@@ -3,6 +3,8 @@
 
 #include<cell_definition.h>
 
-int compare_cell_distinct(void* cell1, cell_definition* cell_def1, void* cell2, cell_definition* cell_def2);
+int compare_cell_allowed(cell_definition* cell_def_1, cell_definition* cell_def_2);
+
+int compare_cell_distinct(void* cell_pos_1, cell_definition* cell_def_1, void* cell_pos_2, cell_definition* cell_def_2);
 
 #endif
