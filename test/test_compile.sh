@@ -1,2 +1,4 @@
-gcc ./test.c -o test.out -I${CAPP_PATH}/inc -L${CAPP_PATH}/bin -lcapp
-./test.out
+cd ..
+make clean all
+cd test
+gcc ./test.c -o test.out -I${SIMPLE_TUPLE_STORAGE_MODEL_PATH}/inc -L${SIMPLE_TUPLE_STORAGE_MODEL_PATH}/bin -lstupstom
