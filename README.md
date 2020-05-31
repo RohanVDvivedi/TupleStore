@@ -1,8 +1,9 @@
-# c_template_application
-A template for my simple generic desktop c application
+# SimpleTupleStorageModel
+
+This library provides you with a very simple, row store oriented, tuble storage model, on fixed sized pages, compressed using ztd zompression library.
 
 setup instructions
- * cd c_template_application
+ * cd SimpleTupleStorageModel
  * make clean
  * make all
  * eval `make path`
