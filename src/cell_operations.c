@@ -3,6 +3,9 @@
 #include<string.h>
 #include<stdint.h>
 
+#define MAX(a,b) ((a > b)?(a):(b));
+#define MIN(a,b) ((a < b)?(a):(b));
+
 int compare_cell_allowed(cell_definition* cell_def_1, cell_definition* cell_def_2)
 {
 	if(cell_def_1->type == CHAR_STRING && cell_def_2->type == CHAR_STRING)
@@ -19,7 +22,7 @@ int compare_cell_allowed(cell_definition* cell_def_1, cell_definition* cell_def_
 	}
 }
 
-int compare_cell_distinct(void* cell_pos_1, cell_definition* cell_def_1, void* cell_pos_2, cell_definition* cell_def_2)
+int compare_cell(void* cell_pos_1, cell_definition* cell_def_1, void* cell_pos_2, cell_definition* cell_def_2)
 {
 	switch(cell_def_1->type)
 	{
@@ -29,7 +32,7 @@ int compare_cell_distinct(void* cell_pos_1, cell_definition* cell_def_1, void* c
 			{
 				case CHAR_STRING :
 				{
-					unsigned int compare_length = CHAR_STRING_max_length;
+					unsigned int compare_length = MIN(cell_def_1->size_in_bytes, cell_def_2->size_in_bytes);
 					return strncmp(cell_pos_1, cell_pos_2, compare_length);
 				}
 				default :
