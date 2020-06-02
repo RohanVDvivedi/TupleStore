@@ -22,6 +22,6 @@ union cell
 	double   FLOATING_POINT_8;
 };
 
-#define read(cell_ptr, TYPE ,SIZE) ((cell*)cell_ptr)->TYPE_SIZE
+#define read_cell(cell_ptr, TYPE ,SIZE) ((cell*)cell_ptr)->TYPE ## _ ## SIZE
 
 #endif
