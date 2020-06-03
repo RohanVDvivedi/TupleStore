@@ -39,7 +39,7 @@ const row_def TABLE_CATALOGUE_sch = {
 									};
 
 const row_def COLUMN_CATALOGUE_sch = {
-										20,
+										23,
 										3,
 										{
 											// column unique id
@@ -54,9 +54,21 @@ const row_def COLUMN_CATALOGUE_sch = {
 												16,
 												CHAR_STRING
 											},
-											// table unique id this column belongs to
+											// size of column in bytes
 											{
 												18,
+												2,
+												UNSIGNED_INT
+											},
+											// datatype stored in column
+											{
+												20,
+												1,
+												UNSIGNED_INT
+											},
+											// table unique id this column belongs to
+											{
+												21,
 												2,
 												CHAR_STRING
 											}
