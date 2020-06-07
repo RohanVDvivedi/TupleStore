@@ -138,5 +138,4 @@ const row_def INDEX_COLUMN_CATALOGUE_sch = {
 										}
 									};
 
-
 #endif
