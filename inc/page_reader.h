@@ -2,7 +2,8 @@
 #define PAGE_READER_H
 
 #include<string.h>
-#include<page_hdr.h>
+
+#include<headers.h>
 #include<data_access_methods.h>
 
 // retuns pointer to tuple at index tuple_no in the page

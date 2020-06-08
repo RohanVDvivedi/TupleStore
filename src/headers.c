@@ -1,4 +1,4 @@
-#include<file_hdr.h>
+#include<headers.h>
 
 void intialize_file_header(file_hdr* hdr, char* database_name, uint32_t page_size_in_bytes)
 {
