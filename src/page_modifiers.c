@@ -38,7 +38,7 @@ int create_or_open_database(const data_access_methods* dam, char* database_name)
 	return 1;
 }
 
-void create_table(const data_access_methods* dam, char* table_name, row_def* columns);
+void create_table(const data_access_methods* dam, char* table_name, tuple_def* columns);
 
 void drop_table(const data_access_methods* dam, char* table_name);
 
