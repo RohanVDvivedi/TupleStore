@@ -2,6 +2,7 @@
 #define DATABASE_HEADER_H
 
 #include<stdint.h>
+#include<string.h>
 
 // This is the first header at page 0
 // this structur is the only data on the first page
@@ -9,15 +10,18 @@
 
 // each database is stored in a separate file
 
-char* database_header_signature = "<- Simple Tuple Storage Model ->";
+char* signature = "<- Simple Tuple Storage Model ->";
 
-typedef struct struct database_hdr;
-struct database_hdr
+#define SIGNATURE_LENGTH 32
+#define DATABASE_NAME_LENGTH 16
+
+typedef struct file_hdr file_hdr;
+struct file_hdr
 {
-	char signature[32];								// simple signale to identify if it is a SimpleTupleStorageModel
+	char signature[SIGNATURE_LENGTH];			// simple signature to identify if it is a SimpleTupleStorageModel
 													// Quite dope 
 
-	char database_name[16];							// name of the database
+	char database_name[DATABASE_NAME_LENGTH];		// name of the database
 
 	uint32_t tables_list_root_page_id;				// root page to start reading list of tables from
 	uint32_t columns_list_root_page_id;				// root page to start reading list of all columns from
@@ -29,6 +33,8 @@ struct database_hdr
 	uint32_t page_size_in_bytes;					// total size of each page in the database, must be multiple of 512
 	uint32_t total_number_of_pages_used;			// total number of pages used by the database file
 													// this number is only incremented and stored, when there are not free pages and a new page is requested by the system
-}
+};
+
+void intialize_file_header(file_hdr* hdr, char* database_name, uint32_t page_size_in_bytes);
 
 #endif

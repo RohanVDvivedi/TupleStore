@@ -6,10 +6,8 @@
 
 #include<string.h>
 
-typedef void* tuple;
+cell get_cell(row_def* tpl_d, void* tpl, unsigned int column_no);
 
-cell get_cell(row_def* tpl_d, tuple tpl, unsigned int column_no);
-
-void set_cell(row_def* tpl_d, tuple tpl, unsigned int column_no, void* value);
+void set_cell(row_def* tpl_d, void* tpl, unsigned int column_no, void* value);
 
 #endif
