@@ -126,7 +126,104 @@ int sprint_tuple(char* str, void* tup, tuple_def* tpl_d)
 	return chars_written;
 }
 
-void sscan_tuple(char* str, void* tup, tuple_def* tpl_d)
+int sscan_tuple(char* str, void* tup, tuple_def* tpl_d)
 {
+	int chars_read = 0;
+	for(uint16_t i = 0; i < tpl_d->element_count; i++)
+	{
+		if(i)
+			chars_read += sscanf(str + chars_read, ", ");
 
+
+		element e = seek_cell(tup, i, tpl_d);
+		switch(tpl_d->element_defs[i].type)
+		{
+			case CHAR_STRING :
+			{
+				chars_read += sscanf(str + chars_read, "%s", e.CHAR_STRING);
+				break;
+			}
+			case UNSIGNED_INT :
+			{
+				u8 temp;
+				chars_read += sscanf(str + chars_read, "%lu", &temp);
+				switch(tpl_d->element_defs[i].size)
+				{
+					case 1 :
+					{
+						(*(e.UNSIGNED_INT_1)) = temp & 0xff;
+						break;
+					}
+					case 2 :
+					{
+						(*(e.UNSIGNED_INT_2)) = temp & 0xffff;
+						break;
+					}
+					case 4 :
+					{
+						(*(e.UNSIGNED_INT_4)) = temp & 0xffffffff;
+						break;
+					}
+					case 8 :
+					{
+						(*(e.UNSIGNED_INT_8)) = temp;
+						break;
+					}
+				}
+				break;
+			}
+			case SIGNED_INT :
+			{
+				i8 temp;
+				chars_read += sscanf(str + chars_read, "%ld", &temp);
+				switch(tpl_d->element_defs[i].size)
+				{
+					case 1 :
+					{
+						(*(e.SIGNED_INT_1)) = temp & 0xff;
+						break;
+					}
+					case 2 :
+					{
+						(*(e.SIGNED_INT_2)) = temp & 0xffff;
+						break;
+					}
+					case 4 :
+					{
+						(*(e.SIGNED_INT_4)) = temp & 0xffffffff;
+						break;
+					}
+					case 8 :
+					{
+						(*(e.SIGNED_INT_8)) = temp;
+						break;
+					}
+				}
+				break;
+			}
+			case FLOATING_NUM :
+			{
+				switch(tpl_d->element_defs[i].size)
+				{
+					case 4 :
+					{
+						f4 temp;
+						chars_read += sscanf(str + chars_read, "%f", &temp);
+						(*(e.FLOATING_NUM_4)) = temp;
+						break;
+					}
+					case 8 :
+					{
+						f8 temp;
+						chars_read += sscanf(str + chars_read, "%lf", &temp);
+						(*(e.FLOATING_NUM_8)) = temp;
+						break;
+					}
+				}
+				break;
+			}
+		}
+	}
+	chars_read += sscanf(str + chars_read, "\n");
+	return chars_read;
 }

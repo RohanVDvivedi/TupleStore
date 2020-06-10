@@ -20,6 +20,7 @@ void swap_tuples(void* tup1, void* tup2, tuple_def* tpl_d);
 // returns number of characters written to the string
 int sprint_tuple(char* str, void* tup, tuple_def* tpl_d);
 
-void sscan_tuple(char* str, void* tup, tuple_def* tpl_d);
+// returns number of bytes read from the string
+int sscan_tuple(char* str, void* tup, tuple_def* tpl_d);
 
 #endif
