@@ -3,16 +3,15 @@
 #include<alloca.h>
 
 #include<tuple.h>
-#include<tuple_def.h>
+#include<page_context.h>
 
 int main()
 {
-	void* data = alloca(1024);
-
+	// allocate size of tuple definition
 	tuple_def* def = alloca(sizeof(tuple_def) + (sizeof(element_def) * 6));
 
+	// initialize tuple definition and insert element definitions
 	init_tuple_def(def);
-
 	insert_element_def(def, UNSIGNED_INT, 8);
 	insert_element_def(def,   SIGNED_INT, 1);
 	tuple_mark_key_complete(def);
@@ -21,11 +20,10 @@ int main()
 	insert_element_def(def,  CHAR_STRING, 32);
 	insert_element_def(def, FLOATING_NUM, 8);
 
-	printf("row_defined with size of %u with %u elements, of which %u are keys with %u total key size\n", def->size, def->element_count, def->key_element_count, def->key_size);
-	for(int i = 0; i < def->element_count; i++)
-	{
-		printf("\tstarts at %u, type number is %u, size in bytes = %u\n", def->element_defs[i].offset, def->element_defs[i].type, def->element_defs[i].size);
-	}
+	print_tuple_def(def);
+/*
+	// this is your single lonely datapage
+	void* page = alloca(4096);
 
 	// your tuple
 	void* tpl = data;
@@ -60,6 +58,6 @@ int main()
 	sprint_tuple(string, tpl, def);
 
 	printf("tuple : %s", string);
-
+*/
 	return 0;
 }

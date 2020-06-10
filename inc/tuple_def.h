@@ -1,6 +1,7 @@
 #ifndef TUPLE_DEF_H
 #define TUPLE_DEF_H
 
+#include<stdio.h>
 #include<stdint.h>
 
 typedef uint8_t  u1;
@@ -28,6 +29,8 @@ enum type
 	UNSIGNED_INT	= 2,
 	FLOATING_NUM	= 3
 };
+
+extern char type_as_string[][16];
 
 typedef struct element_def element_def;
 struct element_def
@@ -94,5 +97,7 @@ void tuple_mark_key_complete(tuple_def* tuple_d);
 // insert the key or values, insert keys in their decreasing order of importance
 // mark the tuple_mark_key_complete, once all the keys are inserted
 int insert_element_def(tuple_def* tuple_d, type element_type, byte_size element_size);
+
+void print_tuple_def(tuple_def* tuple_d);
 
 #endif
