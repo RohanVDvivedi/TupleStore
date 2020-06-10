@@ -39,9 +39,10 @@ void print_tuple(void* tup, tuple_def* tpl_d)
 		if(i)
 			printf(", ");
 
+
+		element e = seek_cell(tup, i, tpl_d);
 		switch(tpl_d->element_defs[i].type)
 		{
-			element e = seek_cell(tup, i, tpl_d);
 			case CHAR_STRING :
 			{
 				printf("%s", e.CHAR_STRING);
@@ -53,17 +54,17 @@ void print_tuple(void* tup, tuple_def* tpl_d)
 				{
 					case 1 :
 					{
-						printf("%u",  (uint32_t)(*(e.UNSIGNED_INT_1)));
+						printf("%u",  (*(e.UNSIGNED_INT_1)) & 0xff);
 						break;
 					}
 					case 2 :
 					{
-						printf("%u",  (uint32_t)(*(e.UNSIGNED_INT_2)));
+						printf("%u",  (*(e.UNSIGNED_INT_2)) & 0xffff);
 						break;
 					}
 					case 4 :
 					{
-						printf("%u", (uint32_t)(*(e.UNSIGNED_INT_4)));
+						printf("%u", (*(e.UNSIGNED_INT_4)) & 0xffffffff);
 						break;
 					}
 					case 8 :
@@ -80,17 +81,17 @@ void print_tuple(void* tup, tuple_def* tpl_d)
 				{
 					case 1 :
 					{
-						printf("%d", (int32_t)(*(e.SIGNED_INT_1)));
+						printf("%d", (*(e.SIGNED_INT_1)) & 0xff);
 						break;
 					}
 					case 2 :
 					{
-						printf("%d", (int32_t)(*(e.SIGNED_INT_2)));
+						printf("%d", (*(e.SIGNED_INT_2)) & 0xffff);
 						break;
 					}
 					case 4 :
 					{
-						printf("%d", (int32_t)(*(e.SIGNED_INT_4)));
+						printf("%d", (*(e.SIGNED_INT_4)) & 0xffffffff);
 						break;
 					}
 					case 8 :

@@ -3,57 +3,49 @@
 #include<alloca.h>
 
 #include<tuple.h>
-#include<row_def.h>
+#include<tuple_def.h>
 
 int main()
 {
 	void* data = alloca(1024);
 
-	row_def* row_d = alloca(sizeof(row_def) + (sizeof(col_def) * 6));
+	tuple_def* def = alloca(sizeof(tuple_def) + (sizeof(element_def) * 6));
 
-	init_row_def(row_d);
+	init_tuple_def(def);
 
-	insert_col_def(row_d, UNSIGNED_INT, 8);
-	insert_col_def(row_d,   SIGNED_INT, 1);
-	insert_col_def(row_d, UNSIGNED_INT, 1);
-	insert_col_def(row_d,  CHAR_STRING, 32);
-	insert_col_def(row_d,  CHAR_STRING, 32);
-	insert_col_def(row_d, FLOATING_NUM, 8);
+	insert_element_def(def, UNSIGNED_INT, 8);
+	insert_element_def(def,   SIGNED_INT, 1);
+	tuple_mark_key_complete(def);
+	insert_element_def(def, UNSIGNED_INT, 1);
+	insert_element_def(def,  CHAR_STRING, 32);
+	insert_element_def(def,  CHAR_STRING, 32);
+	insert_element_def(def, FLOATING_NUM, 8);
 
-	printf("row_defined with size of %u with columns : %u\n", row_d->size_in_bytes, row_d->column_count);
-	for(int i = 0; i < row_d->column_count; i++)
+	printf("row_defined with size of %u with %u elements, of which %u are keys with %u total key size\n", def->size, def->element_count, def->key_element_count, def->key_size);
+	for(int i = 0; i < def->element_count; i++)
 	{
-		printf("\tstarts at %u, type number is %u, size in bytes = %u\n",
-				row_d->col_definitions[i].byte_offset, row_d->col_definitions[i].type, row_d->col_definitions[i].size_in_bytes);
+		printf("\tstarts at %u, type number is %u, size in bytes = %u\n", def->element_defs[i].offset, def->element_defs[i].type, def->element_defs[i].size);
 	}
 
-	tuple tpl = data;
+	void* tpl = data;
 
-	uint64_t col0 = 5796;
-	set_cell(row_d, tpl, 0, &col0);
+	u8 col0 = 5796;
+	copy_to_cell(tpl, 0, def, &col0);
 
-	int8_t col1 = 25;
-	set_cell(row_d, tpl, 1, &col1);
+	i1 col1 = 25;
+	copy_to_cell(tpl, 1, def, &col1);
 
-	uint8_t col2 = 157;
-	set_cell(row_d, tpl, 2, &col2);
+	u1 col2 = 157;
+	copy_to_cell(tpl, 2, def, &col2);
 
-	set_cell(row_d, tpl, 3, "hello");
+	copy_to_cell(tpl, 3, def, "hello");
 	
-	set_cell(row_d, tpl, 4, "Rohan");
+	copy_to_cell(tpl, 4, def, "Rohan");
 
-	double col5 = 5.639;
-	set_cell(row_d, tpl, 5, &col5);
+	f8 col5 = 5.639;
+	copy_to_cell(tpl, 5, def, &col5);
 
-	char* format = "\n\n0 => %llu\n1 => %d\n2 => %u\n3 => %s\n4 => %s\n5 => %lf\n\n";
-
-	printf(format,
-		*(get_cell(row_d, tpl, 0).UNSIGNED_INT_8),
-		*(get_cell(row_d, tpl, 1).SIGNED_INT_1),
-		*(get_cell(row_d, tpl, 2).UNSIGNED_INT_1),
-		(get_cell(row_d, tpl, 3).CHAR_STRING),
-		(get_cell(row_d, tpl, 4).CHAR_STRING),
-		*(get_cell(row_d, tpl, 5).FLOATING_NUM_8));
+	print_tuple(tpl, def);
 
 	return 0;
 }

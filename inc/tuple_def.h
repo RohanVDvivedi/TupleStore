@@ -93,6 +93,6 @@ void tuple_mark_key_complete(tuple_def* tuple_d);
 
 // insert the key or values, insert keys in their decreasing order of importance
 // mark the tuple_mark_key_complete, once all the keys are inserted
-int insert_col_def(tuple_def* tuple_d, type element_type, byte_size element_size);
+int insert_element_def(tuple_def* tuple_d, type element_type, byte_size element_size);
 
 #endif
