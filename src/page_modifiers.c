@@ -21,7 +21,7 @@ int create_or_open_database(const data_access_methods* dam, char* database_name)
 		if(strncmp(fhdr->signature, signature, SIGNATURE_LENGTH))
 		{
 			// initialize database file
-			intialize_file_header(fhdr, database_name, dam->page_size_in_bytes);
+			init_file_header(fhdr, database_name, dam->page_size_in_bytes);
 		}
 		// do not open to modify or re write anyother database
 		else if(strncmp(fhdr->database_name, database_name, DATABASE_NAME_LENGTH))
