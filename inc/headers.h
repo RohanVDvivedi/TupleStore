@@ -4,6 +4,8 @@
 #include<stdint.h>
 #include<string.h>
 
+#include<tuple_def.h>
+
 // This is the first header at page 0
 // this structur is the only data on the first page
 // the disk physical page size is assumed to be grater than or equal to the 512 bytes
@@ -37,31 +39,37 @@ struct file_hdr
 													// this number is only incremented and stored, when there are not free pages and a new page is requested by the system
 };
 
+// two page layouts are supported
+// TUPLE_ARRAY  => array of fixed sized tuples after the header
+// SLOTTED_PAGE => tuples are addressed using array of offsets of tuples in the page, after the main header
+typedef enum page_layout page_layout;
+enum page_layout
+{
+	TUPLE_ARRAY,
+	SLOTTED_PAGE
+};
+
 typedef struct page_hdr page_hdr;
 struct page_hdr
 {
 	// this is the type of the page
-	uint8_t page_type;
+	u8 page_type;
 	
-	uint32_t next_page_id;
+	u4 next_page_id;
 
-	uint32_t overflow_page_id;
+	u4 overflow_page_id;
+
+	// defines how the tuples are layed on the page
+	page_layout layout;
 
 	// size of tuple in bytes
-	uint16_t tuple_size_in_bytes;
-
-	// length of the key in the page
-	// key_size <= tuple_size, and all the fields composing the key are big-endian except the CHAR_STRING
-	// the page is ordered on the key of the tuple
-	uint16_t key_size;
+	byte_size tuple_size_in_bytes;
 
 	// number of tuples contained in the page
-	uint16_t tuple_count_in_page;
+	u2 tuple_count_in_page;
 
-	// offsets of the tuple from the page_address
-	// the offsets are ordered by the increasing order of comparison of the keys of the tuples
-	// the offsets
-	uint16_t tuple_offsets[];
+	// offsets of the tuple from the end of the page_header
+	byte_size tuple_offsets[];
 };
 
 void intialize_file_header(file_hdr* hdr, char* database_name, uint32_t page_size_in_bytes);
