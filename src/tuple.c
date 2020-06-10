@@ -32,12 +32,13 @@ void swap_tuples(void* tup1, void* tup2, tuple_def* tpl_d)
 	memcpy(tup2, temp_tupl, tpl_d->size);
 }
 
-void print_tuple(void* tup, tuple_def* tpl_d)
+int sprint_tuple(char* str, void* tup, tuple_def* tpl_d)
 {
+	int chars_written = 0;
 	for(uint16_t i = 0; i < tpl_d->element_count; i++)
 	{
 		if(i)
-			printf(", ");
+			chars_written += sprintf(str + chars_written, ", ");
 
 
 		element e = seek_cell(tup, i, tpl_d);
@@ -45,7 +46,7 @@ void print_tuple(void* tup, tuple_def* tpl_d)
 		{
 			case CHAR_STRING :
 			{
-				printf("%s", e.CHAR_STRING);
+				chars_written += sprintf(str + chars_written, "%s", e.CHAR_STRING);
 				break;
 			}
 			case UNSIGNED_INT :
@@ -54,22 +55,22 @@ void print_tuple(void* tup, tuple_def* tpl_d)
 				{
 					case 1 :
 					{
-						printf("%u",  (*(e.UNSIGNED_INT_1)) & 0xff);
+						chars_written += sprintf(str + chars_written, "%u",  (*(e.UNSIGNED_INT_1)) & 0xff);
 						break;
 					}
 					case 2 :
 					{
-						printf("%u",  (*(e.UNSIGNED_INT_2)) & 0xffff);
+						chars_written += sprintf(str + chars_written, "%u",  (*(e.UNSIGNED_INT_2)) & 0xffff);
 						break;
 					}
 					case 4 :
 					{
-						printf("%u", (*(e.UNSIGNED_INT_4)) & 0xffffffff);
+						chars_written += sprintf(str + chars_written, "%u", (*(e.UNSIGNED_INT_4)) & 0xffffffff);
 						break;
 					}
 					case 8 :
 					{
-						printf("%lu", *(e.UNSIGNED_INT_8));
+						chars_written += sprintf(str + chars_written, "%lu", *(e.UNSIGNED_INT_8));
 						break;
 					}
 				}
@@ -81,22 +82,22 @@ void print_tuple(void* tup, tuple_def* tpl_d)
 				{
 					case 1 :
 					{
-						printf("%d", (*(e.SIGNED_INT_1)) & 0xff);
+						chars_written += sprintf(str + chars_written, "%d", (*(e.SIGNED_INT_1)) & 0xff);
 						break;
 					}
 					case 2 :
 					{
-						printf("%d", (*(e.SIGNED_INT_2)) & 0xffff);
+						chars_written += sprintf(str + chars_written, "%d", (*(e.SIGNED_INT_2)) & 0xffff);
 						break;
 					}
 					case 4 :
 					{
-						printf("%d", (*(e.SIGNED_INT_4)) & 0xffffffff);
+						chars_written += sprintf(str + chars_written, "%d", (*(e.SIGNED_INT_4)) & 0xffffffff);
 						break;
 					}
 					case 8 :
 					{
-						printf("%ld", *(e.SIGNED_INT_8));
+						chars_written += sprintf(str + chars_written, "%ld", *(e.SIGNED_INT_8));
 						break;
 					}
 				}
@@ -108,12 +109,12 @@ void print_tuple(void* tup, tuple_def* tpl_d)
 				{
 					case 4 :
 					{
-						printf("%f", *(e.FLOATING_NUM_4));
+						chars_written += sprintf(str + chars_written, "%f", *(e.FLOATING_NUM_4));
 						break;
 					}
 					case 8 :
 					{
-						printf("%lf", *(e.FLOATING_NUM_8));
+						chars_written += sprintf(str + chars_written, "%lf", *(e.FLOATING_NUM_8));
 						break;
 					}
 				}
@@ -121,5 +122,11 @@ void print_tuple(void* tup, tuple_def* tpl_d)
 			}
 		}
 	}
-	printf("\n");
+	chars_written += sprintf(str + chars_written, "\n");
+	return chars_written;
+}
+
+void sscan_tuple(char* str, void* tup, tuple_def* tpl_d)
+{
+
 }

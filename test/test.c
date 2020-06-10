@@ -45,7 +45,10 @@ int main()
 	f8 col5 = 5.639;
 	copy_to_cell(tpl, 5, def, &col5);
 
-	print_tuple(tpl, def);
+	char string[1024];
+	sprint_tuple(string, tpl, def);
+
+	printf("tuple : %s", string);
 
 	return 0;
 }
