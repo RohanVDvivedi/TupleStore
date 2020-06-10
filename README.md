@@ -5,8 +5,6 @@ This library provides you with a very simple
  * **fixed length predefined tuple storage model,**
  * **to be stored on fixed sized pages for block storage systems.**
 
-The Model is expect to run only on little endian byte order systems.
-
 Started as a project to be used in a small database storage engine.
 
 To reiterate : This project is not a database, embedded database, database storage engine or any of that.
