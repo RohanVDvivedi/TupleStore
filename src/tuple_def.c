@@ -1,5 +1,12 @@
 #include<tuple_def.h>
 
+char type_as_string[][16] = {
+								"CHAR_STRING",
+								"SIGNED_INT",
+								"UNSIGNED_INT",
+								"FLOATING_NUM"
+							};
+
 int is_size_allowed(type element_type, byte_size size)
 {
 	switch(element_type)
@@ -54,5 +61,21 @@ void tuple_mark_key_complete(tuple_def* tuple_d)
 	{
 		tuple_d->key_size = tuple_d->size;
 		tuple_d->key_element_count = tuple_d->element_count;
+	}
+}
+
+void print_tuple_def(tuple_def* tuple_d)
+{
+	printf("Tuple definition       : \n");
+	printf("\t tuple_size in bytes : %u\n", tuple_d->size);
+	printf("\t elements            : %u\n", tuple_d->element_count);
+	printf("\t key_size in bytes   : %u\n", tuple_d->key_size);
+	printf("\t key_elements        : %u\n", tuple_d->key_element_count);
+	for(u2 i = 0; i < tuple_d->element_count; i++)
+	{
+		printf("\t\tColumn : %u\n", i);
+		printf("\t\t\ttype              : %s\n", type_as_string[tuple_d->element_defs[i].type]);
+		printf("\t\t\tsize  (bytes)     : %u\n", tuple_d->element_defs[i].size);
+		printf("\t\t\toffset in tuple   : %u\n", tuple_d->element_defs[i].offset);
 	}
 }
