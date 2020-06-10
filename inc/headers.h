@@ -40,6 +40,9 @@ struct file_hdr
 typedef struct page_hdr page_hdr;
 struct page_hdr
 {
+	// this is the type of the page
+	uint8_t page_type;
+	
 	uint32_t next_page_id;
 
 	uint32_t overflow_page_id;
@@ -54,9 +57,6 @@ struct page_hdr
 
 	// number of tuples contained in the page
 	uint16_t tuple_count_in_page;
-
-	// this is the type of the page
-	uint8_t page_type;
 };
 
 void intialize_file_header(file_hdr* hdr, char* database_name, uint32_t page_size_in_bytes);
