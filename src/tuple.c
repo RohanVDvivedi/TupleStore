@@ -1,30 +1,30 @@
 #include<tuple.h>
 
-inline element seek_cell(void* tupl, unsigned int column_no, tuple_def* tpl_d)
+element seek_cell(void* tupl, unsigned int column_no, tuple_def* tpl_d)
 {
 	element e;
 	e.GENERIC = (tupl + (tpl_d->element_defs[column_no].offset));
 	return e;
 }
 
-inline void copy_to_cell(void* tupl, unsigned int column_no, tuple_def* tpl_d, void* value)
+void copy_to_cell(void* tupl, unsigned int column_no, tuple_def* tpl_d, void* value)
 {
 	void* vp = seek_cell(tupl, column_no, tpl_d).GENERIC;
 	memcpy(vp, value, tpl_d->element_defs[column_no].size);
 }
 
-inline void copy_from_cell(void* tupl, unsigned int column_no, tuple_def* tpl_d, void* value)
+void copy_from_cell(void* tupl, unsigned int column_no, tuple_def* tpl_d, void* value)
 {
 	void* vp = seek_cell(tupl, column_no, tpl_d).GENERIC;
 	memcpy(value, vp, tpl_d->element_defs[column_no].size);
 }
 
-inline int compare_tuple(void* tup1, void* tup2, tuple_def* tpl_d)
+int compare_tuple(void* tup1, void* tup2, tuple_def* tpl_d)
 {
 	return 0;
 }
 
-inline void swap_tuples(void* tup1, void* tup2, tuple_def* tpl_d)
+void swap_tuples(void* tup1, void* tup2, tuple_def* tpl_d)
 {
 	void* temp_tupl = alloca(tpl_d->size);
 	memcpy(temp_tupl, tup1, tpl_d->size);
