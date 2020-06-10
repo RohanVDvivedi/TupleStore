@@ -25,6 +25,9 @@ enum endian
 	BIG    = 1
 };
 
+// make change here, if your system is BIG endian, my system is little endian
+#define CPU_ENDIAN LITTLE
+
 #define CHAR_STRING_max_length 128
 
 typedef enum type type;
@@ -88,9 +91,9 @@ struct tuple_def
 	// total elements in the tuple
 	uint16_t element_count;
 
-	// definition of all of the lements, of which the first key_element_count compose key for the element
+	// definition of all of the elements, of which the first key_element_count compose key for the element
 	// all the keys are layed out in big endian format for fast comparison
-	// other values are little endian for fast read/write operation
+	// other values are CPU_ENDIAN endian for fast read/write operation
 	element_def element_defs[];
 };
 
