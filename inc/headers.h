@@ -62,9 +62,6 @@ struct page_hdr
 	// defines how the tuples are layed on the page
 	page_layout layout;
 
-	// size of tuple in bytes
-	byte_size tuple_size_in_bytes;
-
 	// number of tuples contained in the page
 	u2 tuple_count_in_page;
 
@@ -72,6 +69,8 @@ struct page_hdr
 	byte_size tuple_offsets[];
 };
 
-void intialize_file_header(file_hdr* hdr, char* database_name, uint32_t page_size_in_bytes);
+void init_file_header(file_hdr* hdr, char* database_name, uint32_t page_size_in_bytes);
+
+void init_page_header(page_hdr* hdr, u8 page_type, page_layout layout);
 
 #endif
