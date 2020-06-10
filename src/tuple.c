@@ -55,17 +55,17 @@ int sprint_tuple(char* str, void* tup, tuple_def* tpl_d)
 				{
 					case 1 :
 					{
-						chars_written += sprintf(str + chars_written, "%u",  (*(e.UNSIGNED_INT_1)) & 0xff);
+						chars_written += sprintf(str + chars_written, "%u",  *(e.UNSIGNED_INT_1));
 						break;
 					}
 					case 2 :
 					{
-						chars_written += sprintf(str + chars_written, "%u",  (*(e.UNSIGNED_INT_2)) & 0xffff);
+						chars_written += sprintf(str + chars_written, "%u",  *(e.UNSIGNED_INT_2));
 						break;
 					}
 					case 4 :
 					{
-						chars_written += sprintf(str + chars_written, "%u", (*(e.UNSIGNED_INT_4)) & 0xffffffff);
+						chars_written += sprintf(str + chars_written, "%u", *(e.UNSIGNED_INT_4));
 						break;
 					}
 					case 8 :
@@ -82,17 +82,17 @@ int sprint_tuple(char* str, void* tup, tuple_def* tpl_d)
 				{
 					case 1 :
 					{
-						chars_written += sprintf(str + chars_written, "%d", (*(e.SIGNED_INT_1)) & 0xff);
+						chars_written += sprintf(str + chars_written, "%d", *(e.SIGNED_INT_1));
 						break;
 					}
 					case 2 :
 					{
-						chars_written += sprintf(str + chars_written, "%d", (*(e.SIGNED_INT_2)) & 0xffff);
+						chars_written += sprintf(str + chars_written, "%d", *(e.SIGNED_INT_2));
 						break;
 					}
 					case 4 :
 					{
-						chars_written += sprintf(str + chars_written, "%d", (*(e.SIGNED_INT_4)) & 0xffffffff);
+						chars_written += sprintf(str + chars_written, "%d", *(e.SIGNED_INT_4));
 						break;
 					}
 					case 8 :
@@ -128,11 +128,12 @@ int sprint_tuple(char* str, void* tup, tuple_def* tpl_d)
 
 int sscan_tuple(char* str, void* tup, tuple_def* tpl_d)
 {
+	int nr = 0;
 	int chars_read = 0;
 	for(uint16_t i = 0; i < tpl_d->element_count; i++)
 	{
 		if(i)
-			chars_read += sscanf(str + chars_read, ", ");
+			sscanf(str + chars_read, ", %n", &nr);						chars_read += nr;
 
 
 		element e = seek_cell(tup, i, tpl_d);
@@ -140,13 +141,13 @@ int sscan_tuple(char* str, void* tup, tuple_def* tpl_d)
 		{
 			case CHAR_STRING :
 			{
-				chars_read += sscanf(str + chars_read, "%s", e.CHAR_STRING);
+				sscanf(str + chars_read, "%[^,]%n", e.CHAR_STRING, &nr);	chars_read += nr;
 				break;
 			}
 			case UNSIGNED_INT :
 			{
 				u8 temp;
-				chars_read += sscanf(str + chars_read, "%lu", &temp);
+				sscanf(str + chars_read, "%lu%n", &temp, &nr);			chars_read += nr;
 				switch(tpl_d->element_defs[i].size)
 				{
 					case 1 :
@@ -175,7 +176,7 @@ int sscan_tuple(char* str, void* tup, tuple_def* tpl_d)
 			case SIGNED_INT :
 			{
 				i8 temp;
-				chars_read += sscanf(str + chars_read, "%ld", &temp);
+				sscanf(str + chars_read, "%ld%n", &temp, &nr);			chars_read += nr;
 				switch(tpl_d->element_defs[i].size)
 				{
 					case 1 :
@@ -208,14 +209,14 @@ int sscan_tuple(char* str, void* tup, tuple_def* tpl_d)
 					case 4 :
 					{
 						f4 temp;
-						chars_read += sscanf(str + chars_read, "%f", &temp);
+						sscanf(str + chars_read, "%f%n", &temp, &nr); 	chars_read += nr;
 						(*(e.FLOATING_NUM_4)) = temp;
 						break;
 					}
 					case 8 :
 					{
 						f8 temp;
-						chars_read += sscanf(str + chars_read, "%lf", &temp);
+						sscanf(str + chars_read, "%lf%n", &temp, &nr);	chars_read += nr;
 						(*(e.FLOATING_NUM_8)) = temp;
 						break;
 					}
@@ -224,6 +225,6 @@ int sscan_tuple(char* str, void* tup, tuple_def* tpl_d)
 			}
 		}
 	}
-	chars_read += sscanf(str + chars_read, "\n");
+	sscanf(str + chars_read, "\n%n", &nr); 	chars_read += nr;
 	return chars_read;
 }
