@@ -39,7 +39,9 @@ void init_row_def(tuple_def* tuple_d)
 int insert_col_def(tuple_def* tuple_d, type element_type, uint16_t element_size)
 {
 	element_def* new_element_def = &(tuple_d->element_defs[tuple_d->element_count]);
-	if(init_col_def(new_element_def, element_type, element_size, LITTLE))
+
+	// all elements default to CPU_ENDIAN (may be little or big) but all keys are little endian
+	if(init_col_def(new_element_def, element_type, element_size, CPU_ENDIAN))
 	{
 		new_element_def->offset = tuple_d->size;
 		tuple_d->size += new_element_def->size;
@@ -53,6 +55,7 @@ void tuple_mark_key_complete(tuple_def* tuple_d)
 {
 	for(int i = tuple_d->key_element_count; i < tuple_d->element_count; i++)
 	{
+		// all keys are BIG endian, irrespective of cpu endianness
 		tuple_d->element_defs[i].endian = BIG;
 	}
 }

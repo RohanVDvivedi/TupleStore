@@ -3,8 +3,9 @@
 This library provides you with a very simple 
  * **row store oriented,**
  * **fixed length predefined tuple storage model,**
- * **to be stored on fixed sized pages for block storage systems,**
- * **which are compressed using ztd compression library.**
+ * **to be stored on fixed sized pages for block storage systems.**
+
+The Model is expect to run only on little endian byte order systems.
 
 Started as a project to be used in a small database storage engine.
 
