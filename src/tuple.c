@@ -3,12 +3,12 @@
 element get_cell(tuple_def* tpl_d, void* tupl, unsigned int column_no)
 {
 	element e;
-	e.GENERIC = (tupl + (tpl_d->element_defs[column_no].byte_offset));
+	e.GENERIC = (tupl + (tpl_d->element_defs[column_no].offset));
 	return e;
 }
 
 void set_cell(tuple_def* tpl_d, void* tupl, unsigned int column_no, void* value)
 {
-	void* vp = (tupl + (tpl_d->element_defs[column_no].byte_offset));
-	memcpy(vp, value, tpl_d->element_defs[column_no].size_in_bytes);
+	void* vp = (tupl + (tpl_d->element_defs[column_no].offset));
+	memcpy(vp, value, tpl_d->element_defs[column_no].size);
 }
