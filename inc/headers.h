@@ -12,7 +12,7 @@
 
 // each database is stored in a separate file
 
-char* signature = "<- Simple Tuple Storage Model ->";
+extern char* signature;
 
 #define SIGNATURE_LENGTH 32
 #define DATABASE_NAME_LENGTH 16

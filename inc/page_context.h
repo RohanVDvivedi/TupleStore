@@ -25,6 +25,6 @@ void* get_page(page_context* pg_cntxt);
 void* get_tuple(page_context* pg_cntxt, uint16_t tuple_no);
 
 // returns the number of tuples that were appended
-uint16_t append_tuple(page_context* pg_cntxt, void* tuples_to_insert, uint16_t num_tuples_to_insert);
+uint16_t append_tuples(page_context* pg_cntxt, void* tuples_to_insert, uint16_t num_tuples_to_insert);
 
 #endif

@@ -1,5 +1,8 @@
 #include<headers.h>
 
+// signature before every SimpleTupleStorageModel database
+char* signature = "<- Simple Tuple Storage Model ->";
+
 void init_file_header(file_hdr* hdr, char* database_name, uint32_t page_size_in_bytes)
 {
 	memcpy(hdr->signature, signature, SIGNATURE_LENGTH);
