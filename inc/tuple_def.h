@@ -18,16 +18,6 @@ typedef double   f8;
 
 typedef uint16_t byte_size;
 
-typedef enum endian endian;
-enum endian
-{
-	LITTLE = 0,
-	BIG    = 1
-};
-
-// make change here, if your system is BIG endian, my system is little endian
-#define CPU_ENDIAN LITTLE
-
 #define CHAR_STRING_max_length 128
 
 typedef enum type type;
@@ -47,9 +37,6 @@ struct element_def
 
 	// size in bytes that is occupied by the element
 	byte_size size;
-
-	// endianness of the field, ignored if the field type is CHAR_STRING
-	endian endian;
 
 	// type stored in the cell
 	type type;
@@ -91,9 +78,7 @@ struct tuple_def
 	// total elements in the tuple
 	uint16_t element_count;
 
-	// definition of all of the elements, of which the first key_element_count compose key for the element
-	// all the keys are layed out in big endian format for fast comparison
-	// other values are CPU_ENDIAN endian for fast read/write operation
+	// definition of all of the elements, of which the first key_element_count form the key for the element
 	element_def element_defs[];
 };
 
