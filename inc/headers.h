@@ -57,6 +57,11 @@ struct page_hdr
 
 	// number of tuples contained in the page
 	uint16_t tuple_count_in_page;
+
+	// offsets of the tuple from the page_address
+	// the offsets are ordered by the increasing order of comparison of the keys of the tuples
+	// the offsets
+	uint16_t tuple_offsets[];
 };
 
 void intialize_file_header(file_hdr* hdr, char* database_name, uint32_t page_size_in_bytes);
