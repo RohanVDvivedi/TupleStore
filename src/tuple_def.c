@@ -27,7 +27,7 @@ static int init_col_def(element_def* element_d, type type, byte_size size)
 	return 0;
 }
 
-void init_row_def(tuple_def* tuple_d)
+void init_tuple_def(tuple_def* tuple_d)
 {
 	tuple_d->key_size = 0;
 	tuple_d->key_element_count = 0;
@@ -35,7 +35,7 @@ void init_row_def(tuple_def* tuple_d)
 	tuple_d->element_count = 0;
 }
 
-int insert_col_def(tuple_def* tuple_d, type element_type, uint16_t element_size)
+int insert_element_def(tuple_def* tuple_d, type element_type, uint16_t element_size)
 {
 	element_def* new_element_def = &(tuple_d->element_defs[tuple_d->element_count]);
 	if(init_col_def(new_element_def, element_type, element_size))
