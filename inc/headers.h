@@ -64,9 +64,6 @@ struct page_hdr
 
 	// number of tuples contained in the page
 	u2 tuple_count_in_page;
-
-	// offsets of the tuple from the end of the page_header
-	byte_size tuple_offsets[];
 };
 
 void init_file_header(file_hdr* hdr, char* database_name, uint32_t page_size_in_bytes);
