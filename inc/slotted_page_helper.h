@@ -1,7 +1,7 @@
 #ifndef SLOTTED_PAGE_HELPER
 #define SLOTTED_PAGE_HELPER
 
-inline uint16_t get_number_of_tuples_stored(page_context* pg_cntxt)
+extern inline uint16_t get_number_of_tuples_stored(page_context* pg_cntxt)
 {
 	if(pg_cntxt->tuples_stored != 0)
 	{
@@ -16,7 +16,7 @@ inline uint16_t get_number_of_tuples_stored(page_context* pg_cntxt)
 	return pg_cntxt->tuples_stored;
 }
 
-inline uint16_t* get_tuple_offsets(page_context* pg_cntxt)
+extern inline uint16_t* get_tuple_offsets(page_context* pg_cntxt)
 {
 	void* page_content = get_page_content(pg_cntxt);
 
@@ -29,7 +29,7 @@ inline uint16_t* get_tuple_offsets(page_context* pg_cntxt)
 
 // you must provide a tuple_no < tuples_stored for the page
 // tuple offset being 0 mean, that there does not exist a tuple at that location
-inline int is_tuple_deleted(page_context* pg_cntxt, uint16_t tuple_no)
+extern inline int is_tuple_deleted(page_context* pg_cntxt, uint16_t tuple_no)
 {
 	uint16_t* tuple_offsets = get_tuple_offsets(pg_cntxt);
 	return tuple_offsets[tuple_no] == 0;
@@ -37,7 +37,7 @@ inline int is_tuple_deleted(page_context* pg_cntxt, uint16_t tuple_no)
 
 // you must provide a tuple_no < tuples_stored for the page
 // tuple offset being 0 mean, that there does not exist a tuple at that location
-inline void mark_tuple_deleted(page_context* pg_cntxt, uint16_t tuple_no)
+extern inline void mark_tuple_deleted(page_context* pg_cntxt, uint16_t tuple_no)
 {
 	uint16_t* tuple_offsets = get_tuple_offsets(pg_cntxt);
 	tuple_offsets[tuple_no] = 0;

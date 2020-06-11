@@ -34,6 +34,11 @@ void swap_tuples(void* tup1, void* tup2, tuple_def* tpl_d)
 
 int sprint_tuple(char* str, void* tup, tuple_def* tpl_d)
 {
+	if(tup == NULL)
+	{
+		str[0] = 'N';str[1] = 'U';str[2] = 'L';str[3] = 'L';str[4] = '\0';
+		return 4; 
+	}
 	int chars_written = 0;
 	for(uint16_t i = 0; i < tpl_d->element_count; i++)
 	{

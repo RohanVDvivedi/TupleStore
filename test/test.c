@@ -77,7 +77,7 @@ int main()
 	sprint_tuple(string, tpl, def);
 	printf("Inserted tuple : %s", string);
 
-	string = "";
+	string[0] = '\0';
 
 	// test sscan_tuple 
 	printf("Printing tuples directly from the page : \n");
