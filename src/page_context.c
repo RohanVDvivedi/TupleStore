@@ -107,7 +107,24 @@ uint16_t append_tuples(page_context* pg_cntxt, void* tuples_to_insert, uint16_t 
 		}
 		case SLOTTED_PAGE :
 		{
-			return 0;
+			uint16_t new_tuple_offset = pg_cntxt->dam->page_size_in_bytes - pg_cntxt->tuple_definition->size;
+			uint16_t* tuple_offsets = get_tuple_offsets(pg_cntxt);
+			while(num_tuples_to_insert > 0)
+			{
+				if(pg_cntxt->tuples_stored > 0)
+					new_tuple_offset = tuple_offsets[pg_cntxt->tuples_stored - 1] - pg_cntxt->tuple_definition->size;
+
+				if( new_tuple_offset <= (uintptr_t) ( ((void*)(tuple_offsets + pg_cntxt->tuples_stored)) - get_page(pg_cntxt) ) )
+					break;
+
+				memcpy(get_page(pg_cntxt) + new_tuple_offset, tuples_to_insert, pg_cntxt->tuple_definition->size);
+
+				tuple_offsets[pg_cntxt->tuples_stored] = new_tuple_offset;
+				pg_cntxt->tuples_stored++;
+				num_tuples_to_insert--;
+				tuples_to_insert += pg_cntxt->tuple_definition->size;
+			}
+			return num_tuples_to_insert;
 		}
 		default :
 		{
