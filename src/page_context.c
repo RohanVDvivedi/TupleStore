@@ -18,15 +18,13 @@ void init_page_context(page_context* pg_cntxt, uint32_t page_id, void* page, tup
 
 void* get_tuple(page_context* pg_cntxt, uint16_t tuple_no)
 {
-	page_hdr* pg_hdr = pg_cntxt->header;
-
 	switch(pg_cntxt->header->layout)
 	{
 		case TUPLE_ARRAY :
 		{
 			byte_size tuple_size = pg_cntxt->tuple_definition->size; // size of tuple in bytes
 			tuple_storage_limit(pg_cntxt);
-			if(tuple_no < pg_cntxt->tuple_storage_limit)
+			if(tuple_no < pg_cntxt->tuple_storage_limit && does_tuple_exist(pg_cntxt, tuple_no))
 			{
 				void* tuples = get_tuples(pg_cntxt);
 				return tuples + (tuple_no * tuple_size);
@@ -37,9 +35,9 @@ void* get_tuple(page_context* pg_cntxt, uint16_t tuple_no)
 		case SLOTTED_PAGE :
 		{
 			get_number_of_tuples_stored(pg_cntxt);
-			if(tuple_no < pg_cntxt->tuples_stored)
+			if(tuple_no < pg_cntxt->tuples_stored && !is_tuple_deleted(pg_cntxt, tuple_no))
 			{
-				return get_page(pg_cntxt); + (get_tuple_offsets(pg_cntxt))[tuple_no];
+				return get_page(pg_cntxt) + (get_tuple_offsets(pg_cntxt))[tuple_no];
 			}
 			else
 				return 0;
