@@ -6,7 +6,7 @@
 #include<page_context.h>
 
 #define PAGE_SIZE    4096
-#define PAGE_LAYOUT  /*TUPLE_ARRAY*/ SLOTTED_PAGE
+#define PAGE_LAYOUT  TUPLE_ARRAY /*SLOTTED_PAGE*/
 
 // output print string
 char string[1024];
@@ -22,8 +22,8 @@ int main()
 	insert_element_def(def,   SIGNED_INT, 1);
 	tuple_mark_key_complete(def);
 	insert_element_def(def, UNSIGNED_INT, 1);
-	insert_element_def(def,  CHAR_STRING, 32);
-	insert_element_def(def,  CHAR_STRING, 32);
+	insert_element_def(def,  CHAR_STRING, 6);
+	insert_element_def(def,  CHAR_STRING, 6);
 	insert_element_def(def, FLOATING_NUM, 8);
 
 	print_tuple_def(def);
