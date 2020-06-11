@@ -51,10 +51,6 @@ void* get_tuple(page_context* pg_cntxt, uint16_t tuple_no)
 
 uint16_t append_tuples(page_context* pg_cntxt, void* tuples_to_insert, uint16_t num_tuples_to_insert)
 {
-	page_hdr* pg_hdr = pg_cntxt->header;
-	void* page = get_page(pg_cntxt);
-	const data_access_methods* dam = pg_cntxt->dam;
-
 	switch(pg_cntxt->header->layout)
 	{
 		case TUPLE_ARRAY :
@@ -63,22 +59,32 @@ uint16_t append_tuples(page_context* pg_cntxt, void* tuples_to_insert, uint16_t 
 	
 			void* tuples = get_tuples(pg_cntxt);
 
-			uint32_t total_tuples_size = get_total_page_content_size(pg_cntxt);
+			uint16_t tuples_count_limit = tuple_storage_limit(pg_cntxt);
 
-			uint32_t occupied_tuples_size = tuple_size * pg_hdr->tuple_count_in_page;
+			uint16_t tuples_next = 0;
 
-			uint32_t vacant_bytes_size = total_tuples_size - occupied_tuples_size;
+			for(u2 i = 0; i < tuples_count_limit; i++)
+			{
+				if(does_tuple_exist(pg_cntxt, i))
+				{
+					tuples_next = i + 1;
+				}
+			}
 
-			uint16_t vacant_tuples_count = vacant_bytes_size / tuple_size;
+			if(tuples_next == tuples_count_limit)
+				return 0;
+
+			uint16_t vacant_tuples_count = tuples_count_limit - tuples_next;
 
 			if(vacant_tuples_count < num_tuples_to_insert)
 				num_tuples_to_insert = vacant_tuples_count;
 
 			if(num_tuples_to_insert > 0)
 			{
-				memcpy(tuples + (pg_hdr->tuple_count_in_page * tuple_size),
+				memcpy(tuples + (tuples_next * tuple_size),
 						tuples_to_insert, num_tuples_to_insert * tuple_size);
-				pg_hdr->tuple_count_in_page += num_tuples_to_insert;
+				for(u2 i = 0; i < num_tuples_to_insert; i++)
+					set_tuple_exist(pg_cntxt, tuples_next + i);
 			}
 
 			return num_tuples_to_insert;
