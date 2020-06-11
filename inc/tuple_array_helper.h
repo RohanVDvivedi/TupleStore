@@ -2,7 +2,7 @@
 #define TUPLE_ARRAY_HELPER
 
 // maximum number of tuples that you can store in a tuple array storage layout
-inline uint16_t tuple_storage_limit(page_context* pg_cntxt)
+extern inline uint16_t tuple_storage_limit(page_context* pg_cntxt)
 {
 	if(pg_cntxt->tuple_storage_limit != 0)
 	{
@@ -24,7 +24,7 @@ inline uint16_t tuple_storage_limit(page_context* pg_cntxt)
 }
 
 // array of bytes, where each bit is used to mark if a tuple exists at that position or not
-inline uint8_t* tuple_exists_bits(page_context* pg_cntxt)
+extern inline uint8_t* tuple_exists_bits(page_context* pg_cntxt)
 {
 	void* page_content = get_page_content(pg_cntxt);
 	// tuple deleted bits are the first thing stored in the tuple array layout in the 
@@ -32,12 +32,12 @@ inline uint8_t* tuple_exists_bits(page_context* pg_cntxt)
 }
 
 // size of array of bytes, where each bit is used to mark if a tuple exists at that position or not
-inline uint16_t tuple_exists_bits_size_in_bytes(page_context* pg_cntxt)
+extern inline uint16_t tuple_exists_bits_size_in_bytes(page_context* pg_cntxt)
 {
 	return (pg_cntxt->tuple_storage_limit / 8) + (((pg_cntxt->tuple_storage_limit % 8) > 0) ? 1 : 0);
 }
 
-inline void* get_tuples(page_context* pg_cntxt)
+extern inline void* get_tuples(page_context* pg_cntxt)
 {
 	void* page_content = get_page_content(pg_cntxt);
 
@@ -47,19 +47,19 @@ inline void* get_tuples(page_context* pg_cntxt)
 }
 
 // checks if tuple exists at a particular tuple_no in the page
-inline int does_tuple_exist(page_context* pg_cntxt, uint16_t tuple_no)
+extern inline int does_tuple_exist(page_context* pg_cntxt, uint16_t tuple_no)
 {
 	uint8_t* exist_bits = tuple_exists_bits(pg_cntxt);
 	return (exist_bits[tuple_no/8]&(1<<(tuple_no%8)));
 }
 
-inline void unset_tuple_exist(page_context* pg_cntxt, uint16_t tuple_no)
+extern inline void unset_tuple_exist(page_context* pg_cntxt, uint16_t tuple_no)
 {
 	uint8_t* exist_bits = tuple_exists_bits(pg_cntxt);
 	exist_bits[tuple_no/8] &= (~(1<<(tuple_no%8)));
 }
 
-inline void set_tuple_exist(page_context* pg_cntxt, uint16_t tuple_no)
+extern inline void set_tuple_exist(page_context* pg_cntxt, uint16_t tuple_no)
 {
 	uint8_t* exist_bits = tuple_exists_bits(pg_cntxt);
 	exist_bits[tuple_no/8] |= (1<<(tuple_no%8));

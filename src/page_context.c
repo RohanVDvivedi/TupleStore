@@ -36,9 +36,7 @@ void* get_tuple(page_context* pg_cntxt, uint16_t tuple_no)
 		{
 			get_number_of_tuples_stored(pg_cntxt);
 			if(tuple_no < pg_cntxt->tuples_stored && !is_tuple_deleted(pg_cntxt, tuple_no))
-			{
 				return get_page(pg_cntxt) + (get_tuple_offsets(pg_cntxt))[tuple_no];
-			}
 			else
 				return 0;
 		}
