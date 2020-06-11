@@ -63,8 +63,8 @@ struct page_hdr
 	page_layout layout;
 };
 
-void init_file_header(file_hdr* hdr, char* database_name, uint32_t page_size_in_bytes);
+void init_file_header(void* page, char* database_name, uint32_t page_size_in_bytes);
 
-void init_page_header(page_hdr* hdr, u8 page_type, page_layout layout);
+void init_page_header(void* page, u8 page_type, page_layout layout);
 
 #endif
