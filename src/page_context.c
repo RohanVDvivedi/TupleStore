@@ -120,6 +120,7 @@ uint16_t append_tuples(page_context* pg_cntxt, void* tuples_to_insert, uint16_t 
 				memcpy(get_page(pg_cntxt) + new_tuple_offset, tuples_to_insert, pg_cntxt->tuple_definition->size);
 
 				tuple_offsets[pg_cntxt->tuples_stored] = new_tuple_offset;
+				(*((uint16_t*)get_page_content(pg_cntxt)))++;
 				pg_cntxt->tuples_stored++;
 				num_tuples_to_insert--;
 				tuples_to_insert += pg_cntxt->tuple_definition->size;

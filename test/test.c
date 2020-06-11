@@ -5,7 +5,8 @@
 #include<tuple.h>
 #include<page_context.h>
 
-#define PAGE_SIZE 4096
+#define PAGE_SIZE    4096
+#define PAGE_LAYOUT  /*TUPLE_ARRAY*/ SLOTTED_PAGE
 
 // output print string
 char string[1024];
@@ -31,7 +32,7 @@ int main()
 	void* page = alloca(PAGE_SIZE);
 
 	// to initialize header inside the page
-	init_page_header(page, 5, TUPLE_ARRAY);
+	init_page_header(page, 5, PAGE_LAYOUT);
 
 	// intialize data access methods for your sample bufferpool/page alocator
 	data_access_methods dam = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, PAGE_SIZE, NULL};
@@ -84,7 +85,23 @@ int main()
 	sprint_tuple(string, get_tuple(&pg_cntxt, 0), def);
 	printf("tuple 0 : %s", string);
 	sprint_tuple(string, get_tuple(&pg_cntxt, 1), def);
-	printf("tuple 1 : %s", string);
+	printf("tuple 1 : %s\n", string);
+
+	for(int i = 0; i < PAGE_SIZE; i++)
+	{
+		if(i % 8 == 0)
+		{
+			printf("\n");
+		}
+		printf("[%2d](%2x)%c \t ", i, 0xff & (*((char*)(page + i))), (*((char*)(page + i))));
+	}
+
+	printf("\n");
+
+	sprint_tuple(string, get_tuple(&pg_cntxt, 0), def);
+	printf("tuple 0 : %s", string);
+	sprint_tuple(string, get_tuple(&pg_cntxt, 1), def);
+	printf("tuple 1 : %s\n", string);
 
 	return 0;
 }
