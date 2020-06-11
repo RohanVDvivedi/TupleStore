@@ -1,16 +1,22 @@
 #include<page_context.h>
 
+void* get_page(page_context* pg_cntxt)
+{
+	return pg_cntxt->header;
+}
+
+uint16_t* get_tuple_offsets(page_context* pg_cntxt)
+{
+	void* page = get_page(pg_cntxt);
+	return (uint16_t*)((page) + sizeof(page_hdr));
+}
+
 void init_page_context(page_context* pg_cntxt, uint32_t page_id, void* page, tuple_def* tuple_definition, const data_access_methods* dam)
 {
 	pg_cntxt->page_id = page_id;
 	pg_cntxt->header = page;
 	pg_cntxt->tuple_definition = tuple_definition;
 	pg_cntxt->dam = dam;
-}
-
-void* get_page(page_context* pg_cntxt)
-{
-	return pg_cntxt->header;
 }
 
 void* get_tuple(page_context* pg_cntxt, uint16_t tuple_no)
@@ -36,8 +42,7 @@ void* get_tuple(page_context* pg_cntxt, uint16_t tuple_no)
 		{
 			if(tuple_no < pg_hdr->tuple_count_in_page)
 			{
-				void* tuples_base_offset = page + sizeof(page_hdr);
-				return tuples_base_offset + pg_hdr->tuple_offsets[tuple_no];
+				return page + (get_tuple_offsets(pg_cntxt))[tuple_no];
 			}
 			else
 				return 0;
