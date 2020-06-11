@@ -20,7 +20,7 @@ struct page_context
 	const data_access_methods* dam;	// this allows the page context to change pages on its own
 };
 
-void init_page_context(page_context* pg_cntxt, uint32_t page_id, void* page, tuple_def* tuple_definition, const data_access_methods* dam);
+void init_page_context(page_context* pg_cntxt, uint32_t page_id, void* page, tuple_def* tuple_definition, const data_access_methods* dam, int reset);
 
 void* get_page(page_context* pg_cntxt);
 
