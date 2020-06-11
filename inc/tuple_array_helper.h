@@ -2,13 +2,8 @@
 #define TUPLE_ARRAY_HELPER
 
 // maximum number of tuples that you can store in a tuple array storage layout
-extern inline uint16_t tuple_storage_limit(page_context* pg_cntxt)
+extern inline void set_tuple_storage_limit(page_context* pg_cntxt)
 {
-	if(pg_cntxt->tuple_storage_limit != 0)
-	{
-		return pg_cntxt->tuple_storage_limit;
-	}
-
 	uint16_t page_content_size = get_page_content_size(pg_cntxt);
 
 	/*
@@ -19,8 +14,6 @@ extern inline uint16_t tuple_storage_limit(page_context* pg_cntxt)
 	*/
 
 	pg_cntxt->tuple_storage_limit = (8 * page_content_size) / (8 * pg_cntxt->tuple_definition->size + 1);
-
-	return pg_cntxt->tuple_storage_limit;
 }
 
 // array of bytes, where each bit is used to mark if a tuple exists at that position or not

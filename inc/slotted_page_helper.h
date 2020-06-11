@@ -1,19 +1,13 @@
 #ifndef SLOTTED_PAGE_HELPER
 #define SLOTTED_PAGE_HELPER
 
-extern inline uint16_t get_number_of_tuples_stored(page_context* pg_cntxt)
+extern inline void set_number_of_tuples_stored(page_context* pg_cntxt)
 {
-	if(pg_cntxt->tuples_stored != 0)
-	{
-		return pg_cntxt->tuples_stored;
-	}
-
 	void* page_content = get_page_content(pg_cntxt);
 
 	// the first 16 bits represent the number of tuples currently stored in the page
 
 	pg_cntxt->tuples_stored = *((uint16_t*)(page_content));
-	return pg_cntxt->tuples_stored;
 }
 
 extern inline uint16_t* get_tuple_offsets(page_context* pg_cntxt)

@@ -38,7 +38,7 @@ int main()
 
 	// now you can initialize your page context
 	page_context pg_cntxt;
-	init_page_context(&pg_cntxt, 15, page, def, &dam);
+	init_page_context(&pg_cntxt, 15, page, def, &dam, 1);
 
 	// your tuple temp storage
 	uint32_t tpl_size = def->size;
