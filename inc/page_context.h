@@ -14,6 +14,9 @@ struct page_context
 	page_hdr* header;				// this effectively the pointer to the page itself
 	tuple_def* tuple_definition;	// definition of all the tuples stored in this page
 
+	uint16_t tuples_stored;			// number of tuples that are stored on the given page
+	uint16_t tuple_storage_limit;	// number of tuples that can be stored on the given page
+
 	const data_access_methods* dam;	// this allows the page context to change pages on its own
 };
 
