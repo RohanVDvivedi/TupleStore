@@ -23,5 +23,4 @@ void init_page_header(page_hdr* hdr, u8 page_type, page_layout layout)
 	hdr->next_page_id = 0;
 	hdr->overflow_page_id = 0;
 	hdr->layout = layout;
-	hdr->tuple_count_in_page = 0;
 }

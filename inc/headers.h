@@ -45,8 +45,8 @@ struct file_hdr
 typedef enum page_layout page_layout;
 enum page_layout
 {
-	TUPLE_ARRAY,
-	SLOTTED_PAGE
+	TUPLE_ARRAY,	// to be used only when your tuples are fixed length
+	SLOTTED_PAGE	// to be used when your tuples are variable length
 };
 
 typedef struct page_hdr page_hdr;
@@ -61,9 +61,6 @@ struct page_hdr
 
 	// defines how the tuples are layed on the page
 	page_layout layout;
-
-	// number of tuples contained in the page
-	u2 tuple_count_in_page;
 };
 
 void init_file_header(file_hdr* hdr, char* database_name, uint32_t page_size_in_bytes);
