@@ -98,6 +98,17 @@ int main()
 
 	printf("\n");
 
+	printf("\nBefore deletion\n\n");
+
+	sprint_tuple(string, get_tuple(&pg_cntxt, 0), def);
+	printf("tuple 0 : %s", string);
+	sprint_tuple(string, get_tuple(&pg_cntxt, 1), def);
+	printf("tuple 1 : %s\n", string);
+
+	mark_deleted(&pg_cntxt, 0);
+
+	printf("\nAfter deletion\n\n");
+
 	sprint_tuple(string, get_tuple(&pg_cntxt, 0), def);
 	printf("tuple 0 : %s", string);
 	sprint_tuple(string, get_tuple(&pg_cntxt, 1), def);

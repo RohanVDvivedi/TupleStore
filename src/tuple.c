@@ -36,7 +36,8 @@ int sprint_tuple(char* str, void* tup, tuple_def* tpl_d)
 {
 	if(tup == NULL)
 	{
-		str[0] = 'N';str[1] = 'U';str[2] = 'L';str[3] = 'L';str[4] = '\0';
+		char* empty = "Empty\n";
+		strcpy(str, empty);
 		return 4; 
 	}
 	int chars_written = 0;

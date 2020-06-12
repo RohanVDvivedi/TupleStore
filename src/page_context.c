@@ -133,3 +133,24 @@ uint16_t append_tuples(page_context* pg_cntxt, void* tuples_to_insert, uint16_t 
 		}
 	}
 }
+
+void mark_deleted(page_context* pg_cntxt, uint16_t tuple_no)
+{
+	switch(pg_cntxt->header->layout)
+	{
+		case TUPLE_ARRAY :
+		{
+			unset_tuple_exist(pg_cntxt, tuple_no);
+			break;
+		}
+		case SLOTTED_PAGE :
+		{
+			mark_tuple_deleted(pg_cntxt, tuple_no);
+			break;
+		}
+		default :
+		{
+			break;
+		}
+	}
+}
