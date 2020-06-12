@@ -32,6 +32,21 @@ enum type
 
 extern char type_as_string[][16];
 
+#define compare(result,a,b) {	\
+	if(a>0 && b<0)				\
+		result = 1;				\
+	else if(a<0 && b>0)			\
+		result = -1;			\
+	else{						\
+		if(a>b)					\
+			result = 1;			\
+		else if(a<b)			\
+			result = -1;		\
+		else 					\
+			result = 0;			\
+	} 							\
+}
+
 typedef struct element_def element_def;
 struct element_def
 {
