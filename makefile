@@ -37,10 +37,12 @@ $(TARGET) : ${OBJECTS} | ${BIN_DIR}
 # just build the target
 all : $(TARGET)
 
-# clean all the build
+# clean all the build, in this directory
+# does not remove the existing installation
 clean :
 	$(RM) -r $(BIN_DIR) $(OBJ_DIR)
 
-# path to the library
-path : 
-	@echo "export SIMPLE_TUPLE_STORAGE_MODEL_PATH=\`pwd\`"
+# install the library, from this directory to user environment path
+install : all
+	cp ${INC_DIR}/* /usr/local/include
+	cp ${BIN_DIR}/* /usr/local/lib
