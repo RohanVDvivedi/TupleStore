@@ -11,7 +11,7 @@ To reiterate : This project is not a database, embedded database, database stora
 It only provides primitive utility functions to systematically organize your data in a specific model for a block storage memory.
 
 setup instructions
+ * git clone https://github.com/RohanVDvivedi/SimpleTupleStorageModel.git
  * cd SimpleTupleStorageModel
- * make clean
- * make all
- * eval `make path`
+ * sudo make clean install
+ * add "-lstupstom" linker flag, while compiling your application
