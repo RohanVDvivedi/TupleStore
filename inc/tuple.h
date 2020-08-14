@@ -1,11 +1,7 @@
 #ifndef TUPLE_H
 #define TUPLE_H
 
-#include<stdio.h>
-#include<alloca.h>
 #include<tuple_def.h>
-
-#include<string.h>
 
 element seek_cell(void* tupl, unsigned int column_no, tuple_def* tpl_d);
 
