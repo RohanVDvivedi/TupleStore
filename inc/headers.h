@@ -1,9 +1,6 @@
 #ifndef PAGE_HDR_H
 #define PAGE_HDR_H
 
-#include<stdint.h>
-#include<string.h>
-
 #include<tuple_def.h>
 
 // This is the first header at page 0

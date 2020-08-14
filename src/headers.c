@@ -1,5 +1,7 @@
 #include<headers.h>
 
+#include<string.h>
+
 // signature before every SimpleTupleStorageModel database
 char* signature = "<- Simple Tuple Storage Model ->";
 

@@ -8,10 +8,29 @@ This library provides you with a very simple
 Started as a project to be used in a small database storage engine.
 
 To reiterate : This project is not a database, embedded database, database storage engine or any of that.
-It only provides primitive utility functions to systematically organize your data in a specific model for a block storage memory.
+It only provides primitive utility functions to systematically organize your data in tuples of predefined datatype in a specific model for a block storage memory of predefined size.
 
-setup instructions
- * git clone https://github.com/RohanVDvivedi/SimpleTupleStorageModel.git
- * cd SimpleTupleStorageModel
- * sudo make clean install
- * add "-lstupstom" linker flag, while compiling your application
+## Setup instructions
+
+**Download source code :**
+ * `git clone https://github.com/RohanVDvivedi/SimpleTupleStorageModel.git`
+
+**Build from source :**
+ * `cd SimpleTupleStorageModel`
+ * `make clean all`
+
+**Install from the build :**
+ * `sudo make install`
+ * ***Once you have installed from source, you may discard the build by*** `make clean`
+
+## Using The library
+ * add `-lstupstom` linker flag, while compiling your application
+ * do not forget to include appropriate public api headers as and when needed. this includes
+   * `#include<tuple.h>`
+   * `#include<tuple.h>`
+
+## Instructions for uninstalling library
+
+**Uninstall :**
+ * `cd SimpleTupleStorageModel`
+ * `sudo make uninstall`
