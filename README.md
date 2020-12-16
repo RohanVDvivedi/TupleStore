@@ -11,6 +11,8 @@ To reiterate : This project is not a database, embedded database, database stora
 It only provides primitive utility functions to systematically organize your data in tuples of predefined datatype in a specific model for a block storage memory of predefined size.
 
 ## Setup instructions
+**Install dependencies :**
+ * There are no dependencies for this project.
 
 **Download source code :**
  * `git clone https://github.com/RohanVDvivedi/SimpleTupleStorageModel.git`
