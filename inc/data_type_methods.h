@@ -27,7 +27,7 @@ struct data_type_methods
 
 	// data1 and data2 are both pointers inside database store, where given datatypes are stored
 	// data1 and data2 both point to the same datatype
-	// return (*data1)- (*data2) or strncmp for strings or memcmp for byte
+	// return (*data1)-(*data2) [taking into consideration its sign/unsign-edness and its size]
 	int (*compare)(const void* data1, const void* data2);
 
 	// a hashmap of type specific methods 
