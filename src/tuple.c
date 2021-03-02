@@ -6,36 +6,63 @@
 
 #include<string.h>
 
-element seek_cell(void* tupl, unsigned int column_no, tuple_def* tpl_d)
+uint64_t get_column_size(tuple_def* tpl_d, uint64_t column_no, const void* tupl)
 {
-	element e;
-	e.GENERIC = (tupl + (tpl_d->element_defs[column_no].offset));
-	return e;
+	if(tpl_d->element_defs[column_no].size != VARIABLE_SIZED)
+		return tpl_d->element_defs[column_no].size;
+	else
+	{
+		switch(tpl_d->element_defs[column_no-1].size)
+		{
+			case 1 :
+				return (*(seek_to_column(tpl_d, column_no - 1, tupl).UINT_1));
+			case 2 :
+				return (*(seek_to_column(tpl_d, column_no - 1, tupl).UINT_2));
+			case 4 :
+				return (*(seek_to_column(tpl_d, column_no - 1, tupl).UINT_4));
+			case 8 :
+				return (*(seek_to_column(tpl_d, column_no - 1, tupl).UINT_8));
+
+			// this is the error case it may never occur
+			default:
+				return 0;
+		}
+	}
 }
 
-void copy_to_cell(void* tupl, unsigned int column_no, tuple_def* tpl_d, void* value)
+uint64_t get_column_offset(tuple_def* tpl_d, uint64_t column_no, const void* tupl)
 {
-	void* vp = seek_cell(tupl, column_no, tpl_d).GENERIC;
-	memcpy(vp, value, tpl_d->element_defs[column_no].size);
+	if(tpl_d->size != VARIABLE_SIZED) // i.e. fixed sized
+		return tpl_d->element_defs[column_no].byte_offset;
+	else
+	{
+		// loop over all the elements and add the sizes
+		return 0;
+	}
 }
 
-void copy_from_cell(void* tupl, unsigned int column_no, tuple_def* tpl_d, void* value)
+element seek_to_column(tuple_def* tpl_d, uint64_t column_no, const void* tupl)
 {
-	void* vp = seek_cell(tupl, column_no, tpl_d).GENERIC;
-	memcpy(value, vp, tpl_d->element_defs[column_no].size);
+	return (element){.BLOB = (void*)(tupl + get_column_offset(tpl_d, column_no, tupl))};
 }
+
+void copy_to_tuple(tuple_def* tpl_d, uint64_t column_no, void* tupl, const void* value)
+{
+	element ele = seek_to_column(tpl_d, column_no, tupl);
+	memcpy(ele.BLOB, value, get_column_size(tpl_d, column_no, tupl));
+}
+
+void copy_from_tuple(tuple_def* tpl_d, uint64_t column_no, const void* tupl, void* value)
+{
+	element ele = seek_to_column(tpl_d, column_no, tupl);
+	memcpy(value, ele.BLOB, get_column_size(tpl_d, column_no, tupl));
+}
+
+#define compare(a,b)	( ((a)>(b)) ? 1 : (((a)<(b)) ? (-1) : 0 ) )
 
 int compare_tuple(void* tup1, void* tup2, tuple_def* tpl_d)
 {
 	return 0;
-}
-
-void swap_tuples(void* tup1, void* tup2, tuple_def* tpl_d)
-{
-	void* temp_tupl = alloca(tpl_d->size);
-	memcpy(temp_tupl, tup1, tpl_d->size);
-	memcpy(tup1, tup2, tpl_d->size);
-	memcpy(tup2, temp_tupl, tpl_d->size);
 }
 
 int sprint_tuple(char* str, void* tup, tuple_def* tpl_d)
@@ -53,83 +80,84 @@ int sprint_tuple(char* str, void* tup, tuple_def* tpl_d)
 			chars_written += sprintf(str + chars_written, ", ");
 
 
-		element e = seek_cell(tup, i, tpl_d);
+		element e = seek_to_column(tpl_d, i, tup);
 		switch(tpl_d->element_defs[i].type)
 		{
-			case CHAR_STRING :
-			{
-				chars_written += sprintf(str + chars_written, "%s", e.CHAR_STRING);
-				break;
-			}
-			case UNSIGNED_INT :
+			case UINT :
 			{
 				switch(tpl_d->element_defs[i].size)
 				{
 					case 1 :
 					{
-						chars_written += sprintf(str + chars_written, "%u",  *(e.UNSIGNED_INT_1));
+						chars_written += sprintf(str + chars_written, "%u",  *(e.UINT_1));
 						break;
 					}
 					case 2 :
 					{
-						chars_written += sprintf(str + chars_written, "%u",  *(e.UNSIGNED_INT_2));
+						chars_written += sprintf(str + chars_written, "%u",  *(e.UINT_2));
 						break;
 					}
 					case 4 :
 					{
-						chars_written += sprintf(str + chars_written, "%u", *(e.UNSIGNED_INT_4));
+						chars_written += sprintf(str + chars_written, "%u", *(e.UINT_4));
 						break;
 					}
 					case 8 :
 					{
-						chars_written += sprintf(str + chars_written, "%lu", *(e.UNSIGNED_INT_8));
+						chars_written += sprintf(str + chars_written, "%lu", *(e.UINT_8));
 						break;
 					}
 				}
 				break;
 			}
-			case SIGNED_INT :
+			case INT :
 			{
 				switch(tpl_d->element_defs[i].size)
 				{
 					case 1 :
 					{
-						chars_written += sprintf(str + chars_written, "%d", *(e.SIGNED_INT_1));
+						chars_written += sprintf(str + chars_written, "%d", *(e.INT_1));
 						break;
 					}
 					case 2 :
 					{
-						chars_written += sprintf(str + chars_written, "%d", *(e.SIGNED_INT_2));
+						chars_written += sprintf(str + chars_written, "%d", *(e.INT_2));
 						break;
 					}
 					case 4 :
 					{
-						chars_written += sprintf(str + chars_written, "%d", *(e.SIGNED_INT_4));
+						chars_written += sprintf(str + chars_written, "%d", *(e.INT_4));
 						break;
 					}
 					case 8 :
 					{
-						chars_written += sprintf(str + chars_written, "%ld", *(e.SIGNED_INT_8));
+						chars_written += sprintf(str + chars_written, "%ld", *(e.INT_8));
 						break;
 					}
 				}
 				break;
 			}
-			case FLOATING_NUM :
+			case FLOAT :
 			{
 				switch(tpl_d->element_defs[i].size)
 				{
 					case 4 :
 					{
-						chars_written += sprintf(str + chars_written, "%f", *(e.FLOATING_NUM_4));
+						chars_written += sprintf(str + chars_written, "%f", *(e.FLOAT_4));
 						break;
 					}
 					case 8 :
 					{
-						chars_written += sprintf(str + chars_written, "%lf", *(e.FLOATING_NUM_8));
+						chars_written += sprintf(str + chars_written, "%lf", *(e.FLOAT_8));
 						break;
 					}
 				}
+				break;
+			}
+			case BLOB :
+			case STRING :
+			{
+				chars_written += sprintf(str + chars_written, "%s", e.STRING);
 				break;
 			}
 		}
@@ -148,15 +176,10 @@ int sscan_tuple(char* str, void* tup, tuple_def* tpl_d)
 			sscanf(str + chars_read, ", %n", &nr);						chars_read += nr;
 
 
-		element e = seek_cell(tup, i, tpl_d);
+		element e = seek_to_column(tpl_d, i, tup);
 		switch(tpl_d->element_defs[i].type)
 		{
-			case CHAR_STRING :
-			{
-				sscanf(str + chars_read, "%[^,]%n", e.CHAR_STRING, &nr);	chars_read += nr;
-				break;
-			}
-			case UNSIGNED_INT :
+			case UINT :
 			{
 				u8 temp;
 				sscanf(str + chars_read, "%lu%n", &temp, &nr);			chars_read += nr;
@@ -164,28 +187,28 @@ int sscan_tuple(char* str, void* tup, tuple_def* tpl_d)
 				{
 					case 1 :
 					{
-						(*(e.UNSIGNED_INT_1)) = temp & 0xff;
+						(*(e.UINT_1)) = temp & 0xff;
 						break;
 					}
 					case 2 :
 					{
-						(*(e.UNSIGNED_INT_2)) = temp & 0xffff;
+						(*(e.UINT_2)) = temp & 0xffff;
 						break;
 					}
 					case 4 :
 					{
-						(*(e.UNSIGNED_INT_4)) = temp & 0xffffffff;
+						(*(e.UINT_4)) = temp & 0xffffffff;
 						break;
 					}
 					case 8 :
 					{
-						(*(e.UNSIGNED_INT_8)) = temp;
+						(*(e.UINT_8)) = temp;
 						break;
 					}
 				}
 				break;
 			}
-			case SIGNED_INT :
+			case INT :
 			{
 				i8 temp;
 				sscanf(str + chars_read, "%ld%n", &temp, &nr);			chars_read += nr;
@@ -193,28 +216,28 @@ int sscan_tuple(char* str, void* tup, tuple_def* tpl_d)
 				{
 					case 1 :
 					{
-						(*(e.SIGNED_INT_1)) = temp & 0xff;
+						(*(e.INT_1)) = temp & 0xff;
 						break;
 					}
 					case 2 :
 					{
-						(*(e.SIGNED_INT_2)) = temp & 0xffff;
+						(*(e.INT_2)) = temp & 0xffff;
 						break;
 					}
 					case 4 :
 					{
-						(*(e.SIGNED_INT_4)) = temp & 0xffffffff;
+						(*(e.INT_4)) = temp & 0xffffffff;
 						break;
 					}
 					case 8 :
 					{
-						(*(e.SIGNED_INT_8)) = temp;
+						(*(e.INT_8)) = temp;
 						break;
 					}
 				}
 				break;
 			}
-			case FLOATING_NUM :
+			case FLOAT :
 			{
 				switch(tpl_d->element_defs[i].size)
 				{
@@ -222,17 +245,23 @@ int sscan_tuple(char* str, void* tup, tuple_def* tpl_d)
 					{
 						f4 temp;
 						sscanf(str + chars_read, "%f%n", &temp, &nr); 	chars_read += nr;
-						(*(e.FLOATING_NUM_4)) = temp;
+						(*(e.FLOAT_4)) = temp;
 						break;
 					}
 					case 8 :
 					{
 						f8 temp;
 						sscanf(str + chars_read, "%lf%n", &temp, &nr);	chars_read += nr;
-						(*(e.FLOATING_NUM_8)) = temp;
+						(*(e.FLOAT_8)) = temp;
 						break;
 					}
 				}
+				break;
+			}
+			case BLOB :
+			case STRING :
+			{
+				sscanf(str + chars_read, "%[^,]%n", e.STRING, &nr);	chars_read += nr;
 				break;
 			}
 		}
