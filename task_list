@@ -1,6 +1,3 @@
- * formalize datatypes
- * use global hashmap to identify them each
- * use this hashmap to reference fuctions to each of them
- * move to slotted page model permanently (ditch the fixed tuple length model)
+ * move to slotted page model permanently (use the fixed tuple length model only when the tuple is fixed sized)
 
- * in a separate repo build Btree and SST persistent datastructures using SimpleTupleStorageModel and BufferPool libraries
+ * in a separate repo build Btree index, hash index and SST persistent datastructures using SimpleTupleStorageModel and BufferPool libraries
