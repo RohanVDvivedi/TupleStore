@@ -20,6 +20,9 @@ struct data_type_methods
 	int (*read_from_data_store)(void* c_data_type, const void* src);
 
 	// get size of field as represented in serialized form inside the database store
+	// special cases for composite datatypes
+	// NULL for BLOB datatype
+	// strlen() for STR datatype
 	uint64_t (*get_size)(const void* data);
 
 	// data1 and data2 are both pointers inside database store, where given datatypes are stored
