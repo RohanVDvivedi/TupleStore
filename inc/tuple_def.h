@@ -90,6 +90,10 @@ void init_tuple_def(tuple_def* tuple_d);
 // mark the tuple_mark_key_complete, once all the keys are inserted
 int insert_element_def(tuple_def* tuple_d, type element_type, uint64_t element_size);
 
+// after inserting all the elements call this function
+void finalize_tuple_def(tuple_def* tuple_d);
+
+// to print a final tuple definition
 void print_tuple_def(tuple_def* tuple_d);
 
 #endif
