@@ -29,7 +29,7 @@ struct data_type_methods
 
 	// a hashmap of type specific methods 
 	// add for numbers, strcat for strings, etc
-	// hashmap <string -> function_pointers>
+	// hashmap <string(function_name) -> function_pointers>
 };
 
 extern const data_type_methods methods_for_data_type[DATA_TYPES_COUNT];
