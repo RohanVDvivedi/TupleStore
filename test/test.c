@@ -34,12 +34,18 @@ int main()
 	insert_element_def(def,   UINT, 8);
 	insert_element_def(def,    INT, 1);
 	insert_element_def(def,   UINT, 1);
-	insert_element_def(def, STRING, VARIABLE_SIZED /*24*/);
+	insert_element_def(def, STRING, VARIABLE_SIZED);
 	insert_element_def(def, STRING, 6);
 	insert_element_def(def, STRING, 10);
 	insert_element_def(def,  FLOAT, 8);
-	
+
 	finalize_tuple_def(def);
+
+	if(is_empty_tuple_def(def))
+	{
+		printf("ERROR BUILDING TUPLE DEFINITION\n");
+		return -1;
+	}
 
 	print_tuple_def(def);
 	printf("\n\n");
