@@ -28,8 +28,10 @@ struct data_access_methods
 	int (*release_read_lock)(const void* context, void* pg_ptr);
 	int (*release_write_lock)(const void* context, void* pg_ptr);
 
+	// equivalent to msync
 	int (*force_write_to_disk)(const void* context, uint32_t page_id);
 
+	// equivalent to fsync
 	int (*force_write_file_to_disk)(const void* context);
 
 	int (*close_data_file)(const void* context);
