@@ -61,13 +61,13 @@ element seek_to_column(tuple_def* tpl_d, uint64_t column_no, const void* tupl)
 void copy_to_tuple(tuple_def* tpl_d, uint64_t column_no, void* tupl, const void* value)
 {
 	element ele = seek_to_column(tpl_d, column_no, tupl);
-	memcpy(ele.BLOB, value, get_column_size(tpl_d, column_no, tupl));
+	memmove(ele.BLOB, value, get_column_size(tpl_d, column_no, tupl));
 }
 
 void copy_from_tuple(tuple_def* tpl_d, uint64_t column_no, const void* tupl, void* value)
 {
 	element ele = seek_to_column(tpl_d, column_no, tupl);
-	memcpy(value, ele.BLOB, get_column_size(tpl_d, column_no, tupl));
+	memmove(value, ele.BLOB, get_column_size(tpl_d, column_no, tupl));
 }
 
 #define compare(a,b)	( ((a)>(b)) ? 1 : (((a)<(b)) ? (-1) : 0 ) )
