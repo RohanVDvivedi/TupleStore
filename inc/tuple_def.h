@@ -29,7 +29,7 @@ enum element_type
 	// such that the preceded UINT type of sizes (1,2 or 4) represents its size in bytes
 };
 
-extern char type_as_string[][6];
+extern char type_as_string[][8];
 
 typedef union element element;
 union element
