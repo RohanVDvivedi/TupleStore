@@ -9,9 +9,9 @@ char type_as_string[][6] = {
 								"BLOB"
 							};
 
-int is_size_allowed(type element_type, uint64_t size)
+int is_size_allowed(element_type ele_type, uint64_t size)
 {
-	switch(element_type)
+	switch(ele_type)
 	{
 		case UINT :
 		case INT :
@@ -26,15 +26,15 @@ int is_size_allowed(type element_type, uint64_t size)
 	}
 }
 
-int init_element_def(element_def* element_d, type type, uint64_t size)
+int init_element_def(element_def* element_d, element_type ele_type, uint64_t size)
 {
-	if(!is_size_allowed(type, size))
+	if(!is_size_allowed(ele_type, size))
 		return 0;
 
-	element_d->type = type;
+	element_d->type = ele_type;
 	element_d->size = size;
 	element_d->byte_offset = 0;
-	return 1;	
+	return 1;
 }
 
 #define compare(a,b)	( ((a)>(b)) ? 1 : (((a)<(b)) ? (-1) : 0 ) )
@@ -96,7 +96,7 @@ void init_tuple_def(tuple_def* tuple_d)
 	tuple_d->element_count = 0;
 }
 
-int insert_element_def(tuple_def* tuple_d, type element_type, uint64_t element_size)
+int insert_element_def(tuple_def* tuple_d, element_type ele_type, uint64_t element_size)
 {
 	// for a variable sized element
 	// the size must be given by a preceding element of UINT data type
@@ -105,7 +105,7 @@ int insert_element_def(tuple_def* tuple_d, type element_type, uint64_t element_s
 
 	// if an element is not of appropriate size it can not be initialized
 	element_def* new_element_def = tuple_d->element_defs + tuple_d->element_count;
-	if(!init_element_def(new_element_def, element_type, element_size))
+	if(!init_element_def(new_element_def, ele_type, element_size))
 		return 0;
 
 	new_element_def->byte_offset = tuple_d->size;
