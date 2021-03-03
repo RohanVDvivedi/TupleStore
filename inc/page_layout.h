@@ -54,6 +54,6 @@ int compact_page(const void* page, uint64_t page_size, const tuple_def* tpl_d);
 
 
 // prints all tuples in the page including the deleted ones with their tomb stones
-void print_all_tuples_in_page(const void* page, uint64_t page_size, const tuple_def* tpl_d);
+void print_all_tuples(const void* page, uint64_t page_size, const tuple_def* tpl_d);
 
 #endif
