@@ -36,7 +36,7 @@ int is_deleted_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_
 
 // returns the index that will be assigned for a new tuple upon insertion
 // i.e. an iterator in the for loop must be lesser than the return value of this function
-uint64_t get_index_for_new_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_d);
+uint16_t get_index_for_new_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_d);
 
 
 
