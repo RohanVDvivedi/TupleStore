@@ -16,6 +16,10 @@ struct data_access_methods
 {
 	int (*open_data_file)(const void* context);
 
+	// a request method to get a new blank page from the page manager with write lock on the page
+	// the page_id_returned is set with the page_id of the new_page
+	void* (*get_blank_page_with_write_lock)(const void* context, uint32_t* page_id_returned);
+
 	// locks a page for read or write, if successfull must return pointer to the in-memory of the page
 	void* (*acquire_read_lock)(const void* context, uint32_t page_id);
 	void* (*acquire_write_lock)(const void* context, uint32_t page_id);
