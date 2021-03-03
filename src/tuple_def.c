@@ -2,10 +2,11 @@
 
 #include<string.h>
 
-char type_as_string[][6] = {
+char type_as_string[][8] = {
 								"UINT",
 								"INT",
 								"FLOAT",
+								"STRING",
 								"BLOB"
 							};
 
