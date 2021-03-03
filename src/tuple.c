@@ -36,8 +36,21 @@ uint64_t get_column_offset(tuple_def* tpl_d, uint64_t column_no, const void* tup
 		return tpl_d->element_defs[column_no].byte_offset;
 	else
 	{
-		// loop over all the elements and add the sizes
-		return 0;
+		unsigned int offset = 0;
+
+		#define USE_DYNAMIC_PROGRAMMING_APPROACH
+
+		#ifdef USE_DYNAMIC_PROGRAMMING_APPROACH
+			
+		#elif	// loop over all the elements (until the column_no) and add their sizes
+
+			for(uint16_t i = 0; i < column_no; i++)
+				offset += get_column_size(tpl_d, 1, tupl);
+
+		#endif
+
+
+		return offset;
 	}
 }
 
