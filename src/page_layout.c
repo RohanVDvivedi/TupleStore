@@ -66,7 +66,7 @@ int is_deleted_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_
 	}
 }
 
-uint64_t get_last_tuple_index(const void* page, uint64_t page_size, const tuple_def* tpl_d)
+uint16_t get_index_for_new_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_d)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
 	{	
