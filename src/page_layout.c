@@ -18,22 +18,6 @@ int insert_tuple(void* page, uint64_t page_size, const tuple_def* tpl_d, uint16_
 	}
 }
 
-int insert_tuple_anywhere(void* page, uint64_t page_size, const tuple_def* tpl_d, const void* external_tuple)
-{
-	if(tpl_d->size == VARIABLE_SIZED)
-	{	
-		// case : SLOTTED PAGE
-		// TODO
-		return 0;
-	}
-	else
-	{
-		// case : FIXED ARRAY PAGE
-		// TODO
-		return 0;
-	}
-}
-
 int delete_tuple(void* page, uint64_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
@@ -66,20 +50,9 @@ int is_deleted_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_
 	}
 }
 
-uint16_t get_index_for_new_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_d)
+uint16_t get_tuple_count(const void* page, uint64_t page_size, const tuple_def* tpl_d)
 {
-	if(tpl_d->size == VARIABLE_SIZED)
-	{	
-		// case : SLOTTED PAGE
-		// TODO
-		return 0;
-	}
-	else
-	{
-		// case : FIXED ARRAY PAGE
-		// TODO
-		return 0;
-	}
+	return *((const uint16_t*)page);
 }
 
 void* seek_to_nth_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_d, uint16_t index)
