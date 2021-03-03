@@ -9,7 +9,7 @@ char type_as_string[][6] = {
 								"BLOB"
 							};
 
-int is_size_allowed(element_type ele_type, uint64_t size)
+int is_size_allowed(element_type ele_type, uint32_t size)
 {
 	switch(ele_type)
 	{
@@ -26,7 +26,7 @@ int is_size_allowed(element_type ele_type, uint64_t size)
 	}
 }
 
-int init_element_def(element_def* element_d, element_type ele_type, uint64_t size)
+int init_element_def(element_def* element_d, element_type ele_type, uint32_t size)
 {
 	if(!is_size_allowed(ele_type, size))
 		return 0;
@@ -96,7 +96,7 @@ void init_tuple_def(tuple_def* tuple_d)
 	tuple_d->element_count = 0;
 }
 
-int insert_element_def(tuple_def* tuple_d, element_type ele_type, uint64_t element_size)
+int insert_element_def(tuple_def* tuple_d, element_type ele_type, uint32_t element_size)
 {
 	// for a variable sized element
 	// the size must be given by a preceding element of UINT data type
@@ -146,8 +146,8 @@ static void print_element_def(const element_def* element_d)
 	if(element_d->size == VARIABLE_SIZED)
 		printf("\t\t\t size : VARIABLE_SIZED (0)\n");
 	else
-		printf("\t\t\t size : %lu\n", element_d->size);
-	printf("\t\t\t byte_offset : %lu\n", element_d->byte_offset);
+		printf("\t\t\t size : %u\n", element_d->size);
+	printf("\t\t\t byte_offset : %u\n", element_d->byte_offset);
 }
 
 void print_tuple_def(const tuple_def* tuple_d)
@@ -156,11 +156,11 @@ void print_tuple_def(const tuple_def* tuple_d)
 	if(tuple_d->size == VARIABLE_SIZED)
 		printf("\t tuple_size : VARIABLE_SIZED (0)\n");
 	else
-		printf("\t tuple_size : %lu\n", tuple_d->size);
-	printf("\t elements : (%lu)\n", tuple_d->element_count);
-	for(uint64_t i = 0; i < tuple_d->element_count; i++)
+		printf("\t tuple_size : %u\n", tuple_d->size);
+	printf("\t elements : (%u)\n", tuple_d->element_count);
+	for(uint16_t i = 0; i < tuple_d->element_count; i++)
 	{
-		printf("\t\t Column : %lu\n", i);
+		printf("\t\t Column : %u\n", i);
 		print_element_def((tuple_d->element_defs) + i);
 	}
 }

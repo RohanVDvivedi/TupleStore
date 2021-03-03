@@ -6,7 +6,7 @@
 
 #include<string.h>
 
-uint64_t get_element_size(const tuple_def* tpl_d, uint64_t index, const void* tupl)
+uint32_t get_element_size(const tuple_def* tpl_d, uint16_t index, const void* tupl)
 {
 	if(tpl_d->element_defs[index].size != VARIABLE_SIZED)
 		return tpl_d->element_defs[index].size;
@@ -30,13 +30,13 @@ uint64_t get_element_size(const tuple_def* tpl_d, uint64_t index, const void* tu
 	}
 }
 
-uint64_t get_element_offset(const tuple_def* tpl_d, uint64_t index, const void* tupl)
+uint32_t get_element_offset(const tuple_def* tpl_d, uint16_t index, const void* tupl)
 {
 	if(tpl_d->size != VARIABLE_SIZED) // i.e. fixed sized
 		return tpl_d->element_defs[index].byte_offset;
 	else
 	{
-		uint64_t offset = 0;
+		uint32_t offset = 0;
 
 		//#define USE_DYNAMIC_PROGRAMMING_APPROACH
 
@@ -53,19 +53,19 @@ uint64_t get_element_offset(const tuple_def* tpl_d, uint64_t index, const void* 
 	}
 }
 
-element seek_to_element(const tuple_def* tpl_d, uint64_t index, const void* tupl)
+element seek_to_element(const tuple_def* tpl_d, uint16_t index, const void* tupl)
 {
 	return (element){.BLOB = (void*)(tupl + get_element_offset(tpl_d, index, tupl))};
 }
 
-uint64_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
+uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
 {
 	if(tpl_d->size != VARIABLE_SIZED) // i.e. fixed sized tuple
 		return tpl_d->size;
 	else
 	{
 		// for VARIABLE_SIZED tuple return last_element's offset + last_element's size
-		uint64_t last_index = tpl_d->element_count - 1;
+		uint16_t last_index = tpl_d->element_count - 1;
 		return get_element_offset(tpl_d, last_index, tupl) + get_element_size(tpl_d, last_index, tupl);
 	}
 }
@@ -75,19 +75,19 @@ void* seek_to_end_of_tuple(const tuple_def* tpl_d, const void* tupl)
 	return (void*)(tupl + get_tuple_size(tpl_d, tupl));
 }
 
-void copy_element_to_tuple(const tuple_def* tpl_d, uint64_t index, void* tupl, const void* value)
+void copy_element_to_tuple(const tuple_def* tpl_d, uint16_t index, void* tupl, const void* value)
 {
 	element ele = seek_to_element(tpl_d, index, tupl);
 	memmove(ele.BLOB, value, get_element_size(tpl_d, index, tupl));
 }
 
-void copy_element_from_tuple(const tuple_def* tpl_d, uint64_t index, const void* tupl, void* value)
+void copy_element_from_tuple(const tuple_def* tpl_d, uint16_t index, const void* tupl, void* value)
 {
 	element ele = seek_to_element(tpl_d, index, tupl);
 	memmove(value, ele.BLOB, get_element_size(tpl_d, index, tupl));
 }
 
-int compare_elements(void* tup1, void* tup2, const tuple_def* tpl_d, uint64_t index)
+int compare_elements(void* tup1, void* tup2, const tuple_def* tpl_d, uint16_t index)
 {
 	// seek to the elements to be compared
 	element e1 = seek_to_element(tpl_d, index, tup1);
@@ -100,10 +100,10 @@ int compare_elements(void* tup1, void* tup2, const tuple_def* tpl_d, uint64_t in
 	{
 		element_type element_compare_type = tpl_d->element_defs[index].type;
 
-		uint64_t size1 = get_element_size(tpl_d, index, tup1);
-		uint64_t size2 = get_element_size(tpl_d, index, tup2);
+		uint32_t size1 = get_element_size(tpl_d, index, tup1);
+		uint32_t size2 = get_element_size(tpl_d, index, tup2);
 
-		uint64_t min_size = (size1 < size2) ? size1 : size2;
+		uint32_t min_size = (size1 < size2) ? size1 : size2;
 
 		int compare = 0;
 		if(element_compare_type == STRING)
@@ -132,7 +132,7 @@ int compare_elements(void* tup1, void* tup2, const tuple_def* tpl_d, uint64_t in
 int compare_tuples(void* tup1, void* tup2, const tuple_def* tpl_d)
 {
 	int compare = 0;
-	for(uint64_t i = 0; ((i < tpl_d->element_count) && (compare == 0)); i++)
+	for(uint16_t i = 0; ((i < tpl_d->element_count) && (compare == 0)); i++)
 	{
 		// SKIP THE ELEMENT IF IT COMES BEFORE A VARIABLE SIZED ELEMENT, SINCE THIS ELEMENT IS NOT ACTUAL DATA
 		// IT IS ONLY NEEDED TO READ THE SIZE OF THE VARIABLE SIZED DATA
@@ -156,7 +156,7 @@ int sprint_tuple(char* str, void* tup, const tuple_def* tpl_d)
 		return 4; 
 	}
 	int chars_written = 0;
-	for(uint64_t i = 0; i < tpl_d->element_count; i++)
+	for(uint16_t i = 0; i < tpl_d->element_count; i++)
 	{
 		if(i)
 			chars_written += sprintf(str + chars_written, ", ");
@@ -252,7 +252,7 @@ int sscan_tuple(char* str, void* tup, const tuple_def* tpl_d)
 {
 	int nr = 0;
 	int chars_read = 0;
-	for(uint64_t i = 0; i < tpl_d->element_count; i++)
+	for(uint16_t i = 0; i < tpl_d->element_count; i++)
 	{
 		if(i)
 			sscanf(str + chars_read, ", %n", &nr);						chars_read += nr;
