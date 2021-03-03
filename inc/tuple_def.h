@@ -17,8 +17,8 @@ typedef int64_t  i8;
 typedef float    f4;
 typedef double   f8;
 
-typedef enum type type;
-enum type
+typedef enum element_type element_type;
+enum element_type
 {
 	UINT	= 0,
 	INT 	= 1,
@@ -58,7 +58,7 @@ typedef struct element_def element_def;
 struct element_def
 {
 	// datatype stored in the element
-	type type;
+	element_type type;
 
 	// size in bytes that may be occupied by the element
 	// size may be equal to VARIABLE_SIZED only for STRING and BLOB datatypes
@@ -70,11 +70,11 @@ struct element_def
 };
 
 // check if a given size is valid for an element's datatype
-int is_size_allowed(type element_type, uint64_t size);
+int is_size_allowed(element_type ele_type, uint64_t size);
 
 // initialize an element's definition using its type and size
 // it may fail if the size parameters is not valid for a given data type
-int init_element_def(element_def* element_d, type type, uint64_t size);
+int init_element_def(element_def* element_d, element_type ele_type, uint64_t size);
 
 // compare 2 elements, given their element definition
 // this function must be called only on fixed sized elements i.e. ele_d->size != VARIABLE_SIZED
@@ -100,7 +100,7 @@ void init_tuple_def(tuple_def* tuple_d);
 
 // insert the key or values, insert keys in their decreasing order of importance
 // mark the tuple_mark_key_complete, once all the keys are inserted
-int insert_element_def(tuple_def* tuple_d, type element_type, uint64_t element_size);
+int insert_element_def(tuple_def* tuple_d, element_type ele_type, uint64_t element_size);
 
 // after inserting all the elements call this function
 void finalize_tuple_def(tuple_def* tuple_d);
