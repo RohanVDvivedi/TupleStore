@@ -17,6 +17,7 @@ int main()
 
 	// initialize tuple definition and insert element definitions
 	init_tuple_def(def);
+
 	insert_element_def(def,   UINT, 8);
 	insert_element_def(def,    INT, 1);
 	insert_element_def(def,   UINT, 1);
@@ -24,6 +25,7 @@ int main()
 	insert_element_def(def, STRING, 6);
 	insert_element_def(def, STRING, 6);
 	insert_element_def(def,  FLOAT, 8);
+	
 	finalize_tuple_def(def);
 
 	print_tuple_def(def);
