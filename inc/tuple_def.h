@@ -69,6 +69,18 @@ struct element_def
 	uint64_t byte_offset;
 };
 
+// check if a given size is valid for an element's datatype
+int is_size_allowed(type element_type, uint64_t size);
+
+// initialize an element's definition using its type and size
+// it may fail if the size parameters is not valid for a given data type
+int init_element_def(element_def* element_d, type type, uint64_t size);
+
+// compare 2 elements, given their element definition
+// this function must be called only on fixed sized elements i.e. ele_d->size != VARIABLE_SIZED
+// if the elements are variable sized, then we do not have enough information to compare them appropriately
+int compare_elements(element e1, element e2, const element_def* ele_d);
+
 typedef struct tuple_def tuple_def;
 struct tuple_def
 {
@@ -94,6 +106,6 @@ int insert_element_def(tuple_def* tuple_d, type element_type, uint64_t element_s
 void finalize_tuple_def(tuple_def* tuple_d);
 
 // to print a final tuple definition
-void print_tuple_def(tuple_def* tuple_d);
+void print_tuple_def(const tuple_def* tuple_d);
 
 #endif

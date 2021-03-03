@@ -1,5 +1,7 @@
 #include<tuple_def.h>
 
+#include<string.h>
+
 char type_as_string[][6] = {
 								"UINT",
 								"INT",
@@ -7,7 +9,7 @@ char type_as_string[][6] = {
 								"BLOB"
 							};
 
-static int is_size_allowed(type element_type, uint64_t size)
+int is_size_allowed(type element_type, uint64_t size)
 {
 	switch(element_type)
 	{
@@ -24,7 +26,7 @@ static int is_size_allowed(type element_type, uint64_t size)
 	}
 }
 
-static int init_element_def(element_def* element_d, type type, uint64_t size)
+int init_element_def(element_def* element_d, type type, uint64_t size)
 {
 	if(!is_size_allowed(type, size))
 		return 0;
@@ -33,6 +35,59 @@ static int init_element_def(element_def* element_d, type type, uint64_t size)
 	element_d->size = size;
 	element_d->byte_offset = 0;
 	return 1;	
+}
+
+#define compare(a,b)	( ((a)>(b)) ? 1 : (((a)<(b)) ? (-1) : 0 ) )
+int compare_elements(element e1, element e2, const element_def* ele_d)
+{
+	if(ele_d->size == VARIABLE_SIZED)
+		return 0;
+	switch(ele_d->type)
+	{
+		case UINT :
+		{
+			switch(ele_d->size)
+			{
+				case 1 :
+					return compare(*e1.UINT_1, *e2.UINT_1);
+				case 2 :
+					return compare(*e1.UINT_2, *e2.UINT_2);
+				case 4 :
+					return compare(*e1.UINT_4, *e2.UINT_4);
+				case 8 :
+					return compare(*e1.UINT_8, *e2.UINT_8);
+			}
+		}
+		case INT :
+		{
+			switch(ele_d->size)
+			{
+				case 1 :
+					return compare(*e1.INT_1, *e2.INT_1);
+				case 2 :
+					return compare(*e1.INT_2, *e2.INT_2);
+				case 4 :
+					return compare(*e1.INT_4, *e2.INT_4);
+				case 8 :
+					return compare(*e1.INT_8, *e2.INT_8);
+			}
+		}
+		case FLOAT :
+		{
+			switch(ele_d->size)
+			{
+				case 4 :
+					return compare(*e1.FLOAT_4, *e2.FLOAT_4);
+				case 8 :
+					return compare(*e1.FLOAT_8, *e2.FLOAT_8);
+			}
+		}
+		case STRING :
+			return strncmp(e1.STRING, e2.STRING, ele_d->size);
+		case BLOB :
+			return memcmp(e1.STRING, e2.STRING, ele_d->size);
+	}
+	return 0;
 }
 
 void init_tuple_def(tuple_def* tuple_d)
@@ -78,7 +133,7 @@ void finalize_tuple_def(tuple_def* tuple_d)
 	}
 }
 
-static void print_element_def(element_def* element_d)
+static void print_element_def(const element_def* element_d)
 {
 	printf("\t\t\t type : %s\n", type_as_string[element_d->type]);
 	if(element_d->size == VARIABLE_SIZED)
@@ -88,7 +143,7 @@ static void print_element_def(element_def* element_d)
 	printf("\t\t\t byte_offset : %lu\n", element_d->byte_offset);
 }
 
-void print_tuple_def(tuple_def* tuple_d)
+void print_tuple_def(const tuple_def* tuple_d)
 {
 	printf("Tuple definition : \n");
 	if(tuple_d->size == VARIABLE_SIZED)
