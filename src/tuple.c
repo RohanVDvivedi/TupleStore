@@ -72,7 +72,41 @@ void copy_element_from_tuple(const tuple_def* tpl_d, uint64_t index, const void*
 
 int compare_elements(void* tup1, void* tup2, const tuple_def* tpl_d, uint64_t index)
 {
-	return 0;
+	element e1 = seek_to_element(tpl_d, index, tup1);
+	element e2 = seek_to_element(tpl_d, index, tup2);
+	if(tpl_d->element_defs[index].size != VARIABLE_SIZED)
+		return compare_fixed_sized_elements(e1, e2, tpl_d->element_defs + index);
+	else
+	{
+		type element_compare_type = tpl_d->element_defs[index].type;
+
+		uint64_t size1 = get_element_size(tpl_d, index, tup1);
+		uint64_t size2 = get_element_size(tpl_d, index, tup2);
+
+		uint64_t min_size = (size1 < size2) ? size1 : size2;
+
+		int compare = 0;
+		if(element_compare_type == STRING)
+			compare = strncmp(e1.STRING, e2.STRING, min_size);
+		else if(element_compare_type == BLOB)
+			compare = memcmp(e1.STRING, e2.STRING, min_size);
+
+		if(compare > 0)
+			compare = 1;
+		else if(compare < 0)
+			compare = -1;
+		else if((compare == 0) && (size1 != size2))
+		{
+			// in dictionary ordering if 1 string is a prefix of the other
+			// then the larger string comes latter in the order
+			if(size1 > size2)
+				compare = -1;
+			else if(size1 > size2)
+				compare = 1;
+		}
+
+		return compare;
+	}
 }
 
 int compare_tuples(void* tup1, void* tup2, const tuple_def* tpl_d)
