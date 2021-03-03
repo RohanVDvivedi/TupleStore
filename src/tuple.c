@@ -60,16 +60,14 @@ element seek_to_element(const tuple_def* tpl_d, uint64_t index, const void* tupl
 
 uint64_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
 {
-	// a tuple with 0 number of elements is 0 sized
-	if(tpl_d->element_count == 0)
-		return 0;
-
-	uint64_t last_index = tpl_d->element_count - 1;
-
 	if(tpl_d->size != VARIABLE_SIZED) // i.e. fixed sized tuple
 		return tpl_d->size;
-	else 			// for VARIABLE_SIZED tuple return last_element's offset + last_element's size
+	else
+	{
+		// for VARIABLE_SIZED tuple return last_element's offset + last_element's size
+		uint64_t last_index = tpl_d->element_count - 1;
 		return get_element_offset(tpl_d, last_index, tupl) + get_element_size(tpl_d, last_index, tupl);
+	}
 }
 
 void* seek_to_end_of_tuple(const tuple_def* tpl_d, const void* tupl)
@@ -139,9 +137,9 @@ int compare_tuples(void* tup1, void* tup2, const tuple_def* tpl_d)
 		// SKIP THE ELEMENT IF IT COMES BEFORE A VARIABLE SIZED ELEMENT, SINCE THIS ELEMENT IS NOT ACTUAL DATA
 		// IT IS ONLY NEEDED TO READ THE SIZE OF THE VARIABLE SIZED DATA
 
-		// only if the index is lesser than or equal to the last second index
-		// we may check whether the element at this index could be denoting the size of the VARIABLE_SIZE element succeeding it
-		if((i <= tpl_d->element_count - 2) && (tpl_d->element_defs[i + 1].size == VARIABLE_SIZED))
+		// only if the next element index (index + 1) is not out of bounds
+		// we may check whether the element at the current index could be denoting the size of the succeeding VARIABLE_SIZED element
+		if(((i + 1) < tpl_d->element_count) && (tpl_d->element_defs[i + 1].size == VARIABLE_SIZED))
 			continue;
 
 		compare = compare_elements(tup1, tup2, tpl_d, i);
