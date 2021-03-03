@@ -79,7 +79,7 @@ int init_element_def(element_def* element_d, type type, uint64_t size);
 // compare 2 elements, given their element definition
 // this function must be called only on fixed sized elements i.e. ele_d->size != VARIABLE_SIZED
 // if the elements are variable sized, then we do not have enough information to compare them appropriately
-int compare_elements(element e1, element e2, const element_def* ele_d);
+int compare_fixed_sized_elements(element e1, element e2, const element_def* ele_d);
 
 typedef struct tuple_def tuple_def;
 struct tuple_def

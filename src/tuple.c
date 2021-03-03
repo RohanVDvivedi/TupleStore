@@ -70,9 +70,17 @@ void copy_element_from_tuple(const tuple_def* tpl_d, uint64_t index, const void*
 	memmove(value, ele.BLOB, get_element_size(tpl_d, index, tupl));
 }
 
-int compare_tuples(void* tup1, void* tup2, const tuple_def* tpl_d)
+int compare_elements(void* tup1, void* tup2, const tuple_def* tpl_d, uint64_t index)
 {
 	return 0;
+}
+
+int compare_tuples(void* tup1, void* tup2, const tuple_def* tpl_d)
+{
+	int compare = 0;
+	for(uint64_t i = 0; ((i < tpl_d->element_count) && (compare == 0)); i++)
+		compare = compare_elements(tup1, tup2, tpl_d, i);
+	return compare;
 }
 
 int sprint_tuple(char* str, void* tup, const tuple_def* tpl_d)
@@ -84,7 +92,7 @@ int sprint_tuple(char* str, void* tup, const tuple_def* tpl_d)
 		return 4; 
 	}
 	int chars_written = 0;
-	for(uint16_t i = 0; i < tpl_d->element_count; i++)
+	for(uint64_t i = 0; i < tpl_d->element_count; i++)
 	{
 		if(i)
 			chars_written += sprintf(str + chars_written, ", ");
@@ -180,7 +188,7 @@ int sscan_tuple(char* str, void* tup, const tuple_def* tpl_d)
 {
 	int nr = 0;
 	int chars_read = 0;
-	for(uint16_t i = 0; i < tpl_d->element_count; i++)
+	for(uint64_t i = 0; i < tpl_d->element_count; i++)
 	{
 		if(i)
 			sscanf(str + chars_read, ", %n", &nr);						chars_read += nr;
