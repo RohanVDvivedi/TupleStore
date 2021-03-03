@@ -84,7 +84,7 @@ void print_all_tuples(const void* page, uint64_t page_size, const tuple_def* tpl
 **
 **					SLOTTED PAGE
 **
-**		* used when tuple_definition->size == variable size page
+**		* CASE ::: tuple_definition->size == variable size page
 **
 **		* the first uint16_t equals the total number of tuples in the page.
 **			(including the deleted tuples)
@@ -111,20 +111,32 @@ void print_all_tuples(const void* page, uint64_t page_size, const tuple_def* tpl
 **
 **					FIXED_ARRAY PAGE
 **
-**		* used when tuple_definition->size != variable size page
+**		* CASE ::: tuple_definition->size != variable size page
 **
-**		* the first uint16_t equals the total number of tuples in the page.
+**		* The first uint16_t equals the total number of tuples in the page.
 **			(including the deleted tuples)
 **
-**		* due to the fixed length of each tuple we can precompute the number of bits
-**			that are required for marking the tombstones for each of the tuples.
-**				total_bitmap_size = ceil_function( MAX_TUPLES_ACCOMODATABLE / 8)
+**		* Due to the fixed length of each tuple we can precompute the maximum number
+**			of tuples that a page can accomodate, as:
 **
-**			0 -> tuple is deleted OR tuple at that index does not exists
-**			1 -> the tuple at that index exists and is valid
+**			= MAX_TUPLES_ACCOMODATABLE
 **
-**		* the rest of the page memory is used as an array of tuples,
-**			each of tuple_definition->size number of bytes.
+**				= TOTAL_UNUSED_BITS_IN_PAGE / TOTAL_BITS_IN_A_TUPLE
+**
+**				= (PAGE_SIZE * 8 - 16) / (tuple_definition->size * 8 + 1)
+**
+**		* The 1 additional bit is required for marking the tombstones for each of the tuples.
+**
+**			total_bitmap_size (in bytes) = ceil_function(MAX_TUPLES_ACCOMODATABLE / 8)
+**
+**			0 -> tuple is deleted OR tuple does not exists
+**			1 -> the tuple exists and is valid
+**
+**		* This bitmap of total_bitmap_size bytes forms the prefix of the page,
+**			since due to fixed sized tuples.
+**
+**		* The rest of the page memory of (page_size - total_bitmap_size) bytes
+**			is used as an array of tuples, each of (tuple_definition->size) bytes.
 *****************************************************************************************
 **
 */
