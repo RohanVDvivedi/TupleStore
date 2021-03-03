@@ -6,22 +6,22 @@
 
 #include<string.h>
 
-uint64_t get_column_size(tuple_def* tpl_d, uint64_t column_no, const void* tupl)
+uint64_t get_element_size(tuple_def* tpl_d, uint64_t index, const void* tupl)
 {
-	if(tpl_d->element_defs[column_no].size != VARIABLE_SIZED)
-		return tpl_d->element_defs[column_no].size;
+	if(tpl_d->element_defs[index].size != VARIABLE_SIZED)
+		return tpl_d->element_defs[index].size;
 	else
 	{
-		switch(tpl_d->element_defs[column_no-1].size)
+		switch(tpl_d->element_defs[index - 1].size)
 		{
 			case 1 :
-				return (*(seek_to_column(tpl_d, column_no - 1, tupl).UINT_1));
+				return (*(seek_to_element(tpl_d, index - 1, tupl).UINT_1));
 			case 2 :
-				return (*(seek_to_column(tpl_d, column_no - 1, tupl).UINT_2));
+				return (*(seek_to_element(tpl_d, index - 1, tupl).UINT_2));
 			case 4 :
-				return (*(seek_to_column(tpl_d, column_no - 1, tupl).UINT_4));
+				return (*(seek_to_element(tpl_d, index - 1, tupl).UINT_4));
 			case 8 :
-				return (*(seek_to_column(tpl_d, column_no - 1, tupl).UINT_8));
+				return (*(seek_to_element(tpl_d, index - 1, tupl).UINT_8));
 
 			// this is the error case it may never occur
 			default:
@@ -30,10 +30,10 @@ uint64_t get_column_size(tuple_def* tpl_d, uint64_t column_no, const void* tupl)
 	}
 }
 
-uint64_t get_column_offset(tuple_def* tpl_d, uint64_t column_no, const void* tupl)
+uint64_t get_element_offset(tuple_def* tpl_d, uint64_t index, const void* tupl)
 {
 	if(tpl_d->size != VARIABLE_SIZED) // i.e. fixed sized
-		return tpl_d->element_defs[column_no].byte_offset;
+		return tpl_d->element_defs[index].byte_offset;
 	else
 	{
 		uint64_t offset = 0;
@@ -42,10 +42,10 @@ uint64_t get_column_offset(tuple_def* tpl_d, uint64_t column_no, const void* tup
 
 		#ifdef USE_DYNAMIC_PROGRAMMING_APPROACH
 			
-		#else	// loop over all the elements (until the column_no) and add their sizes
+		#else	// loop over all the elements (until the index) and add their sizes
 
-			for(uint16_t i = 0; i < column_no; i++)
-				offset += get_column_size(tpl_d, i, tupl);
+			for(uint16_t i = 0; i < index; i++)
+				offset += get_element_size(tpl_d, i, tupl);
 
 		#endif
 
@@ -53,21 +53,21 @@ uint64_t get_column_offset(tuple_def* tpl_d, uint64_t column_no, const void* tup
 	}
 }
 
-element seek_to_column(tuple_def* tpl_d, uint64_t column_no, const void* tupl)
+element seek_to_element(tuple_def* tpl_d, uint64_t index, const void* tupl)
 {
-	return (element){.BLOB = (void*)(tupl + get_column_offset(tpl_d, column_no, tupl))};
+	return (element){.BLOB = (void*)(tupl + get_element_offset(tpl_d, index, tupl))};
 }
 
-void copy_to_tuple(tuple_def* tpl_d, uint64_t column_no, void* tupl, const void* value)
+void copy_element_to_tuple(tuple_def* tpl_d, uint64_t index, void* tupl, const void* value)
 {
-	element ele = seek_to_column(tpl_d, column_no, tupl);
-	memmove(ele.BLOB, value, get_column_size(tpl_d, column_no, tupl));
+	element ele = seek_to_element(tpl_d, index, tupl);
+	memmove(ele.BLOB, value, get_element_size(tpl_d, index, tupl));
 }
 
-void copy_from_tuple(tuple_def* tpl_d, uint64_t column_no, const void* tupl, void* value)
+void copy_element_from_tuple(tuple_def* tpl_d, uint64_t index, const void* tupl, void* value)
 {
-	element ele = seek_to_column(tpl_d, column_no, tupl);
-	memmove(value, ele.BLOB, get_column_size(tpl_d, column_no, tupl));
+	element ele = seek_to_element(tpl_d, index, tupl);
+	memmove(value, ele.BLOB, get_element_size(tpl_d, index, tupl));
 }
 
 #define compare(a,b)	( ((a)>(b)) ? 1 : (((a)<(b)) ? (-1) : 0 ) )
@@ -92,7 +92,7 @@ int sprint_tuple(char* str, void* tup, tuple_def* tpl_d)
 			chars_written += sprintf(str + chars_written, ", ");
 
 
-		element e = seek_to_column(tpl_d, i, tup);
+		element e = seek_to_element(tpl_d, i, tup);
 		switch(tpl_d->element_defs[i].type)
 		{
 			case UINT :
@@ -188,7 +188,7 @@ int sscan_tuple(char* str, void* tup, tuple_def* tpl_d)
 			sscanf(str + chars_read, ", %n", &nr);						chars_read += nr;
 
 
-		element e = seek_to_column(tpl_d, i, tup);
+		element e = seek_to_element(tpl_d, i, tup);
 		switch(tpl_d->element_defs[i].type)
 		{
 			case UINT :
