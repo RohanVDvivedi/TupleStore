@@ -135,7 +135,12 @@ int compare_tuples(void* tup1, void* tup2, const tuple_def* tpl_d)
 {
 	int compare = 0;
 	for(uint64_t i = 0; ((i < tpl_d->element_count) && (compare == 0)); i++)
+	{
+		// SKIP THE ELEMENT IF IT COMES BEFORE A VARIABLE SIZED ELEMENT
+		// SINCE THIS ELEMENT IS NOT ACTUAL DATA IT IS ONLY NEEDED TO READ THE SIZE OF
+		// THE VARIABLE SIZED DATA
 		compare = compare_elements(tup1, tup2, tpl_d, i);
+	}
 	return compare;
 }
 
