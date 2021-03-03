@@ -58,6 +58,25 @@ element seek_to_element(const tuple_def* tpl_d, uint64_t index, const void* tupl
 	return (element){.BLOB = (void*)(tupl + get_element_offset(tpl_d, index, tupl))};
 }
 
+uint64_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
+{
+	// a tuple with 0 number of elements is 0 sized
+	if(tpl_d->element_count == 0)
+		return 0;
+
+	uint64_t last_index = tpl_d->element_count - 1;
+
+	if(tpl_d->size != VARIABLE_SIZED) // i.e. fixed sized tuple
+		return tpl_d->size;
+	else 			// for VARIABLE_SIZED tuple return last_element's offset + last_element's size
+		return get_element_offset(tpl_d, last_index, tupl) + get_element_size(tpl_d, last_index, tupl);
+}
+
+void* seek_to_next_tuple(const tuple_def* tpl_d, const void* tupl)
+{
+	return (void*)(tupl + get_tuple_size(tpl_d, tupl));
+}
+
 void copy_element_to_tuple(const tuple_def* tpl_d, uint64_t index, void* tupl, const void* value)
 {
 	element ele = seek_to_element(tpl_d, index, tupl);
