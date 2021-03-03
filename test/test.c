@@ -59,13 +59,13 @@ int main()
 	copy_element_to_tuple(def, 6, tuple_0, &(row_0.c6));
 
 	sprint_tuple(print_buffer, tuple_0, def);
-	printf("tuple 1 : \n\t%s\n\n", print_buffer);
+	printf("tuple 0 : size(%lu)\n\t%s\n\n", get_tuple_size(def, tuple_0), print_buffer);
 
 	// ---------------
 
 	void* tuple_1 = seek_to_end_of_tuple(def, tuple_0);
 
-	row row_1 = {3003, -123, 21, "rohan is a good boy", "roopa", "DVIVEDI", 99.99};
+	row row_1 = {3003, -12, 16, "rohan bad boy", "rupa", "joshi", 512};
 
 	copy_element_to_tuple(def, 0, tuple_1, &(row_1.c0));
 	copy_element_to_tuple(def, 1, tuple_1, &(row_1.c1));
@@ -76,7 +76,7 @@ int main()
 	copy_element_to_tuple(def, 6, tuple_1, &(row_1.c6));
 
 	sprint_tuple(print_buffer, tuple_1, def);
-	printf("tuple 2 : \n\t%s\n\n", print_buffer);
+	printf("tuple 1 : size(%lu)\n\t%s\n\n", get_tuple_size(def, tuple_1), print_buffer);
 
 	// ---------------
 
