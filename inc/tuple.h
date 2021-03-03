@@ -3,6 +3,10 @@
 
 #include<tuple_def.h>
 
+// NONE OF THE FOLLOWING FUNCTIONS CAN BE CALLED ON AN EMPTY TUPLE
+// i.e. please check true for (0 == is_empty_tuple_def(const tuple_def* tpl_d))
+// prior to calling any of the following functions below
+
 // element level functions
 uint64_t get_element_size(const tuple_def* tpl_d, uint64_t index, const void* tupl);
 

@@ -133,6 +133,13 @@ void finalize_tuple_def(tuple_def* tuple_d)
 	}
 }
 
+int is_empty_tuple_def(const tuple_def* tuple_d)
+{
+	// an empty tuple definition is of no use to us
+	// an empty tuple definition can not represent any set of tuples
+	return tuple_d->element_count == 0;
+}
+
 static void print_element_def(const element_def* element_d)
 {
 	printf("\t\t\t type : %s\n", type_as_string[element_d->type]);

@@ -95,7 +95,7 @@ struct tuple_def
 	element_def element_defs[];
 };
 
-// to initialize a tuple definition
+// to initialize an empty tuple definition
 void init_tuple_def(tuple_def* tuple_d);
 
 // insert the key or values, insert keys in their decreasing order of importance
@@ -105,7 +105,32 @@ int insert_element_def(tuple_def* tuple_d, element_type ele_type, uint64_t eleme
 // after inserting all the elements call this function
 void finalize_tuple_def(tuple_def* tuple_d);
 
+// no function can be called on a tuple definition in a valid way if the tuple is empty
+// the functions we are refering to are in the "tuple.h" header file
+int is_empty_tuple_def(const tuple_def* tuple_d);
+
 // to print a final tuple definition
 void print_tuple_def(const tuple_def* tuple_d);
 
 #endif
+
+// before any operation initializing a tuple definiton for that tuple is very important
+/*
+**	tuple_def* tuple_d = acclocate( sizeof(tuple_def) + NO_OF_ELEMENTS * sizeof(element_def) );
+**
+**	init_tuple_def(tuple_d);
+**
+**	insert_element_def(tuple_d, ele_type_0, ele_size_0);
+**	insert_element_def(tuple_d, ele_type_1, ele_size_1);
+**	insert_element_def(tuple_d, ele_type_2, ele_size_2);
+**	.
+**	. ... NO_OF_ELEMENTS number of successfull inserts 
+**
+**	finalize_tuple_def(tuple_d);
+**
+**	if(is_empty_tuple_def(tuple_def))
+**		exit(-1);	// panic for the error
+**
+**	// you may call print_tuple_def or any of other functions from "tuple.h" header file
+**
+*/
