@@ -65,7 +65,7 @@ int main()
 	copy_element_to_tuple(def, 6, tuple_0, &(row_0.c6));
 
 	sprint_tuple(print_buffer, tuple_0, def);
-	printf("tuple 0 : size(%lu)\n\t%s\n\n", get_tuple_size(def, tuple_0), print_buffer);
+	printf("tuple 0 : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple_0), print_buffer);
 
 	// ---------------
 
@@ -82,7 +82,7 @@ int main()
 	copy_element_to_tuple(def, 6, tuple_1, &(row_1.c6));
 
 	sprint_tuple(print_buffer, tuple_1, def);
-	printf("tuple 1 : size(%lu)\n\t%s\n\n", get_tuple_size(def, tuple_1), print_buffer);
+	printf("tuple 1 : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple_1), print_buffer);
 
 	// ---------------
 
