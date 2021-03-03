@@ -17,10 +17,6 @@
 // to insert a tuple at the given index in the given page
 int insert_tuple(void* page, uint64_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple);
 
-// to insert a tuple anywhere in the given page
-// a tuple may be inserted over an already deleted tuple
-int insert_tuple_anywhere(void* page, uint64_t page_size, const tuple_def* tpl_d, const void* external_tuple);
-
 // to remove a tuple at the given index in the page
 int delete_tuple(void* page, uint64_t page_size, const tuple_def* tpl_d, uint16_t index);
 
@@ -36,7 +32,7 @@ int is_deleted_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_
 
 // returns the index that will be assigned for a new tuple upon insertion
 // i.e. an iterator in the for loop must be lesser than the return value of this function
-uint16_t get_index_for_new_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_d);
+uint16_t get_tuple_count(const void* page, uint64_t page_size, const tuple_def* tpl_d);
 
 
 
