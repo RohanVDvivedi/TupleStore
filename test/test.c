@@ -46,22 +46,45 @@ int main()
 	// this is your single lonely datapage
 	void* page = alloca(PAGE_SIZE);
 
-	// first tuple in the page
-	void* tupl = page + 0;
+	// ---------------
+
+	void* tuple_0 = page + 0;
 
 	row row_0 = {3003, -123, 21, "rohan is a good boy", "roopa", "DVIVEDI", 99.99};
 
-	copy_element_to_tuple(def, 0, tupl, &(row_0.c0));
-	copy_element_to_tuple(def, 1, tupl, &(row_0.c1));
-	copy_element_to_tuple(def, 2, tupl, &(row_0.c2));
-	copy_element_to_tuple(def, 3, tupl, (row_0.c3));
-	copy_element_to_tuple(def, 4, tupl, (row_0.c4));
-	copy_element_to_tuple(def, 5, tupl, (row_0.c5));
-	copy_element_to_tuple(def, 6, tupl, &(row_0.c6));
+	copy_element_to_tuple(def, 0, tuple_0, &(row_0.c0));
+	copy_element_to_tuple(def, 1, tuple_0, &(row_0.c1));
+	copy_element_to_tuple(def, 2, tuple_0, &(row_0.c2));
+	copy_element_to_tuple(def, 3, tuple_0, (row_0.c3));
+	copy_element_to_tuple(def, 4, tuple_0, (row_0.c4));
+	copy_element_to_tuple(def, 5, tuple_0, (row_0.c5));
+	copy_element_to_tuple(def, 6, tuple_0, &(row_0.c6));
 
-	sprint_tuple(print_buffer, tupl, def);
-	printf("tuple : \n\t%s\n\n", print_buffer);
+	sprint_tuple(print_buffer, tuple_0, def);
+	printf("tuple 1 : \n\t%s\n\n", print_buffer);
 
+	// ---------------
+
+	void* tuple_1 = page + 512;
+
+	row row_1 = {3003, -123, 21, "rohan is a good boy", "roopa", "DVIVEDI", 99.99};
+
+	copy_element_to_tuple(def, 0, tuple_1, &(row_1.c0));
+	copy_element_to_tuple(def, 1, tuple_1, &(row_1.c1));
+	copy_element_to_tuple(def, 2, tuple_1, &(row_1.c2));
+	copy_element_to_tuple(def, 3, tuple_1, (row_1.c3));
+	copy_element_to_tuple(def, 4, tuple_1, (row_1.c4));
+	copy_element_to_tuple(def, 5, tuple_1, (row_1.c5));
+	copy_element_to_tuple(def, 6, tuple_1, &(row_1.c6));
+
+	sprint_tuple(print_buffer, tuple_1, def);
+	printf("tuple 2 : \n\t%s\n\n", print_buffer);
+
+	// ---------------
+
+	printf("compare(tuple_0 , tuple_1) = %d\n\n", compare_tuples(tuple_0, tuple_1, def));
+
+	// ---------------
 	
 	for(int i = 0; i < PAGE_SIZE; i++)
 	{
