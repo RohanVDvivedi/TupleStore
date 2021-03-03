@@ -3,34 +3,50 @@
 
 #include<stdint.h>
 
+#include<tuple_def.h>
+
 // NONE OF THE FOLLOWING FUNCTIONS CAN BE CALLED ON AN EMPTY TUPLE
 // i.e. please check true for (0 == is_empty_tuple_def(const tuple_def* tpl_d))
 // prior to calling any of the following functions below
 
 
 
-// to insert a tuple at the given index in the page
-int insert_tuple(void* page, uint64_t page_size, const tuple_def* tpl_d, const void* external_tuple);
+
+// insert and delete operation return 1 upon success, else they return 0 for failure
+
+// to insert a tuple at the given index in the given page
+int insert_tuple(void* page, uint64_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple);
+
+// to insert a tuple anywhere in the given page
+// a tuple may be inserted over an already deleted tuple
+int insert_tuple_anywhere(void* page, uint64_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
 // to remove a tuple at the given index in the page
-int delete_tuple(void* page, uint64_t page_size, const tuple_def* tpl_d, uint64_t index);
+int delete_tuple(void* page, uint64_t page_size, const tuple_def* tpl_d, uint16_t index);
+
+
+
 
 // to check if a tuple at the given index in the page has been deleted
-int is_deleted_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_d, uint64_t index);
-
-
-
-// returns the index of the last tuple in the page
-uint64_t get_last_tuple_index(const void* page, uint64_t page_size, const tuple_def* tpl_d);
+// 1 means the tuple is deleted OR it does not exists
+int is_deleted_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_d, uint16_t index);
 
 
 
 
-// SEEK FUNCTIONS FAIL WITH NULL, WHEN THE INDEX OF THE TUPLE IS OUT_OF_BOUNDS 
-// tuple is out of bounds, if (index > get_last_tuple_index())
+// returns the index that will be assigned for a new tuple upon insertion
+// i.e. an iterator in the for loop must be lesser than the return value of this function
+uint64_t get_index_for_new_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_d);
+
+
+
+
+// SEEK FUNCTION FAILS WITH NULL, WHEN THE INDEX OF THE TUPLE IS OUT_OF_BOUNDS 
+// tuple is out of bounds, if (index >= get_index_for_new_tuple())
+// index attribute must be lesser than get_index_for_new_tuple(), else you get NULL
 
 // returns pointer to nth tuple in the page
-void* seek_to_nth_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_d, uint64_t index);
+void* seek_to_nth_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_d, uint16_t index);
 
 
 
@@ -49,7 +65,9 @@ uint64_t get_free_space(const void* page, uint64_t page_size, const tuple_def* t
 // it involves
 //    * reducing the extra area given to the VARIABLE_SIZED elements in the tuple
 //    * removing tomb stones for deleted records and their records space in both VARIABLE_SIZED and fixed sized tuples
+// returns 1, if any of the compaction operation was performed, else 0
 int compact_page(const void* page, uint64_t page_size, const tuple_def* tpl_d);
+
 
 
 
@@ -57,3 +75,56 @@ int compact_page(const void* page, uint64_t page_size, const tuple_def* tpl_d);
 void print_all_tuples(const void* page, uint64_t page_size, const tuple_def* tpl_d);
 
 #endif
+
+/*
+**
+*****************************************************************************************
+********			PAGE FORMATS
+*****************************************************************************************
+**
+**					SLOTTED PAGE
+**
+**		* used when tuple_definition->size == variable size page
+**
+**		* the first uint16_t equals the total number of tuples in the page.
+**			(including the deleted tuples)
+**
+**		* if there are N tuples in an SLOTTED_PAGE, 
+**			then there are N uint16_t integers that give us pointer offsets in the page to 
+**			the first addresses of N variable sized tuples in the page.
+**		i.e.
+**			void* page = PAGE_ADDRESS;
+**
+**			uint16_t Num_tuples = *((uint16_t)page);
+**
+**			uint16_t* Tuple_offsets = page + sizeof(Num_tuples);
+**									OR 
+**			uint16_t* Tuple_offsets = page + sizeof(uint16_t);
+**
+**			now the n th tuple =>	(consider n < N)
+**
+**				void* nth_tuple = (page + page_size) - Tuple_offsets[n];
+**
+**		* NOTE : all the Tuple_offsets are always ordered in their increasing order.
+**
+****************************************************************************************
+**
+**					FIXED_ARRAY PAGE
+**
+**		* used when tuple_definition->size != variable size page
+**
+**		* the first uint16_t equals the total number of tuples in the page.
+**			(including the deleted tuples)
+**
+**		* due to the fixed length of each tuple we can precompute the number of bits
+**			that are required for marking the tombstones for each of the tuples.
+**				total_bitmap_size = ceil_function( MAX_TUPLES_ACCOMODATABLE / 8)
+**
+**			0 -> tuple is deleted OR tuple at that index does not exists
+**			1 -> the tuple at that index exists and is valid
+**
+**		* the rest of the page memory is used as an array of tuples,
+**			each of tuple_definition->size number of bytes.
+*****************************************************************************************
+**
+*/
