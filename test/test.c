@@ -51,13 +51,13 @@ int main()
 
 	row row_0 = {3003, -123, 21, "rohan is a good boy", "roopa", "DVIVEDI", 99.99};
 
-	copy_to_tuple(def, 0, tupl, &(row_0.c0));
-	copy_to_tuple(def, 1, tupl, &(row_0.c1));
-	copy_to_tuple(def, 2, tupl, &(row_0.c2));
-	copy_to_tuple(def, 3, tupl, (row_0.c3));
-	copy_to_tuple(def, 4, tupl, (row_0.c4));
-	copy_to_tuple(def, 5, tupl, (row_0.c5));
-	copy_to_tuple(def, 6, tupl, &(row_0.c6));
+	copy_element_to_tuple(def, 0, tupl, &(row_0.c0));
+	copy_element_to_tuple(def, 1, tupl, &(row_0.c1));
+	copy_element_to_tuple(def, 2, tupl, &(row_0.c2));
+	copy_element_to_tuple(def, 3, tupl, (row_0.c3));
+	copy_element_to_tuple(def, 4, tupl, (row_0.c4));
+	copy_element_to_tuple(def, 5, tupl, (row_0.c5));
+	copy_element_to_tuple(def, 6, tupl, &(row_0.c6));
 
 	sprint_tuple(print_buffer, tupl, def);
 	printf("tuple : \n\t%s\n\n", print_buffer);
