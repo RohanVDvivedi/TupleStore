@@ -72,7 +72,7 @@ uint64_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
 		return get_element_offset(tpl_d, last_index, tupl) + get_element_size(tpl_d, last_index, tupl);
 }
 
-void* seek_to_next_tuple(const tuple_def* tpl_d, const void* tupl)
+void* seek_to_end_of_tuple(const tuple_def* tpl_d, const void* tupl)
 {
 	return (void*)(tupl + get_tuple_size(tpl_d, tupl));
 }
