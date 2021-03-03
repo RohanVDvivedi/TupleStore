@@ -2,7 +2,26 @@
 
 #include<tuple.h>
 
-int insert_tuple(void* page, uint64_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple)
+// -------------------------------------------
+// UTILITY FUNCTIONS         SLOTTED PAGE TYPE
+// -------------------------------------------
+
+// -------------------------------------------
+// -------------------------------------------
+
+// -------------------------------------------
+// UTILITY FUNCTIONS     FIXED_ARRAY PAGE TYPE
+// -------------------------------------------
+
+uint16_t get_max_capacity_FIXED_ARRAY(uint32_t page_size, uint32_t tuple_size)
+{
+	return ((page_size - sizeof(uint16_t)) * 8) / (8 * tuple_size + 1); 
+}
+
+// -------------------------------------------
+// -------------------------------------------
+
+int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
 	{	
@@ -18,7 +37,7 @@ int insert_tuple(void* page, uint64_t page_size, const tuple_def* tpl_d, uint16_
 	}
 }
 
-int delete_tuple(void* page, uint64_t page_size, const tuple_def* tpl_d, uint16_t index)
+int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
 	{	
@@ -34,7 +53,7 @@ int delete_tuple(void* page, uint64_t page_size, const tuple_def* tpl_d, uint16_
 	}
 }
 
-int is_deleted_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_d, uint16_t index)
+int is_deleted_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
 	{	
@@ -50,12 +69,12 @@ int is_deleted_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_
 	}
 }
 
-uint16_t get_tuple_count(const void* page, uint64_t page_size, const tuple_def* tpl_d)
+uint16_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	return *((const uint16_t*)page);
 }
 
-void* seek_to_nth_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_d, uint16_t index)
+void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
 	{	
@@ -71,7 +90,7 @@ void* seek_to_nth_tuple(const void* page, uint64_t page_size, const tuple_def* t
 	}
 }
 
-int can_accomodate_tuple(const void* page, uint64_t page_size, const tuple_def* tpl_d, const void* external_tuple)
+int can_accomodate_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
 	{	
@@ -87,7 +106,7 @@ int can_accomodate_tuple(const void* page, uint64_t page_size, const tuple_def* 
 	}
 }
 
-uint64_t get_free_space(const void* page, uint64_t page_size, const tuple_def* tpl_d)
+uint32_t get_free_space(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
 	{	
@@ -103,7 +122,7 @@ uint64_t get_free_space(const void* page, uint64_t page_size, const tuple_def* t
 	}
 }
 
-int compact_page(const void* page, uint64_t page_size, const tuple_def* tpl_d)
+int compact_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
 	{	
@@ -119,7 +138,7 @@ int compact_page(const void* page, uint64_t page_size, const tuple_def* tpl_d)
 	}
 }
 
-void print_all_tuples(const void* page, uint64_t page_size, const tuple_def* tpl_d)
+void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
 	{	
