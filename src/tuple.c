@@ -6,7 +6,7 @@
 
 #include<string.h>
 
-uint64_t get_element_size(tuple_def* tpl_d, uint64_t index, const void* tupl)
+uint64_t get_element_size(const tuple_def* tpl_d, uint64_t index, const void* tupl)
 {
 	if(tpl_d->element_defs[index].size != VARIABLE_SIZED)
 		return tpl_d->element_defs[index].size;
@@ -30,7 +30,7 @@ uint64_t get_element_size(tuple_def* tpl_d, uint64_t index, const void* tupl)
 	}
 }
 
-uint64_t get_element_offset(tuple_def* tpl_d, uint64_t index, const void* tupl)
+uint64_t get_element_offset(const tuple_def* tpl_d, uint64_t index, const void* tupl)
 {
 	if(tpl_d->size != VARIABLE_SIZED) // i.e. fixed sized
 		return tpl_d->element_defs[index].byte_offset;
@@ -53,31 +53,29 @@ uint64_t get_element_offset(tuple_def* tpl_d, uint64_t index, const void* tupl)
 	}
 }
 
-element seek_to_element(tuple_def* tpl_d, uint64_t index, const void* tupl)
+element seek_to_element(const tuple_def* tpl_d, uint64_t index, const void* tupl)
 {
 	return (element){.BLOB = (void*)(tupl + get_element_offset(tpl_d, index, tupl))};
 }
 
-void copy_element_to_tuple(tuple_def* tpl_d, uint64_t index, void* tupl, const void* value)
+void copy_element_to_tuple(const tuple_def* tpl_d, uint64_t index, void* tupl, const void* value)
 {
 	element ele = seek_to_element(tpl_d, index, tupl);
 	memmove(ele.BLOB, value, get_element_size(tpl_d, index, tupl));
 }
 
-void copy_element_from_tuple(tuple_def* tpl_d, uint64_t index, const void* tupl, void* value)
+void copy_element_from_tuple(const tuple_def* tpl_d, uint64_t index, const void* tupl, void* value)
 {
 	element ele = seek_to_element(tpl_d, index, tupl);
 	memmove(value, ele.BLOB, get_element_size(tpl_d, index, tupl));
 }
 
-#define compare(a,b)	( ((a)>(b)) ? 1 : (((a)<(b)) ? (-1) : 0 ) )
-
-int compare_tuple(void* tup1, void* tup2, tuple_def* tpl_d)
+int compare_tuples(void* tup1, void* tup2, const tuple_def* tpl_d)
 {
 	return 0;
 }
 
-int sprint_tuple(char* str, void* tup, tuple_def* tpl_d)
+int sprint_tuple(char* str, void* tup, const tuple_def* tpl_d)
 {
 	if(tup == NULL)
 	{
@@ -178,7 +176,7 @@ int sprint_tuple(char* str, void* tup, tuple_def* tpl_d)
 	return chars_written;
 }
 
-int sscan_tuple(char* str, void* tup, tuple_def* tpl_d)
+int sscan_tuple(char* str, void* tup, const tuple_def* tpl_d)
 {
 	int nr = 0;
 	int chars_read = 0;
