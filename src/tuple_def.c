@@ -38,7 +38,7 @@ int init_element_def(element_def* element_d, type type, uint64_t size)
 }
 
 #define compare(a,b)	( ((a)>(b)) ? 1 : (((a)<(b)) ? (-1) : 0 ) )
-int compare_elements(element e1, element e2, const element_def* ele_d)
+int compare_fixed_sized_elements(element e1, element e2, const element_def* ele_d)
 {
 	if(ele_d->size == VARIABLE_SIZED)
 		return 0;

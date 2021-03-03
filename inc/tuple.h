@@ -13,6 +13,8 @@ void copy_element_to_tuple(const tuple_def* tpl_d, uint64_t index, void* tupl, c
 
 void copy_element_from_tuple(const tuple_def* tpl_d, uint64_t index, const void* tupl, void* value);
 
+int compare_elements(void* tup1, void* tup2, const tuple_def* tpl_d, uint64_t index);
+
 int compare_tuples(void* tup1, void* tup2, const tuple_def* tpl_d);
 
 // returns number of characters written to the string
