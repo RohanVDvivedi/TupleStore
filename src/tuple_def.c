@@ -98,10 +98,14 @@ void init_tuple_def(tuple_def* tuple_d)
 
 int insert_element_def(tuple_def* tuple_d, element_type ele_type, uint32_t element_size)
 {
-	// for a variable sized element
-	// the size must be given by a preceding element of UINT data type
-	if(element_size == VARIABLE_SIZED && tuple_d->element_defs[tuple_d->element_count - 1].type != UINT)
-		return 0;
+	// for a variable sized element, the size is given by 
+	// a preceding element of UINT data type of size (1,2, or 4)
+	if(element_size == VARIABLE_SIZED)
+	{
+		if( ( tuple_d->element_defs[tuple_d->element_count - 1].type != UINT )
+		 	|| ( tuple_d->element_defs[tuple_d->element_count - 1].size > 4 ) )
+			return 0;
+	}
 
 	// if an element is not of appropriate size it can not be initialized
 	element_def* new_element_def = tuple_d->element_defs + tuple_d->element_count;

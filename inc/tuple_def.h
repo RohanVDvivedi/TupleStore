@@ -26,7 +26,7 @@ enum element_type
 	STRING  = 3,
 	BLOB 	= 4
 	// a BLOB type may be preceded with a UINT type
-	// such that the preceded UINT type represents its size in bytes
+	// such that the preceded UINT type of sizes (1,2 or 4) represents its size in bytes
 };
 
 extern char type_as_string[][6];

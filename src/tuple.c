@@ -20,8 +20,6 @@ uint32_t get_element_size(const tuple_def* tpl_d, uint16_t index, const void* tu
 				return (*(seek_to_element(tpl_d, index - 1, tupl).UINT_2));
 			case 4 :
 				return (*(seek_to_element(tpl_d, index - 1, tupl).UINT_4));
-			case 8 :
-				return (*(seek_to_element(tpl_d, index - 1, tupl).UINT_8));
 
 			// this is the error case it may never occur
 			default:
