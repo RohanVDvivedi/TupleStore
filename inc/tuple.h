@@ -14,7 +14,7 @@ element seek_to_element(const tuple_def* tpl_d, uint64_t index, const void* tupl
 // tuple level functions
 uint64_t get_tuple_size(const tuple_def* tpl_d, const void* tupl);
 
-void* seek_to_next_tuple(const tuple_def* tpl_d, const void* tupl);
+void* seek_to_end_of_tuple(const tuple_def* tpl_d, const void* tupl);
 
 
 // copy element to and from tuple functions
