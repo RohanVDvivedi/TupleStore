@@ -5,6 +5,7 @@
 #include<tuple.h>
 
 #define PAGE_SIZE    1024
+char page[PAGE_SIZE] = {};
 //#define PAGE_LAYOUT  TUPLE_ARRAY /*SLOTTED_PAGE*/
 
 // output print string
@@ -43,9 +44,6 @@ int main()
 	print_tuple_def(def);
 	printf("\n\n");
 
-	// this is your single lonely datapage
-	void* page = alloca(PAGE_SIZE);
-
 	// ---------------
 
 	void* tuple_0 = page + 0;
@@ -65,7 +63,7 @@ int main()
 
 	// ---------------
 
-	void* tuple_1 = page + 512;
+	void* tuple_1 = seek_to_end_of_tuple(def, tuple_0);
 
 	row row_1 = {3003, -123, 21, "rohan is a good boy", "roopa", "DVIVEDI", 99.99};
 
