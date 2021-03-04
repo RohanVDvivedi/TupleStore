@@ -77,11 +77,19 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 			// size of tuple to be inserted
 			uint32_t external_tuple_size = get_tuple_size(tpl_d, exists_tuple);
 
-			// set valid offset for the new tuple
+			// set valid offset for the new tuple, such that it is adjacent to the last tuple (or the end of the page)
+			uint16_t new_tuple_offset;
 			if(index == 0)
-				tuple_offsets[index] = page_size - external_tuple_size;
+				new_tuple_offset = page_size - external_tuple_size;
 			else
-				tuple_offsets[index] = tuple_offsets[index - 1] - external_tuple_size;
+				new_tuple_offset = tuple_offsets[index - 1] - external_tuple_size;
+
+			// check for its overlap with the tuple offsets array
+			if(get_tuple_offsets_offset_SLOTTED() + (*count) > new_tuple_offset)
+				return 0;
+
+			// update the tuple_offset with the new value
+			tuple_offsets[index] = new_tuple_offset;
 
 			// pointer to the new tuple in the page
 			void* new_tuple_p = page + tuple_offsets[index];
@@ -126,12 +134,6 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 	if(index >= get_tuple_count(page, page_size, tpl_d))
 		return 0;
 
-	// size of tuple to be inserted
-	uint32_t external_tuple_size = get_tuple_size(tpl_d, exists_tuple);
-
-	if(external_tuple_size > get_capacity_for_tuple_at_index(page, page_size, tpl_d, index))
-		return 0;
-
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
@@ -139,18 +141,31 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 			uint16_t count = get_tuple_count(page, page_size, tpl_d);
 			uint16_t* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED();
 
-			// generate the new_offset_for_index that is 
+			// size of tuple to be inserted
+			uint32_t external_tuple_size = get_tuple_size(tpl_d, exists_tuple);
+
+			// generate the new_offset_for_index with the largest possible offset
+			// i.e. adjacent to the previous tuple (or the end of the page)
 			uint16_t new_offset_for_index;
 			if(index == 0)
 				new_offset_for_index = page_size - external_tuple_size;
 			else
 				new_offset_for_index = tuple_offsets[index - 1] - external_tuple_size;
 
-			// check if the new_offset does not over lap the succeeding tuple
-			if(index < (count-1))
+			// check if the new_offset does not over lap the succeeding tuple, if it has a succeeding tuple
+			if(index < (count - 1))
 			{
-				uint32_t offset_of_next_tuple_last_byte = tuple_offsets[index+1] + get_size_for_tuple_at_index(page, page_size, tpl_d, index) - 1;
-				if(offset_of_next_tuple_last_byte >= new_offset_for_index)
+				// next tuple
+				const void* next_tuple = page + tuple_offsets[index + 1];
+				uint32_t next_tuple_size = get_tuple_size(tpl_d, next_tuple);
+
+				if(tuple_offsets[index + 1] + next_tuple_size > new_offset_for_index)
+					return 0;
+			}
+			else
+			{
+				// check for overlap with tuple offsets array
+				if(get_tuple_offsets_offset_SLOTTED() + count > new_offset_for_index)
 					return 0;
 			}
 
@@ -287,48 +302,6 @@ int can_accomodate_tuple(const void* page, uint32_t page_size, const tuple_def* 
 	uint32_t external_tuple_size = get_tuple_size(tpl_d, external_tuple);
 
 	return external_tuple_size <= free_space_in_page;
-}
-
-uint32_t get_capacity_for_tuple_at_index(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
-{
-	// index OUT_OF_BOUNDS
-	if(index >= get_tuple_count(page, page_size, tpl_d))
-		return 0;
-
-	switch(get_page_layout_type(tpl_d))
-	{
-		case SLOTTED_PAGE_LAYOUT :
-		{
-			uint16_t count = get_tuple_count(page, page_size, tpl_d);
-
-			const uint16_t* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED();
-
-			// TODO
-			// add space left over by previous and next tuple
-
-			return 0;
-		}
-		case FIXED_ARRAY_PAGE_LAYOUT :
-		{
-			return tpl_d->size;
-		}
-		default :
-		{
-			return 0;
-		}
-	}
-}
-
-uint32_t get_size_for_tuple_at_index(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
-{
-	// index OUT_OF_BOUNDS
-	if(index >= get_tuple_count(page, page_size, tpl_d))
-		return 0;
-
-	// get pointer to the tuple at the given index
-	void* tuple_at_index = seek_to_nth_tuple(page, page_size, tpl_d, index);
-
-	return get_tuple_size(tpl_d, tuple_at_index);
 }
 
 uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
