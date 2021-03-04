@@ -102,7 +102,21 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			// TODO
+			uint16_t* count         = page + get_tuple_count_offset();
+			uint16_t* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED();
+
+			uint32_t external_tuple_size = get_tuple_size(tpl_d, exists_tuple);
+
+			if(count == 0)
+				tuple_offsets[count] = external_tuple_size;
+			else
+				tuple_offsets[count] = tuple_offsets[count - 1] + external_tuple_size;
+
+			void* new_tuple_p = (page + page_size) - tuple_offsets[count];
+
+			memmove(new_tuple_p, external_tuple, external_tuple_size);
+			(*count) += 1;
+
 			return 0;
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
