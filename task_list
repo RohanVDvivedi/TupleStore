@@ -1,6 +1,4 @@
- * formalize datatypes
- * use global hashmap to identify them each
- * use this hashmap to reference fuctions to each of them
- * move to slotted page model permanently (ditch the fixed tuple length model)
+ * formalize test_cases row build procedure
+ * test fixed page layout (only slotted page layout test)
 
  * in a separate repo build Btree and SST persistent datastructures using SimpleTupleStorageModel and BufferPool libraries
