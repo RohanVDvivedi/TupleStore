@@ -13,8 +13,9 @@
 // UTILITY FUNCTIONS     FIXED_ARRAY PAGE TYPE
 // -------------------------------------------
 
-uint16_t get_max_capacity_FIXED_ARRAY(uint32_t page_size, uint32_t tuple_size)
+static uint16_t get_tuple_capacity_FIXED_ARRAY(uint32_t page_size, uint32_t tuple_size)
 {
+	// unsigned int divisions give floor results by defaults
 	return ((page_size - sizeof(uint16_t)) * 8) / (8 * tuple_size + 1); 
 }
 
