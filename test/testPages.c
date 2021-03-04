@@ -97,16 +97,16 @@ int main()
 
 	row row_2 = {3007, -12, 18, "rohan is awesome", "Rohi", "MOM+DAD", 2021};
 
-	copy_element_to_tuple(def, 0, tuple_1, &(row_2.c0));
-	copy_element_to_tuple(def, 1, tuple_1, &(row_2.c1));
-	copy_element_to_tuple(def, 2, tuple_1, &(row_2.c2));
-	copy_element_to_tuple(def, 3, tuple_1, (row_2.c3));
-	copy_element_to_tuple(def, 4, tuple_1, (row_2.c4));
-	copy_element_to_tuple(def, 5, tuple_1, (row_2.c5));
-	copy_element_to_tuple(def, 6, tuple_1, &(row_2.c6));
+	copy_element_to_tuple(def, 0, tuple_2, &(row_2.c0));
+	copy_element_to_tuple(def, 1, tuple_2, &(row_2.c1));
+	copy_element_to_tuple(def, 2, tuple_2, &(row_2.c2));
+	copy_element_to_tuple(def, 3, tuple_2, (row_2.c3));
+	copy_element_to_tuple(def, 4, tuple_2, (row_2.c4));
+	copy_element_to_tuple(def, 5, tuple_2, (row_2.c5));
+	copy_element_to_tuple(def, 6, tuple_2, &(row_2.c6));
 
 	sprint_tuple(print_buffer, tuple_2, def);
-	printf("tuple 1 : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple_2), print_buffer);
+	printf("tuple 2 : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple_2), print_buffer);
 
 	insert_tuple(page, PAGE_SIZE, def, tuple_2);
 
@@ -123,6 +123,25 @@ int main()
 								seek_to_nth_tuple(page, PAGE_SIZE, def, 1), 
 								def)
 			);
+
+	// ---------------
+	
+	print_all_tuples(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	// ---------------
+	
+	for(int i = 0; i < PAGE_SIZE; i++)
+	{
+		if(i % 8 == 0)
+			printf("\n");
+		printf("[%2d](%2x)%c \t ", i, 0xff & (*((char*)(page + i))), (*((char*)(page + i))));
+	}
+	printf("\n\n");
+
+	// ---------------
+
+	delete_tuple(page, PAGE_SIZE, def, 1);
 
 	// ---------------
 	
