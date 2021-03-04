@@ -33,7 +33,6 @@ uint16_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* 
 
 
 // insert and delete operation return 1 upon success, else they return 0 for failure
-
 // to insert a tuple at the end in the given page
 int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
@@ -72,16 +71,6 @@ int can_accomodate_tuple(const void* page, uint32_t page_size, const tuple_def* 
 // returns total free space inside a given page
 // free_space = total_space - space occupied by the tuples (including the deleted one's)
 uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
-
-
-
-
-// for a slotted page, compaction of the page is necessary to increase the usable area
-// it involves
-//    * reducing the extra area given to the VARIABLE_SIZED elements in the tuple
-//    * removing tomb stones for deleted records and their records space in both VARIABLE_SIZED and fixed sized tuples
-// returns 1, if any of the compaction operation was performed, else 0
-int compact_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 
 

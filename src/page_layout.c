@@ -59,9 +59,6 @@ uint16_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* 
 
 int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
-	if(!can_accomodate_tuple(page, page_size, tpl_d, external_tuple))
-		return 0;
-
 	// reference to the count of tuple on the page
 	uint16_t* count = page + get_tuple_count_offset();
 
@@ -295,15 +292,6 @@ void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* t
 	}
 }
 
-int can_accomodate_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
-{
-	uint32_t free_space_in_page = get_free_space_in_page(page, page_size, tpl_d);
-
-	uint32_t external_tuple_size = get_tuple_size(tpl_d, external_tuple);
-
-	return external_tuple_size <= free_space_in_page;
-}
-
 uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	uint16_t count = get_tuple_count(page, page_size, tpl_d);
@@ -326,27 +314,6 @@ uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tupl
 			uint16_t capacity = get_tuple_capacity_FIXED_ARRAY(page_size, tpl_d->size);
 
 			return (capacity - count) * tpl_d->size;
-		}
-		default :
-		{
-			return 0;
-		}
-	}
-}
-
-int compact_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
-{
-	switch(get_page_layout_type(tpl_d))
-	{
-		case SLOTTED_PAGE_LAYOUT :
-		{
-			// TODO
-			return 0;
-		}
-		case FIXED_ARRAY_PAGE_LAYOUT :
-		{
-			// TODO
-			return 0;
 		}
 		default :
 		{
