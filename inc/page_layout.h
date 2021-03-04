@@ -15,8 +15,8 @@
 typedef enum page_layout page_layout;
 enum page_layout
 {
-	SLOTTED_PAGE,
-	FIXED_ARRAY_PAGE,
+	SLOTTED_PAGE_LAYOUT,
+	FIXED_ARRAY_PAGE_LAYOUT,
 };
 
 // get the page layout that will be used by the functions below,

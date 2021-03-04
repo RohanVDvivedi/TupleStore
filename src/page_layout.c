@@ -7,6 +7,17 @@
 #include<string.h>
 #include<stdlib.h>
 
+// get page_layout to use for the given tuple definition
+page_layout get_page_type(const tuple_def* tpl_d)
+{
+	// for variable sized tuples use SLOTTED_PAGE_LAYOUT
+	// else use FIXED_ARRAY_PAGE_LAYOUT for fixed length tuples
+	if(tpl_d->size == VARIABLE_SIZED)
+		return SLOTTED_PAGE_LAYOUT;
+	else
+		return FIXED_ARRAY_PAGE_LAYOUT;
+}
+
 // -------------------------------------------
 // UTILITY FUNCTIONS
 // -------------------------------------------
