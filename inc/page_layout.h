@@ -69,14 +69,6 @@ int can_accomodate_tuple(const void* page, uint32_t page_size, const tuple_def* 
 
 
 
-// the below functions yield tpl_d->size for FIXED ARRAY page
-uint32_t get_capacity_for_tuple_at_index(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
-
-uint32_t get_size_for_tuple_at_index(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
-
-
-
-
 // returns total free space inside a given page
 // free_space = total_space - space occupied by the tuples (including the deleted one's)
 uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
