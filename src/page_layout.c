@@ -78,7 +78,7 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 		return 0;
 
 	if(tpl_d->size == VARIABLE_SIZED)
-	{	
+	{
 		// case : SLOTTED PAGE
 		// TODO
 		return 0;
@@ -111,7 +111,7 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
-	{	
+	{
 		// case : SLOTTED PAGE
 		// TODO
 		return 0;
@@ -140,7 +140,7 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
-	{	
+	{
 		// case : SLOTTED PAGE
 		// TODO
 		return 0;
@@ -166,10 +166,40 @@ uint16_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* 
 	return *count;
 }
 
+uint32_t get_capacity_for_tuple_at_index(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
+{
+	if(tpl_d->size == VARIABLE_SIZED)
+	{
+		// case : SLOTTED PAGE
+		// TODO
+		return 0;
+	}
+	else
+	{
+		// case : FIXED ARRAY PAGE
+		return tpl_d->size;
+	}
+}
+
+uint32_t get_size_for_tuple_at_index(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
+{
+	if(tpl_d->size == VARIABLE_SIZED)
+	{
+		// case : SLOTTED PAGE
+		// TODO
+		return 0;
+	}
+	else
+	{
+		// case : FIXED ARRAY PAGE
+		return tpl_d->size;
+	}
+}
+
 void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
-	{	
+	{
 		// case : SLOTTED PAGE
 		// TODO
 		return NULL;
@@ -197,7 +227,7 @@ void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* t
 int can_accomodate_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
-	{	
+	{
 		// case : SLOTTED PAGE
 		// TODO
 		return 0;
@@ -217,7 +247,7 @@ int can_accomodate_tuple(const void* page, uint32_t page_size, const tuple_def* 
 uint32_t get_free_space(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
-	{	
+	{
 		// case : SLOTTED PAGE
 		// TODO
 		return 0;
@@ -237,7 +267,7 @@ uint32_t get_free_space(const void* page, uint32_t page_size, const tuple_def* t
 int compact_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
-	{	
+	{
 		// case : SLOTTED PAGE
 		// TODO
 		return 0;
@@ -253,7 +283,7 @@ int compact_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	if(tpl_d->size == VARIABLE_SIZED)
-	{	
+	{
 		// case : SLOTTED PAGE
 		// TODO
 	}
