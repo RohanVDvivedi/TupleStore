@@ -146,7 +146,7 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 			uint16_t* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED();
 
 			// size of tuple to be inserted
-			uint32_t external_tuple_size = get_tuple_size(tpl_d, exists_tuple);
+			uint32_t external_tuple_size = get_tuple_size(tpl_d, external_tuple);
 
 			// generate the new_offset_for_index with the largest possible offset
 			// i.e. adjacent to the previous tuple (or the end of the page)
