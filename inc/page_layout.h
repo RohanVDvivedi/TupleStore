@@ -34,12 +34,13 @@ uint16_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* 
 
 // insert and delete operation return 1 upon success, else they return 0 for failure
 
-// insert tuple at the specified index, index must be < get_tuple_count()
-// if index >= get_tuple_count(), insert fails with 0
-int insert_tuple_at(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple);
-
 // to insert a tuple at the end in the given page
 int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
+
+// insert/update tuple at the specified index,
+// index must be < get_tuple_count()
+// if ((index >= get_tuple_count()) || capacity_at_index < incomming_tuple_size), insert fails with 0
+int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple);
 
 // to remove a tuple at the given index in the page
 // if index >= get_tuple_count(), delete fails with 0
