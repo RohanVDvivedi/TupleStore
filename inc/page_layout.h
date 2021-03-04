@@ -105,7 +105,7 @@ void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl
 **
 **					SLOTTED PAGE
 **
-**		* CASE ::: tuple_definition->size == variable size page
+**		* CASE ::: tuple_definition->size == VARIABLE_SIZED page
 **
 **		* the first uint16_t equals the total number of tuples in the page.
 **			(including the deleted tuples)
@@ -124,7 +124,7 @@ void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl
 **
 **			now the n th tuple =>	(consider n < N)
 **
-**				void* nth_tuple = (page + page_size) - Tuple_offsets[n];
+**				void* nth_tuple = page + Tuple_offsets[n];
 **
 **		* NOTE : all the Tuple_offsets are always ordered in their increasing order
 **			except when the corresponding tuple is deleted.
@@ -134,7 +134,7 @@ void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl
 **
 **					FIXED_ARRAY PAGE
 **
-**		* CASE ::: tuple_definition->size != variable size page
+**		* CASE ::: tuple_definition->size != VARIABLE_SIZED page
 **
 **		* The first uint16_t equals the total number of tuples in the page.
 **			(including the deleted tuples)
