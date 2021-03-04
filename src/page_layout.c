@@ -177,7 +177,7 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 
 			void* new_tuple_p = page + tuple_offsets[index];
 
-			memmove(new_tuple_p, external_tuple, tpl_d->size);
+			memmove(new_tuple_p, external_tuple, external_tuple_size);
 
 			return 0;
 		}
