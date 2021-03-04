@@ -48,6 +48,7 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 // to check if a tuple at the given index in the page exists
 // 1 means the tuple exists, else if 0 then the tuple does not exists
 // it returns 0, also when the tuple index is out of bounds, i.e. (index >= get_tuple_count())
+// or if it is deleted
 int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
 
 
@@ -108,7 +109,7 @@ void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl
 **		* CASE ::: tuple_definition->size == VARIABLE_SIZED page
 **
 **		* the first uint16_t equals the total number of tuples in the page.
-**			(including the deleted tuples)
+**			(the deleted tuples are not included here)
 **
 **		* if there are N tuples in an SLOTTED_PAGE, 
 **			then there are N uint16_t integers that give us pointer offsets in the page to 
