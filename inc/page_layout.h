@@ -14,8 +14,8 @@
 
 // insert and delete operation return 1 upon success, else they return 0 for failure
 
-// to insert a tuple at the given index in the given page
-int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple);
+// to insert a tuple at the end in the given page
+int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
 // to remove a tuple at the given index in the page
 int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
@@ -38,7 +38,7 @@ uint16_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* 
 
 
 // SEEK FUNCTION FAILS WITH NULL, WHEN THE INDEX OF THE TUPLE IS OUT_OF_BOUNDS or IF THE TUPLE IS DELETED
-// tuple is out of bounds, if (index >= get_index_for_new_tuple())
+// tuple is out of bounds, if (index >= get_tuple_count())
 // index attribute must be lesser than get_index_for_new_tuple(), else you get NULL
 
 // returns pointer to nth tuple in the page
