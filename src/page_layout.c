@@ -65,9 +65,6 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 	// reference to the count of tuple on the page
 	uint16_t* count = page + get_tuple_count_offset();
 
-	// size of tuple to be inserted
-	uint32_t external_tuple_size = get_tuple_size(tpl_d, exists_tuple);
-
 	// the index where this tuple will be inserted
 	uint16_t index = (*count);
 
@@ -76,6 +73,9 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 		case SLOTTED_PAGE_LAYOUT :
 		{
 			uint16_t* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED();
+
+			// size of tuple to be inserted
+			uint32_t external_tuple_size = get_tuple_size(tpl_d, exists_tuple);
 
 			// set valid offset for the new tuple
 			if(index == 0)
@@ -126,11 +126,40 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 	if(index >= get_tuple_count(page, page_size, tpl_d))
 		return 0;
 
+	// size of tuple to be inserted
+	uint32_t external_tuple_size = get_tuple_size(tpl_d, exists_tuple);
+
+	if(external_tuple_size > get_capacity_for_tuple_at_index(page, page_size, tpl_d, index))
+		return 0;
+
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			// TODO
+			uint16_t count = get_tuple_count(page, page_size, tpl_d);
+			uint16_t* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED();
+
+			// generate the new_offset_for_index that is 
+			uint16_t new_offset_for_index;
+			if(index == 0)
+				new_offset_for_index = page_size - external_tuple_size;
+			else
+				new_offset_for_index = tuple_offsets[index - 1] - external_tuple_size;
+
+			// check if the new_offset does not over lap the succeeding tuple
+			if(index < (count-1))
+			{
+				uint32_t offset_of_next_tuple_last_byte = tuple_offsets[index+1] + get_size_for_tuple_at_index(page, page_size, tpl_d, index) - 1;
+				if(offset_of_next_tuple_last_byte >= new_offset_for_index)
+					return 0;
+			}
+
+			tuple_offsets[index] = new_offset_for_index;
+
+			void* new_tuple_p = page + tuple_offsets[index];
+
+			memmove(new_tuple_p, external_tuple, tpl_d->size);
+
 			return 0;
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
