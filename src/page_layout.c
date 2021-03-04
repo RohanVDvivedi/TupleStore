@@ -259,7 +259,19 @@ uint32_t get_capacity_for_tuple_at_index(const void* page, uint32_t page_size, c
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
+			uint16_t count = get_tuple_count(page, page_size, tpl_d);
+			const uint16_t* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED();
+
 			// TODO
+			// if the tuple is deleted
+				// if it is the first tuple
+				// else if it is the last tuple
+				// else
+			// if the tuple is not deleted
+				// if it is the first tuple
+				// else if it is the last tuple
+				// else
+
 			return 0;
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
