@@ -12,6 +12,20 @@
 
 
 
+typedef enum page_layout page_layout;
+enum page_layout
+{
+	SLOTTED_PAGE,
+	FIXED_ARRAY_PAGE,
+};
+
+// get the page layout that will be used by the functions below,
+// for storing the tuple definition given in the parameter
+page_layout get_page_type(const tuple_def* tpl_d);
+
+
+
+
 // insert and delete operation return 1 upon success, else they return 0 for failure
 
 // insert tuple at the specified index, index must be < get_tuple_count()
