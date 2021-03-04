@@ -119,7 +119,9 @@ void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl
 **
 **				= TOTAL_UNUSED_BITS_IN_PAGE / TOTAL_BITS_IN_A_TUPLE
 **
-**				= (PAGE_SIZE * 8 - 16) / (tuple_definition->size * 8 + 1)
+**				= floor_function( ((PAGE_SIZE - 2) * 8) / ((tuple_size * 8) + 1) )
+**
+**			here, tuple_size = tuple_definition->size
 **
 **		* The 1 additional bit is required for marking the tombstones for each of the tuples.
 **
