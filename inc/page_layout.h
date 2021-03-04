@@ -14,6 +14,10 @@
 
 // insert and delete operation return 1 upon success, else they return 0 for failure
 
+// insert tuple at the specified index, index must be < get_tuple_count()
+// if index >= get_tuple_count(), insert fails with 0
+int insert_tuple_at(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple);
+
 // to insert a tuple at the end in the given page
 int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
@@ -33,6 +37,14 @@ int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, u
 // returns the index that will be assigned for a new tuple upon insertion
 // i.e. an iterator in the for loop must be lesser than the return value of this function
 uint16_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+
+
+
+
+// the below functions yield tpl_d->size for FIXED ARRAY page
+uint32_t get_capacity_for_tuple_at_index(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+
+uint32_t get_size_for_tuple_at_index(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
 
 
 

@@ -40,6 +40,38 @@ static inline uint16_t get_tuple_offsets_offset_SLOTTED()
 // -------------------------------------------
 // -------------------------------------------
 
+int insert_tuple_at(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple)
+{
+	// index OUT_OF_BOUNDS
+	if(index >= get_tuple_count(page, page_size, tpl_d))
+		return 0;
+
+	if(tpl_d->size == VARIABLE_SIZED)
+	{
+		// case : SLOTTED PAGE
+		// TODO
+		return 0;
+	}
+	else
+	{
+		// case : FIXED ARRAY PAGE
+
+		char*     is_valid = page + get_bitmap_offset_FIXED_ARRAY();
+		void*     tuples   = page + get_tuples_offset_FIXED_ARRAY(page_size, tpl_d->size);
+
+		// indexed tuple has valid data
+		if(get_bit(is_valid, index))
+			return 0;
+
+		void* new_tuple_p = tuples + (index * tpl_d->size);
+
+		memmove(new_tuple_p, external_tuple, tpl_d->size);
+		set_bit(is_valid, index);
+
+		return 1;
+	}
+}
+
 int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
 	if(!can_accomodate_tuple(page, page_size, tpl_d, external_tuple))
