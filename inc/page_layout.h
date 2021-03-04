@@ -26,6 +26,12 @@ page_layout get_page_layout_type(const tuple_def* tpl_d);
 
 
 
+// returns the number of tuples in the page (including the deleted ones)
+uint16_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+
+
+
+
 // insert and delete operation return 1 upon success, else they return 0 for failure
 
 // insert tuple at the specified index, index must be < get_tuple_count()
@@ -36,21 +42,26 @@ int insert_tuple_at(void* page, uint32_t page_size, const tuple_def* tpl_d, uint
 int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
 // to remove a tuple at the given index in the page
+// if index >= get_tuple_count(), delete fails with 0
 int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
-
-
-
 
 // to check if a tuple at the given index in the page exists
 // 1 means the tuple exists, else if 0 then the tuple does not exists
+// it returns 0, also when the tuple index is out of bounds, i.e. (index >= get_tuple_count())
 int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
 
 
 
 
-// returns the index that will be assigned for a new tuple upon insertion
-// i.e. an iterator in the for loop must be lesser than the return value of this function
-uint16_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+// returns NULL on failure, when the tuple index is out of bounds, i.e. (index >= get_tuple_count())
+// returns pointer to nth tuple in the page
+void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+
+
+
+
+// returns true if the given page has enough space to accomodate the given tuple
+int can_accomodate_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
 
 
@@ -63,22 +74,9 @@ uint32_t get_size_for_tuple_at_index(const void* page, uint32_t page_size, const
 
 
 
-// SEEK FUNCTION FAILS WITH NULL, WHEN THE INDEX OF THE TUPLE IS OUT_OF_BOUNDS
-// tuple is out of bounds, if (index >= get_tuple_count())
-// index attribute must be lesser than get_index_for_new_tuple(), else you get NULL
-
-// returns pointer to nth tuple in the page
-void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
-
-
-
-
-// returns true if the given page has enough space to accomodate the given tuple
-int can_accomodate_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
-
 // returns total free space inside a given page
-// this is the space that will be freed if the page was to be compacted thoroughly
-uint32_t get_free_space(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+// free_space = total_space - space occupied by the tuples (including the deleted one's)
+uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 
 

@@ -51,6 +51,12 @@ static inline uint16_t get_tuple_offsets_offset_SLOTTED()
 // -------------------------------------------
 // -------------------------------------------
 
+uint16_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	const uint16_t* count = page + get_tuple_count_offset();
+	return *count;
+}
+
 int insert_tuple_at(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple)
 {
 	// index OUT_OF_BOUNDS
@@ -185,60 +191,6 @@ int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, u
 	}
 }
 
-uint16_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* tpl_d)
-{
-	const uint16_t* count = page + get_tuple_count_offset();
-	return *count;
-}
-
-uint32_t get_capacity_for_tuple_at_index(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
-{
-	// index OUT_OF_BOUNDS
-	if(index >= get_tuple_count(page, page_size, tpl_d))
-		return 0;
-
-	switch(get_page_layout_type(tpl_d))
-	{
-		case SLOTTED_PAGE_LAYOUT :
-		{
-			// TODO
-			return 0;
-		}
-		case FIXED_ARRAY_PAGE_LAYOUT :
-		{
-			return tpl_d->size;
-		}
-		default :
-		{
-			return 0;
-		}
-	}
-}
-
-uint32_t get_size_for_tuple_at_index(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
-{
-	// index OUT_OF_BOUNDS
-	if(index >= get_tuple_count(page, page_size, tpl_d))
-		return 0;
-
-	switch(get_page_layout_type(tpl_d))
-	{
-		case SLOTTED_PAGE_LAYOUT :
-		{
-			// TODO
-			return 0;
-		}
-		case FIXED_ARRAY_PAGE_LAYOUT :
-		{
-			return tpl_d->size;
-		}
-		default :
-		{
-			return 0;
-		}
-	}
-}
-
 void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
 	// index OUT_OF_BOUNDS
@@ -281,6 +233,54 @@ int can_accomodate_tuple(const void* page, uint32_t page_size, const tuple_def* 
 			const uint16_t* count = page + get_tuple_count_offset();
 
 			return (*count) < capacity;
+		}
+		default :
+		{
+			return 0;
+		}
+	}
+}
+
+uint32_t get_capacity_for_tuple_at_index(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
+{
+	// index OUT_OF_BOUNDS
+	if(index >= get_tuple_count(page, page_size, tpl_d))
+		return 0;
+
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+		{
+			// TODO
+			return 0;
+		}
+		case FIXED_ARRAY_PAGE_LAYOUT :
+		{
+			return tpl_d->size;
+		}
+		default :
+		{
+			return 0;
+		}
+	}
+}
+
+uint32_t get_size_for_tuple_at_index(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
+{
+	// index OUT_OF_BOUNDS
+	if(index >= get_tuple_count(page, page_size, tpl_d))
+		return 0;
+
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+		{
+			// TODO
+			return 0;
+		}
+		case FIXED_ARRAY_PAGE_LAYOUT :
+		{
+			return tpl_d->size;
 		}
 		default :
 		{
