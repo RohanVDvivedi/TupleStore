@@ -108,11 +108,11 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 			uint32_t external_tuple_size = get_tuple_size(tpl_d, exists_tuple);
 
 			if(count == 0)
-				tuple_offsets[count] = external_tuple_size;
+				tuple_offsets[count] = page_size - external_tuple_size;
 			else
-				tuple_offsets[count] = tuple_offsets[count - 1] + external_tuple_size;
+				tuple_offsets[count] = tuple_offsets[count - 1] - external_tuple_size;
 
-			void* new_tuple_p = (page + page_size) - tuple_offsets[count];
+			void* new_tuple_p = page + tuple_offsets[count];
 
 			memmove(new_tuple_p, external_tuple, external_tuple_size);
 			(*count) += 1;
@@ -225,7 +225,7 @@ void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* t
 		{
 			const uint16_t* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED();
 
-			return (void*)((page + page_size) - tuple_offsets[index]);
+			return (void*)(page + tuple_offsets[index]);
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
