@@ -129,6 +129,10 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 
 int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
+	// index OUT_OF_BOUNDS
+	if(index >= get_tuple_count(page, page_size, tpl_d))
+		return 0;
+
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
@@ -138,12 +142,7 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
-			uint16_t* count    = page + get_tuple_count_offset();
-			char*     is_valid = page + get_bitmap_offset_FIXED_ARRAY();
-
-			// check for index in bounds
-			if(index >= (*count))
-				return 0;
+			char* is_valid = page + get_bitmap_offset_FIXED_ARRAY();
 
 			// indexed tuple does not exist, so can not delete it
 			if(!get_bit(is_valid, index))
@@ -162,6 +161,10 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 
 int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
+	// index OUT_OF_BOUNDS
+	if(index >= get_tuple_count(page, page_size, tpl_d))
+		return 0;
+
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
@@ -171,12 +174,7 @@ int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, u
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
-			const uint16_t* count    = page + get_tuple_count_offset();
-			const char*     is_valid = page + get_bitmap_offset_FIXED_ARRAY();
-
-			// check for index in bounds
-			if(index >= (*count))
-				return 0;
+			const char* is_valid = page + get_bitmap_offset_FIXED_ARRAY();
 
 			return get_bit(is_valid, index);
 		}
@@ -195,6 +193,10 @@ uint16_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* 
 
 uint32_t get_capacity_for_tuple_at_index(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
+	// index OUT_OF_BOUNDS
+	if(index >= get_tuple_count(page, page_size, tpl_d))
+		return 0;
+
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
@@ -215,6 +217,10 @@ uint32_t get_capacity_for_tuple_at_index(const void* page, uint32_t page_size, c
 
 uint32_t get_size_for_tuple_at_index(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
+	// index OUT_OF_BOUNDS
+	if(index >= get_tuple_count(page, page_size, tpl_d))
+		return 0;
+
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
@@ -235,6 +241,10 @@ uint32_t get_size_for_tuple_at_index(const void* page, uint32_t page_size, const
 
 void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
+	// index OUT_OF_BOUNDS
+	if(index >= get_tuple_count(page, page_size, tpl_d))
+		return NULL;
+
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
@@ -244,17 +254,7 @@ void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* t
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
-			const uint16_t* count    = page + get_tuple_count_offset();
-			const char*     is_valid = page + get_bitmap_offset_FIXED_ARRAY();
-			const void*     tuples   = page + get_tuples_offset_FIXED_ARRAY(page_size, tpl_d->size);
-
-			// check for index in bounds
-			if(index >= (*count))
-				return NULL;
-
-			// indexed tuple was deleted (! is_valid)
-			if(!get_bit(is_valid, index))
-				return NULL;
+			const void* tuples   = page + get_tuples_offset_FIXED_ARRAY(page_size, tpl_d->size);
 
 			return (void*)(tuples + (index * tpl_d->size));
 		}
@@ -278,7 +278,7 @@ int can_accomodate_tuple(const void* page, uint32_t page_size, const tuple_def* 
 		{
 			uint16_t capacity = get_tuple_capacity_FIXED_ARRAY(page_size, tpl_d->size);
 
-			const uint16_t* count    = page + get_tuple_count_offset();
+			const uint16_t* count = page + get_tuple_count_offset();
 
 			return (*count) < capacity;
 		}
@@ -302,7 +302,7 @@ uint32_t get_free_space(const void* page, uint32_t page_size, const tuple_def* t
 		{
 			uint16_t capacity = get_tuple_capacity_FIXED_ARRAY(page_size, tpl_d->size);
 
-			const uint16_t* count    = page + get_tuple_count_offset();
+			const uint16_t* count = page + get_tuple_count_offset();
 
 			return (capacity - (*count)) * tpl_d->size;
 		}
