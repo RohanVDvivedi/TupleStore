@@ -181,8 +181,8 @@ int main()
 
 	void* tuple_1u = tuple_cache;
 
-	row row_1u = {5004, -123, 66, 
-		"Project built by Rohan Dvivedi. Only contributor to this project.", 
+	row row_1u = {5004, -123, 60, 
+		"Project built by Rohan Dvivedi. Only coder on this project.", 
 		"Roopa", "Dvivedi", 65536};
 
 	copy_element_to_tuple(def, 0, tuple_1u, &(row_1u.c0));
