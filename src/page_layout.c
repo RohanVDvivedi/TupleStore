@@ -291,8 +291,15 @@ uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tupl
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			// TODO
-			return 0;
+			uint16_t* count         = page + get_tuple_count_offset();
+			uint16_t* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED();
+
+			if(count == 0)
+				// (total page size) - (memory occupied for storing the tuple count)
+				return page_size - get_tuple_count_offset();
+			else
+				// (first address of the last tuple) - (first address of the free space)
+				return ((void*)tuple_offsets[count - 1]) - ((void*)(tuple_offsets + count));
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
