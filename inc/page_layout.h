@@ -21,7 +21,7 @@ enum page_layout
 
 // get the page layout that will be used by the functions below,
 // for storing the tuple definition given in the parameter
-page_layout get_page_type(const tuple_def* tpl_d);
+page_layout get_page_layout_type(const tuple_def* tpl_d);
 
 
 
