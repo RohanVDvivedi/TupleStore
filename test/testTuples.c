@@ -9,7 +9,7 @@ char page[PAGE_SIZE] = {};
 //#define PAGE_LAYOUT  TUPLE_ARRAY /*SLOTTED_PAGE*/
 
 // output print string
-char print_buffer[1024];
+char print_buffer[PAGE_SIZE];
 
 typedef struct row row;
 struct row
