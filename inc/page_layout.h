@@ -63,7 +63,7 @@ uint32_t get_size_for_tuple_at_index(const void* page, uint32_t page_size, const
 
 
 
-// SEEK FUNCTION FAILS WITH NULL, WHEN THE INDEX OF THE TUPLE IS OUT_OF_BOUNDS or IF THE TUPLE IS DELETED
+// SEEK FUNCTION FAILS WITH NULL, WHEN THE INDEX OF THE TUPLE IS OUT_OF_BOUNDS
 // tuple is out of bounds, if (index >= get_tuple_count())
 // index attribute must be lesser than get_index_for_new_tuple(), else you get NULL
 
