@@ -282,32 +282,28 @@ int compact_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 
 void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
-	if(tpl_d->size == VARIABLE_SIZED)
-	{
-		// case : SLOTTED PAGE
-		// TODO
-	}
-	else
-	{
-		// case : FIXED ARRAY PAGE
+	char* print_buffer = malloc(tpl_d->size + (tpl_d->element_count * 32));
 
-		char* print_buffer = malloc(tpl_d->size + (tpl_d->element_count * 24));
+	uint16_t count = get_tuple_count(page, page_size, tpl_d);
 
-		uint16_t count = get_tuple_count(page, page_size, tpl_d);
+	if(tpl_d->size == VARIABLE_SIZED)	// case : SLOTTED PAGE
+		printf("SLOTTED PAGE     : size(%u) : tuples(%u)\n\n", page_size, count);
+	else								// case : FIXED ARRAY PAGE
 		printf("FIXED ARRAY PAGE : size(%u) : tuples(%u)\n\n", page_size, count);
-		for(uint16_t i = 0; i < count; i++)
-		{
-			printf("\t Tuple %u\n", i);
-			if(exists_tuple(page, page_size, tpl_d, i))
-			{
-				sprint_tuple(print_buffer, seek_to_nth_tuple(page, page_size, tpl_d, i), tpl_d);
-				printf("\t\t %s\n\n", print_buffer);
-			}
-			else
-				printf("\t\t %s\n\n", "DELETED");
-		}
-		printf("\n\n\n");
 
-		free(print_buffer);
+	for(uint16_t i = 0; i < count; i++)
+	{
+		printf("\t Tuple %u\n", i);
+		if(exists_tuple(page, page_size, tpl_d, i))
+		{
+			print_buffer[0] = '\0';
+			sprint_tuple(print_buffer, seek_to_nth_tuple(page, page_size, tpl_d, i), tpl_d);
+			printf("\t\t %s\n\n", print_buffer);
+		}
+		else
+			printf("\t\t %s\n\n", "DELETED");
 	}
+	printf("\n\n\n");
+
+	free(print_buffer);
 }
