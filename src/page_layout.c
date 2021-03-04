@@ -59,20 +59,18 @@ uint16_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* 
 
 int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
-	// reference to the count of tuple on the page
-	uint16_t* count = page + get_tuple_count_offset();
-
-	// the index where this tuple will be inserted
-	uint16_t index = (*count);
-
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
+			uint16_t* count         = page + get_tuple_count_offset();
 			uint16_t* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED();
 
 			// size of tuple to be inserted
 			uint32_t external_tuple_size = get_tuple_size(tpl_d, exists_tuple);
+
+			// the index where this tuple will be inserted
+			uint16_t index = (*count);
 
 			// set valid offset for the new tuple, such that it is adjacent to the last tuple (or the end of the page)
 			uint16_t new_tuple_offset;
@@ -101,8 +99,17 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
-			char* is_valid = page + get_bitmap_offset_FIXED_ARRAY();
-			void* tuples   = page + get_tuples_offset_FIXED_ARRAY(page_size, tpl_d->size);
+			// if the tuple count of the page has reached the maximum capacity
+			// then no tuples can be inserted further and the insert fails
+			if(get_tuple_count(page, page_size, tpl_d) == get_tuple_capacity_FIXED_ARRAY(page_size, tpl_d->size))
+				return 0;
+
+			uint16_t* count = page + get_tuple_count_offset();
+			char* is_valid  = page + get_bitmap_offset_FIXED_ARRAY();
+			void* tuples    = page + get_tuples_offset_FIXED_ARRAY(page_size, tpl_d->size);
+
+			// the index where this tuple will be inserted
+			uint16_t index = (*count);
 
 			// pointer to the new tuple in the page
 			void* new_tuple_p = tuples + (index * tpl_d->size);
