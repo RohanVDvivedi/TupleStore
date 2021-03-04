@@ -1,4 +1,5 @@
  * formalize test_cases row build procedure
- * test fixed page layout (only slotted page layout test)
+ * test fixed page layout (only slotted page layout tested)
+ * array of page_ids as indirections
 
  * in a separate repo build Btree and SST persistent datastructures using SimpleTupleStorageModel and BufferPool libraries
