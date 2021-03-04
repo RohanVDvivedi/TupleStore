@@ -7,7 +7,7 @@ DOWNLOAD_DIR:=/usr/local
 # we may download all the public headers
 
 # list of public api headers (only these headers will be installed)
-PUBLIC_HEADERS:=tuple.h tuple_def.h
+PUBLIC_HEADERS:=page_layout.h tuple.h tuple_def.h
 # the library, which we will create
 LIBRARY:=lib${PROJECT_NAME}.a
 # the binary, which will use the created library
@@ -25,7 +25,7 @@ CC:=gcc
 # compiler flags
 CFLAGS:=-Wall -O3 -I${INC_DIR}
 # linker flags, this will used to compile the binary
-LFLAGS:=-L${LIB_DIR} -l${PROJECT_NAME}
+LFLAGS:=-L${LIB_DIR} -l${PROJECT_NAME} -lcutlery
 # Archiver
 AR:=ar rcs
 
