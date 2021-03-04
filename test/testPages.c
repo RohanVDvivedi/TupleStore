@@ -112,6 +112,25 @@ int main()
 
 	// ---------------
 
+	void* tuple_3 = tuple_cache;
+
+	row row_3 = {3, -53, 3, "ro", "RO", "rO", 20.21};
+
+	copy_element_to_tuple(def, 0, tuple_3, &(row_3.c0));
+	copy_element_to_tuple(def, 1, tuple_3, &(row_3.c1));
+	copy_element_to_tuple(def, 2, tuple_3, &(row_3.c2));
+	copy_element_to_tuple(def, 3, tuple_3, (row_3.c3));
+	copy_element_to_tuple(def, 4, tuple_3, (row_3.c4));
+	copy_element_to_tuple(def, 5, tuple_3, (row_3.c5));
+	copy_element_to_tuple(def, 6, tuple_3, &(row_3.c6));
+
+	sprint_tuple(print_buffer, tuple_3, def);
+	printf("tuple 3 : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple_3), print_buffer);
+
+	insert_tuple(page, PAGE_SIZE, def, tuple_3);
+
+	// ---------------
+
 	printf("compare(tuple_0 , tuple_1) = %d\n\n", 
 				compare_tuples(	seek_to_nth_tuple(page, PAGE_SIZE, def, 0), 
 								seek_to_nth_tuple(page, PAGE_SIZE, def, 1), 
@@ -142,6 +161,42 @@ int main()
 	// ---------------
 
 	delete_tuple(page, PAGE_SIZE, def, 1);
+
+	// ---------------
+	
+	print_all_tuples(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	// ---------------
+	
+	for(int i = 0; i < PAGE_SIZE; i++)
+	{
+		if(i % 8 == 0)
+			printf("\n");
+		printf("[%2d](%2x)%c \t ", i, 0xff & (*((char*)(page + i))), (*((char*)(page + i))));
+	}
+	printf("\n\n");
+
+	// ---------------
+
+	void* tuple_1u = tuple_cache;
+
+	row row_1u = {5004, -123, 66, 
+		"Project built by Rohan Dvivedi. Only contributor to this project.", 
+		"Roopa", "Dvivedi", 65536};
+
+	copy_element_to_tuple(def, 0, tuple_1u, &(row_1u.c0));
+	copy_element_to_tuple(def, 1, tuple_1u, &(row_1u.c1));
+	copy_element_to_tuple(def, 2, tuple_1u, &(row_1u.c2));
+	copy_element_to_tuple(def, 3, tuple_1u, (row_1u.c3));
+	copy_element_to_tuple(def, 4, tuple_1u, (row_1u.c4));
+	copy_element_to_tuple(def, 5, tuple_1u, (row_1u.c5));
+	copy_element_to_tuple(def, 6, tuple_1u, &(row_1u.c6));
+
+	sprint_tuple(print_buffer, tuple_1u, def);
+	printf("tuple 1 : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple_1u), print_buffer);
+
+	update_tuple(page, PAGE_SIZE, def, 1, tuple_1u);
 
 	// ---------------
 	
