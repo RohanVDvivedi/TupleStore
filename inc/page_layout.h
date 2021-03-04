@@ -126,7 +126,9 @@ void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl
 **
 **				void* nth_tuple = (page + page_size) - Tuple_offsets[n];
 **
-**		* NOTE : all the Tuple_offsets are always ordered in their increasing order.
+**		* NOTE : all the Tuple_offsets are always ordered in their increasing order
+**			except when the corresponding tuple is deleted.
+**			for a deleted tuple at index i Tuple_offsets[i] = 0x0000
 **
 ****************************************************************************************
 **
