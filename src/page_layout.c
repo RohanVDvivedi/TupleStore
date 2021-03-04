@@ -138,12 +138,9 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 			char* is_valid = page + get_bitmap_offset_FIXED_ARRAY();
 			void* tuples   = page + get_tuples_offset_FIXED_ARRAY(page_size, tpl_d->size);
 
-			// indexed tuple has valid data
-			if(get_bit(is_valid, index))
-				return 0;
-
 			void* new_tuple_p = tuples + (index * tpl_d->size);
 
+			// copy external_tuple to the new_tuple (in the page)
 			memmove(new_tuple_p, external_tuple, tpl_d->size);
 			set_bit(is_valid, index);
 
