@@ -23,9 +23,9 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 
 
 
-// to check if a tuple at the given index in the page has been deleted
-// 1 means the tuple is deleted OR it does not exists
-int is_deleted_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+// to check if a tuple at the given index in the page exists
+// 1 means the tuple exists, else if 0 then the tuple does not exists
+int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
 
 
 
@@ -37,7 +37,7 @@ uint16_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* 
 
 
 
-// SEEK FUNCTION FAILS WITH NULL, WHEN THE INDEX OF THE TUPLE IS OUT_OF_BOUNDS 
+// SEEK FUNCTION FAILS WITH NULL, WHEN THE INDEX OF THE TUPLE IS OUT_OF_BOUNDS or IF THE TUPLE IS DELETED
 // tuple is out of bounds, if (index >= get_index_for_new_tuple())
 // index attribute must be lesser than get_index_for_new_tuple(), else you get NULL
 
