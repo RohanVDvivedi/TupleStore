@@ -67,7 +67,7 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 			uint16_t* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED();
 
 			// size of tuple to be inserted
-			uint32_t external_tuple_size = get_tuple_size(tpl_d, exists_tuple);
+			uint32_t external_tuple_size = get_tuple_size(tpl_d, external_tuple);
 
 			// the index where this tuple will be inserted
 			uint16_t index = (*count);
@@ -80,7 +80,7 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 				new_tuple_offset = tuple_offsets[index - 1] - external_tuple_size;
 
 			// check for its overlap with the tuple offsets array
-			if(get_tuple_offsets_offset_SLOTTED() + (*count) > new_tuple_offset)
+			if(get_tuple_offsets_offset_SLOTTED() + (2 * (*count)) > new_tuple_offset)
 				return 0;
 
 			// update the tuple_offset with the new value
@@ -169,7 +169,7 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 			else
 			{
 				// check for overlap with tuple offsets array
-				if(get_tuple_offsets_offset_SLOTTED() + count > new_offset_for_index)
+				if(get_tuple_offsets_offset_SLOTTED() + (2 * count) > new_offset_for_index)
 					return 0;
 			}
 
