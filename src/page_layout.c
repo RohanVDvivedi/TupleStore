@@ -72,8 +72,8 @@ int insert_tuple_at(void* page, uint32_t page_size, const tuple_def* tpl_d, uint
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
-			char*     is_valid = page + get_bitmap_offset_FIXED_ARRAY();
-			void*     tuples   = page + get_tuples_offset_FIXED_ARRAY(page_size, tpl_d->size);
+			char* is_valid = page + get_bitmap_offset_FIXED_ARRAY();
+			void* tuples   = page + get_tuples_offset_FIXED_ARRAY(page_size, tpl_d->size);
 
 			// indexed tuple has valid data
 			if(get_bit(is_valid, index))
