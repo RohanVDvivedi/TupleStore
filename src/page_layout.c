@@ -2,6 +2,8 @@
 
 #include<tuple.h>
 
+#include<bitmap.h>
+
 // -------------------------------------------
 // UTILITY FUNCTIONS         SLOTTED PAGE TYPE
 // -------------------------------------------
@@ -13,10 +15,22 @@
 // UTILITY FUNCTIONS     FIXED_ARRAY PAGE TYPE
 // -------------------------------------------
 
-static uint16_t get_tuple_capacity_FIXED_ARRAY(uint32_t page_size, uint32_t tuple_size)
+static inline uint16_t get_tuple_capacity_FIXED_ARRAY(uint32_t page_size, uint32_t tuple_size)
 {
 	// unsigned int divisions give floor results by defaults
 	return ((page_size - sizeof(uint16_t)) * 8) / (8 * tuple_size + 1); 
+}
+
+static inline uint16_t get_bitmap_offset_FIXED_ARRAY(uint32_t page_size, uint32_t tuple_size)
+{
+	return 2; 
+}
+
+static inline uint16_t get_tuples_offset_FIXED_ARRAY(uint32_t page_size, uint32_t tuple_size)
+{
+	// unsigned int divisions give floor results by defaults
+	uint16_t tuples_capacity = get_tuple_capacity_FIXED_ARRAY(page_size, tuple_size);
+	return 2 + bitmap_size_in_bytes(tuples_capacity); 
 }
 
 // -------------------------------------------
