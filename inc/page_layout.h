@@ -90,8 +90,18 @@ void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl
 **
 **		* CASE ::: tuple_definition->size == VARIABLE_SIZED page
 **
-**		* the first uint16_t equals the total number of tuples in the page.
+**		* the first uint8_t denotes the user defined page_type of the page.
+**			* there are get_page_type() and set_page_type() function to access this user defined value.
+**
+**		* then comes uint8_t that denotes the number of reference page_ids, 
+**			for furthering your search from this page.
+**
+**		* then comes uint16_t equals the total number of tuples in the page.
 **			(the deleted tuples are not included here)
+**
+**		* then comes an array of uint32_t. each element is a reference page_id.
+**			the length of this field is fixed for a given page upon initialization,
+**			by the init_page() function.
 **
 **		* if there are N tuples in an SLOTTED_PAGE, 
 **			then there are N uint16_t integers that give us pointer offsets in the page to 
@@ -113,13 +123,34 @@ void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl
 **			except when the corresponding tuple is deleted.
 **			for a deleted tuple at index i Tuple_offsets[i] = 0x0000
 **
+**		
+**		struct page_of_SLOTTED_PAGE
+**		{
+**			uint8_t 	page_type;
+**
+**			uint8_t 	reference_page_count;
+**
+**			uint16_t 	tuple_count;
+**
+**			uint32_t 	reference_page_ids [ reference_page_count ] ;
+**
+**			uint16_t 	tuple_offsets [ tuple_count ];
+**		}
+**
+**
 ****************************************************************************************
 **
 **					FIXED_ARRAY PAGE
 **
 **		* CASE ::: tuple_definition->size != VARIABLE_SIZED page
 **
-**		* The first uint16_t equals the total number of tuples in the page.
+**		* the first uint8_t denotes the user defined page_type of the page.
+**			* there are get_page_type() and set_page_type() function to access this user defined value.
+**
+**		* then comes uint8_t that denotes the number of reference page_ids, 
+**			for furthering your search from this page.
+**
+**		* then comes uint16_t equals the total number of tuples in the page.
 **			(including the deleted tuples)
 **
 **		* Due to the fixed length of each tuple we can precompute the maximum number
@@ -145,6 +176,22 @@ void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl
 **
 **		* The rest of the page memory of (page_size - total_bitmap_size) bytes
 **			is used as an array of tuples, each of (tuple_definition->size) bytes.
+**
+**
+**		struct page_of_FIXED_ARRAY_PAGE
+**		{
+**			uint8_t 	page_type;
+**
+**			uint8_t 	reference_page_count;
+**
+**			uint16_t 	tuple_count;
+**
+**			uint32_t 	reference_page_ids [ reference_page_count ] ;
+**
+**			< tuples [ tuple_count ]; >
+**		}
+**
+**
 *****************************************************************************************
 **
 */
