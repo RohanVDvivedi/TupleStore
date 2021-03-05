@@ -25,8 +25,10 @@ enum element_type
 	FLOAT	= 2,
 	STRING  = 3,
 	BLOB 	= 4
-	// a BLOB type may be preceded with a UINT type
-	// such that the preceded UINT type of sizes (1,2 or 4) represents its size in bytes
+	// data of STRING or BLOB type can be of fixed_size or be VARIABLE_SIZED
+
+	// a VARIABLE_SIZED STRING or BLOB data type must be preceded with a UINT type of sizes (1,2 or 4)
+	// such that the preceded data denotes its size in bytes
 };
 
 extern char type_as_string[][8];
