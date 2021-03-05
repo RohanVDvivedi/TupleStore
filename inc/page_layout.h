@@ -34,7 +34,7 @@ void set_page_type(void* page, uint8_t page_type);
 
 // the total number of reference page count on this page
 // i.e. this is the number of page_ids, you may want to follow to continue your search operation
-uint8_t get_reference_page_count(const void* page);
+uint8_t get_reference_pages_count(const void* page);
 
 // returns the number of tuples in the page (including the deleted ones)
 uint16_t get_tuple_count(const void* page);
