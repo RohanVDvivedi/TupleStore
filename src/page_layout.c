@@ -134,7 +134,7 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 			uint16_t index = (*count);
 
 			// set valid offset for the new tuple, such that it is adjacent to the last tuple (or the end of the page)
-			uint16_t new_tuple_offset;
+			uint32_t new_tuple_offset;
 			if(index == 0)
 				new_tuple_offset = page_size - external_tuple_size;
 			else
@@ -211,7 +211,7 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 
 			// generate the new_offset_for_index with the largest possible offset
 			// i.e. adjacent to the previous tuple (or the end of the page)
-			uint16_t new_offset_for_index;
+			uint32_t new_offset_for_index;
 			if(index == 0)
 				new_offset_for_index = page_size - external_tuple_size;
 			else
