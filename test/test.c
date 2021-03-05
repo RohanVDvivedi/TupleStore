@@ -143,39 +143,27 @@ int main()
 								def)
 			);
 
-	// ---------------	PRINT TUPLES
-	
-	print_all_tuples(page, PAGE_SIZE, def);
-	printf("\n\n");
-
 	// ---------------	PRINT PAGE
 	
-	for(int i = 0; i < PAGE_SIZE; i++)
-	{
-		if(i % 8 == 0)
-			printf("\n");
-		printf("[%2d](%2x)%c \t ", i, 0xff & (*((char*)(page + i))), (*((char*)(page + i))));
-	}
+	print_page(page, PAGE_SIZE, def);
 	printf("\n\n");
+
+	// ---------------	PRINT PAGE IN HEX
+	
+	print_page_in_hex(page, PAGE_SIZE);
 
 	// --------------- DELETE
 
 	delete_tuple(page, PAGE_SIZE, def, 1);
 
-	// ---------------	PRINT TUPLES
-	
-	print_all_tuples(page, PAGE_SIZE, def);
-	printf("\n\n");
-
 	// ---------------	PRINT PAGE
 	
-	for(int i = 0; i < PAGE_SIZE; i++)
-	{
-		if(i % 8 == 0)
-			printf("\n");
-		printf("[%2d](%2x)%c \t ", i, 0xff & (*((char*)(page + i))), (*((char*)(page + i))));
-	}
+	print_page(page, PAGE_SIZE, def);
 	printf("\n\n");
+
+	// ---------------	PRINT PAGE IN HEX
+	
+	print_page_in_hex(page, PAGE_SIZE);
 
 	// ---------------	UPDATE
 
@@ -187,20 +175,14 @@ int main()
 
 	update_tuple(page, PAGE_SIZE, def, 1, tuple_cache);
 
-	// ---------------	PRINT TUPLES
-	
-	print_all_tuples(page, PAGE_SIZE, def);
-	printf("\n\n");
-
 	// ---------------	PRINT PAGE
 	
-	for(int i = 0; i < PAGE_SIZE; i++)
-	{
-		if(i % 8 == 0)
-			printf("\n");
-		printf("[%2d](%2x)%c \t ", i, 0xff & (*((char*)(page + i))), (*((char*)(page + i))));
-	}
+	print_page(page, PAGE_SIZE, def);
 	printf("\n\n");
+
+	// ---------------	PRINT PAGE IN HEX
+	
+	print_page_in_hex(page, PAGE_SIZE);
 
 	// --------------- SET REFERENCE PAGE ID
 
@@ -212,18 +194,12 @@ int main()
 
 	// ---------------- PRINT PAGE
 
-	print_all_tuples(page, PAGE_SIZE, def);
+	print_page(page, PAGE_SIZE, def);
 	printf("\n\n");
 
-	// ---------------	PRINT PAGE
+	// ---------------	PRINT PAGE IN HEX
 	
-	for(int i = 0; i < PAGE_SIZE; i++)
-	{
-		if(i % 8 == 0)
-			printf("\n");
-		printf("[%2d](%2x)%c \t ", i, 0xff & (*((char*)(page + i))), (*((char*)(page + i))));
-	}
-	printf("\n\n");
+	print_page_in_hex(page, PAGE_SIZE);
 
 	return 0;
 }

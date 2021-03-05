@@ -94,8 +94,11 @@ uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tupl
 
 
 
-// prints all tuples in the page including the deleted ones with their tomb stones
-void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+// prints all page_reference_ids andd all tuples in the page including the deleted
+void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+
+// prints page in hexadecimal format
+void print_page_in_hex(const void* page, uint32_t page_size);
 
 #endif
 
