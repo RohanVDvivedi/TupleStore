@@ -1,5 +1,8 @@
- * formalize test_cases row build procedure
- * test fixed page layout (only slotted page layout tested)
- * array of page_ids as indirections
+ * formalize test_cases
+ 	* initialize tuple function
+ 	* row build in a tuple_cache area
+ 	* use acro to switch between SLOTTED_PAGE_LAYOUT and FIXED_ARRAY_PAGE_LAYOUT
+ 
+ * array of page_ids as indirections (* very important, this would allow us to build ondisk data structures like btree index and hash index)
 
  * in a separate repo build Btree and SST persistent datastructures using SimpleTupleStorageModel and BufferPool libraries
