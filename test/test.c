@@ -7,7 +7,7 @@
 #include<page_layout.h>
 
 // comment the below macro to test the SLOTTED_PAGE_LAYOUT
-//#define TEST_FIXED_ARRAY_PAGE_LAYOUT
+#define TEST_FIXED_ARRAY_PAGE_LAYOUT
 
 #define PAGE_SIZE    1024
 char page[PAGE_SIZE] = {};
@@ -175,8 +175,8 @@ int main()
 
 	// ---------------	UPDATE
 
-	r = &(row){5004, -123, 60, 
-		"Project built by Rohan Dvivedi. Only coder on this project.", 
+	r = &(row){5004, -123, 65, 
+		"Project built by Rohan Dvivedi. The only coder on this project.", 
 		"Roopa", "Dvivedi", 65536};
 
 	build_tuple_from_row_struct(def, tuple_cache, r);
