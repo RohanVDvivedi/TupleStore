@@ -7,7 +7,7 @@
 #include<page_layout.h>
 
 // comment the below macro to test the SLOTTED_PAGE_LAYOUT
-#define TEST_FIXED_ARRAY_PAGE_LAYOUT
+//#define TEST_FIXED_ARRAY_PAGE_LAYOUT
 
 #define PAGE_SIZE    1024
 char page[PAGE_SIZE] = {};
@@ -189,6 +189,29 @@ int main()
 
 	// ---------------	PRINT TUPLES
 	
+	print_all_tuples(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	// ---------------	PRINT PAGE
+	
+	for(int i = 0; i < PAGE_SIZE; i++)
+	{
+		if(i % 8 == 0)
+			printf("\n");
+		printf("[%2d](%2x)%c \t ", i, 0xff & (*((char*)(page + i))), (*((char*)(page + i))));
+	}
+	printf("\n\n");
+
+	// --------------- SET REFERENCE PAGE ID
+
+	printf("set reference no %d to %d : %d\n\n", 0, 6, set_reference_page_id(page, 0, 6));
+	printf("set reference no %d to %d : %d\n\n", 1, 7, set_reference_page_id(page, 1, 7));
+	printf("set reference no %d to %d : %d\n\n", 3, 5, set_reference_page_id(page, 3, 5));
+	printf("set reference no %d to %d : %d\n\n", 5, 3, set_reference_page_id(page, 5, 3));
+	printf("set reference no %d to %d : %d\n\n", 7, 1, set_reference_page_id(page, 7, 1));
+
+	// ---------------- PRINT PAGE
+
 	print_all_tuples(page, PAGE_SIZE, def);
 	printf("\n\n");
 
