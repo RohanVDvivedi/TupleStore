@@ -1,19 +1,48 @@
 #include<stdio.h>
+#include<stdlib.h>
 
 #include<alloca.h>
 
 #include<tuple.h>
 #include<page_layout.h>
 
+// comment the below macro to test the SLOTTED_PAGE_LAYOUT
+//#define TEST_FIXED_ARRAY_PAGE_LAYOUT
+
 #define PAGE_SIZE    1024
 char page[PAGE_SIZE] = {};
 //#define PAGE_LAYOUT  TUPLE_ARRAY /*SLOTTED_PAGE*/
 
-char tuple_cache[PAGE_SIZE];
+void init_tuple_definition(tuple_def* def)
+{
+	// initialize tuple definition and insert element definitions
+	init_tuple_def(def);
 
-// output print string
-char print_buffer[PAGE_SIZE];
+	insert_element_def(def,   UINT, 8);
+	insert_element_def(def,    INT, 1);
+	insert_element_def(def,   UINT, 1);
 
+	#ifndef TEST_FIXED_ARRAY_PAGE_LAYOUT
+		insert_element_def(def, STRING, VARIABLE_SIZED);
+	#endif
+	
+	insert_element_def(def, STRING, 6);
+	insert_element_def(def, STRING, 10);
+	insert_element_def(def,  FLOAT, 8);
+
+	finalize_tuple_def(def);
+
+	if(is_empty_tuple_def(def))
+	{
+		printf("ERROR BUILDING TUPLE DEFINITION\n");
+		exit(-1);
+	}
+
+	print_tuple_def(def);
+	printf("\n\n");
+}
+
+// a row like struct for ease in building test tuples
 typedef struct row row;
 struct row
 {
@@ -26,110 +55,77 @@ struct row
 	f8 c6;
 };
 
+void build_tuple_from_row_struct(const tuple_def* def, void* tuple, const row* r)
+{
+	int column_no = 0;
+
+	copy_element_to_tuple(def, column_no++, tuple, &(r->c0));
+	copy_element_to_tuple(def, column_no++, tuple, &(r->c1));
+	copy_element_to_tuple(def, column_no++, tuple, &(r->c2));
+
+	#ifndef TEST_FIXED_ARRAY_PAGE_LAYOUT
+		copy_element_to_tuple(def, column_no++, tuple, (r->c3));
+	#endif
+	
+	copy_element_to_tuple(def, column_no++, tuple, (r->c4));
+	copy_element_to_tuple(def, column_no++, tuple, (r->c5));
+	copy_element_to_tuple(def, column_no++, tuple, &(r->c6));
+
+	// output print string
+	char print_buffer[PAGE_SIZE];
+
+	sprint_tuple(print_buffer, tuple, def);
+	printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
+}
+
 int main()
 {
 	// allocate size of tuple definition
 	tuple_def* def = alloca(sizeof(tuple_def) + (sizeof(element_def) * 24));
 
 	// initialize tuple definition and insert element definitions
-	init_tuple_def(def);
+	init_tuple_definition(def);
 
-	insert_element_def(def,   UINT, 8);
-	insert_element_def(def,    INT, 1);
-	insert_element_def(def,   UINT, 1);
-	insert_element_def(def, STRING, VARIABLE_SIZED);
-	insert_element_def(def, STRING, 6);
-	insert_element_def(def, STRING, 10);
-	insert_element_def(def,  FLOAT, 8);
+	// ---------------	DECLARE TEMP variables
 
-	finalize_tuple_def(def);
+	// to build intermediate tuples (only 1 at a time)
+	char tuple_cache[PAGE_SIZE];
+	// and
+	row* r = NULL;
 
-	if(is_empty_tuple_def(def))
-	{
-		printf("ERROR BUILDING TUPLE DEFINITION\n");
-		return -1;
-	}
+	// ---------------	INSERT
 
-	print_tuple_def(def);
-	printf("\n\n");
+	r = &(row){3003, -123, 21, "rohan is a good boy", "roopa", "DVIVEDI", 99.99};
 
-	// ---------------
+	build_tuple_from_row_struct(def, tuple_cache, r);
 
-	void* tuple_0 = tuple_cache;
+	insert_tuple(page, PAGE_SIZE, def, tuple_cache);
 
-	row row_0 = {3003, -123, 21, "rohan is a good boy", "roopa", "DVIVEDI", 99.99};
+	// ---------------	INSERT
 
-	copy_element_to_tuple(def, 0, tuple_0, &(row_0.c0));
-	copy_element_to_tuple(def, 1, tuple_0, &(row_0.c1));
-	copy_element_to_tuple(def, 2, tuple_0, &(row_0.c2));
-	copy_element_to_tuple(def, 3, tuple_0, (row_0.c3));
-	copy_element_to_tuple(def, 4, tuple_0, (row_0.c4));
-	copy_element_to_tuple(def, 5, tuple_0, (row_0.c5));
-	copy_element_to_tuple(def, 6, tuple_0, &(row_0.c6));
+	r = &(row){3003, -12, 16, "rohan bad boy", "rupa", "joshi", 512};
 
-	sprint_tuple(print_buffer, tuple_0, def);
-	printf("tuple 0 : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple_0), print_buffer);
+	build_tuple_from_row_struct(def, tuple_cache, r);
 
-	insert_tuple(page, PAGE_SIZE, def, tuple_0);
+	insert_tuple(page, PAGE_SIZE, def, tuple_cache);
 
-	// ---------------
+	// ---------------`INSERT
 
-	void* tuple_1 = tuple_cache;
+	r = &(row){3007, -12, 18, "rohan is awesome", "Rohi", "MOM+DAD", 2021};
 
-	row row_1 = {3003, -12, 16, "rohan bad boy", "rupa", "joshi", 512};
+	build_tuple_from_row_struct(def, tuple_cache, r);
 
-	copy_element_to_tuple(def, 0, tuple_1, &(row_1.c0));
-	copy_element_to_tuple(def, 1, tuple_1, &(row_1.c1));
-	copy_element_to_tuple(def, 2, tuple_1, &(row_1.c2));
-	copy_element_to_tuple(def, 3, tuple_1, (row_1.c3));
-	copy_element_to_tuple(def, 4, tuple_1, (row_1.c4));
-	copy_element_to_tuple(def, 5, tuple_1, (row_1.c5));
-	copy_element_to_tuple(def, 6, tuple_1, &(row_1.c6));
+	insert_tuple(page, PAGE_SIZE, def, tuple_cache);
 
-	sprint_tuple(print_buffer, tuple_1, def);
-	printf("tuple 1 : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple_1), print_buffer);
+	// ---------------	INSERT
 
-	insert_tuple(page, PAGE_SIZE, def, tuple_1);
+	r = &(row){3, -53, 3, "ro", "RO", "rO", 20.21};
 
-	// ---------------
+	build_tuple_from_row_struct(def, tuple_cache, r);
 
-	void* tuple_2 = tuple_cache;
+	insert_tuple(page, PAGE_SIZE, def, tuple_cache);
 
-	row row_2 = {3007, -12, 18, "rohan is awesome", "Rohi", "MOM+DAD", 2021};
-
-	copy_element_to_tuple(def, 0, tuple_2, &(row_2.c0));
-	copy_element_to_tuple(def, 1, tuple_2, &(row_2.c1));
-	copy_element_to_tuple(def, 2, tuple_2, &(row_2.c2));
-	copy_element_to_tuple(def, 3, tuple_2, (row_2.c3));
-	copy_element_to_tuple(def, 4, tuple_2, (row_2.c4));
-	copy_element_to_tuple(def, 5, tuple_2, (row_2.c5));
-	copy_element_to_tuple(def, 6, tuple_2, &(row_2.c6));
-
-	sprint_tuple(print_buffer, tuple_2, def);
-	printf("tuple 2 : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple_2), print_buffer);
-
-	insert_tuple(page, PAGE_SIZE, def, tuple_2);
-
-	// ---------------
-
-	void* tuple_3 = tuple_cache;
-
-	row row_3 = {3, -53, 3, "ro", "RO", "rO", 20.21};
-
-	copy_element_to_tuple(def, 0, tuple_3, &(row_3.c0));
-	copy_element_to_tuple(def, 1, tuple_3, &(row_3.c1));
-	copy_element_to_tuple(def, 2, tuple_3, &(row_3.c2));
-	copy_element_to_tuple(def, 3, tuple_3, (row_3.c3));
-	copy_element_to_tuple(def, 4, tuple_3, (row_3.c4));
-	copy_element_to_tuple(def, 5, tuple_3, (row_3.c5));
-	copy_element_to_tuple(def, 6, tuple_3, &(row_3.c6));
-
-	sprint_tuple(print_buffer, tuple_3, def);
-	printf("tuple 3 : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple_3), print_buffer);
-
-	insert_tuple(page, PAGE_SIZE, def, tuple_3);
-
-	// ---------------
+	// ---------------	COMPARE 2 TUPLES
 
 	printf("compare(tuple_0 , tuple_1) = %d\n\n", 
 				compare_tuples(	seek_to_nth_tuple(page, PAGE_SIZE, def, 0), 
@@ -143,12 +139,12 @@ int main()
 								def)
 			);
 
-	// ---------------
+	// ---------------	PRINT TUPLES
 	
 	print_all_tuples(page, PAGE_SIZE, def);
 	printf("\n\n");
 
-	// ---------------
+	// ---------------	PRINT PAGE
 	
 	for(int i = 0; i < PAGE_SIZE; i++)
 	{
@@ -158,16 +154,16 @@ int main()
 	}
 	printf("\n\n");
 
-	// ---------------
+	// --------------- DELETE
 
 	delete_tuple(page, PAGE_SIZE, def, 1);
 
-	// ---------------
+	// ---------------	PRINT TUPLES
 	
 	print_all_tuples(page, PAGE_SIZE, def);
 	printf("\n\n");
 
-	// ---------------
+	// ---------------	PRINT PAGE
 	
 	for(int i = 0; i < PAGE_SIZE; i++)
 	{
@@ -177,33 +173,22 @@ int main()
 	}
 	printf("\n\n");
 
-	// ---------------
+	// ---------------	UPDATE
 
-	void* tuple_1u = tuple_cache;
-
-	row row_1u = {5004, -123, 60, 
+	r = &(row){5004, -123, 60, 
 		"Project built by Rohan Dvivedi. Only coder on this project.", 
 		"Roopa", "Dvivedi", 65536};
 
-	copy_element_to_tuple(def, 0, tuple_1u, &(row_1u.c0));
-	copy_element_to_tuple(def, 1, tuple_1u, &(row_1u.c1));
-	copy_element_to_tuple(def, 2, tuple_1u, &(row_1u.c2));
-	copy_element_to_tuple(def, 3, tuple_1u, (row_1u.c3));
-	copy_element_to_tuple(def, 4, tuple_1u, (row_1u.c4));
-	copy_element_to_tuple(def, 5, tuple_1u, (row_1u.c5));
-	copy_element_to_tuple(def, 6, tuple_1u, &(row_1u.c6));
+	build_tuple_from_row_struct(def, tuple_cache, r);
 
-	sprint_tuple(print_buffer, tuple_1u, def);
-	printf("tuple 1 : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple_1u), print_buffer);
+	update_tuple(page, PAGE_SIZE, def, 1, tuple_cache);
 
-	update_tuple(page, PAGE_SIZE, def, 1, tuple_1u);
-
-	// ---------------
+	// ---------------	PRINT TUPLES
 	
 	print_all_tuples(page, PAGE_SIZE, def);
 	printf("\n\n");
 
-	// ---------------
+	// ---------------	PRINT PAGE
 	
 	for(int i = 0; i < PAGE_SIZE; i++)
 	{
