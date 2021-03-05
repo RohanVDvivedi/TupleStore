@@ -1,3 +1,5 @@
  * array of page_ids as indirections (* very important, this would allow us to build ondisk data structures like btree index and hash index)
 
+ * dynamic programming approach to calculate offsets in a varibale sized tuple
+
  * in a separate repo build Btree and SST persistent datastructures using SimpleTupleStorageModel and BufferPool libraries
