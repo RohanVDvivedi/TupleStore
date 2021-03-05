@@ -390,7 +390,7 @@ uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tupl
 	}
 }
 
-void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	char* print_buffer = malloc(tpl_d->size + (tpl_d->element_count * 32));
 
@@ -430,4 +430,15 @@ void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl
 	printf("\n\n\n");
 
 	free(print_buffer);
+}
+
+void print_page_in_hex(const void* page, uint32_t page_size)
+{
+	for(int i = 0; i < page_size; i++)
+	{
+		if(i % 8 == 0)
+			printf("\n");
+		printf("[%2d](%2x)%c \t ", i, 0xff & (*((char*)(page + i))), (*((char*)(page + i))));
+	}
+	printf("\n\n");
 }
