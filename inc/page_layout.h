@@ -207,6 +207,8 @@ void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl
 **
 **			uint32_t 	reference_page_ids [ reference_page_count ] ;
 **
+**			char*	 	is_valid_bitmap [ ceil_function( tuple_capacity / 8 ) ] ;
+**
 **			< tuples [ tuple_count ]; >
 **		}
 **
