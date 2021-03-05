@@ -66,7 +66,7 @@ static inline uint32_t get_tuple_offsets_offset_SLOTTED(const void* page)
 // -------------------------------------------
 // -------------------------------------------
 
-void init_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint8_t page_type, uint8_t reference_page_count)
+void init_page(void* page, uint8_t page_type, uint8_t reference_page_count)
 {
 	uint8_t* page_type_p            = page + get_page_type_offset();
 	uint8_t* reference_page_count_p = page + get_reference_page_count_offset();
