@@ -405,7 +405,10 @@ void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl
 	uint8_t ref_count = get_reference_pages_count(page);
 	uint16_t tup_count = get_tuple_count(page);
 
-	printf("%s : size(%u) : reference_page_ids(%u) : tuples(%u)\n\n",page_layout_type, page_size, ref_count, tup_count);
+	printf("%s : size(%u) : reference_page_ids(%u) : tuples(%u",page_layout_type, page_size, ref_count, tup_count);
+	if(tpl_d->size != VARIABLE_SIZED)	// case : FIXED ARRAY PAGE
+		printf(" of %u)", get_tuple_capacity_FIXED_ARRAY(page, page_size, tpl_d->size));
+	printf(")\n\n");
 
 	for(uint8_t i = 0; i < ref_count; i++)
 		printf("Reference page id [%u] : %u\n", i, get_reference_page_id(page, i));
