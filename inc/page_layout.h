@@ -26,27 +26,27 @@ page_layout get_page_layout_type(const tuple_def* tpl_d);
 
 
 // to use any page, it must have been initialized
-void init_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint8_t page_type, uint8_t reference_page_count);
+void init_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint8_t page_type, uint8_t reference_page_count);
 
 // getter and setter for the page_type that the user mentioned
-uint8_t get_page_type(const void* page, uint32_t page_size, const tuple_def* tpl_d);
-void set_page_type(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint8_t page_type);
+uint8_t get_page_type(const void* page);
+void set_page_type(void* page, uint8_t page_type);
 
 // the total number of reference page count on this page
 // i.e. this is the number of page_ids, you may want to follow to continue your search operation
-uint8_t get_reference_page_count(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+uint8_t get_reference_page_count(const void* page);
 
 // returns the number of tuples in the page (including the deleted ones)
-uint16_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+uint16_t get_tuple_count(const void* page);
 
 // get_reference_page_id() returns the page_id that you can refer to, for your further search
 // p_ref_id = index in the reference_page_ids array
 // must => index < get_reference_page_count()
-uint32_t get_reference_page_id(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint8_t index);
+uint32_t get_reference_page_id(const void* page, uint8_t index);
 
 // returns 1, if the reference_page_id at index was set to page_id in the reference_page_ids array
 // returns 0 if index >= get_reference_page_count()
-uint32_t set_reference_page_id(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint8_t index, uint32_t page_id);
+int set_reference_page_id(void* page, uint8_t index, uint32_t page_id);
 
 
 
