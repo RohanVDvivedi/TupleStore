@@ -25,7 +25,8 @@ page_layout get_page_layout_type(const tuple_def* tpl_d);
 
 
 
-void init_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+// to use any page, it must have been initialized
+void init_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint8_t page_type, uint8_t reference_page_count);
 
 // getter and setter for the page_type that the user mentioned
 uint8_t get_page_type(const void* page, uint32_t page_size, const tuple_def* tpl_d);
