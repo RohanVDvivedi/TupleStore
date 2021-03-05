@@ -411,7 +411,7 @@ void print_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl
 	printf(")\n\n");
 
 	for(uint8_t i = 0; i < ref_count; i++)
-		printf("Reference page id [%u] : %u\n", i, get_reference_page_id(page, i));
+		printf("\t Reference page id [%u] : %u\n\n", i, get_reference_page_id(page, i));
 
 	printf("\n");
 
