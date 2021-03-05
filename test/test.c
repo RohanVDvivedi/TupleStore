@@ -93,6 +93,10 @@ int main()
 	// and
 	row* r = NULL;
 
+	// ---------------  INITIALIZE PAGE
+
+	init_page(page, 3, 7);
+
 	// ---------------	INSERT
 
 	r = &(row){3003, -123, 21, "rohan is a good boy", "roopa", "DVIVEDI", 99.99};
