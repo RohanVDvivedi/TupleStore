@@ -156,16 +156,48 @@ static inline int set_tuple_offset_SLOTTED(void* page, uint32_t page_size, uint3
 // -------------------------------------------
 // -------------------------------------------
 
-uint32_t get_minimum_page_size(uint8_t reference_pages_count)
+uint32_t get_minimum_page_size(uint8_t reference_pages_count, const tuple_def* tpl_d, uint16_t tuple_count)
 {
 	// constant_size = sizeof(page_type) + sizeof(references_pages_count) + sizeof(tuple_count) 
 	// + reference_pages_count * sizeof(each_reference_page_id)
-	return sizeof(uint8_t) + sizeof(uint8_t) + sizeof(uint16_t) + (reference_pages_count * sizeof(uint32_t));
+	uint32_t constant_size = sizeof(uint8_t) + sizeof(uint8_t) + sizeof(uint16_t) + (reference_pages_count * sizeof(uint32_t));
+
+	if(tuple_count == 0)
+		return constant_size;
+
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+		{
+			uint32_t minimum_size_temp = constant_size + (tuple_count * get_minimum_tuple_size(tpl_d));
+
+			uint32_t minimum_size_temp_1 = minimum_size_temp + (tuple_count * 1);
+			uint32_t minimum_size_temp_2 = minimum_size_temp + (tuple_count * 2);
+			uint32_t minimum_size_temp_4 = minimum_size_temp + (tuple_count * 4);
+
+			if(minimum_size_temp_1 < (1<<8))
+				return minimum_size_temp_1;
+			else if(minimum_size_temp_2 < (1<<16))
+				return minimum_size_temp_2;
+			else
+				return minimum_size_temp_4;
+		}
+		case FIXED_ARRAY_PAGE_LAYOUT :
+		{
+			uint32_t is_valid_bitmap_size = (tuple_count/8) + ((tuple_count%8)?1:0);
+			return constant_size + is_valid_bitmap_size + (tuple_count * tpl_d->size);
+		}
+		default :
+		{
+			return 0;
+		}
+	}
 }
 
-int init_page(void* page, uint32_t page_size, uint8_t page_type, uint8_t reference_pages_count)
+int init_page(void* page, uint32_t page_size, uint8_t page_type, uint8_t reference_pages_count, const tuple_def* tpl_d)
 {
-	if(page_size < get_minimum_page_size(reference_pages_count))
+	// the page you decide to use must be able to accomodate atleast a tuple
+	if(page_size < get_minimum_page_size(reference_pages_count, tpl_d, 1))
 		return 0;
 
 	uint8_t* page_type_p             = page + get_page_type_offset();
