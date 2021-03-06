@@ -469,10 +469,8 @@ uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tupl
 				// (total page size) - (memory occupied for storing the header)
 				return page_size - get_tuple_offsets_offset_SLOTTED(page);
 			else
-			{
 				// (offset of the last tuple) - (offset of the free space)
 				return get_tuple_offset_SLOTTED(page, page_size, count - 1) - get_free_space_offset_SLOTTED(page, page_size);
-			}
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
