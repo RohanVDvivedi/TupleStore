@@ -74,6 +74,7 @@ static inline uint8_t get_size_of_tuple_offset_data_type_SLOTTED(uint32_t page_s
 		return 4;
 }
 
+// all tuple_offsets in a SLOTTED_PAGE_LAYOUT must be greater than or equal to this offset
 static inline uint32_t get_free_space_offset_SLOTTED(const void* page, uint32_t page_size)
 {
 	return get_tuple_offsets_offset_SLOTTED(page) + 
