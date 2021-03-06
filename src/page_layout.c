@@ -214,8 +214,7 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			uint16_t* count         = page + get_tuple_count_offset();
-			uint16_t* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED(page);
+			uint16_t* count = page + get_tuple_count_offset();
 
 			// size of tuple to be inserted
 			uint32_t external_tuple_size = get_tuple_size(tpl_d, external_tuple);
@@ -228,23 +227,23 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 			if(index == 0)
 				new_tuple_offset = page_size - external_tuple_size;
 			else
-				new_tuple_offset = tuple_offsets[index - 1] - external_tuple_size;
+				new_tuple_offset = get_tuple_offset_SLOTTED(page, page_size, index - 1) - external_tuple_size;
 
-			// check for its overlap with the tuple offsets array
-			if(get_tuple_offsets_offset_SLOTTED(page) + (sizeof(uint16_t) * (*count)) > new_tuple_offset)
+			// this offset may not cross the new_free_space_offset
+			// new_free_space_offset = free_space_offset after adding the new element's offset
+			uint32_t new_free_space_offset = get_free_space_offset_SLOTTED(page, page_size) + get_size_of_tuple_offset_data_type_SLOTTED(page_size);
+			if(new_free_space_offset > new_tuple_offset)
 				return 0;
 
-			// update the tuple_offset with the new value
-			tuple_offsets[index] = new_tuple_offset;
+			// insert the new tuple_offset with the new value
+			(*count) += 1;
+			set_tuple_offset_SLOTTED(page, page_size, index, new_tuple_offset);
 
 			// pointer to the new tuple in the page
-			void* new_tuple_p = page + tuple_offsets[index];
+			void* new_tuple_p = page + get_tuple_offset_SLOTTED(page, page_size, index);
 
 			// move data from external tuple to the tuple in the page
 			memmove(new_tuple_p, external_tuple, external_tuple_size);
-
-			// increment the tuple counter on the page
-			(*count) += 1;
 
 			return 1;
 		}
@@ -294,7 +293,6 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 		case SLOTTED_PAGE_LAYOUT :
 		{
 			uint16_t count = get_tuple_count(page);
-			uint16_t* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED(page);
 
 			// size of tuple to be inserted
 			uint32_t external_tuple_size = get_tuple_size(tpl_d, external_tuple);
@@ -305,32 +303,38 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 			if(index == 0)
 				new_offset_for_index = page_size - external_tuple_size;
 			else
-				new_offset_for_index = tuple_offsets[index - 1] - external_tuple_size;
+				new_offset_for_index = get_tuple_offset_SLOTTED(page, page_size, index - 1) - external_tuple_size;
 
 			// check if the new_offset does not over lap the succeeding tuple, if it has a succeeding tuple
 			if(index < (count - 1))
 			{
 				// next tuple
-				const void* next_tuple = page + tuple_offsets[index + 1];
+				uint32_t next_tuple_offset = get_tuple_offset_SLOTTED(page, page_size, index + 1);
+				const void* next_tuple = page + next_tuple_offset;
 				uint32_t next_tuple_size = get_tuple_size(tpl_d, next_tuple);
 
-				if(tuple_offsets[index + 1] + next_tuple_size > new_offset_for_index)
+				if(next_tuple_offset + next_tuple_size > new_offset_for_index)
 					return 0;
 			}
 			else
 			{
-				// check for overlap with tuple offsets array
-				if(get_tuple_offsets_offset_SLOTTED(page) + (sizeof(uint16_t) * count) > new_offset_for_index)
+				// since this is the update to the last element, we make sure that
+				// its offset may not cross the free_space_offset
+				// new_free_space_offset = free_space_offset after adding the new element's offset
+				uint32_t free_space_offset = get_free_space_offset_SLOTTED(page, page_size);
+				if(free_space_offset > new_offset_for_index)
 					return 0;
 			}
 
-			tuple_offsets[index] = new_offset_for_index;
+			// update the offset of the tuple to be updated
+			set_tuple_offset_SLOTTED(page, page_size, index, new_offset_for_index);
 
-			void* new_tuple_p = page + tuple_offsets[index];
+			// pointer to the new updated tuple in the page
+			void* new_tuple_p = page + get_tuple_offset_SLOTTED(page, page_size, index);
 
 			memmove(new_tuple_p, external_tuple, external_tuple_size);
 
-			return 0;
+			return 1;
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
@@ -362,15 +366,18 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			uint16_t* count         = page + get_tuple_count_offset();
-			uint16_t* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED(page);
+			uint16_t* count     = page + get_tuple_count_offset();
+			void* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED(page);
 
 			// move all the offsets after index to the front by 1 unit
-			// the last tuple offset is set to 0
-			memmove(tuple_offsets + index, tuple_offsets + index + 1, 
-				((*count) - (index + 1)) * sizeof(uint16_t));
+			// and then set the last tuple offset to 0
+			uint32_t tuple_offsets_to_copy = ((*count) - (index + 1));
+			uint32_t size_of_tuple_offset_data_type = get_size_of_tuple_offset_data_type_SLOTTED(page_size);
+			memmove(tuple_offsets + (index) * size_of_tuple_offset_data_type,
+					tuple_offsets + (index + 1) * size_of_tuple_offset_data_type,
+					tuple_offsets_to_copy * size_of_tuple_offset_data_type);
 
-			tuple_offsets[(*count) - 1] = 0;
+			set_tuple_offset_SLOTTED(page, page_size, ((*count) - 1), 0);
 
 			// decrement the tuple count
 			(*count)--;
@@ -433,9 +440,9 @@ void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* t
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			const uint16_t* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED(page);
+			uint32_t tuple_offset_for_index = get_tuple_offset_SLOTTED(page, page_size, index);
 
-			return (void*)(page + tuple_offsets[index]);
+			return (void*)(page + tuple_offset_for_index);
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
@@ -458,14 +465,14 @@ uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tupl
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			const uint16_t* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED(page);
-
 			if(count == 0)
-				// (total page size) - (memory occupied for storing the tuple count)
-				return page_size - get_tuple_count_offset();
+				// (total page size) - (memory occupied for storing the header)
+				return page_size - get_tuple_offsets_offset_SLOTTED(page);
 			else
+			{
 				// (offset of the last tuple) - (offset of the free space)
-				return tuple_offsets[count-1] - (get_tuple_offsets_offset_SLOTTED(page) + count);
+				return get_tuple_offset_SLOTTED(page, page_size, count - 1) - get_free_space_offset_SLOTTED(page, page_size);
+			}
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
