@@ -7,7 +7,7 @@
 #include<page_layout.h>
 
 // comment the below macro to test the SLOTTED_PAGE_LAYOUT
-#define TEST_FIXED_ARRAY_PAGE_LAYOUT
+//#define TEST_FIXED_ARRAY_PAGE_LAYOUT
 
 // uncomment the page size that you want to test with
 #define PAGE_SIZE     256
@@ -210,6 +210,31 @@ int main()
 	// ---------------	PRINT PAGE IN HEX
 	
 	print_page_in_hex(page, PAGE_SIZE);
+
+#if PAGE_SIZE == 256
+	// ---------------- INSERT WHEN ABOUT TO BE FULL
+
+	r = &(row){4, -35, 30, "ROHAN", "test1", "TEST1", 7.12};
+	build_tuple_from_row_struct(def, tuple_cache, r);
+	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
+
+	r = &(row){5, 36, 30, "rohan", "test2", "TEST2", 12.1996};
+	build_tuple_from_row_struct(def, tuple_cache, r);
+	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
+
+	r = &(row){6, -37, 30, "ROHan", "test3", "TEST3", 7.1996};
+	build_tuple_from_row_struct(def, tuple_cache, r);
+	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
+
+	// ---------------- PRINT PAGE
+
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	// ---------------	PRINT PAGE IN HEX
+	
+	print_page_in_hex(page, PAGE_SIZE);
+#endif
 
 	return 0;
 }
