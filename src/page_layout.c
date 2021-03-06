@@ -66,9 +66,9 @@ static inline uint32_t get_tuple_offsets_offset_SLOTTED(const void* page)
 // data_type size to use for storing tuple_offsets (1, 2 or 4)
 static inline uint8_t get_size_of_tuple_offset_data_type_SLOTTED(uint32_t page_size)
 {
-	if(page_size < (1<<8))
+	if(page_size <= (1<<8))
 		return 1;
-	else if(page_size < (1<<16))
+	else if(page_size <= (1<<16))
 		return 2;
 	else
 		return 4;
