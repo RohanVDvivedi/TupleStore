@@ -234,10 +234,19 @@ int sprint_tuple(char* str, void* tup, const tuple_def* tpl_d)
 				}
 				break;
 			}
-			case BLOB :
 			case STRING :
 			{
-				chars_written += sprintf(str + chars_written, "%s", e.STRING);
+				uint32_t size = get_element_size(tpl_d, i, tup);
+				chars_written += sprintf(str + chars_written, "\"%.*s\"", size, e.STRING);
+				break;
+			}
+			case BLOB :
+			{
+				uint32_t size = get_element_size(tpl_d, i, tup);
+				chars_written += sprintf(str + chars_written, "BLOB(%u)[", size);
+				for(uint32_t i = 0; i < size; i++)
+					chars_written += sprintf(str + chars_written, "0x%2x", (*((uint8_t*)(e.BLOB + i))));
+				chars_written += sprintf(str + chars_written, "]");
 				break;
 			}
 		}
