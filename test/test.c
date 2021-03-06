@@ -109,7 +109,7 @@ int main()
 
 	// ---------------	INSERT
 
-	r = &(row){3003, -123, 21, "rohan is a good boy", "roopa", "DVIVEDI", 99.99};
+	r = &(row){3003, -123, 11, "Rohan good", "roopa", "DVIVEDI", 99.99};
 
 	build_tuple_from_row_struct(def, tuple_cache, r);
 
@@ -117,7 +117,7 @@ int main()
 
 	// ---------------	INSERT
 
-	r = &(row){3003, -12, 16, "rohan bad boy", "rupa", "joshi", 512};
+	r = &(row){3003, -12, 10, "Rohan bad", "rupa", "joshi", 512};
 
 	build_tuple_from_row_struct(def, tuple_cache, r);
 
@@ -125,7 +125,7 @@ int main()
 
 	// ---------------`INSERT
 
-	r = &(row){3007, -12, 18, "rohan is awesome", "Rohi", "MOM+DAD", 2021};
+	r = &(row){3007, -12, 14, "Rohan awesome", "Rohi", "MOM+DAD", 2021};
 
 	build_tuple_from_row_struct(def, tuple_cache, r);
 
@@ -177,8 +177,8 @@ int main()
 
 	// ---------------	UPDATE
 
-	r = &(row){5004, -123, 65, 
-		"Project built by Rohan Dvivedi. The only coder on this project.", 
+	r = &(row){5004, -123, 58, 
+		"Project by Rohan Dvivedi. The only coder on this project.", 
 		"Roopa", "Dvivedi", 65536};
 
 	build_tuple_from_row_struct(def, tuple_cache, r);
@@ -214,15 +214,15 @@ int main()
 #if PAGE_SIZE == 256
 	// ---------------- INSERT WHEN ABOUT TO BE FULL
 
-	r = &(row){4, -35, 30, "ROHAN", "test1", "TEST1", 7.12};
+	r = &(row){4, -35, 13, "ROHAN IS ART", "test1", "TEST1", 7.12};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 
-	r = &(row){5, 36, 30, "rohan", "test2", "TEST2", 12.1996};
+	r = &(row){5, 36, 12, "Rohan is RD", "test2", "TEST2", 12.1996};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 
-	r = &(row){6, -37, 30, "ROHan", "test3", "TEST3", 7.1996};
+	r = &(row){6, -37, 3, "AN", "test3", "TEST3", 7.1996};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 
