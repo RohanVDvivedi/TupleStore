@@ -156,7 +156,7 @@ uint32_t get_minimum_tuple_size(const tuple_def* tpl_d)
 	// consider all VARIABLE_SIZED elements to be of size 0
 	uint32_t minimum_size = 0;
 	for(int i = 0; i < tpl_d->element_count; i++)
-		minimum_size += ((tuple_d->element_defs[i].size == VARIABLE_SIZED) ? 0 : tuple_d->element_defs[i].size);
+		minimum_size += ((tpl_d->element_defs[i].size == VARIABLE_SIZED) ? 0 : tpl_d->element_defs[i].size);
 	return minimum_size;
 }
 
