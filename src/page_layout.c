@@ -269,9 +269,18 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 			// set valid offset for the new tuple, such that it is adjacent to the last tuple (or the end of the page)
 			uint32_t new_tuple_offset;
 			if(index == 0)
+			{
+				if(page_size < external_tuple_size)
+					return 0;
 				new_tuple_offset = page_size - external_tuple_size;
+			}
 			else
-				new_tuple_offset = get_tuple_offset_SLOTTED(page, page_size, index - 1) - external_tuple_size;
+			{
+				uint32_t previous_tuple_offset = get_tuple_offset_SLOTTED(page, page_size, index - 1);
+				if(previous_tuple_offset < external_tuple_size)
+					return 0;
+				new_tuple_offset = previous_tuple_offset - external_tuple_size;
+			}
 
 			// this offset may not cross the new_free_space_offset
 			// new_free_space_offset = free_space_offset after adding the new element's offset
@@ -345,9 +354,18 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 			// i.e. adjacent to the previous tuple (or the end of the page)
 			uint32_t new_offset_for_index;
 			if(index == 0)
+			{
+				if(page_size < external_tuple_size)
+					return 0;
 				new_offset_for_index = page_size - external_tuple_size;
+			}
 			else
-				new_offset_for_index = get_tuple_offset_SLOTTED(page, page_size, index - 1) - external_tuple_size;
+			{
+				uint32_t previous_tuple_offset = get_tuple_offset_SLOTTED(page, page_size, index - 1);
+				if(previous_tuple_offset < external_tuple_size)
+					return 0;
+				new_offset_for_index = previous_tuple_offset - external_tuple_size;
+			}
 
 			// check if the new_offset does not over lap the succeeding tuple, if it has a succeeding tuple
 			if(index < (count - 1))
