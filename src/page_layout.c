@@ -505,7 +505,9 @@ void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 	printf("%s : size(%u) : reference_page_ids(%u) : tuples(%u",page_layout_type, page_size, ref_count, tup_count);
 	if(tpl_d->size != VARIABLE_SIZED)	// case : FIXED ARRAY PAGE
 		printf(" of %u)", get_tuple_capacity_FIXED_ARRAY(page, page_size, tpl_d->size));
-	printf(")\n\n");
+	else 								// case : SLOTTED PAGE
+		printf(") : tuple_offsets_data_type_size(%u)", get_size_of_tuple_offset_data_type_SLOTTED(page_size));
+	printf("\n\n");
 
 	for(uint8_t i = 0; i < ref_count; i++)
 		printf("\t Reference page id [%u] : %u\n\n", i, get_reference_page_id(page, i));
