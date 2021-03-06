@@ -531,8 +531,6 @@ uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tupl
 
 void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
-	char* print_buffer = malloc(tpl_d->size + (tpl_d->element_count * 32));
-
 	char* page_layout_type = "NONE";
 
 	if(tpl_d->size == VARIABLE_SIZED)	// case : SLOTTED PAGE
@@ -561,16 +559,16 @@ void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 		printf("\t Tuple %u\n", i);
 		if(exists_tuple(page, page_size, tpl_d, i))
 		{
-			print_buffer[0] = '\0';
-			sprint_tuple(print_buffer, seek_to_nth_tuple(page, page_size, tpl_d, i), tpl_d);
+			void* tuple = seek_to_nth_tuple(page, page_size, tpl_d, i);
+			char* print_buffer = malloc(get_tuple_size(tuple, tpl_d) + (tpl_d->element_count * 32));
+			sprint_tuple(print_buffer, tuple, tpl_d);
 			printf("\t\t %s\n\n", print_buffer);
+			free(print_buffer);
 		}
 		else
 			printf("\t\t %s\n\n", "DELETED");
 	}
 	printf("\n\n\n");
-
-	free(print_buffer);
 }
 
 void print_page_in_hex(const void* page, uint32_t page_size)
