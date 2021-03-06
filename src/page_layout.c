@@ -27,7 +27,7 @@ static inline uint32_t get_page_type_offset()
 	return 0; 
 }
 
-static inline uint32_t get_reference_page_count_offset()
+static inline uint32_t get_reference_pages_count_offset()
 {
 	return 1; 
 }
@@ -156,13 +156,25 @@ static inline int set_tuple_offset_SLOTTED(void* page, uint32_t page_size, uint3
 // -------------------------------------------
 // -------------------------------------------
 
-void init_page(void* page, uint8_t page_type, uint8_t reference_page_count)
+uint32_t get_minimum_page_size(uint8_t reference_pages_count)
 {
-	uint8_t* page_type_p            = page + get_page_type_offset();
-	uint8_t* reference_page_count_p = page + get_reference_page_count_offset();
+	// constant_size = sizeof(page_type) + sizeof(references_pages_count) + sizeof(tuple_count) 
+	// + reference_pages_count * sizeof(each_reference_page_id)
+	return sizeof(uint8_t) + sizeof(uint8_t) + sizeof(uint16_t) + (reference_pages_count * sizeof(uint32_t));
+}
+
+int init_page(void* page, uint32_t page_size, uint8_t page_type, uint8_t reference_pages_count)
+{
+	if(page_size < get_minimum_page_size(reference_pages_count))
+		return 0;
+
+	uint8_t* page_type_p             = page + get_page_type_offset();
+	uint8_t* reference_pages_count_p = page + get_reference_pages_count_offset();
 
 	(*page_type_p)            = page_type;
-	(*reference_page_count_p) = reference_page_count;
+	(*reference_pages_count_p) = reference_pages_count;
+
+	return 1;
 }
 
 uint8_t get_page_type(const void* page)
@@ -179,8 +191,8 @@ void set_page_type(void* page, uint8_t page_type)
 
 uint8_t get_reference_pages_count(const void* page)
 {
-	const uint8_t* reference_page_count = page + get_reference_page_count_offset();
-	return (*reference_page_count);
+	const uint8_t* reference_pages_count = page + get_reference_pages_count_offset();
+	return (*reference_pages_count);
 }
 
 uint16_t get_tuple_count(const void* page)

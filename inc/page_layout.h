@@ -25,8 +25,15 @@ page_layout get_page_layout_type(const tuple_def* tpl_d);
 
 
 
+// this is the smallest sized page that is possible (consisting of only header and 0 tuples)
+uint32_t get_minimum_page_size(uint8_t reference_pages_count);
+
+
+
 // to use any page, it must have been initialized
-void init_page(void* page, uint8_t page_type, uint8_t reference_page_count);
+// the page_size provided must be greater than the get_minimum_page_size
+// if init_page fails, then it returns 0 (else 1 for success)
+int init_page(void* page, uint32_t page_size, uint8_t page_type, uint8_t reference_pages_count);
 
 // getter and setter for the page_type that the user mentioned
 uint8_t get_page_type(const void* page);
