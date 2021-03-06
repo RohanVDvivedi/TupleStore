@@ -66,30 +66,90 @@ static inline uint32_t get_tuple_offsets_offset_SLOTTED(const void* page)
 // data_type size to use for storing tuple_offsets (1, 2 or 4)
 static inline uint8_t get_size_of_tuple_offset_data_type_SLOTTED(uint32_t page_size)
 {
-	// TODO
-	return 0; 
+	if(page_size < (1<<8))
+		return 1;
+	else if(page_size < (1<<16))
+		return 2;
+	else
+		return 4;
 }
 
-static inline uint32_t get_free_space_offset_SLOTTED(const void* page)
+static inline uint32_t get_free_space_offset_SLOTTED(const void* page, uint32_t page_size)
 {
-	// TODO
-	return 0; 
+	return get_tuple_offsets_offset_SLOTTED(page) + 
+		(get_size_of_tuple_offset_data_type_SLOTTED(page_size) * get_tuple_count(page));
 }
 
 // utility functions to get/set tuple offsets in a SLOTTED_PAGE_LAYOUT
 
 // index < get_tuple_count()
-static inline uint32_t get_tuple_offset_SLOTTED(const void* page, uint32_t index)
+static inline uint32_t get_tuple_offset_SLOTTED(const void* page, uint32_t page_size, uint32_t index)
 {
-	// TODO
-	return 0; 
+	// INDEX OUT OF BOUNDS
+	if(index >= get_tuple_count(page))
+		return 0;
+
+	const void* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED(page);
+
+	switch(get_size_of_tuple_offset_data_type_SLOTTED(page_size))
+	{
+		case 1 :
+		{
+			const uint8_t* tuple_offsets_1 = tuple_offsets;
+			return tuple_offsets_1[index];
+		}
+		case 2 :
+		{
+			const uint16_t* tuple_offsets_2 = tuple_offsets;
+			return tuple_offsets_2[index];
+		}
+		case 4 :
+		{
+			const uint32_t* tuple_offsets_4 = tuple_offsets;
+			return tuple_offsets_4[index];
+		}
+
+		// may never happen
+		default :
+			return 0;
+	}
 }
 
 // index < get_tuple_count()
-static inline uint32_t set_tuple_offset_SLOTTED(const void* page, uint32_t index, uint32_t tuple_offset)
+// return 1, on success and 0 on index OUT_OF_BOUNDS
+static inline int set_tuple_offset_SLOTTED(void* page, uint32_t page_size, uint32_t index, uint32_t tuple_offset)
 {
-	// TODO
-	return 0; 
+	// INDEX OUT OF BOUNDS
+	if(index >= get_tuple_count(page))
+		return 0;
+
+	void* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED(page);
+
+	switch(get_size_of_tuple_offset_data_type_SLOTTED(page_size))
+	{
+		case 1 :
+		{
+			uint8_t* tuple_offsets_1 = tuple_offsets;
+			tuple_offsets_1[index] = tuple_offset;
+			return 1;
+		}
+		case 2 :
+		{
+			uint16_t* tuple_offsets_2 = tuple_offsets;
+			tuple_offsets_2[index] = tuple_offset;
+			return 1;
+		}
+		case 4 :
+		{
+			uint32_t* tuple_offsets_4 = tuple_offsets;
+			tuple_offsets_4[index] = tuple_offset;
+			return 1;
+		}
+
+		// may never happen
+		default :
+			return 0;
+	}
 }
 
 // -------------------------------------------
