@@ -101,7 +101,11 @@ int main()
 
 	// ---------------  INITIALIZE PAGE
 
-	init_page(page, 3, 7);
+	if(!init_page(page, PAGE_SIZE, 3, 7, def))
+	{
+		printf("ERROR INITIALIZING THE PAGE\n");
+		exit(-1);
+	}
 
 	// ---------------	INSERT
 
