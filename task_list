@@ -1,3 +1,10 @@
+ * sie of the offsets depend on the size of the page in the SLOTTED_PAGE_LAYOUT
+ 	page_size 		-> 		bytes for storing tuple_offsets
+ 	0 -	(2^8  - 1)	->			1
+ 	0 - (2^16 - 1)	->			2
+ 	0 - (2^32 - 1)	->			4
+ 	currently we are using default of 2 bytes only for storing tuple offsets
+
  * dynamic programming approach to calculate offsets in a varibale sized tuple
 
  * in a separate repo build Btree and SST persistent datastructures using SimpleTupleStorageModel and BufferPool libraries
