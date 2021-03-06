@@ -63,6 +63,35 @@ static inline uint32_t get_tuple_offsets_offset_SLOTTED(const void* page)
 	return get_reference_page_ids_offset() + (sizeof(uint32_t) * get_reference_pages_count(page)); 
 }
 
+// data_type size to use for storing tuple_offsets (1, 2 or 4)
+static inline uint8_t get_size_of_tuple_offset_data_type_SLOTTED(uint32_t page_size)
+{
+	// TODO
+	return 0; 
+}
+
+static inline uint32_t get_free_space_offset_SLOTTED(const void* page)
+{
+	// TODO
+	return 0; 
+}
+
+// utility functions to get/set tuple offsets in a SLOTTED_PAGE_LAYOUT
+
+// index < get_tuple_count()
+static inline uint32_t get_tuple_offset_SLOTTED(const void* page, uint32_t index)
+{
+	// TODO
+	return 0; 
+}
+
+// index < get_tuple_count()
+static inline uint32_t set_tuple_offset_SLOTTED(const void* page, uint32_t index, uint32_t tuple_offset)
+{
+	// TODO
+	return 0; 
+}
+
 // -------------------------------------------
 // -------------------------------------------
 
