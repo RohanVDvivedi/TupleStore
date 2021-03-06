@@ -9,7 +9,13 @@
 // comment the below macro to test the SLOTTED_PAGE_LAYOUT
 #define TEST_FIXED_ARRAY_PAGE_LAYOUT
 
-#define PAGE_SIZE    1024
+// uncomment the page size that you want to test with
+#define PAGE_SIZE     256
+//#define PAGE_SIZE    1024
+//#define PAGE_SIZE    4096
+//#define PAGE_SIZE    8192
+//#define PAGE_SIZE    (((1U<<16) + 1))
+
 char page[PAGE_SIZE] = {};
 //#define PAGE_LAYOUT  TUPLE_ARRAY /*SLOTTED_PAGE*/
 
