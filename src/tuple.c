@@ -39,7 +39,7 @@ uint32_t get_element_offset(const tuple_def* tpl_d, uint16_t index, const void* 
 		//#define USE_DYNAMIC_PROGRAMMING_APPROACH
 
 		#ifdef USE_DYNAMIC_PROGRAMMING_APPROACH
-			
+			// TODO
 		#else	// loop over all the elements (until the index) and add their sizes
 
 			for(uint16_t i = 0; i < index; i++)
