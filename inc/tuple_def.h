@@ -111,6 +111,10 @@ void finalize_tuple_def(tuple_def* tuple_d);
 // the functions we are refering to are in the "tuple.h" header file
 int is_empty_tuple_def(const tuple_def* tuple_d);
 
+// this is the minimum size of any tuple that can be defined by the given tuple definition
+// the minimum sized tuple is the one where all variable size elements (as per the tuple definition) are 0 sized
+uint32_t get_minimum_tuple_size(const tuple_def* tpl_d);
+
 // to print a final tuple definition
 void print_tuple_def(const tuple_def* tuple_d);
 

@@ -145,6 +145,21 @@ int is_empty_tuple_def(const tuple_def* tuple_d)
 	return tuple_d->element_count == 0;
 }
 
+uint32_t get_minimum_tuple_size(const tuple_def* tpl_d)
+{
+	// if the tuple is not variable sized
+	// i.e. if the tuple is fixed sized, then return its size
+	if(tpl_d->size != VARIABLE_SIZED)
+		return tpl_d->size;
+
+	// for a VARIABLE_SIZED tuple definition
+	// consider all VARIABLE_SIZED elements to be of size 0
+	uint32_t minimum_size = 0;
+	for(int i = 0; i < tpl_d->element_count; i++)
+		minimum_size += ((tuple_d->element_defs[i].size == VARIABLE_SIZED) ? 0 : tuple_d->element_defs[i].size);
+	return minimum_size;
+}
+
 static void print_element_def(const element_def* element_d)
 {
 	printf("\t\t\t type : %s\n", type_as_string[element_d->type]);
