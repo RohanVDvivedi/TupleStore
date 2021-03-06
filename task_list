@@ -1,4 +1,7 @@
 
+ * add get_minimum_possible_page_size(uint8_t reference_pages_count, const tuple_def* tpl_d) function, and fail init_page function if it gets violated.
+ * add get_minimum_tuple_size(const tuple_def* tpl_d) that gives the size of the tuple when all the VARIABLE_SIZED elements are of 0 size.
+
  * dynamic programming approach to calculate offsets in a varibale sized tuple
 
  * in a separate repo build Btree and SST persistent datastructures using SimpleTupleStorageModel and BufferPool libraries
