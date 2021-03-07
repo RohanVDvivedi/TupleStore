@@ -33,7 +33,7 @@ void init_tuple_definition(tuple_def* def)
 	#endif
 	
 	insert_element_def(def, STRING, 6);
-	insert_element_def(def, STRING, 10);
+	insert_element_def(def,   BLOB, 10);
 	insert_element_def(def,  FLOAT, 8);
 
 	finalize_tuple_def(def);
