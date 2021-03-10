@@ -1,3 +1,1 @@
- * formalize public headers, move data access methods to the rightfull repo in Row oriented Data Indexer
-
  * dynamic programming approach to calculate offsets in a varibale sized tuple
