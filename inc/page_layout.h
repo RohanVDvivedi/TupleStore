@@ -31,8 +31,9 @@ uint32_t get_minimum_page_size(uint8_t reference_pages_count, const tuple_def* t
 
 
 // to use any page, it must have been initialized
-// the page_size provided must be greater than the get_minimum_page_size(*, *,1)
-// i.e. the page you decide to use must be able to accomodate atleast a tuple worth of data
+// the page_size provided must be greater than the get_minimum_page_size(*, *, ((tpl_d == NULL) ? 0 : 1))
+// i.e. if you have a tuple definition for the page, thet you must be able to accomodate atleast a tuple worth of data on it
+// The tuple_def parameter is not mandatory, you may pass NULL, if you are going to store only page references on the page
 // if init_page fails, then it returns 0 (else 1 for success)
 int init_page(void* page, uint32_t page_size, uint8_t page_type, uint8_t reference_pages_count, const tuple_def* tpl_d);
 
