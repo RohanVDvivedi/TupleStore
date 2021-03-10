@@ -1,4 +1,5 @@
+ * For fixed sized pages
+  * allow update_tuple to update a tuple greater than the page_count, if so happens change the page_count to updated index + 1.
+  * delete_tuple will decrement the page_count if the tuple deleted is at the end of the page, this count is then brought to the value of largest index + 1.
 
  * dynamic programming approach to calculate offsets in a varibale sized tuple
-
- * in a separate repo build Btree and SST persistent datastructures using SimpleTupleStorageModel and BufferPool libraries
