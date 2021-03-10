@@ -236,5 +236,38 @@ int main()
 	print_page_in_hex(page, PAGE_SIZE);
 #endif
 
+	// ---------------  DELTE ALL TUPLES
+
+	uint16_t tuples_to_delete = get_tuple_count(page);
+	#define START_WITH (tuples_to_delete/2)
+
+	for(uint16_t i = START_WITH; i < tuples_to_delete; i++)
+	{
+		uint16_t index = i;
+		if(exists_tuple(page, PAGE_SIZE, def, index))
+		{
+			int is_deleted = delete_tuple(page, PAGE_SIZE, def, index);
+			printf("Delete called for index %u, giving : %d\n", index, is_deleted);
+			print_page(page, PAGE_SIZE, def);
+			printf("\n\n");
+		}
+	}
+
+	tuples_to_delete = get_tuple_count(page);
+	for(uint16_t i = 0; i < tuples_to_delete; i++)
+	{
+		uint16_t index = tuples_to_delete - 1 - i;
+		if(exists_tuple(page, PAGE_SIZE, def, index))
+		{
+			int is_deleted = delete_tuple(page, PAGE_SIZE, def, index);
+			printf("Delete called for index %u, giving : %d\n", index, is_deleted);
+			print_page(page, PAGE_SIZE, def);
+			printf("\n\n");
+		}
+	}
+
+	// ---------------  UPDATE AT ARBITRARY PLACE
+
+
 	return 0;
 }
