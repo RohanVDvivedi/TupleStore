@@ -262,8 +262,9 @@ int sscan_tuple(char* str, void* tup, const tuple_def* tpl_d)
 	for(uint16_t i = 0; i < tpl_d->element_count; i++)
 	{
 		if(i)
+		{
 			sscanf(str + chars_read, ", %n", &nr);						chars_read += nr;
-
+		}
 
 		element e = seek_to_element(tpl_d, i, tup);
 		switch(tpl_d->element_defs[i].type)
