@@ -268,6 +268,15 @@ int main()
 
 	// ---------------  UPDATE AT ARBITRARY PLACE
 
+	r = &(row){3, 5, 25, "Rohan Dvivedi's, project.", "Roopa", "Vipul", 3.57};
+	build_tuple_from_row_struct(def, tuple_cache, r);
+	update_tuple(page, PAGE_SIZE, def, 2, tuple_cache);
+	print_page(page, PAGE_SIZE, def);
+
+	r = &(row){5, 7, 49, "Rohan's, project : Simple Tuple Storage Model.", "Roopa", "Vipul", 35.7};
+	build_tuple_from_row_struct(def, tuple_cache, r);
+	update_tuple(page, PAGE_SIZE, def, 0, tuple_cache);
+	print_page(page, PAGE_SIZE, def);
 
 	return 0;
 }
