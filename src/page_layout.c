@@ -337,14 +337,14 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 
 int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple)
 {
-	// index OUT_OF_BOUNDS
-	if(index >= get_tuple_count(page))
-		return 0;
-
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
+			// index OUT_OF_BOUNDS
+			if(index >= get_tuple_count(page))
+				return 0;
+
 			uint16_t count = get_tuple_count(page);
 
 			// size of tuple to be inserted
@@ -400,14 +400,25 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
-			char* is_valid = page + get_bitmap_offset_FIXED_ARRAY(page);
-			void* tuples   = page + get_tuples_offset_FIXED_ARRAY(page, page_size, tpl_d->size);
+			// index OUT_OF_BOUNDS
+			if(index >= get_tuple_capacity_FIXED_ARRAY(page, page_size, tpl_d->size))
+				return 0;
+
+			uint16_t* count = page + get_tuple_count_offset();
+			char* is_valid  = page + get_bitmap_offset_FIXED_ARRAY(page);
+			void* tuples    = page + get_tuples_offset_FIXED_ARRAY(page, page_size, tpl_d->size);
 
 			void* new_tuple_p = tuples + (index * tpl_d->size);
 
 			// copy external_tuple to the new_tuple (in the page)
 			memmove(new_tuple_p, external_tuple, tpl_d->size);
 			set_bit(is_valid, index);
+
+			// if the index (at which we updated) is greater than or equal to (tuple) count
+			// then update the (tuple) count to the (index + 1)
+			// since index must always follow => (index < count)
+			if(index >= (*count))
+				(*count) = index + 1;
 
 			return 1;
 		}
@@ -448,13 +459,33 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
-			char* is_valid = page + get_bitmap_offset_FIXED_ARRAY(page);
+			uint16_t* count = page + get_tuple_count_offset();
+			char* is_valid  = page + get_bitmap_offset_FIXED_ARRAY(page);
 
 			// indexed tuple does not exist, so can not delete it
 			if(!get_bit(is_valid, index))
 				return 0;
 
+			// mark deleted
 			reset_bit(is_valid, index);
+
+			// if the deleted tuple is the last in page
+			if(index == ((*count) - 1))
+			{
+				// loop until a valid tuple count is found
+				// i.e. least index AT which and AFTER which all the tuples are marked invalid
+				uint16_t new_count = index;
+
+				while(new_count > 0)
+				{
+					// break as soon as you find a valid tuple on a (new_count - 1)
+					if(get_bit(is_valid, new_count - 1))
+						break;
+					new_count--;
+				}
+
+				(*count) = new_count;
+			}
 
 			return 1;
 		}
