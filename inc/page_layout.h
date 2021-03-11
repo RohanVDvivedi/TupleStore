@@ -89,13 +89,6 @@ void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* t
 
 
 
-// returns true if the given page has enough space to accomodate the given tuple at the end of the page
-// a true from this function signifies that the insert_tuple() will not fail
-int can_accomodate_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
-
-
-
-
 // returns total free space inside a given page
 // free_space = total_space - space occupied by the tuples (including the deleted one's)
 uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
