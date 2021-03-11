@@ -1,1 +1,4 @@
  * dynamic programming approach to calculate offsets in a varibale sized tuple
+
+ * write a function to sort all tuples in a page, and give output in new page
+ * write utiity function to hash all elements in the tuple and five a uint32_t value, -> this function must be similar to the compare function but it takes a uint32_t (*hash_function)(void* data, uint32_t size) to generate the hash
