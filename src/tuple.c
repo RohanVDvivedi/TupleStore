@@ -85,7 +85,7 @@ void copy_element_from_tuple(const tuple_def* tpl_d, uint16_t index, const void*
 	memmove(value, ele.BLOB, get_element_size(tpl_d, index, tupl));
 }
 
-int compare_elements(void* tup1, void* tup2, const tuple_def* tpl_d, uint16_t index)
+int compare_elements(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint16_t index)
 {
 	// seek to the elements to be compared
 	element e1 = seek_to_element(tpl_d, index, tup1);
@@ -127,7 +127,7 @@ int compare_elements(void* tup1, void* tup2, const tuple_def* tpl_d, uint16_t in
 	}
 }
 
-int compare_tuples(void* tup1, void* tup2, const tuple_def* tpl_d)
+int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d)
 {
 	int compare = 0;
 	for(uint16_t i = 0; ((i < tpl_d->element_count) && (compare == 0)); i++)
@@ -143,6 +143,16 @@ int compare_tuples(void* tup1, void* tup2, const tuple_def* tpl_d)
 		compare = compare_elements(tup1, tup2, tpl_d, i);
 	}
 	return compare;
+}
+
+uint32_t hash_element(const void* tup, const tuple_def* tpl_d, uint16_t index)
+{
+
+}
+
+uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d)
+{
+
 }
 
 int sprint_tuple(char* str, void* tup, const tuple_def* tpl_d)
