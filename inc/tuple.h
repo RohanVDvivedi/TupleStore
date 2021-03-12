@@ -7,6 +7,12 @@
 // i.e. please check true for (0 == is_empty_tuple_def(const tuple_def* tpl_d))
 // prior to calling any of the following functions below
 
+// also the index must be an unsigned integral value between [0, tpl_d->element_count),
+// for the functions that are called on elements of a tuple for given a tuple definition.
+// this is the mandatory condition, since, the functions do not check this condition to be true, repetitively.
+// and the functions assume that this condition holds true while you call that particular element level function.
+
+
 // element level functions
 uint32_t get_element_size(const tuple_def* tpl_d, uint16_t index, const void* tupl);
 
@@ -34,9 +40,9 @@ int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d);
 
 
 // hash function for tuple and for an element inside the tuple at the specified index
-uint32_t hash_element(const void* tup, const tuple_def* tpl_d, uint16_t index);
+uint32_t hash_element(const void* tup, const tuple_def* tpl_d, uint16_t index, uint32_t (*hash_func)(const void* data, uint32_t size));
 
-uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d);
+uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_func)(const void* data, uint32_t size));
 
 
 // print and scan functions for tuple
