@@ -28,9 +28,15 @@ void copy_element_from_tuple(const tuple_def* tpl_d, uint16_t index, const void*
 
 
 // compare functions for tuple and for an element inside the tuple
-int compare_elements(void* tup1, void* tup2, const tuple_def* tpl_d, uint16_t index);
+int compare_elements(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint16_t index);
 
-int compare_tuples(void* tup1, void* tup2, const tuple_def* tpl_d);
+int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d);
+
+
+// hash function for tuple and for an element inside the tuple at the specified index
+uint32_t hash_element(const void* tup, const tuple_def* tpl_d, uint16_t index);
+
+uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d);
 
 
 // print and scan functions for tuple
