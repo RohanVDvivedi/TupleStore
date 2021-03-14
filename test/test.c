@@ -87,7 +87,7 @@ void build_tuple_from_row_struct(const tuple_def* def, void* tuple, const row* r
 int main()
 {
 	// allocate size of tuple definition
-	tuple_def* def = alloca(sizeof(tuple_def) + (sizeof(element_def) * 24));
+	tuple_def* def = alloca(size_of_tuple_def(16));
 
 	// initialize tuple definition and insert element definitions
 	init_tuple_definition(def);
