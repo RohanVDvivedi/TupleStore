@@ -66,7 +66,7 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 
 // inserts tuples from page_src starting with start_index and until end_index (or tuple_count - 1), it ignores NULL
 // the function returns the number of tuples inserted
-uint16_t insert_tuples_from_page(void* page, const void* page_src, uint16_t start_index, uint16_t end_index, const tuple_def* def);
+uint16_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def* def, const void* page_src, uint16_t start_index, uint16_t end_index);
 
 // insert/update tuple at the specified index,
 // index must be < get_tuple_count()
