@@ -245,6 +245,23 @@ int main()
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
 
+	// ---------------  DELETE 2 TUPLES FROM THE PAGE AND COMPACT IT
+
+	delete_tuple(temp_page, PAGE_SIZE, def, 0);
+	delete_tuple(temp_page, PAGE_SIZE, def, 2);
+
+	printf("\nBefore compaction\n");
+	printf("\nCOPY PAGE :: \n");
+	print_page(temp_page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	reinsert_all_for_page_compaction(temp_page, PAGE_SIZE, def);
+
+	printf("\nAfter compaction\n");
+	printf("\nCOPY PAGE :: \n");
+	print_page(temp_page, PAGE_SIZE, def);
+	printf("\n\n");
+
 	// ---------------  DELETE ALL TUPLES
 
 	uint16_t tuples_to_delete = get_tuple_count(page);
