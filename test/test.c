@@ -18,7 +18,8 @@
 //#define PAGE_SIZE    (((1U<<16) + 1))
 
 char page[PAGE_SIZE] = {};
-//#define PAGE_LAYOUT  TUPLE_ARRAY /*SLOTTED_PAGE*/
+
+char temp_page[PAGE_SIZE] = {};
 
 void init_tuple_definition(tuple_def* def)
 {
