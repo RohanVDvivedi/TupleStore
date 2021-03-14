@@ -238,6 +238,12 @@ int main()
 
 	// ---------------  INSERT TUPLES IN TEMP PAGE BY INDEX RANGE
 
+	uint16_t tuples_copied = insert_tuples_from_page(temp_page, PAGE_SIZE, def, page, 2, 5);
+	printf("\nTuples copied : %u\n", tuples_copied);
+	printf("\nCOPY PAGE :: \n");
+	print_page(temp_page, PAGE_SIZE, def);
+	printf("\n\n");
+
 	// ---------------  DELETE ALL TUPLES
 
 	uint16_t tuples_to_delete = get_tuple_count(page);
