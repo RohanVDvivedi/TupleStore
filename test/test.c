@@ -250,14 +250,14 @@ int main()
 	delete_tuple(temp_page, PAGE_SIZE, def, 0);
 	delete_tuple(temp_page, PAGE_SIZE, def, 2);
 
-	printf("\nBefore compaction available_size(%u)\n", get_free_space_in_page(temp_page, page_size, def));
+	printf("\nBefore compaction available_size(%u)\n", get_free_space_in_page(temp_page, PAGE_SIZE, def));
 	printf("\nCOPY PAGE :: \n");
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
 
 	reinsert_all_for_page_compaction(temp_page, PAGE_SIZE, def);
 
-	printf("\nAfter compaction available_size(%u)\n", get_free_space_in_page(temp_page, page_size, def));
+	printf("\nAfter compaction available_size(%u)\n", get_free_space_in_page(temp_page, PAGE_SIZE, def));
 	printf("\nCOPY PAGE :: \n");
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
