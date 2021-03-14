@@ -10,7 +10,8 @@
 #define TEST_FIXED_ARRAY_PAGE_LAYOUT
 
 // uncomment the page size that you want to test with
-#define PAGE_SIZE     256
+//#define PAGE_SIZE     256
+  #define PAGE_SIZE     512
 //#define PAGE_SIZE    1024
 //#define PAGE_SIZE    4096
 //#define PAGE_SIZE    8192
@@ -211,7 +212,6 @@ int main()
 	
 	print_page_in_hex(page, PAGE_SIZE);
 
-#if PAGE_SIZE == 256
 	// ---------------- INSERT WHEN ABOUT TO BE FULL
 
 	r = &(row){4, -35, 13, "ROHAN IS ART", "test1", "TEST1", 7.12};
@@ -234,9 +234,10 @@ int main()
 	// ---------------	PRINT PAGE IN HEX
 	
 	print_page_in_hex(page, PAGE_SIZE);
-#endif
 
-	// ---------------  DELTE ALL TUPLES
+	// ---------------  INSERT TUPLES IN TEMP PAGE BY INDEX RANGE
+
+	// ---------------  DELETE ALL TUPLES
 
 	uint16_t tuples_to_delete = get_tuple_count(page);
 	#define START_WITH (tuples_to_delete/2)
