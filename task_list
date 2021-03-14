@@ -1,1 +1,4 @@
+ * copy_first_n_tuples_from
+ * get_sorted_tuples_from
+
  * dynamic programming approach to calculate offsets in a varibale sized tuple
