@@ -581,13 +581,28 @@ uint16_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def
 void reinsert_all_for_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	uint16_t tuple_count = get_tuple_count(page);
-	for(uint16_t read_index = 0, update_index = 0; read_index < tuple_count; read_index++)
+
+	// no compaction required if the tuple count is 0
+	if(tuple_count == 0)
+		return;
+
+	uint16_t update_index = 0;
+	
+	// move existing tuples to the front
+	for(uint16_t read_index = 0; read_index < tuple_count; read_index++)
 	{
 		if(exists_tuple(page, page_size, tpl_d, read_index))
 		{
 			void* tuple = seek_to_nth_tuple(page, page_size, tpl_d, read_index);
 			update_tuple(page, page_size, tpl_d, update_index++, tuple);
 		}
+	}
+
+	// discard excess tuples from end
+	for(; update_index < tuple_count; update_index++)
+	{
+		if(exists_tuple(page, page_size, tpl_d, update_index))
+			delete_tuple(page, page_size, tpl_d, update_index);
 	}
 }
 
