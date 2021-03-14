@@ -578,6 +578,19 @@ uint16_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def
 	return tuples_copied;
 }
 
+void reinsert_all_for_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	uint16_t tuple_count = get_tuple_count(page);
+	for(uint16_t read_index = 0, update_index = 0; read_index < tuple_count; read_index++)
+	{
+		if(exists_tuple(page, page_size, tpl_d, read_index))
+		{
+			void* tuple = seek_to_nth_tuple(page, page_size, tpl_d, read_index);
+			update_tuple(page, page_size, tpl_d, update_index++, tuple);
+		}
+	}
+}
+
 uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	uint16_t count = get_tuple_count(page);

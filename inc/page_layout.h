@@ -93,6 +93,14 @@ void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* t
 
 
 
+// reinserts all the elements in the tuple to compact the page
+// this function will get rid of space that was occupied by the deleted tuples
+// and the spaces that is surrounding the existing tuple in the page
+void reinsert_all_for_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d);
+
+
+
+
 // returns total free space inside a given page
 // free_space = total_space - space occupied by the tuples (including the deleted one's)
 uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
