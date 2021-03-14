@@ -550,6 +550,33 @@ void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* t
 	}
 }
 
+uint16_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* page_src, uint16_t start_index, uint16_t end_index)
+{
+	// copy is not possible if
+	// start_index is greater than end_index or the last_index in the tuple
+	if((start_index > end_index) || (start_index >= tuple_count))
+		return 0;
+
+	uint16_t tuple_count = get_tuple_count(page_src);
+	if(end_index >= tuple_count)
+		end_index = tuple_count - 1;
+
+	uint16_t tuples_copied = 0;
+	
+	for(uint16_t index = start_index; index <= end_index; index++, tuples_copied++)
+	{
+		if(exists(page_src, page_size, tpl_d, index))
+		{
+			void* tuple = seek_to_nth_tuple(page_src, page_size, tpl_d, index);
+			int inserted = insert_tuple(page, page_size, tpl_d, tuple);
+			if(!inserted)
+				break;
+		}
+	}
+
+	return tuples_copied;
+}
+
 uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	uint16_t count = get_tuple_count(page);
