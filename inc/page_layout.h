@@ -64,6 +64,10 @@ int set_reference_page_id(void* page, uint8_t index, uint32_t page_id);
 // to insert a tuple at the end in the given page
 int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
+// inserts tuples from page_src starting with start_index and until end_index (or tuple_count - 1), it ignores NULL
+// the function returns the number of tuples inserted
+uint16_t insert_tuples_from_page(void* page, const void* page_src, uint16_t start_index, uint16_t end_index, const tuple_def* def);
+
 // insert/update tuple at the specified index,
 // index must be < get_tuple_count()
 // if ((index >= get_tuple_count()) || capacity_at_index < incomming_tuple_size), insert fails with 0
