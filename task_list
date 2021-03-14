@@ -1,4 +1,4 @@
- * copy_first_n_tuples_from
- * get_sorted_tuples_from
+ * insert_tuples_from_page(void* page, const void* page_src, uint32_t start_index, uint32_t end_index, const tuple_def* def);
+ * insert_sorted_tuples_from_page(void* page, const void* page_src, uint32_t start_index, uint32_t end_index, const tuple_def* def);
 
  * dynamic programming approach to calculate offsets in a varibale sized tuple
