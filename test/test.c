@@ -33,7 +33,7 @@ void init_tuple_definition(tuple_def* def)
 	#ifndef TEST_FIXED_ARRAY_PAGE_LAYOUT
 		insert_element_def(def, STRING, VARIABLE_SIZED);
 	#endif
-	
+
 	insert_element_def(def, STRING, 6);
 	insert_element_def(def,   BLOB, 10);	// make this a STRING datatype to print a readable output
 	insert_element_def(def,  FLOAT, 8);
@@ -238,6 +238,7 @@ int main()
 
 	// ---------------  INSERT TUPLES IN TEMP PAGE BY INDEX RANGE
 
+	init_page(temp_page, PAGE_SIZE, 3, 0, def);
 	uint16_t tuples_copied = insert_tuples_from_page(temp_page, PAGE_SIZE, def, page, 2, 5);
 	printf("\nTuples copied : %u\n", tuples_copied);
 	printf("\nCOPY PAGE :: \n");
