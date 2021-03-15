@@ -217,14 +217,17 @@ int main()
 
 	r = &(row){4, -35, 13, "ROHAN IS ART", "test1", "TEST1", 7.12};
 	build_tuple_from_row_struct(def, tuple_cache, r);
+	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 
 	r = &(row){5, 36, 12, "Rohan is RD", "test2", "TEST2", 12.1996};
 	build_tuple_from_row_struct(def, tuple_cache, r);
+	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 
 	r = &(row){6, -37, 3, "AN", "test3", "TEST3", 7.1996};
 	build_tuple_from_row_struct(def, tuple_cache, r);
+	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 
 	// ---------------- PRINT PAGE
