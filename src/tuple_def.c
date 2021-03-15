@@ -101,12 +101,8 @@ int insert_element_def(tuple_def* tuple_d, element_type ele_type, uint32_t eleme
 {
 	// for a variable sized element, the size is given by 
 	// a preceding element of UINT data type of size (1,2, or 4)
-	if(element_size == VARIABLE_SIZED)
-	{
-		if( ( tuple_d->element_defs[tuple_d->element_count - 1].type != UINT )
-		 	|| ( tuple_d->element_defs[tuple_d->element_count - 1].size > 4 ) )
-			return 0;
-	}
+	if((element_size == VARIABLE_SIZED) && (tuple_d->element_count < 1 || !is_size_specifying_element(tuple_d, tuple_d->element_count - 1)))
+		return 0;
 
 	// if an element is not of appropriate size it can not be initialized
 	element_def* new_element_def = tuple_d->element_defs + tuple_d->element_count;
@@ -130,7 +126,7 @@ void finalize_tuple_def(tuple_def* tuple_d)
 {
 	for(int i = 0; i < tuple_d->element_count; i++)
 	{
-		if(tuple_d->element_defs[i].size == VARIABLE_SIZED)
+		if(is_variable_sized_element(tuple_d, i))
 		{
 			tuple_d->size = VARIABLE_SIZED;
 			return;
@@ -182,7 +178,7 @@ uint32_t get_minimum_tuple_size(const tuple_def* tpl_d)
 	// consider all VARIABLE_SIZED elements to be of size 0
 	uint32_t minimum_size = 0;
 	for(int i = 0; i < tpl_d->element_count; i++)
-		minimum_size += ((tpl_d->element_defs[i].size == VARIABLE_SIZED) ? 0 : tpl_d->element_defs[i].size);
+		minimum_size += (is_variable_sized_element(tpl_d, i) ? 0 : tpl_d->element_defs[i].size);
 	return minimum_size;
 }
 
