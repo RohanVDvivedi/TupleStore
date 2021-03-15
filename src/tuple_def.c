@@ -145,6 +145,32 @@ int is_empty_tuple_def(const tuple_def* tuple_d)
 	return tuple_d->element_count == 0;
 }
 
+int is_variable_sized_element(const tuple_def* tuple_d, uint16_t index)
+{
+	// index out of bounds
+	if(index >= tuple_d->element_count)
+		return 0;
+
+	return tuple_d->element_defs[index].size == VARIABLE_SIZED;
+}
+
+int is_size_specifying_element(const tuple_def* tuple_d, uint16_t index)
+{
+	// there must be atleast 2 elements, so that one element specifies the size of the other
+	if(tuple_d->element_count < 2)
+		return 0;
+
+	// index out of bounds
+	if(index >= tuple_d->element_count)
+		return 0;
+
+	// returns 1, if the next element is a variable sized element
+	// and the index-ed element is of type UINT, with size lesser than 8
+	return (tuple_d->element_defs[index].type == UINT)
+		&& (tuple_d->element_defs[index].size <= 4)
+		&& is_variable_sized_element(tuple_d, index + 1);
+}
+
 uint32_t get_minimum_tuple_size(const tuple_def* tpl_d)
 {
 	// if the tuple is not variable sized
