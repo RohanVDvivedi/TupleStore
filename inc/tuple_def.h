@@ -113,9 +113,6 @@ void finalize_tuple_def(tuple_def* tuple_d);
 // the functions we are refering to are in the "tuple.h" header file
 int is_empty_tuple_def(const tuple_def* tuple_d);
 
-// returns true if the element at the given index will be a variable sized element
-int is_variable_sized_element(const tuple_def* tuple_d, uint16_t index);
-
 // returns 1, if the element at the given index will be responsible
 // for specifing the size of a VARIABLE_SIZED tuple element at (index + 1).
 int is_size_specifying_element(const tuple_def* tuple_d, uint16_t index);

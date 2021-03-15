@@ -135,9 +135,8 @@ int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d)
 		// SKIP THE ELEMENT IF IT COMES BEFORE A VARIABLE SIZED ELEMENT, SINCE THIS ELEMENT IS NOT ACTUAL DATA
 		// IT IS ONLY NEEDED TO READ THE SIZE OF THE VARIABLE SIZED DATA
 
-		// only if the next element index (index + 1) is not out of bounds
-		// we may check whether the element at the current index could be denoting the size of the succeeding VARIABLE_SIZED element
-		if(((i + 1) < tpl_d->element_count) && (tpl_d->element_defs[i + 1].size == VARIABLE_SIZED))
+		// do not compare a size specifying element
+		if(is_size_specifying_element(tpl_d, i))
 			continue;
 
 		compare = compare_elements(tup1, tup2, tpl_d, i);
@@ -169,9 +168,8 @@ uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_fun
 		// SKIP THE ELEMENT IF IT COMES BEFORE A VARIABLE SIZED ELEMENT, SINCE THIS ELEMENT IS NOT ACTUAL DATA
 		// IT IS ONLY NEEDED TO READ THE SIZE OF THE VARIABLE SIZED DATA
 
-		// only if the next element index (index + 1) is not out of bounds
-		// we may check whether the element at the current index could be denoting the size of the succeeding VARIABLE_SIZED element
-		if(((i + 1) < tpl_d->element_count) && (tpl_d->element_defs[i + 1].size == VARIABLE_SIZED))
+		// do not hash a size specifying element
+		if(is_size_specifying_element(tpl_d, i))
 			continue;
 
 		hash_value += hash_element(tup, tpl_d, i, hash_func);
