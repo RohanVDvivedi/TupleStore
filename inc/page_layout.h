@@ -64,6 +64,10 @@ int set_reference_page_id(void* page, uint8_t index, uint32_t page_id);
 // to insert a tuple at the end in the given page
 int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
+// returns 1, on success, if insert_tuple function would return with a success, without the actual insert happening
+// i.e. for simplicity it returns get_free_space_in_page() >= get_size(external_tuple)
+int can_accomodate_tuple_insert(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
+
 // inserts tuples from page_src starting with start_index and until end_index (or tuple_count - 1), it ignores NULL
 // the function returns the number of tuples copied
 uint16_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def* def, const void* page_src, uint16_t start_index, uint16_t end_index);
