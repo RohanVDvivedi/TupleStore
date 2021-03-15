@@ -636,6 +636,21 @@ uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tupl
 	}
 }
 
+int can_accomodate_tuple_insert(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
+{
+	uint32_t free_space_in_page = get_free_space_in_page(page, page_size, tpl_d);
+
+	uint32_t external_tuple_size = get_tuple_size(tpl_d, external_tuple);
+
+	uint32_t external_tuple_size_on_page = external_tuple_size;
+
+	// there is additional space required by the offset of the tuple in the page for a SLOTTED_PAGE_LAYOUT 
+	if(get_page_layout_type(tpl_d) == SLOTTED_PAGE_LAYOUT)
+		external_tuple_size_on_page += get_size_of_tuple_offset_data_type_SLOTTED(page_size);
+
+	return free_space_in_page >= external_tuple_size_on_page;
+}
+
 void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	char* page_layout_type = "NONE";
