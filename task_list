@@ -3,4 +3,6 @@
 
  * provide a tuple_as_struct interface to bridge the gap between Cutlery data structures and the tuple from SimpleTupleStorageModel
 
+ * implement can_accomodate_tuple_in_page function 
+
  * dynamic programming approach to calculate offsets in a varibale sized tuple
