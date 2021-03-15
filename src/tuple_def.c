@@ -126,7 +126,7 @@ void finalize_tuple_def(tuple_def* tuple_d)
 {
 	for(int i = 0; i < tuple_d->element_count; i++)
 	{
-		if(is_variable_sized_element(tuple_d, i))
+		if(tuple_d->element_defs[i].size == VARIABLE_SIZED)
 		{
 			tuple_d->size = VARIABLE_SIZED;
 			return;
@@ -139,15 +139,6 @@ int is_empty_tuple_def(const tuple_def* tuple_d)
 	// an empty tuple definition is of no use to us
 	// an empty tuple definition can not represent any set of tuples
 	return tuple_d->element_count == 0;
-}
-
-int is_variable_sized_element(const tuple_def* tuple_d, uint16_t index)
-{
-	// index out of bounds
-	if(index >= tuple_d->element_count)
-		return 0;
-
-	return tuple_d->element_defs[index].size == VARIABLE_SIZED;
 }
 
 int is_size_specifying_element(const tuple_def* tuple_d, uint16_t index)
@@ -164,7 +155,7 @@ int is_size_specifying_element(const tuple_def* tuple_d, uint16_t index)
 	// and the index-ed element is of type UINT, with size lesser than 8
 	return (tuple_d->element_defs[index].type == UINT)
 		&& (tuple_d->element_defs[index].size <= 4)
-		&& is_variable_sized_element(tuple_d, index + 1);
+		&& (tuple_d->element_defs[index + 1].size == VARIABLE_SIZED);
 }
 
 uint32_t get_minimum_tuple_size(const tuple_def* tpl_d)
@@ -178,7 +169,7 @@ uint32_t get_minimum_tuple_size(const tuple_def* tpl_d)
 	// consider all VARIABLE_SIZED elements to be of size 0
 	uint32_t minimum_size = 0;
 	for(int i = 0; i < tpl_d->element_count; i++)
-		minimum_size += (is_variable_sized_element(tpl_d, i) ? 0 : tpl_d->element_defs[i].size);
+		minimum_size += tpl_d->element_defs[i].size;
 	return minimum_size;
 }
 
