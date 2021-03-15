@@ -623,9 +623,11 @@ uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tupl
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
-			uint16_t capacity = get_tuple_capacity_FIXED_ARRAY(page, page_size, tpl_d->size);
+			uint32_t first_tuple = get_tuples_offset_FIXED_ARRAY(page, page_size, tpl_d->size);
 
-			return (capacity - count) * tpl_d->size;
+			uint32_t end_of_tuples_offset = first_tuple + (get_tuple_count(page) * tpl_d->size);
+
+			return page_size - end_of_tuples_offset;
 		}
 		default :
 		{
