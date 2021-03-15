@@ -175,16 +175,16 @@ uint32_t get_minimum_page_size(uint8_t reference_pages_count, const tuple_def* t
 			uint32_t minimum_size_temp_2 = minimum_size_temp + (tuple_count * 2);
 			uint32_t minimum_size_temp_4 = minimum_size_temp + (tuple_count * 4);
 
-			if(minimum_size_temp_1 < (1<<8))
+			if(minimum_size_temp_1 <= (1<<8))
 				return minimum_size_temp_1;
-			else if(minimum_size_temp_2 < (1<<16))
+			else if(minimum_size_temp_2 <= (1<<16))
 				return minimum_size_temp_2;
 			else
 				return minimum_size_temp_4;
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
-			uint32_t is_valid_bitmap_size = (tuple_count/8) + ((tuple_count%8)?1:0);
+			uint32_t is_valid_bitmap_size = bitmap_size_in_bytes(tuple_count);
 			return constant_size + is_valid_bitmap_size + (tuple_count * tpl_d->size);
 		}
 		default :
