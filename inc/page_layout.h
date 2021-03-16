@@ -109,6 +109,13 @@ void reinsert_all_for_page_compaction(void* page, uint32_t page_size, const tupl
 // free_space = total_space - space occupied by the tuples (including the deleted one's)
 uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
+// returns the space that is used on this page for storing the tuples between indices start_index and end_index
+// this is the space excluding the deleted tuples and the extra left over space between tuples (which is also left over from deleted tuples)
+// it is the core data memory used on the page for the tuples, excluding all the unused space
+// it also does not include the bitmap size required for storing the tuples (for FIXED_ARRAY_PAGE_LAYOUT)
+// essentially this is the ammount of free space required to copy the intended tuples from one page to another
+uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t start_index, uint16_t end_index);
+
 
 
 

@@ -636,6 +636,43 @@ uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tupl
 	}
 }
 
+uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t start_index, uint16_t end_index)
+{
+	uint16_t tuple_count = get_tuple_count(page);
+
+	// 0 bytes are occupied by 0 tuples
+	if(tuple_count == 0)
+		return 0;
+
+	// start_index is greater than end_index or the last_index in the tuple
+	if((start_index > end_index) || (start_index >= tuple_count))
+		return 0;
+
+	if(end_index >= tuple_count)
+		end_index = tuple_count - 1;
+
+	uint32_t existing_tuple_count = 0;
+	uint32_t tuples_data_size = 0;
+
+	// sum the sizes of all the tuples in the page
+	for(uint16_t index = start_index; index <= end_index; index++)
+	{
+		if(exists_tuple(page, page_size, tpl_d, index))
+		{
+			void* tuple = seek_to_nth_tuple(page, page_size, tpl_d, index);
+			tuples_data_size += get_tuple_size(tpl_d, tuple);
+
+			existing_tuple_count++;
+		}
+	}
+
+	// there is additional space required by the offset of the tuple in the page for a SLOTTED_PAGE_LAYOUT 
+	if(get_page_layout_type(tpl_d) == SLOTTED_PAGE_LAYOUT)
+		tuples_data_size += (existing_tuple_count * get_size_of_tuple_offset_data_type_SLOTTED(page_size));
+
+	return tuples_data_size;
+}
+
 int can_accomodate_tuple_insert(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
 	uint32_t free_space_in_page = get_free_space_in_page(page, page_size, tpl_d);
