@@ -2,4 +2,6 @@
  * insert_sorted_tuples_from_page(void* page, const void* page_src, uint32_t start_index, uint32_t end_index, const tuple_def* def);
  * provide a tuple_object struct to bridge the gap between Cutlery data structures and the tuple from SimpleTupleStorageModel
 
+ * implement get_space_occupied_by_tuples(start_index, end_index);
+
  * dynamic programming approach to calculate offsets in a variable sized tuple
