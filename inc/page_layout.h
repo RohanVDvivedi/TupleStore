@@ -102,7 +102,7 @@ const void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_
 
 // returns 1, if the page_compaction is not a NOOP
 // this function is a NOOP for FIXED_ARRAY_PAGE_LAYOUT
-void run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d);
+int run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 
 
@@ -115,7 +115,7 @@ uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tupl
 // this is the space excluding the deleted tuples and the extra left over space between tuples (which is also left over from deleted tuples)
 // it is the core data memory used on the page for the tuples, excluding all the unused space
 // it also does not include the bitmap size required for storing the tuples (for FIXED_ARRAY_PAGE_LAYOUT)
-// essentially this is the ammount of free space required to copy the intended tuples from one page to another
+// essentially this is the ammount of free space required to copy the intended tuples from one page to another, ignoring the deleted ones
 uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t start_index, uint16_t end_index);
 
 
