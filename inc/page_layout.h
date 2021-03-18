@@ -61,29 +61,32 @@ int set_reference_page_id(void* page, uint8_t index, uint32_t page_id);
 
 
 // insert and delete operation return 1 upon success, else they return 0 for failure
+
 // to insert a tuple at the end in the given page
+// fails if the page is out of space
 int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
 // returns 1, on success, if insert_tuple function would return with a success, without the actual insert happening
 // i.e. for simplicity it returns get_free_space_in_page() >= get_size(external_tuple)
 int can_accomodate_tuple_insert(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
-// inserts tuples from page_src starting with start_index and until end_index (or tuple_count - 1), it ignores NULL
+// inserts tuples from page_src starting with start_index and until end_index (or tuple_count - 1), 
+// it ignore copying all deleted tuples
 // the function returns the number of tuples copied
 uint16_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def* def, const void* page_src, uint16_t start_index, uint16_t end_index);
 
-// insert/update tuple at the specified index,
+// update tuple at the specified index, fails if the page id out of space, or if the index is out of bounds
 // index must be < get_tuple_count()
-// if ((index >= get_tuple_count()) || capacity_at_index < incomming_tuple_size), insert fails with 0
 int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple);
 
-// to remove a tuple at the given index in the page
-// if index >= get_tuple_count(), delete fails with 0
+// to delete a tuple at the given index in the page
+// delete fails with 0, if index >= get_tuple_count()
+// index must be < get_tuple_count()
 int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
 
 // to check if a tuple at the given index in the page exists
 // 1 means the tuple exists, else if 0 then the tuple does not exists
-// it returns 0, also when the tuple index is out of bounds, i.e. (index >= get_tuple_count())
+// it also returns 0, also when the tuple index is out of bounds, i.e. (index >= get_tuple_count())
 // or if it is deleted
 int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
 
@@ -92,15 +95,14 @@ int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, u
 
 // returns NULL on failure, when the tuple index is out of bounds, i.e. (index >= get_tuple_count())
 // returns pointer to nth tuple in the page
-void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+const void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
 
 
 
 
-// reinserts all the elements in the tuple to compact the page
-// this function will get rid of space that was occupied by the deleted tuples
-// and the spaces that is surrounding the existing tuple in the page
-void reinsert_all_for_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d);
+// returns 1, if the page_compaction is not a NOOP
+// this function is a NOOP for FIXED_ARRAY_PAGE_LAYOUT
+void run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 
 
