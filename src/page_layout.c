@@ -394,14 +394,14 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 
 int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple)
 {
+	// index OUT_OF_BOUNDS
+	if(index >= get_tuple_count(page))
+		return 0;
+
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			// index OUT_OF_BOUNDS
-			if(index >= get_tuple_count(page))
-				return 0;
-
 			uint16_t count = get_tuple_count(page);
 
 			// size of tuple to be inserted
@@ -457,10 +457,6 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
-			// index OUT_OF_BOUNDS
-			if(index >= get_tuple_capacity_FIXED_ARRAY(page, page_size, tpl_d->size))
-				return 0;
-
 			uint16_t* count = page + get_tuple_count_offset();
 			char* is_valid  = page + get_bitmap_offset_FIXED_ARRAY(page);
 			void* tuples    = page + get_tuples_offset_FIXED_ARRAY(page, page_size, tpl_d->size);
