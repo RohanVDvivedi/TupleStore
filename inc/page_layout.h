@@ -95,7 +95,7 @@ int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, u
 
 // returns NULL on failure, when the tuple index is out of bounds, i.e. (index >= get_tuple_count())
 // returns pointer to nth tuple in the page
-const void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+const void* get_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
 
 
 

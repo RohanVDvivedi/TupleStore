@@ -525,7 +525,7 @@ int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, u
 	}
 }
 
-const void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
+const void* get_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
 	// index OUT_OF_BOUNDS
 	if(index >= get_tuple_count(page))
@@ -570,7 +570,7 @@ uint16_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def
 	{
 		if(exists_tuple(page_src, page_size, tpl_d, index))
 		{
-			const void* tuple = seek_to_nth_tuple(page_src, page_size, tpl_d, index);
+			const void* tuple = get_nth_tuple(page_src, page_size, tpl_d, index);
 			int inserted = insert_tuple(page, page_size, tpl_d, tuple);
 			if(!inserted)
 				break;
@@ -651,7 +651,7 @@ uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, cons
 	{
 		if(exists_tuple(page, page_size, tpl_d, index))
 		{
-			const void* tuple = seek_to_nth_tuple(page, page_size, tpl_d, index);
+			const void* tuple = get_nth_tuple(page, page_size, tpl_d, index);
 			tuples_data_size += get_tuple_size(tpl_d, tuple);
 
 			existing_tuple_count++;
@@ -710,7 +710,7 @@ void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 		printf("\t Tuple %u\n", i);
 		if(exists_tuple(page, page_size, tpl_d, i))
 		{
-			const void* tuple = seek_to_nth_tuple(page, page_size, tpl_d, i);
+			const void* tuple = get_nth_tuple(page, page_size, tpl_d, i);
 			char* print_buffer = malloc(get_tuple_size(tuple, tpl_d) + (tpl_d->element_count * 32));
 			sprint_tuple(print_buffer, tuple, tpl_d);
 			printf("\t\t %s\n\n", print_buffer);
