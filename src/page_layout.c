@@ -340,7 +340,7 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 				return 0;
 			
 			uint32_t new_tuple_offset = get_end_of_free_space_offset_SLOTTED(page, page_size) - external_tuple_size;
-			uint32_t new_free_space_offset = get_free_space_offset_SLOTTED(page, page_size) + get_data_type_size_for_page_offsets(page, page_size);
+			uint32_t new_free_space_offset = get_free_space_offset_SLOTTED(page, page_size) + get_data_type_size_for_page_offsets(page_size);
 
 			// if the new_free_space_offset violated the order with the newly added tuple_offset
 			if(new_free_space_offset > new_tuple_offset)
@@ -406,11 +406,9 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			uint16_t count = get_tuple_count(page);
-
 			// calculate the offset and the size of the old tuple that exists at the index
 			uint32_t old_offset_for_index = get_tuple_offset_SLOTTED(page, page_size, index);
-			uint32_t old_tuple_size;
+			uint32_t old_tuple_size = 0;
 			if(old_offset_for_index != 0)
 				old_tuple_size = get_tuple_size(tpl_d, page + old_offset_for_index);
 
@@ -438,10 +436,21 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 			if(old_offset_for_index != 0 && old_tuple_size >= external_tuple_size)
 				new_offset_for_index = old_offset_for_index;
 			else
-			{
-				// TODO
-				// allocate the new slot of size external_tuple_size
-				// forget the old one
+			{	// new allocation
+
+				// new_offset_for_index can not be negative
+				if(get_end_of_free_space_offset_SLOTTED(page, page_size) < external_tuple_size)
+					return 0;
+				
+				new_offset_for_index = get_end_of_free_space_offset_SLOTTED(page, page_size) - external_tuple_size;
+				uint32_t new_free_space_offset = get_free_space_offset_SLOTTED(page, page_size) + get_data_type_size_for_page_offsets(page_size);
+
+				// if the new_free_space_offset violated the order with the newly added tuple_offset
+				if(new_free_space_offset > new_offset_for_index)
+					return 0;
+
+				// decrement the end_of_free_space_offset, to create a stack allocation, for the newly added element
+				set_end_of_free_space_offset_SLOTTED(page, page_size, new_offset_for_index);
 			}
 
 
