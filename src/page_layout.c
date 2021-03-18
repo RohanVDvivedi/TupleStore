@@ -85,7 +85,63 @@ static inline uint32_t get_free_space_offset_SLOTTED(const void* page, uint32_t 
 	return get_tuple_offsets_offset_SLOTTED(page, page_size) + (get_tuple_count(page) * get_data_type_size_for_page_offsets(page_size));
 }
 
-// utility functions to get/set tuple offsets in a SLOTTED_PAGE_LAYOUT
+// utility functions to get/set tuple offsets and end_of_free_space_offset in a SLOTTED_PAGE_LAYOUT
+
+static inline uint32_t get_end_of_free_space_offset_SLOTTED(const void* page, uint32_t page_size)
+{
+	const void* end_of_free_space_offset = page + get_end_of_free_space_offset_offset_SLOTTED(page);
+
+	switch(get_data_type_size_for_page_offsets(page_size))
+	{
+		case 1 :
+		{
+			const uint8_t* end_of_free_space_offset_1 = end_of_free_space_offset;
+			return (*(end_of_free_space_offset_1));
+		}
+		case 2 :
+		{
+			const uint16_t* end_of_free_space_offset_2 = end_of_free_space_offset;
+			return (*(end_of_free_space_offset_2));
+		}
+		case 4 :
+		{
+			const uint32_t* end_of_free_space_offset_4 = end_of_free_space_offset;
+			return (*(end_of_free_space_offset_4));
+		}
+
+		// may never happen
+		default :
+			return 0;
+	}
+}
+
+static inline int set_end_of_free_space_offset_SLOTTED(const void* page, uint32_t page_size, uint32_t end_of_free_space_offset)
+{
+	const void* end_of_free_space_offset_p = page + get_end_of_free_space_offset_offset_SLOTTED(page);
+
+	switch(get_data_type_size_for_page_offsets(page_size))
+	{
+		case 1 :
+		{
+			*((uint8_t*)(end_of_free_space_offset_p)) = end_of_free_space_offset;
+			return 1;
+		}
+		case 2 :
+		{
+			*((uint16_t*)(end_of_free_space_offset_p)) = end_of_free_space_offset;
+			return 1;
+		}
+		case 4 :
+		{
+			*((uint32_t*)(end_of_free_space_offset_p)) = end_of_free_space_offset;
+			return 1;
+		}
+
+		// may never happen
+		default :
+			return 0;
+	}
+}
 
 // index < get_tuple_count()
 static inline uint32_t get_tuple_offset_SLOTTED(const void* page, uint32_t page_size, uint32_t index)
@@ -440,18 +496,10 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			uint16_t* count     = page + get_tuple_count_offset();
-			void* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED(page, page_size);
+			uint16_t* count = page + get_tuple_count_offset();
 
-			// move all the offsets after index to the front by 1 unit
-			// and then set the last tuple offset to 0
-			uint32_t tuple_offsets_to_copy = ((*count) - (index + 1));
-			uint32_t size_of_tuple_offset_data_type = get_data_type_size_for_page_offsets(page_size);
-			memmove(tuple_offsets + (index) * size_of_tuple_offset_data_type,
-					tuple_offsets + (index + 1) * size_of_tuple_offset_data_type,
-					tuple_offsets_to_copy * size_of_tuple_offset_data_type);
-
-			set_tuple_offset_SLOTTED(page, page_size, ((*count) - 1), 0);
+			// set the tuple offset of the tuple to be deleted to 0
+			set_tuple_offset_SLOTTED(page, page_size, index, 0);
 
 			// decrement the tuple count
 			(*count)--;
@@ -461,7 +509,7 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
 			uint16_t* count = page + get_tuple_count_offset();
-			char* is_valid  = page + get_bitmap_offset_FIXED_ARRAY(page);
+			char* is_valid = page + get_bitmap_offset_FIXED_ARRAY(page);
 
 			// indexed tuple does not exist, so can not delete it
 			if(!get_bit(is_valid, index))
