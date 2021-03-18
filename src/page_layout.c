@@ -523,7 +523,7 @@ int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, u
 	}
 }
 
-void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
+const void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
 	// index OUT_OF_BOUNDS
 	if(index >= get_tuple_count(page))
@@ -535,13 +535,13 @@ void* seek_to_nth_tuple(const void* page, uint32_t page_size, const tuple_def* t
 		{
 			uint32_t tuple_offset_for_index = get_tuple_offset_SLOTTED(page, page_size, index);
 
-			return (void*)(page + tuple_offset_for_index);
+			return page + tuple_offset_for_index;
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
 			const void* tuples = page + get_tuples_offset_FIXED_ARRAY(page, page_size, tpl_d->size);
 
-			return (void*)(tuples + (index * tpl_d->size));
+			return tuples + (index * tpl_d->size);
 		}
 		default :
 		{
@@ -568,7 +568,7 @@ uint16_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def
 	{
 		if(exists_tuple(page_src, page_size, tpl_d, index))
 		{
-			void* tuple = seek_to_nth_tuple(page_src, page_size, tpl_d, index);
+			const void* tuple = seek_to_nth_tuple(page_src, page_size, tpl_d, index);
 			int inserted = insert_tuple(page, page_size, tpl_d, tuple);
 			if(!inserted)
 				break;
@@ -578,7 +578,7 @@ uint16_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def
 	return tuples_copied;
 }
 
-void reinsert_all_for_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d)
+void run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	uint16_t tuple_count = get_tuple_count(page);
 
@@ -593,7 +593,7 @@ void reinsert_all_for_page_compaction(void* page, uint32_t page_size, const tupl
 	{
 		if(exists_tuple(page, page_size, tpl_d, read_index))
 		{
-			void* tuple = seek_to_nth_tuple(page, page_size, tpl_d, read_index);
+			const void* tuple = seek_to_nth_tuple(page, page_size, tpl_d, read_index);
 			update_tuple(page, page_size, tpl_d, update_index++, tuple);
 		}
 	}
@@ -659,7 +659,7 @@ uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, cons
 	{
 		if(exists_tuple(page, page_size, tpl_d, index))
 		{
-			void* tuple = seek_to_nth_tuple(page, page_size, tpl_d, index);
+			const void* tuple = seek_to_nth_tuple(page, page_size, tpl_d, index);
 			tuples_data_size += get_tuple_size(tpl_d, tuple);
 
 			existing_tuple_count++;
@@ -718,7 +718,7 @@ void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 		printf("\t Tuple %u\n", i);
 		if(exists_tuple(page, page_size, tpl_d, i))
 		{
-			void* tuple = seek_to_nth_tuple(page, page_size, tpl_d, i);
+			const void* tuple = seek_to_nth_tuple(page, page_size, tpl_d, i);
 			char* print_buffer = malloc(get_tuple_size(tuple, tpl_d) + (tpl_d->element_count * 32));
 			sprint_tuple(print_buffer, tuple, tpl_d);
 			printf("\t\t %s\n\n", print_buffer);
