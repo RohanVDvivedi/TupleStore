@@ -326,27 +326,19 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 			// the index where this tuple will be inserted
 			uint16_t index = (*count);
 
-			// set valid offset for the new tuple, such that it is adjacent to the last tuple (or the end of the page)
-			uint32_t new_tuple_offset;
-			if(index == 0)
-			{
-				if(page_size < external_tuple_size)
-					return 0;
-				new_tuple_offset = page_size - external_tuple_size;
-			}
-			else
-			{
-				uint32_t previous_tuple_offset = get_tuple_offset_SLOTTED(page, page_size, index - 1);
-				if(previous_tuple_offset < external_tuple_size)
-					return 0;
-				new_tuple_offset = previous_tuple_offset - external_tuple_size;
-			}
+			// new_tuple_offset can not be negative
+			if(get_end_of_free_space_offset_SLOTTED(page, page_size) < external_tuple_size)
+				return 0;
+			
+			uint32_t new_tuple_offset = get_end_of_free_space_offset_SLOTTED(page, page_size) - external_tuple_size;
+			uint32_t new_free_space_offset = get_free_space_offset_SLOTTED(page, page_size) + get_data_type_size_for_page_offsets(page, page_size);
 
-			// this offset may not cross the new_free_space_offset
-			// new_free_space_offset = free_space_offset after adding the new element's offset
-			uint32_t new_free_space_offset = get_free_space_offset_SLOTTED(page, page_size) + get_data_type_size_for_page_offsets(page_size);
+			// if the new_free_space_offset violated the order with the newly added tuple_offset
 			if(new_free_space_offset > new_tuple_offset)
 				return 0;
+
+			// decrement the end_of_free_space_offset, to create a stack allocation, for the newly added element
+			set_end_of_free_space_offset_SLOTTED(page, page_size, new_tuple_offset);
 
 			// insert the new tuple_offset with the new value
 			(*count) += 1;
