@@ -69,16 +69,20 @@ static inline uint32_t get_tuples_offset_FIXED_ARRAY(const void* page, uint32_t 
 	return get_bitmap_offset_FIXED_ARRAY(page) + bitmap_size_in_bytes(tuples_capacity); 
 }
 
-static inline uint32_t get_tuple_offsets_offset_SLOTTED(const void* page)
+static inline uint32_t get_end_of_free_space_offset_offset_SLOTTED(const void* page)
 {
 	return get_reference_page_ids_offset() + (sizeof(uint32_t) * get_reference_pages_count(page)); 
+}
+
+static inline uint32_t get_tuple_offsets_offset_SLOTTED(const void* page, uint32_t page_size)
+{
+	return get_end_of_free_space_offset_offset_SLOTTED(page) + get_data_type_size_for_page_offsets(page_size); 
 }
 
 // all tuple_offsets in a SLOTTED_PAGE_LAYOUT must be greater than or equal to this offset
 static inline uint32_t get_free_space_offset_SLOTTED(const void* page, uint32_t page_size)
 {
-	return get_tuple_offsets_offset_SLOTTED(page) + 
-		(get_data_type_size_for_page_offsets(page_size) * get_tuple_count(page));
+	return get_tuple_offsets_offset_SLOTTED(page, page_size) + (get_tuple_count(page) * get_data_type_size_for_page_offsets(page_size));
 }
 
 // utility functions to get/set tuple offsets in a SLOTTED_PAGE_LAYOUT
@@ -90,7 +94,7 @@ static inline uint32_t get_tuple_offset_SLOTTED(const void* page, uint32_t page_
 	if(index >= get_tuple_count(page))
 		return 0;
 
-	const void* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED(page);
+	const void* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED(page, page_size);
 
 	switch(get_data_type_size_for_page_offsets(page_size))
 	{
@@ -124,7 +128,7 @@ static inline int set_tuple_offset_SLOTTED(void* page, uint32_t page_size, uint3
 	if(index >= get_tuple_count(page))
 		return 0;
 
-	void* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED(page);
+	void* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED(page, page_size);
 
 	switch(get_data_type_size_for_page_offsets(page_size))
 	{
@@ -162,18 +166,15 @@ uint32_t get_minimum_page_size(uint8_t reference_pages_count, const tuple_def* t
 	// + reference_pages_count * sizeof(each_reference_page_id)
 	uint32_t constant_size = sizeof(uint8_t) + sizeof(uint8_t) + sizeof(uint16_t) + (reference_pages_count * sizeof(uint32_t));
 
-	if(tuple_count == 0 || tpl_d == NULL)
-		return constant_size;
-
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
 			uint32_t minimum_size_temp = constant_size + (tuple_count * get_minimum_tuple_size(tpl_d));
 
-			uint32_t minimum_size_temp_1 = minimum_size_temp + (tuple_count * 1);
-			uint32_t minimum_size_temp_2 = minimum_size_temp + (tuple_count * 2);
-			uint32_t minimum_size_temp_4 = minimum_size_temp + (tuple_count * 4);
+			uint32_t minimum_size_temp_1 = minimum_size_temp + ((tuple_count + 1) * 1);
+			uint32_t minimum_size_temp_2 = minimum_size_temp + ((tuple_count + 1) * 2);
+			uint32_t minimum_size_temp_4 = minimum_size_temp + ((tuple_count + 1) * 4);
 
 			if(minimum_size_temp_1 <= (1<<8))
 				return minimum_size_temp_1;
@@ -236,7 +237,7 @@ uint16_t get_tuple_count(const void* page)
 uint32_t get_reference_page_id(const void* page, uint8_t index)
 {
 	uint8_t reference_page_count = get_reference_pages_count(page);
-	const uint32_t* reference_page_ids  = page + get_reference_page_ids_offset();
+	const uint32_t* reference_page_ids = page + get_reference_page_ids_offset();
 	return (index < reference_page_count) ? reference_page_ids[index] : 0;
 }
 
@@ -440,7 +441,7 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 		case SLOTTED_PAGE_LAYOUT :
 		{
 			uint16_t* count     = page + get_tuple_count_offset();
-			void* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED(page);
+			void* tuple_offsets = page + get_tuple_offsets_offset_SLOTTED(page, page_size);
 
 			// move all the offsets after index to the front by 1 unit
 			// and then set the last tuple offset to 0
@@ -616,7 +617,7 @@ uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tupl
 		{
 			if(count == 0)
 				// (total page size) - (memory occupied for storing the header)
-				return page_size - get_tuple_offsets_offset_SLOTTED(page);
+				return page_size - get_free_space_offset_SLOTTED(page, page_size);
 			else
 				// (offset of the last tuple) - (offset of the free space)
 				return get_tuple_offset_SLOTTED(page, page_size, count - 1) - get_free_space_offset_SLOTTED(page, page_size);
