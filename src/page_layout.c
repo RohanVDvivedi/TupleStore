@@ -498,11 +498,41 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 		{
 			uint16_t* count = page + get_tuple_count_offset();
 
+			// indexed tuple does not exist, so can not delete it
+			if(get_tuple_offset_SLOTTED(page, page_size, index) == 0)
+				return 0;
+
+			uint32_t tuple_offset_at_index = get_tuple_offset_SLOTTED(page, page_size, index);
+			uint32_t end_of_free_space_offset = get_end_of_free_space_offset_SLOTTED(page, page_size);
+
+			// if this is the tuple that is at the top of the allocation stack, 
+			// then we can reclaim the free space of the page
+			if(tuple_offset_at_index == end_of_free_space_offset)
+			{
+				uint32_t tuple_size_at_index = get_tuple_size(tpl_d, page + tuple_offset_at_index);
+				set_end_of_free_space_offset_SLOTTED(page, page_size, end_of_free_space_offset + tuple_size_at_index);
+			}
+
 			// set the tuple offset of the tuple to be deleted to 0
 			set_tuple_offset_SLOTTED(page, page_size, index, 0);
 
-			// decrement the tuple count
-			(*count)--;
+			// if the deleted tuple is the last in page
+			if(index == ((*count) - 1))
+			{
+				// loop until a valid tuple count is found
+				// i.e. least index AT which and AFTER which all the tuples are marked invalid
+				uint16_t new_count = index;
+
+				while(new_count > 0)
+				{
+					// break as soon as you find a valid tuple on a (new_count - 1)
+					if(get_tuple_offset_SLOTTED(page, page_size, new_count - 1) != 0)
+						break;
+					new_count--;
+				}
+
+				(*count) = new_count;
+			}
 
 			return 1;
 		}
