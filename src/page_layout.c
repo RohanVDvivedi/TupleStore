@@ -408,46 +408,42 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 		{
 			uint16_t count = get_tuple_count(page);
 
+			// calculate the offset and the size of the old tuple that exists at the index
+			uint32_t old_offset_for_index = get_tuple_offset_SLOTTED(page, page_size, index);
+			uint32_t old_tuple_size;
+			if(old_offset_for_index != 0)
+				old_tuple_size = get_tuple_size(tpl_d, page + old_offset_for_index);
+
+			// deallocate the old tuple, if it is at the top of the stack
+			if(old_offset_for_index == get_end_of_free_space_offset_SLOTTED(page, page_size))
+			{
+				old_tuple_size = get_tuple_size(tpl_d, page + old_offset_for_index);
+
+				// deallocate
+				uint32_t end_of_free_space_offset = get_end_of_free_space_offset_SLOTTED(page, page_size);
+				set_end_of_free_space_offset_SLOTTED(page, page_size, end_of_free_space_offset + old_tuple_size);
+
+				// mark deleted
+				set_tuple_offset_SLOTTED(page, page_size, index, 0);
+				old_offset_for_index = get_tuple_offset_SLOTTED(page, page_size, index);
+			}
+
+			// to be calculated
+			uint32_t new_offset_for_index;
+
 			// size of tuple to be inserted
 			uint32_t external_tuple_size = get_tuple_size(tpl_d, external_tuple);
 
-			// generate the new_offset_for_index with the largest possible offset
-			// i.e. adjacent to the previous tuple (or the end of the page)
-			uint32_t new_offset_for_index;
-			if(index == 0)
-			{
-				if(page_size < external_tuple_size)
-					return 0;
-				new_offset_for_index = page_size - external_tuple_size;
-			}
+			// if the old_tuple_size is greater than or equal to the new tuple_size, then use the same slot
+			if(old_offset_for_index != 0 && old_tuple_size >= external_tuple_size)
+				new_offset_for_index = old_offset_for_index;
 			else
 			{
-				uint32_t previous_tuple_offset = get_tuple_offset_SLOTTED(page, page_size, index - 1);
-				if(previous_tuple_offset < external_tuple_size)
-					return 0;
-				new_offset_for_index = previous_tuple_offset - external_tuple_size;
+				// TODO
+				// allocate the new slot of size external_tuple_size
+				// forget the old one
 			}
 
-			// check if the new_offset does not over lap the succeeding tuple, if it has a succeeding tuple
-			if(index < (count - 1))
-			{
-				// next tuple
-				uint32_t next_tuple_offset = get_tuple_offset_SLOTTED(page, page_size, index + 1);
-				const void* next_tuple = page + next_tuple_offset;
-				uint32_t next_tuple_size = get_tuple_size(tpl_d, next_tuple);
-
-				if(next_tuple_offset + next_tuple_size > new_offset_for_index)
-					return 0;
-			}
-			else
-			{
-				// since this is the update to the last element, we make sure that
-				// its offset may not cross the free_space_offset
-				// new_free_space_offset = free_space_offset after adding the new element's offset
-				uint32_t free_space_offset = get_free_space_offset_SLOTTED(page, page_size);
-				if(free_space_offset > new_offset_for_index)
-					return 0;
-			}
 
 			// update the offset of the tuple to be updated
 			set_tuple_offset_SLOTTED(page, page_size, index, new_offset_for_index);
@@ -461,21 +457,14 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
-			uint16_t* count = page + get_tuple_count_offset();
-			char* is_valid  = page + get_bitmap_offset_FIXED_ARRAY(page);
-			void* tuples    = page + get_tuples_offset_FIXED_ARRAY(page, page_size, tpl_d->size);
+			char* is_valid = page + get_bitmap_offset_FIXED_ARRAY(page);
+			void* tuples = page + get_tuples_offset_FIXED_ARRAY(page, page_size, tpl_d->size);
 
 			void* new_tuple_p = tuples + (index * tpl_d->size);
 
 			// copy external_tuple to the new_tuple (in the page)
 			memmove(new_tuple_p, external_tuple, tpl_d->size);
 			set_bit(is_valid, index);
-
-			// if the index (at which we updated) is greater than or equal to (tuple) count
-			// then update the (tuple) count to the (index + 1)
-			// since index must always follow => (index < count)
-			if(index >= (*count))
-				(*count) = index + 1;
 
 			return 1;
 		}
