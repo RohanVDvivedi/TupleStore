@@ -150,25 +150,20 @@ void print_page_in_hex(const void* page, uint32_t page_size);
 **			the length of this field is fixed for a given page upon initialization,
 **			by the init_page() function.
 **
-**		* if there are N tuples in an SLOTTED_PAGE, 
-**			then there are N uint16_t integers that give us pointer offsets in the page to 
+** 		* then comes a uintK_t integer that gives the end of free_space offset in the page.
+**			it is used to allocate more memory for new the tuples when inserted/updated.
+**
+**		* then, if there are N tuples in an SLOTTED_PAGE, 
+**			then there are N uintK_t integers that give us offsets in the page to 
 **			the first addresses of N variable sized tuples in the page.
 **		i.e.
 **			void* page = PAGE_ADDRESS;
 **
-**			uint16_t Num_tuples = *((uint16_t)page);
-**
-**			uint16_t* Tuple_offsets = page + sizeof(Num_tuples);
-**									OR 
-**			uint16_t* Tuple_offsets = page + sizeof(uint16_t);
+**			uintK_t* Tuple_offsets = page + sizeof( all header fields prior to this field );
 **
 **			now the n th tuple =>	(consider n < N)
 **
 **				void* nth_tuple = page + Tuple_offsets[n];
-**
-**		* NOTE : all the Tuple_offsets are always ordered in their increasing order
-**			except when the corresponding tuple is deleted.
-**			for a deleted tuple at index i Tuple_offsets[i] = 0x0000
 **
 **		
 **		struct page_of_SLOTTED_PAGE
@@ -181,9 +176,14 @@ void print_page_in_hex(const void* page, uint32_t page_size);
 **
 **			uint32_t 	reference_page_ids [ reference_page_count ] ;
 **
-**			uint16_t 	tuple_offsets [ tuple_count ];
+**			uintK_t		end_of_free_space_offset;
+**
+**			uintK_t 	tuple_offsets [ tuple_count ];
 **		}
 **
+**		if page_size is in range [1, 256] inclusive, then K = 8,
+**		else if page_size is in range [257, 16536] inclusive, then K = 16,
+** 		else K = 32.
 **
 ****************************************************************************************
 **
