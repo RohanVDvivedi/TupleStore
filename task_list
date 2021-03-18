@@ -4,6 +4,10 @@
    * updates cause insert and move operation, i.e. true updates just like the FIXED_ARRAY_PAGES.
    * reinsert_compaction only to modify the slotted page models.
    * implement slotted page as if it is a stack allocator
+   * if deleting a lastly allocated tuple, then reclaim its space (i.e. tuples offset == end_of_free_space_offset)
+   * if updating at index greater than tuple count return 0 (for slotted page, bump tuple count for FIXED_ARRAY_PAGE_LAYOUT)
+   * inserts always at the index of tuple_count
+   * tuple_count is stored for both the page_layouts
 
 
  * dynamic programming approach to calculate offsets in a variable sized tuple
