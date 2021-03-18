@@ -96,16 +96,22 @@ static inline uint32_t get_end_of_free_space_offset_SLOTTED(const void* page, ui
 		case 1 :
 		{
 			const uint8_t* end_of_free_space_offset_1 = end_of_free_space_offset;
+			if((*(end_of_free_space_offset_1)) == 0)
+				return page_size;
 			return (*(end_of_free_space_offset_1));
 		}
 		case 2 :
 		{
 			const uint16_t* end_of_free_space_offset_2 = end_of_free_space_offset;
+			if((*(end_of_free_space_offset_2)) == 0)
+				return page_size;
 			return (*(end_of_free_space_offset_2));
 		}
 		case 4 :
 		{
 			const uint32_t* end_of_free_space_offset_4 = end_of_free_space_offset;
+			if((*(end_of_free_space_offset_4)) == 0)
+				return page_size;
 			return (*(end_of_free_space_offset_4));
 		}
 
