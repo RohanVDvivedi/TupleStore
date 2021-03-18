@@ -167,6 +167,8 @@ void print_page_in_hex(const void* page, uint32_t page_size);
 **
 **				void* nth_tuple = page + Tuple_offsets[n];
 **
+**		* if the i-th tuple is deleted, then Tuple_offsets[i] == 0.
+**
 **		
 **		struct page_of_SLOTTED_PAGE
 **		{
