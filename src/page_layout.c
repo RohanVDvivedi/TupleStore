@@ -507,9 +507,10 @@ int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, u
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			// if the tuple index is in range
-			// then the tuple exists
-			return 1;
+			uint32_t tuple_offset_for_index = get_tuple_offset_SLOTTED(page, page_size, index);
+
+			// a tuple offset of 0, means the tuple does not exixts
+			return tuple_offset_for_index != 0;
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
