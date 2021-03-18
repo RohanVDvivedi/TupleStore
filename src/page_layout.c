@@ -22,6 +22,17 @@ page_layout get_page_layout_type(const tuple_def* tpl_d)
 // UTILITY FUNCTIONS
 // -------------------------------------------
 
+// data_type size that we will be using for storing offsets in a page (1, 2 or 4)
+static inline uint8_t get_data_type_size_for_page_offsets(uint32_t page_size)
+{
+	if(page_size <= (1<<8))
+		return 1;
+	else if(page_size <= (1<<16))
+		return 2;
+	else
+		return 4;
+}
+
 static inline uint32_t get_page_type_offset()
 {
 	return 0; 
@@ -61,17 +72,6 @@ static inline uint32_t get_tuples_offset_FIXED_ARRAY(const void* page, uint32_t 
 static inline uint32_t get_tuple_offsets_offset_SLOTTED(const void* page)
 {
 	return get_reference_page_ids_offset() + (sizeof(uint32_t) * get_reference_pages_count(page)); 
-}
-
-// data_type size to use for storing tuple_offsets (1, 2 or 4)
-static inline uint8_t get_data_type_size_for_page_offsets(uint32_t page_size)
-{
-	if(page_size <= (1<<8))
-		return 1;
-	else if(page_size <= (1<<16))
-		return 2;
-	else
-		return 4;
 }
 
 // all tuple_offsets in a SLOTTED_PAGE_LAYOUT must be greater than or equal to this offset
