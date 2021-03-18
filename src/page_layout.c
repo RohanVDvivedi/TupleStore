@@ -125,6 +125,9 @@ static inline int set_end_of_free_space_offset_SLOTTED(const void* page, uint32_
 {
 	const void* end_of_free_space_offset_p = page + get_end_of_free_space_offset_offset_SLOTTED(page);
 
+	if(end_of_free_space_offset == page_size)
+		end_of_free_space_offset = 0;
+
 	switch(get_data_type_size_for_page_offsets(page_size))
 	{
 		case 1 :
