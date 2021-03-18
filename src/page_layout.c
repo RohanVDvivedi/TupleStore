@@ -253,8 +253,8 @@ uint32_t get_minimum_page_size(uint8_t reference_pages_count, const tuple_def* t
 
 int init_page(void* page, uint32_t page_size, uint8_t page_type, uint8_t reference_pages_count, const tuple_def* tpl_d)
 {
-	// the page you decide to use must be able to accomodate atleast a tuple, if you have provided a tuple definition
-	if(page_size < get_minimum_page_size(reference_pages_count, tpl_d, ((tpl_d == NULL) ? 0 : 1)))
+	// the page you decide to use must be able to accomodate atleast 4 tuples, if you have provided a tuple definition
+	if(page_size < get_minimum_page_size(reference_pages_count, tpl_d, ((tpl_d == NULL) ? 0 : 4)))
 		return 0;
 
 	uint8_t* page_type_p             = page + get_page_type_offset();
@@ -262,6 +262,9 @@ int init_page(void* page, uint32_t page_size, uint8_t page_type, uint8_t referen
 
 	(*page_type_p)            = page_type;
 	(*reference_pages_count_p) = reference_pages_count;
+
+	if(get_page_layout_type(tpl_d) == SLOTTED_PAGE_LAYOUT)
+		set_end_of_free_space_offset_SLOTTED(page, page_size, 0);
 
 	return 1;
 }
