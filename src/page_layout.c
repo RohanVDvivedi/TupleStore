@@ -674,10 +674,15 @@ int swap_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t
 		{
 			char* is_valid = page + get_bitmap_offset_FIXED_ARRAY(page);
 
-			// swap bits of the is_valid bitmap
+			// get is_valid bits of the corresponding tuples
 			int bit_i1 = get_bit(is_valid, i1);
 			int bit_i2 = get_bit(is_valid, i2);
 
+			// i.e. if both the tuples are invalid, then no swapping needed
+			if(bit_i1 == 0 && bit_i2 == 0)
+				break;
+
+			// swap bits of the is_valid bitmap
 			bit_i1 ? set_bit(is_valid, i2) : reset_bit(is_valid, i2);
 			bit_i2 ? set_bit(is_valid, i1) : reset_bit(is_valid, i1);
 
