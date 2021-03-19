@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 
 #include<alloca.h>
 
@@ -347,24 +348,25 @@ int main()
 	printf("\nCOPY PAGE :: \n");
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
-/*
-	// ---------------  DELETE 2 TUPLES FROM THE PAGE AND COMPACT IT
 
+	// ---------------  COMPACT PAGE
+
+	memmove(temp_page, page, PAGE_SIZE);
 	delete_tuple(temp_page, PAGE_SIZE, def, 0);
 	delete_tuple(temp_page, PAGE_SIZE, def, 2);
 
 	printf("\nBefore compaction available_size(%u)\n", get_free_space_in_page(temp_page, PAGE_SIZE, def));
-	printf("\nCOPY PAGE :: \n");
+	printf("\nTEMP PAGE :: \n");
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
 
 	run_page_compaction(temp_page, PAGE_SIZE, def);
 
 	printf("\nAfter compaction available_size(%u)\n", get_free_space_in_page(temp_page, PAGE_SIZE, def));
-	printf("\nCOPY PAGE :: \n");
+	printf("\nTEMP PAGE :: \n");
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
-*/
+
 	// ---------------  DELETE ALL TUPLES
 
 	uint16_t tuples_to_delete = get_tuple_count(page);
