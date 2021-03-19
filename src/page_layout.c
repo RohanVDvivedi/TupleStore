@@ -657,9 +657,6 @@ int swap_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t
 	if(i1 >= get_tuple_count(page) || i2 >= get_tuple_count(page) || i1 == i2)
 		return 0;
 
-	if(i1 > i2)
-		return swap_tuples(page, page_size, tpl_d, i2, i1);
-
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
