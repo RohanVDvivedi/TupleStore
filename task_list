@@ -1,2 +1,4 @@
-
+ 
+ * implement sort_page method
+ 
  * dynamic programming approach to calculate offsets in a variable sized tuple
