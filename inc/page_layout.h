@@ -92,7 +92,7 @@ int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, u
 
 // swap tuples at given indices i1 and i2
 // return 0, if the swap fails
-int swap_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t i1, uint16_t i2);
+int swap_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t i1, uint16_t i2);
 
 
 

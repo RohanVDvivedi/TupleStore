@@ -651,7 +651,7 @@ uint16_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def
 	return tuples_copied;
 }
 
-int swap_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t i1, uint16_t i2)
+int swap_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t i1, uint16_t i2)
 {
 	// if either of indices are out of bounds, or if the indices are equal, then the swap can not be performed
 	if(i1 >= get_tuple_count(page) || i2 >= get_tuple_count(page) || i1 == i2)
@@ -664,19 +664,57 @@ int swap_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d, ui
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			// TODO
-			return 1;
+			// swap the tuple offsets
+			uint32_t offset_i1 = get_tuple_offset_SLOTTED(page, page_size, i1);
+			uint32_t offset_i2 = get_tuple_offset_SLOTTED(page, page_size, i2);
+
+			set_tuple_offset_SLOTTED(page, page_size, i1, offset_i2);
+			set_tuple_offset_SLOTTED(page, page_size, i2, offset_i1);
+
+			break;
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
-			// TODO
-			return 1;
+			char* is_valid = page + get_bitmap_offset_FIXED_ARRAY(page);
+
+			// swap bits of the is_valid bitmap
+			int bit_i1 = get_bit(is_valid, i1);
+			int bit_i2 = get_bit(is_valid, i2);
+
+			bit_i1 ? set_bit(is_valid, i2) : reset_bit(is_valid, i2);
+			bit_i2 ? set_bit(is_valid, i1) : reset_bit(is_valid, i1);
+
+			// swap data of the tuples
+			void* tuples = page + get_tuples_offset_FIXED_ARRAY(page, page_size, tpl_d->size);
+
+			void* tuple_i1 = tuples + (i1 * tpl_d->size);
+			void* tuple_i2 = tuples + (i2 * tpl_d->size);
+
+			if(bit_i1 == 0)
+				memmove(tuple_i1, tuple_i2, tpl_d->size);
+			else if(bit_i2 == 0)
+				memmove(tuple_i2, tuple_i1, tpl_d->size);
+			else
+			{
+				void* temp = malloc(tpl_d->size);
+				memmove(    temp, tuple_i1, tpl_d->size);
+				memmove(tuple_i1, tuple_i2, tpl_d->size);
+				memmove(tuple_i2,     temp, tpl_d->size);
+				free(temp);
+			}
+
+			break;
 		}
 		default :
 		{
 			return 0;
 		}
 	}
+
+	if(i1 == (get_tuple_count(page) - 1) || i2 == (get_tuple_count(page) - 1))
+		manage_tuple_count_for_trailing_delete(page, page_size, tpl_d);
+	
+	return 1;
 }
 
 int run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d)
