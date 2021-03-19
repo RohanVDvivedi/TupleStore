@@ -669,6 +669,28 @@ int run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d)
 		case SLOTTED_PAGE_LAYOUT :
 		{
 			// TODO 
+
+			// create a copy page
+			void* copy_page = malloc(page_size);
+			memmove(copy_page, page, page_size);
+
+			uint16_t tuple_count = get_tuple_count(page);
+
+			// reset the allocator offset for the actual page
+			set_end_of_free_space_offset_SLOTTED(page, page_size, page_size);
+
+			// set all tuple offsets for the page to 0
+			for(uint16_t index = 0; index <= tuple_count; index++)
+			{
+				if(exists_tuple(copy_page, page_size, tpl_d, index))
+				{
+					const void* tuple = get_nth_tuple(copy_page, page_size, tpl_d, index);
+					set_tuple_offset_SLOTTED(page, page_size, index, 0);
+					update_tuple(page, page_size, tpl_d, index, tuple);
+				}
+			}
+
+			free(copy_page);
 			return 1;
 		}
 		// no page compaction for FIXED_ARRAY_PAGE_LAYOUT pages
