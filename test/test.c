@@ -124,7 +124,7 @@ int main()
 
 	// ---------------`INSERT
 
-	r = &(row){-12, 13, "Rohan awesome", 20.21};
+	r = &(row){-12, 16, "Rohan is awesome", 20.21};
 
 	build_tuple_from_row_struct(def, tuple_cache, r);
 
@@ -218,9 +218,24 @@ int main()
 	
 	print_page_in_hex(page, PAGE_SIZE);
 
+	// --------------- DELETE
+
+	res = delete_tuple(page, PAGE_SIZE, def, 3);
+
+	printf("Delete(3) : %d\n\n\n", res);
+
+	// ---------------	PRINT PAGE
+	
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	// ---------------	PRINT PAGE IN HEX
+	
+	print_page_in_hex(page, PAGE_SIZE);
+
 	// ---------------	UPDATE
 
-	r = &(row){-123, 17, "Project by Rohan.", 65536};
+	r = &(row){-234, 17, "Project by Rohan.", 655.36};
 
 	build_tuple_from_row_struct(def, tuple_cache, r);
 
@@ -255,18 +270,27 @@ int main()
 	print_page_in_hex(page, PAGE_SIZE);
 
 	// ---------------- INSERT WHEN ABOUT TO BE FULL
-/*
-	r = &(row){4, -35, 13, "ROHAN IS ART", "test1", "TEST1", 7.12};
+
+	r = &(row){34, 13, "genre horror.", 7.121996};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 
-	r = &(row){5, 36, 12, "Rohan is RD", "test2", "TEST2", 12.1996};
+	r = &(row){-35, 16, "Rohan is artist.", 7.12};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 
-	r = &(row){6, -37, 3, "AN", "test3", "TEST3", 7.1996};
+
+
+	r = &(row){36, 15, "Rohan is RohanD", 12.1996};
+	build_tuple_from_row_struct(def, tuple_cache, r);
+	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
+	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
+
+
+
+	r = &(row){36, 14, "Rohan is RohanD", 12.1996};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
@@ -279,7 +303,7 @@ int main()
 	// ---------------	PRINT PAGE IN HEX
 	
 	print_page_in_hex(page, PAGE_SIZE);
-
+/*
 	// ---------------  INSERT TUPLES IN TEMP PAGE BY INDEX RANGE
 
 	init_page(temp_page, PAGE_SIZE, 3, 0, def);
