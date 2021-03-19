@@ -332,6 +332,36 @@ int main()
 	// ---------------	PRINT PAGE IN HEX
 	
 	print_page_in_hex(page, PAGE_SIZE);
+
+	// ---------------	UPDATE
+
+	r = &(row){-234, 15, "Project Stupstom", 655.36};
+
+	build_tuple_from_row_struct(def, tuple_cache, r);
+
+	res = update_tuple(page, PAGE_SIZE, def, 5, tuple_cache);
+
+	printf("Update(5) : %d\n\n\n", res);
+
+	// ---------------	PRINT PAGE
+	
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	// ---------------	UPDATE
+
+	r = &(row){-234, 12, "Project Stupstom", 655.36};
+
+	build_tuple_from_row_struct(def, tuple_cache, r);
+
+	res = update_tuple(page, PAGE_SIZE, def, 5, tuple_cache);
+
+	printf("Update(5) : %d\n\n\n", res);
+
+	// ---------------	PRINT PAGE
+	
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
 /*
 	// ---------------  INSERT TUPLES IN TEMP PAGE BY INDEX RANGE
 
