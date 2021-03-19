@@ -1,3 +1,5 @@
  * implement swap_tuples function for page
 
+ * use a static inline function to remove trailing deletes
+
  * dynamic programming approach to calculate offsets in a variable sized tuple
