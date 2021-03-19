@@ -364,15 +364,16 @@ int main()
 	printf("\nCOPY PAGE :: \n");
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
-
+*/
 	// ---------------  DELETE ALL TUPLES
 
 	uint16_t tuples_to_delete = get_tuple_count(page);
-	#define START_WITH (tuples_to_delete/2)
+	uint16_t mid = (tuples_to_delete/2);
 
-	for(uint16_t i = START_WITH; i < tuples_to_delete; i++)
+	for(uint16_t i = mid; i < tuples_to_delete; i++)
 	{
 		uint16_t index = i;
+		printf("l1 index : %u\n", index);
 		if(exists_tuple(page, PAGE_SIZE, def, index))
 		{
 			int is_deleted = delete_tuple(page, PAGE_SIZE, def, index);
@@ -382,10 +383,10 @@ int main()
 		}
 	}
 
-	tuples_to_delete = get_tuple_count(page);
-	for(uint16_t i = 0; i < tuples_to_delete; i++)
+	for(uint16_t i = 0; i < mid; i++)
 	{
-		uint16_t index = tuples_to_delete - 1 - i;
+		uint16_t index = mid - 1 - i;
+		printf("l2 index : %u\n", index);
 		if(exists_tuple(page, PAGE_SIZE, def, index))
 		{
 			int is_deleted = delete_tuple(page, PAGE_SIZE, def, index);
@@ -397,15 +398,17 @@ int main()
 
 	// ---------------  UPDATE AT ARBITRARY PLACE
 
-	r = &(row){3, 5, 25, "Rohan Dvivedi's, project.", "Roopa", "Vipul", 3.57};
+	r = &(row){3, 15, "Rohan Dvivedi's, project.", 3.57};
 	build_tuple_from_row_struct(def, tuple_cache, r);
-	update_tuple(page, PAGE_SIZE, def, 2, tuple_cache);
+	res = update_tuple(page, PAGE_SIZE, def, 2, tuple_cache);
+	printf("Update(2) : %d\n\n\n", res);
 	print_page(page, PAGE_SIZE, def);
 
-	r = &(row){5, 7, 49, "Rohan's, project : Simple Tuple Storage Model.", "Roopa", "Vipul", 35.7};
+	r = &(row){5, 13, "Rohan's, project : Simple Tuple Storage Model.", 35.7};
 	build_tuple_from_row_struct(def, tuple_cache, r);
-	update_tuple(page, PAGE_SIZE, def, 0, tuple_cache);
+	res = update_tuple(page, PAGE_SIZE, def, 0, tuple_cache);
+	printf("Update(0) : %d\n\n\n", res);
 	print_page(page, PAGE_SIZE, def);
-*/
+
 	return 0;
 }
