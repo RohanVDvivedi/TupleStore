@@ -105,41 +105,29 @@ int main()
 	// ---------------	INSERT
 
 	r = &(row){-123, 10, "Rohan good", 99.99};
-
 	build_tuple_from_row_struct(def, tuple_cache, r);
-
 	res = insert_tuple(page, PAGE_SIZE, def, tuple_cache);
-
 	printf("Insert : %d\n\n\n", res);
 
 	// ---------------	INSERT
 
 	r = &(row){-12, 12, "Rohan is bad", 51.2};
-
 	build_tuple_from_row_struct(def, tuple_cache, r);
-
 	insert_tuple(page, PAGE_SIZE, def, tuple_cache);
-
 	printf("Insert : %d\n\n\n", res);
 
 	// ---------------`INSERT
 
 	r = &(row){-12, 16, "Rohan is awesome", 20.21};
-
 	build_tuple_from_row_struct(def, tuple_cache, r);
-
 	insert_tuple(page, PAGE_SIZE, def, tuple_cache);
-
 	printf("Insert : %d\n\n\n", res);
 
 	// ---------------	INSERT
 
 	r = &(row){-53, 2, "ro", 20.21};
-
 	build_tuple_from_row_struct(def, tuple_cache, r);
-
 	insert_tuple(page, PAGE_SIZE, def, tuple_cache);
-
 	printf("Insert : %d\n\n\n", res);
 
 	// ---------------	COMPARE 2 TUPLES
@@ -168,11 +156,8 @@ int main()
 	// ---------------	UPDATE
 
 	r = &(row){-456, 8, "by Rohan", 65536};
-
 	build_tuple_from_row_struct(def, tuple_cache, r);
-
 	res = update_tuple(page, PAGE_SIZE, def, 1, tuple_cache);
-
 	printf("Update(1) : %d\n\n\n", res);
 
 	// ---------------	PRINT PAGE
@@ -187,11 +172,8 @@ int main()
 	// ---------------	UPDATE
 
 	r = &(row){-789, 18, "Nam: Rohan Dvivedi", 99.99};
-
 	build_tuple_from_row_struct(def, tuple_cache, r);
-
 	res = update_tuple(page, PAGE_SIZE, def, 3, tuple_cache);
-
 	printf("Update(3) : %d\n\n\n", res);
 
 	// ---------------	PRINT PAGE
@@ -336,11 +318,8 @@ int main()
 	// ---------------	UPDATE
 
 	r = &(row){-234, 15, "Project Stupstom", 655.36};
-
 	build_tuple_from_row_struct(def, tuple_cache, r);
-
 	res = update_tuple(page, PAGE_SIZE, def, 5, tuple_cache);
-
 	printf("Update(5) : %d\n\n\n", res);
 
 	// ---------------	PRINT PAGE
@@ -351,11 +330,8 @@ int main()
 	// ---------------	UPDATE
 
 	r = &(row){-234, 12, "Project Stupstom", 655.36};
-
 	build_tuple_from_row_struct(def, tuple_cache, r);
-
 	res = update_tuple(page, PAGE_SIZE, def, 5, tuple_cache);
-
 	printf("Update(5) : %d\n\n\n", res);
 
 	// ---------------	PRINT PAGE
