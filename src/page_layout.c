@@ -838,9 +838,10 @@ void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 		if(exists_tuple(page, page_size, tpl_d, i))
 		{
 			const void* tuple = get_nth_tuple(page, page_size, tpl_d, i);
-			char* print_buffer = malloc(get_tuple_size(tpl_d, tuple) + (tpl_d->element_count * 32));
+			uint32_t tuple_size = get_tuple_size(tpl_d, tuple);
+			char* print_buffer = malloc(tuple_size + (tpl_d->element_count * 32));
 			sprint_tuple(print_buffer, tuple, tpl_d);
-			printf("\t\t[%lu] :: %s\n\n", ((uintptr_t)(tuple - page)), print_buffer);
+			printf("\t\toffset[%lu] size(%u) :: %s\n\n", ((uintptr_t)(tuple - page)), tuple_size, print_buffer);
 			free(print_buffer);
 		}
 		else
