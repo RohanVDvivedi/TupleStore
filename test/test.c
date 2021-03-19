@@ -10,7 +10,8 @@
 #define TEST_FIXED_ARRAY_PAGE_LAYOUT
 
 // uncomment the page size that you want to test with
-  #define PAGE_SIZE     256
+  #define PAGE_SIZE     128
+//#define PAGE_SIZE     256
 //#define PAGE_SIZE     512
 //#define PAGE_SIZE    1024
 //#define PAGE_SIZE    4096
@@ -26,16 +27,17 @@ void init_tuple_definition(tuple_def* def)
 	// initialize tuple definition and insert element definitions
 	init_tuple_def(def);
 
-	insert_element_def(def,   UINT, 8);
-	insert_element_def(def,    INT, 1);
+	insert_element_def(def,   INT, 8);
+
+	// a size specifier for a varibale sized string
 	insert_element_def(def,   UINT, 1);
 
 	#ifndef TEST_FIXED_ARRAY_PAGE_LAYOUT
 		insert_element_def(def, STRING, VARIABLE_SIZED);
+	else
+		insert_element_def(def, STRING, 18);
 	#endif
 
-	insert_element_def(def, STRING, 6);
-	insert_element_def(def, STRING, 10);	// make this a STRING datatype to print a readable output
 	insert_element_def(def,  FLOAT, 8);
 
 	finalize_tuple_def(def);
@@ -54,13 +56,10 @@ void init_tuple_definition(tuple_def* def)
 typedef struct row row;
 struct row
 {
-	u8 c0;
-	i1 c1;
-	u1 c2;
-	char* c3;
-	char* c4;
-	char* c5;
-	f8 c6;
+	i8 c0;
+	u1 c1;
+	char* c2;
+	f8 c3;
 };
 
 void build_tuple_from_row_struct(const tuple_def* def, void* tuple, const row* r)
@@ -69,15 +68,8 @@ void build_tuple_from_row_struct(const tuple_def* def, void* tuple, const row* r
 
 	copy_element_to_tuple(def, column_no++, tuple, &(r->c0));
 	copy_element_to_tuple(def, column_no++, tuple, &(r->c1));
-	copy_element_to_tuple(def, column_no++, tuple, &(r->c2));
-
-	#ifndef TEST_FIXED_ARRAY_PAGE_LAYOUT
-		copy_element_to_tuple(def, column_no++, tuple, (r->c3));
-	#endif
-	
-	copy_element_to_tuple(def, column_no++, tuple, (r->c4));
-	copy_element_to_tuple(def, column_no++, tuple, (r->c5));
-	copy_element_to_tuple(def, column_no++, tuple, &(r->c6));
+	copy_element_to_tuple(def, column_no++, tuple,  (r->c2));
+	copy_element_to_tuple(def, column_no++, tuple, &(r->c3));
 
 	// output print string
 	char print_buffer[PAGE_SIZE];
@@ -111,7 +103,7 @@ int main()
 
 	// ---------------	INSERT
 
-	r = &(row){3003, -123, 11, "Rohan good", "roopa", "DVIVEDI", 99.99};
+	r = &(row){-123, 10, "Rohan good", 99.99};
 
 	build_tuple_from_row_struct(def, tuple_cache, r);
 
@@ -119,7 +111,7 @@ int main()
 
 	// ---------------	INSERT
 
-	r = &(row){3003, -12, 10, "Rohan bad", "rupa", "joshi", 512};
+	r = &(row){-12, 9, "Rohan bad", 51.2};
 
 	build_tuple_from_row_struct(def, tuple_cache, r);
 
@@ -127,7 +119,7 @@ int main()
 
 	// ---------------`INSERT
 
-	r = &(row){3007, -12, 14, "Rohan awesome", "Rohi", "MOM+DAD", 2021};
+	r = &(row){-12, 13, "Rohan awesome", 20.21};
 
 	build_tuple_from_row_struct(def, tuple_cache, r);
 
@@ -135,7 +127,7 @@ int main()
 
 	// ---------------	INSERT
 
-	r = &(row){3, -53, 3, "ro", "RO", "rO", 20.21};
+	r = &(row){-53, 2, "ro", 20.21};
 
 	build_tuple_from_row_struct(def, tuple_cache, r);
 
@@ -179,9 +171,7 @@ int main()
 
 	// ---------------	UPDATE
 
-	r = &(row){5004, -123, 55, 
-		"Project by Rohan Dvivedi. The only coder on this project.", 
-		"Roopa", "Dvivedi", 65536};
+	r = &(row){-123, 17, "Project by Rohan.", 65536};
 
 	build_tuple_from_row_struct(def, tuple_cache, r);
 
@@ -214,7 +204,7 @@ int main()
 	print_page_in_hex(page, PAGE_SIZE);
 
 	// ---------------- INSERT WHEN ABOUT TO BE FULL
-
+/*
 	r = &(row){4, -35, 13, "ROHAN IS ART", "test1", "TEST1", 7.12};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
@@ -306,6 +296,6 @@ int main()
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	update_tuple(page, PAGE_SIZE, def, 0, tuple_cache);
 	print_page(page, PAGE_SIZE, def);
-
+*/
 	return 0;
 }
