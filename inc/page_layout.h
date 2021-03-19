@@ -90,6 +90,10 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 // or if it is deleted
 int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
 
+// swap tuples at given indices i1 and i2
+// return 0, if the swap fails
+int swap_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t i1, uint16_t i2);
+
 
 
 
