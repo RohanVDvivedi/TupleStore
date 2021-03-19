@@ -773,9 +773,10 @@ void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 	if(tpl_d->size != VARIABLE_SIZED)	// case : FIXED ARRAY PAGE
 		printf(" of %u)", get_tuple_capacity_FIXED_ARRAY(page, page_size, tpl_d->size));
 	else 								// case : SLOTTED PAGE
-		printf(") : tuple_offsets_data_type_size(%u)", get_data_type_size_for_page_offsets(page_size));
+		printf(") : tuple_offsets_data_type_size(%u) : end_of_free_space_offset(%u)", get_data_type_size_for_page_offsets(page_size), get_end_of_free_space_offset_SLOTTED(page, page_size));
 	printf(" : tuples_data_size(%u) : free_space(%u)\n\n", get_space_occupied_by_tuples(page, page_size, tpl_d, 0, tup_count - 1), get_free_space_in_page(page, page_size, tpl_d));
 
+	printf("Page references ::\n");
 	for(uint8_t i = 0; i < ref_count; i++)
 		printf("\t Reference page id [%u] : %u\n\n", i, get_reference_page_id(page, i));
 
@@ -789,7 +790,7 @@ void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 			const void* tuple = get_nth_tuple(page, page_size, tpl_d, i);
 			char* print_buffer = malloc(get_tuple_size(tpl_d, tuple) + (tpl_d->element_count * 32));
 			sprint_tuple(print_buffer, tuple, tpl_d);
-			printf("\t\t %s\n\n", print_buffer);
+			printf("\t\t[%lu] :: %s\n\n", ((uintptr_t)(tuple - page)), print_buffer);
 			free(print_buffer);
 		}
 		else
