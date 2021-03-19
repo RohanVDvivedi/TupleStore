@@ -676,18 +676,12 @@ int run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d)
 
 uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
-	uint16_t count = get_tuple_count(page);
-
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			if(count == 0)
-				// (total page size) - (memory occupied for storing the header)
-				return page_size - get_free_space_offset_SLOTTED(page, page_size);
-			else
-				// (offset of the last tuple) - (offset of the free space)
-				return get_tuple_offset_SLOTTED(page, page_size, count - 1) - get_free_space_offset_SLOTTED(page, page_size);
+			// (offset of the last allocated tuple i.e. end_of_free_space_offset) - (offset of the free space)
+			return get_end_of_free_space_offset_SLOTTED(page, page_size) - get_free_space_offset_SLOTTED(page, page_size);
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
