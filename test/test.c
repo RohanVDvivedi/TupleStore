@@ -32,10 +32,10 @@ void init_tuple_definition(tuple_def* def)
 	// a size specifier for a varibale sized string
 	insert_element_def(def,   UINT, 1);
 
-	#ifndef TEST_FIXED_ARRAY_PAGE_LAYOUT
-		insert_element_def(def, STRING, VARIABLE_SIZED);
-	else
+	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
 		insert_element_def(def, STRING, 18);
+	#else
+		insert_element_def(def, STRING, VARIABLE_SIZED);
 	#endif
 
 	insert_element_def(def,  FLOAT, 8);
