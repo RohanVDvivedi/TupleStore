@@ -276,21 +276,50 @@ int main()
 	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 
+	// ---------------- PRINT PAGE
+
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	// ---------------- INSERT
+
 	r = &(row){-35, 16, "Rohan is artist.", 7.12};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 
+	// ---------------- PRINT PAGE
 
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	// ---------------- INSERT
 
 	r = &(row){36, 15, "Rohan is RohanD", 12.1996};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 
+	// ---------------- PRINT PAGE
 
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
 
-	r = &(row){36, 14, "Rohan is RohanD", 12.1996};
+	// ---------------- INSERT
+
+	r = &(row){36, 14, "Rohan is Rohan", 12.1996};
+	build_tuple_from_row_struct(def, tuple_cache, r);
+	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
+	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
+
+	// ---------------- PRINT PAGE
+
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	// ---------------- INSERT
+
+	r = &(row){35, 16, "Rohan is Dvivedi", 7.1996};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
