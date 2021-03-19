@@ -412,18 +412,19 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 			if(old_offset_for_index != 0)
 				old_tuple_size = get_tuple_size(tpl_d, page + old_offset_for_index);
 
-			// deallocate the old tuple, if it is at the top of the stack
-			if(old_offset_for_index == get_end_of_free_space_offset_SLOTTED(page, page_size))
+			// local copy of the offset to the end of free space
+			uint32_t end_of_free_space_offset = get_end_of_free_space_offset_SLOTTED(page, page_size);
+
+			// consider that we deallocate (& delete) the old tuple, if it is at the top of the stack
+			if(old_offset_for_index == end_of_free_space_offset)
 			{
 				old_tuple_size = get_tuple_size(tpl_d, page + old_offset_for_index);
 
-				// deallocate
-				uint32_t end_of_free_space_offset = get_end_of_free_space_offset_SLOTTED(page, page_size);
-				set_end_of_free_space_offset_SLOTTED(page, page_size, end_of_free_space_offset + old_tuple_size);
+				// consider that we deallocated, the old tuple
+				end_of_free_space_offset = end_of_free_space_offset + old_tuple_size;
 
-				// mark deleted
-				set_tuple_offset_SLOTTED(page, page_size, index, 0);
-				old_offset_for_index = get_tuple_offset_SLOTTED(page, page_size, index);
+				// also consider it as deleted
+				old_offset_for_index = 0;
 			}
 
 			// to be calculated
@@ -439,20 +440,25 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 			{	// new allocation
 
 				// new_offset_for_index can not be negative
-				if(get_end_of_free_space_offset_SLOTTED(page, page_size) < external_tuple_size)
+				if(end_of_free_space_offset < external_tuple_size)
 					return 0;
 				
-				new_offset_for_index = get_end_of_free_space_offset_SLOTTED(page, page_size) - external_tuple_size;
+				new_offset_for_index = end_of_free_space_offset - external_tuple_size;
+
+				// this below is also the offset right after the new offset will be added to the tuple_offsets
 				uint32_t new_free_space_offset = get_free_space_offset_SLOTTED(page, page_size) + get_data_type_size_for_page_offsets(page_size);
 
 				// if the new_free_space_offset violated the order with the newly added tuple_offset
 				if(new_free_space_offset > new_offset_for_index)
 					return 0;
 
-				// decrement the end_of_free_space_offset, to create a stack allocation, for the newly added element
-				set_end_of_free_space_offset_SLOTTED(page, page_size, new_offset_for_index);
+				// to create a stack allocation, for the newly added element
+				// set the end_of_free_space_offset to the new_offset_for_index
+				end_of_free_space_offset = new_offset_for_index;
 			}
 
+			// set the end_of_free_space offset that we calculated cumulatively
+			set_end_of_free_space_offset_SLOTTED(page, page_size, end_of_free_space_offset);
 
 			// update the offset of the tuple to be updated
 			set_tuple_offset_SLOTTED(page, page_size, index, new_offset_for_index);
