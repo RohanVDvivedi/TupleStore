@@ -490,6 +490,28 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 	}
 }
 
+static inline void manage_tuple_count_for_trailing_delete(void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	uint16_t* count = page + get_tuple_count_offset();
+
+	if((*count) == 0)
+		return;
+
+	// loop until a valid tuple count is found
+	// i.e. least index AT which and AFTER which all the tuples are marked invalid
+	uint16_t new_count = (*count);
+
+	while(new_count > 0)
+	{
+		// break as soon as you find a valid tuple on a (new_count - 1)
+		if(exists_tuple(page, page_size, tpl_d, new_count - 1))
+			break;
+		new_count--;
+	}
+
+	(*count) = new_count;
+}
+
 int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
 	// index OUT_OF_BOUNDS
@@ -500,8 +522,6 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			uint16_t* count = page + get_tuple_count_offset();
-
 			// indexed tuple does not exist, so can not delete it
 			if(get_tuple_offset_SLOTTED(page, page_size, index) == 0)
 				return 0;
@@ -517,32 +537,13 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 				set_end_of_free_space_offset_SLOTTED(page, page_size, end_of_free_space_offset + tuple_size_at_index);
 			}
 
-			// set the tuple offset of the tuple to be deleted to 0
+			// set the tuple offset of the tuple to be deleted to 0, i.e. mark deleted
 			set_tuple_offset_SLOTTED(page, page_size, index, 0);
 
-			// if the deleted tuple is the last in page
-			if(index == ((*count) - 1))
-			{
-				// loop until a valid tuple count is found
-				// i.e. least index AT which and AFTER which all the tuples are marked invalid
-				uint16_t new_count = index;
-
-				while(new_count > 0)
-				{
-					// break as soon as you find a valid tuple on a (new_count - 1)
-					if(get_tuple_offset_SLOTTED(page, page_size, new_count - 1) != 0)
-						break;
-					new_count--;
-				}
-
-				(*count) = new_count;
-			}
-
-			return 1;
+			break;
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
-			uint16_t* count = page + get_tuple_count_offset();
 			char* is_valid = page + get_bitmap_offset_FIXED_ARRAY(page);
 
 			// indexed tuple does not exist, so can not delete it
@@ -552,31 +553,19 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 			// mark deleted
 			reset_bit(is_valid, index);
 
-			// if the deleted tuple is the last in page
-			if(index == ((*count) - 1))
-			{
-				// loop until a valid tuple count is found
-				// i.e. least index AT which and AFTER which all the tuples are marked invalid
-				uint16_t new_count = index;
-
-				while(new_count > 0)
-				{
-					// break as soon as you find a valid tuple on a (new_count - 1)
-					if(get_bit(is_valid, new_count - 1))
-						break;
-					new_count--;
-				}
-
-				(*count) = new_count;
-			}
-
-			return 1;
+			break;
 		}
 		default :
 		{
 			return 0;
 		}
 	}
+
+	// if the deleted tuple is the last in page, we may need to manage the tuple_count
+	if(index == (get_tuple_count(page) - 1))
+		manage_tuple_count_for_trailing_delete(page, page_size, tpl_d);
+
+	return 1;
 }
 
 int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
