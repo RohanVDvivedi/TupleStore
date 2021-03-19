@@ -177,7 +177,7 @@ uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_fun
 	return hash_value;
 }
 
-int sprint_tuple(char* str, void* tup, const tuple_def* tpl_d)
+int sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 {
 	if(tup == NULL)
 	{
@@ -287,7 +287,7 @@ int sprint_tuple(char* str, void* tup, const tuple_def* tpl_d)
 	return chars_written;
 }
 
-int sscan_tuple(char* str, void* tup, const tuple_def* tpl_d)
+int sscan_tuple(const char* str, void* tup, const tuple_def* tpl_d)
 {
 	int nr = 0;
 	int chars_read = 0;
