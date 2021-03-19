@@ -662,6 +662,34 @@ uint16_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def
 	return tuples_copied;
 }
 
+int swap_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t i1, uint16_t i2)
+{
+	// if either of indices are out of bounds, or if the indices are equal, then the swap can not be performed
+	if(i1 >= get_tuple_count(page) || i2 >= get_tuple_count(page) || i1 == i2)
+		return 0;
+
+	if(i1 > i2)
+		return swap_tuples(page, page_size, tpl_d, i2, i1);
+
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+		{
+			// TODO
+			return 1;
+		}
+		case FIXED_ARRAY_PAGE_LAYOUT :
+		{
+			// TODO
+			return 1;
+		}
+		default :
+		{
+			return 0;
+		}
+	}
+}
+
 int run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	switch(get_page_layout_type(tpl_d))
