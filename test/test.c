@@ -144,14 +144,14 @@ int main()
 	// ---------------	COMPARE 2 TUPLES
 
 	printf("compare(tuple_0 , tuple_1) = %d\n\n", 
-				compare_tuples(	seek_to_nth_tuple(page, PAGE_SIZE, def, 0), 
-								seek_to_nth_tuple(page, PAGE_SIZE, def, 1), 
+				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 0), 
+								get_nth_tuple(page, PAGE_SIZE, def, 1), 
 								def)
 			);
 
 	printf("compare(tuple_2 , tuple_1) = %d\n\n", 
-				compare_tuples(	seek_to_nth_tuple(page, PAGE_SIZE, def, 2), 
-								seek_to_nth_tuple(page, PAGE_SIZE, def, 1), 
+				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 2), 
+								get_nth_tuple(page, PAGE_SIZE, def, 1), 
 								def)
 			);
 
@@ -258,7 +258,7 @@ int main()
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
 
-	reinsert_all_for_page_compaction(temp_page, PAGE_SIZE, def);
+	run_page_compaction(temp_page, PAGE_SIZE, def);
 
 	printf("\nAfter compaction available_size(%u)\n", get_free_space_in_page(temp_page, PAGE_SIZE, def));
 	printf("\nCOPY PAGE :: \n");
