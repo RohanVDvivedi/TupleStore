@@ -7,7 +7,7 @@
 #include<page_layout.h>
 
 // comment the below macro to test the SLOTTED_PAGE_LAYOUT
-#define TEST_FIXED_ARRAY_PAGE_LAYOUT
+//#define TEST_FIXED_ARRAY_PAGE_LAYOUT
 
 // uncomment the page size that you want to test with
   #define PAGE_SIZE     256
@@ -91,6 +91,8 @@ int main()
 	char tuple_cache[PAGE_SIZE];
 	// and
 	row* r = NULL;
+	// and the result from operation
+	int res;
 
 	// ---------------  INITIALIZE PAGE
 
@@ -106,15 +108,19 @@ int main()
 
 	build_tuple_from_row_struct(def, tuple_cache, r);
 
-	insert_tuple(page, PAGE_SIZE, def, tuple_cache);
+	res = insert_tuple(page, PAGE_SIZE, def, tuple_cache);
+
+	printf("Insert : %d\n\n\n", res);
 
 	// ---------------	INSERT
 
-	r = &(row){-12, 9, "Rohan bad", 51.2};
+	r = &(row){-12, 12, "Rohan is bad", 51.2};
 
 	build_tuple_from_row_struct(def, tuple_cache, r);
 
 	insert_tuple(page, PAGE_SIZE, def, tuple_cache);
+
+	printf("Insert : %d\n\n\n", res);
 
 	// ---------------`INSERT
 
@@ -124,6 +130,8 @@ int main()
 
 	insert_tuple(page, PAGE_SIZE, def, tuple_cache);
 
+	printf("Insert : %d\n\n\n", res);
+
 	// ---------------	INSERT
 
 	r = &(row){-53, 2, "ro", 20.21};
@@ -131,6 +139,8 @@ int main()
 	build_tuple_from_row_struct(def, tuple_cache, r);
 
 	insert_tuple(page, PAGE_SIZE, def, tuple_cache);
+
+	printf("Insert : %d\n\n\n", res);
 
 	// ---------------	COMPARE 2 TUPLES
 
@@ -155,9 +165,49 @@ int main()
 	
 	print_page_in_hex(page, PAGE_SIZE);
 
+	// ---------------	UPDATE
+
+	r = &(row){-456, 8, "by Rohan", 65536};
+
+	build_tuple_from_row_struct(def, tuple_cache, r);
+
+	res = update_tuple(page, PAGE_SIZE, def, 1, tuple_cache);
+
+	printf("Update(1) : %d\n\n\n", res);
+
+	// ---------------	PRINT PAGE
+	
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	// ---------------	PRINT PAGE IN HEX
+	
+	print_page_in_hex(page, PAGE_SIZE);
+
+	// ---------------	UPDATE
+
+	r = &(row){-789, 18, "Nam: Rohan Dvivedi", 99.99};
+
+	build_tuple_from_row_struct(def, tuple_cache, r);
+
+	res = update_tuple(page, PAGE_SIZE, def, 3, tuple_cache);
+
+	printf("Update(3) : %d\n\n\n", res);
+
+	// ---------------	PRINT PAGE
+	
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	// ---------------	PRINT PAGE IN HEX
+	
+	print_page_in_hex(page, PAGE_SIZE);
+
 	// --------------- DELETE
 
-	delete_tuple(page, PAGE_SIZE, def, 1);
+	res = delete_tuple(page, PAGE_SIZE, def, 1);
+
+	printf("Delete(1) : %d\n\n\n", res);
 
 	// ---------------	PRINT PAGE
 	
@@ -174,7 +224,9 @@ int main()
 
 	build_tuple_from_row_struct(def, tuple_cache, r);
 
-	update_tuple(page, PAGE_SIZE, def, 1, tuple_cache);
+	res = update_tuple(page, PAGE_SIZE, def, 1, tuple_cache);
+
+	printf("Update(1) : %d\n\n\n", res);
 
 	// ---------------	PRINT PAGE
 	
