@@ -668,8 +668,6 @@ int run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d)
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			// TODO 
-
 			// create a copy page
 			void* copy_page = malloc(page_size);
 			memmove(copy_page, page, page_size);
