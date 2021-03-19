@@ -364,6 +364,22 @@ int main()
 
 	// ---------------  SWAP TUPLES
 
+	printf("\nSwap(%u, %u) = %d\n", 2, 3, swap_tuples(temp_page, PAGE_SIZE, def, 2, 3));
+	print_page(temp_page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	printf("\nSwap(%u, %u) = %d\n", 0, 3, swap_tuples(temp_page, PAGE_SIZE, def, 0, 3));
+	print_page(temp_page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	printf("\nSwap(%u, %u) = %d\n", 4, 3, swap_tuples(temp_page, PAGE_SIZE, def, 4, 3));
+	print_page(temp_page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	printf("\nSwap(%u, %u) = %d\n", 1, 3, swap_tuples(temp_page, PAGE_SIZE, def, 1, 3));
+	print_page(temp_page, PAGE_SIZE, def);
+	printf("\n\n");
+
 	// ---------------  DELETE ALL TUPLES
 
 	printf("page :: \n");
