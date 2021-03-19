@@ -380,6 +380,10 @@ int main()
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
 
+	printf("\nSwap(%u, %u) = %d\n", 0, 5, swap_tuples(temp_page, PAGE_SIZE, def, 0, 5));
+	print_page(temp_page, PAGE_SIZE, def);
+	printf("\n\n");
+
 	// ---------------  DELETE ALL TUPLES
 
 	printf("page :: \n");
