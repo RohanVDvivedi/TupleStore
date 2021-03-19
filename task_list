@@ -1,5 +1,9 @@
- * implement swap_tuples function for page
 
- * use a static inline function to remove trailing deletes
+ * use a static inline function to remove trailing tombstones
+ 	* implement discard_trailing_tombstones()
+ 	* use it in delete_function
+
+ * implement swap_tuples(i1, i2) function for page
+ 	* use delete and update function for implementing swap_tuples function
 
  * dynamic programming approach to calculate offsets in a variable sized tuple
