@@ -10,8 +10,8 @@
 #define TEST_FIXED_ARRAY_PAGE_LAYOUT
 
 // uncomment the page size that you want to test with
-//#define PAGE_SIZE     256
-  #define PAGE_SIZE     512
+  #define PAGE_SIZE     256
+//#define PAGE_SIZE     512
 //#define PAGE_SIZE    1024
 //#define PAGE_SIZE    4096
 //#define PAGE_SIZE    8192
@@ -35,7 +35,7 @@ void init_tuple_definition(tuple_def* def)
 	#endif
 
 	insert_element_def(def, STRING, 6);
-	insert_element_def(def,   BLOB, 10);	// make this a STRING datatype to print a readable output
+	insert_element_def(def, STRING, 10);	// make this a STRING datatype to print a readable output
 	insert_element_def(def,  FLOAT, 8);
 
 	finalize_tuple_def(def);
