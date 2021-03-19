@@ -1,5 +1,3 @@
- * implement multi level page compaction
-
  * change seek_to method names to get_ methods
 
  * dynamic programming approach to calculate offsets in a variable sized tuple
