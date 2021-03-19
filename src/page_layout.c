@@ -761,6 +761,34 @@ uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, cons
 	return tuples_data_size;
 }
 
+uint32_t get_space_occupied_by_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	uint16_t tuple_count = get_tuple_count(page);
+	if(tuple_count == 0)
+		return 0;
+	else
+		return get_space_occupied_by_tuples(page, page_size, tpl_d, 0, tuple_count - 1);
+}
+
+uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	switch(get_page_layout_type(tpl_d))
+	{
+		case FIXED_ARRAY_PAGE_LAYOUT :
+		{
+			return page_size - get_tuple_offsets_offset_SLOTTED(page, page_size);
+		}
+		case SLOTTED_PAGE_LAYOUT :
+		{
+			return page_size - get_bitmap_offset_FIXED_ARRAY(page);
+		}
+		default :
+		{
+			return 0;
+		}
+	}
+}
+
 int can_accomodate_tuple_insert(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
 	uint32_t free_space_in_page = get_free_space_in_page(page, page_size, tpl_d);
@@ -794,7 +822,9 @@ void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 		printf(" of %u)", get_tuple_capacity_FIXED_ARRAY(page, page_size, tpl_d->size));
 	else 								// case : SLOTTED PAGE
 		printf(") : tuple_offsets_data_type_size(%u) : end_of_free_space_offset(%u)", get_data_type_size_for_page_offsets(page_size), get_end_of_free_space_offset_SLOTTED(page, page_size));
-	printf(" : tuples_data_size(%u) : free_space(%u)\n\n", get_space_occupied_by_tuples(page, page_size, tpl_d, 0, tup_count - 1), get_free_space_in_page(page, page_size, tpl_d));
+	printf(" : tuples_data_size(%u) : free_space(%u)", get_space_occupied_by_tuples(page, page_size, tpl_d, 0, tup_count - 1), get_free_space_in_page(page, page_size, tpl_d));
+	printf(" : efficiency(%u/%u) = %f\n\n", get_space_occupied_by_all_tuples(page, page_size, tpl_d), get_space_allotted_to_all_tuples(page, page_size, tpl_d),
+		((float)get_space_occupied_by_all_tuples(page, page_size, tpl_d)) / get_space_allotted_to_all_tuples(page, page_size, tpl_d));
 
 	printf("Page references ::\n");
 	for(uint8_t i = 0; i < ref_count; i++)

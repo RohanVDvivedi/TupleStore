@@ -121,6 +121,15 @@ uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, cons
 
 
 
+// equivalent to get_space_occupied_by_tuples(0, tuple_count - 1)
+uint32_t get_space_occupied_by_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+
+// this is equivalent to free_space when the tuple_count = 0
+uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+
+
+
+
 // prints all page_reference_ids andd all tuples in the page including the deleted
 void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
