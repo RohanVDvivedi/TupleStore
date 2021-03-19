@@ -219,11 +219,8 @@ int main()
 	// ---------------	UPDATE
 
 	r = &(row){-234, 17, "Project by Rohan.", 655.36};
-
 	build_tuple_from_row_struct(def, tuple_cache, r);
-
 	res = update_tuple(page, PAGE_SIZE, def, 1, tuple_cache);
-
 	printf("Update(1) : %d\n\n\n", res);
 
 	// ---------------	PRINT PAGE
