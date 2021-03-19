@@ -189,7 +189,6 @@ int main()
 	// --------------- DELETE
 
 	res = delete_tuple(page, PAGE_SIZE, def, 1);
-
 	printf("Delete(1) : %d\n\n\n", res);
 
 	// ---------------	PRINT PAGE
@@ -204,7 +203,6 @@ int main()
 	// --------------- DELETE
 
 	res = delete_tuple(page, PAGE_SIZE, def, 3);
-
 	printf("Delete(3) : %d\n\n\n", res);
 
 	// ---------------	PRINT PAGE
@@ -364,7 +362,13 @@ int main()
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
 
+	// ---------------  SWAP TUPLES
+
 	// ---------------  DELETE ALL TUPLES
+
+	printf("page :: \n");
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
 
 	uint16_t tuples_to_delete = get_tuple_count(page);
 	uint16_t mid = (tuples_to_delete/2);
