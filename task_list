@@ -1,4 +1,4 @@
  
- * implement sort_page method
+ * implement delete_all_tuples method
  
  * dynamic programming approach to calculate offsets in a variable sized tuple
