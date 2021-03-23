@@ -568,7 +568,7 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 	return 1;
 }
 
-void delete_all_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d)
+int delete_all_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	// set the tuple count to 0
 	uint16_t* count = page + get_tuple_count_offset();
@@ -578,9 +578,9 @@ void delete_all_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d)
 	{
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			// reset its end_of_free_space_offset
+			// reset end_of_free_space_offset to page_size
 			set_end_of_free_space_offset_SLOTTED(page, page_size, page_size);
-			break;
+			return 1;
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{	// this is not necessary, but it is performed to maintain clarity, 
@@ -593,10 +593,14 @@ void delete_all_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d)
 			
 			// set all the bytes in the is_valid bitmap to 0
 			memset(is_valid, 0, bitmap_size_in_bytes(tuples_capacity));
-			break;
+
+			return 1;
+		}
+		default :
+		{
+			return 0;
 		}
 	}
-
 }
 
 int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
