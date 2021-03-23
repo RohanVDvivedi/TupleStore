@@ -84,6 +84,10 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 // index must be < get_tuple_count()
 int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
 
+// deletes all the tuple in the page
+// for a slotted page it will also reset the end_of_free_space_offset
+int delete_all_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d);
+
 // to check if a tuple at the given index in the page exists
 // 1 means the tuple exists, else if 0 then the tuple does not exists
 // it also returns 0, also when the tuple index is out of bounds, i.e. (index >= get_tuple_count())
