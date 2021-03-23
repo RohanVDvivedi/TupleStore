@@ -568,15 +568,35 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 	return 1;
 }
 
-int delete_all_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d)
+void delete_all_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	// set the tuple count to 0
 	uint16_t* count = page + get_tuple_count_offset();
 	(*count) = 0;
 
-	// if the layout is SLOTTED_PAGE, then reset its end_of_free_space_offset
-	if(get_page_layout_type(tpl_d) == SLOTTED_PAGE_LAYOUT)
-		set_end_of_free_space_offset_SLOTTED(page, page_size, page_size);
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+		{
+			// reset its end_of_free_space_offset
+			set_end_of_free_space_offset_SLOTTED(page, page_size, page_size);
+			break;
+		}
+		case FIXED_ARRAY_PAGE_LAYOUT :
+		{	// this is not necessary, but it is performed to maintain clarity, 
+			// i.e. that there is a bitmap to manage on the page
+
+			char* is_valid = page + get_bitmap_offset_FIXED_ARRAY(page);
+
+			// the tuples_capacity is the size of the bitmap in bits
+			uint16_t tuples_capacity = get_tuple_capacity_FIXED_ARRAY(page, page_size, tpl_d->size);
+			
+			// set all the bytes in the is_valid bitmap to 0
+			memset(is_valid, 0, bitmap_size_in_bytes(tuples_capacity));
+			break;
+		}
+	}
+
 }
 
 int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
