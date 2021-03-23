@@ -539,6 +539,11 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 				set_end_of_free_space_offset_SLOTTED(page, page_size, end_of_free_space_offset + tuple_size_at_index);
 			}
 
+			// if we are deleting the only last available tuple on this page
+			// then reset the end_of_free_space_offset to the end of the page (i.e. all space is available)
+			if(get_tuple_count(page) == 1)
+				set_end_of_free_space_offset_SLOTTED(page, page_size, page_size);
+
 			// set the tuple offset of the tuple to be deleted to 0, i.e. mark deleted
 			set_tuple_offset_SLOTTED(page, page_size, index, 0);
 
