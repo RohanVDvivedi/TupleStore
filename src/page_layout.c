@@ -266,11 +266,13 @@ int init_page(void* page, uint32_t page_size, uint8_t page_type, uint8_t referen
 	if(page_size < get_minimum_page_size(reference_pages_count, tpl_d, ((tpl_d == NULL) ? 0 : 4)))
 		return 0;
 
-	uint8_t* page_type_p             = page + get_page_type_offset();
+	uint8_t* page_type_p = page + get_page_type_offset();
 	uint8_t* reference_pages_count_p = page + get_reference_pages_count_offset();
+	uint16_t* tuple_count_p = page + get_tuple_count_offset();
 
-	(*page_type_p)            = page_type;
+	(*page_type_p) = page_type;
 	(*reference_pages_count_p) = reference_pages_count;
+	(*tuple_count_p) = 0;
 
 	if(get_page_layout_type(tpl_d) == SLOTTED_PAGE_LAYOUT)
 		set_end_of_free_space_offset_SLOTTED(page, page_size, page_size);
