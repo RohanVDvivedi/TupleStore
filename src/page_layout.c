@@ -273,7 +273,7 @@ int init_page(void* page, uint32_t page_size, uint8_t page_type, uint8_t referen
 	(*reference_pages_count_p) = reference_pages_count;
 
 	if(get_page_layout_type(tpl_d) == SLOTTED_PAGE_LAYOUT)
-		set_end_of_free_space_offset_SLOTTED(page, page_size, 0);
+		set_end_of_free_space_offset_SLOTTED(page, page_size, page_size);
 
 	return 1;
 }
@@ -566,6 +566,17 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 		manage_tuple_count_for_trailing_delete(page, page_size, tpl_d);
 
 	return 1;
+}
+
+int delete_all_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	// set the tuple count to 0
+	uint16_t* count = page + get_tuple_count_offset();
+	(*count) = 0;
+
+	// if the layout is SLOTTED_PAGE, then reset its end_of_free_space_offset
+	if(get_page_layout_type(tpl_d) == SLOTTED_PAGE_LAYOUT)
+		set_end_of_free_space_offset_SLOTTED(page, page_size, page_size);
 }
 
 int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
