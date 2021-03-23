@@ -384,6 +384,12 @@ int main()
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
 
+	// ---------------  DELETE ALL TUPLES AT ONCE
+
+	delete_all_tuples(temp_page, PAGE_SIZE, def);
+	print_page(temp_page, PAGE_SIZE, def);
+	printf("\n\n");
+
 	// ---------------  DELETE ALL TUPLES
 
 	printf("page :: \n");
