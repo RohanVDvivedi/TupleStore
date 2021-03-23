@@ -97,7 +97,7 @@ struct tuple_def
 	element_def element_defs[];
 };
 
-#define size_of_tuple_def(element_count) (sizeof(tuple_def) + (element_count * sizeof(element_def)))
+#define size_of_tuple_def(element_count) (sizeof(tuple_def) + ((element_count) * sizeof(element_def)))
 
 // to initialize an empty tuple definition
 void init_tuple_def(tuple_def* tuple_d);
