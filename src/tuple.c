@@ -15,11 +15,11 @@ uint32_t get_element_size(const tuple_def* tpl_d, uint16_t index, const void* tu
 		switch(tpl_d->element_defs[index - 1].size)
 		{
 			case 1 :
-				return (*(get_element(tpl_d, index - 1, tupl).UINT_1));
+				return (*(get_element_from_tuple(tpl_d, index - 1, tupl).UINT_1));
 			case 2 :
-				return (*(get_element(tpl_d, index - 1, tupl).UINT_2));
+				return (*(get_element_from_tuple(tpl_d, index - 1, tupl).UINT_2));
 			case 4 :
-				return (*(get_element(tpl_d, index - 1, tupl).UINT_4));
+				return (*(get_element_from_tuple(tpl_d, index - 1, tupl).UINT_4));
 
 			// this is the error case it may never occur
 			default:
@@ -51,7 +51,7 @@ uint32_t get_element_offset(const tuple_def* tpl_d, uint16_t index, const void* 
 	}
 }
 
-element get_element(const tuple_def* tpl_d, uint16_t index, const void* tupl)
+element get_element_from_tuple(const tuple_def* tpl_d, uint16_t index, const void* tupl)
 {
 	return (element){.BLOB = (void*)(tupl + get_element_offset(tpl_d, index, tupl))};
 }
@@ -75,21 +75,21 @@ void* seek_to_end_of_tuple(const tuple_def* tpl_d, const void* tupl)
 
 void copy_element_to_tuple(const tuple_def* tpl_d, uint16_t index, void* tupl, const void* value)
 {
-	element ele = get_element(tpl_d, index, tupl);
+	element ele = get_element_from_tuple(tpl_d, index, tupl);
 	memmove(ele.BLOB, value, get_element_size(tpl_d, index, tupl));
 }
 
 void copy_element_from_tuple(const tuple_def* tpl_d, uint16_t index, const void* tupl, void* value)
 {
-	element ele = get_element(tpl_d, index, tupl);
+	element ele = get_element_from_tuple(tpl_d, index, tupl);
 	memmove(value, ele.BLOB, get_element_size(tpl_d, index, tupl));
 }
 
 int compare_elements(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint16_t index)
 {
 	// seek to the elements to be compared
-	element e1 = get_element(tpl_d, index, tup1);
-	element e2 = get_element(tpl_d, index, tup2);
+	element e1 = get_element_from_tuple(tpl_d, index, tup1);
+	element e2 = get_element_from_tuple(tpl_d, index, tup2);
 
 	// if fixed sized elements compare them directly
 	if(tpl_d->element_defs[index].size != VARIABLE_SIZED)
@@ -147,7 +147,7 @@ int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d)
 uint32_t hash_element(const void* tup, const tuple_def* tpl_d, uint16_t index, uint32_t (*hash_func)(const void* data, uint32_t size))
 {
 	// seek to the elements to be compared
-	element ele = get_element(tpl_d, index, tup);
+	element ele = get_element_from_tuple(tpl_d, index, tup);
 
 	// size of the element
 	uint32_t size = get_element_size(tpl_d, index, tup);
@@ -192,7 +192,7 @@ int sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 			chars_written += sprintf(str + chars_written, ", ");
 
 
-		element e = get_element(tpl_d, i, tup);
+		element e = get_element_from_tuple(tpl_d, i, tup);
 		switch(tpl_d->element_defs[i].type)
 		{
 			case UINT :
@@ -298,7 +298,7 @@ int sscan_tuple(const char* str, void* tup, const tuple_def* tpl_d)
 			sscanf(str + chars_read, ", %n", &nr);						chars_read += nr;
 		}
 
-		element e = get_element(tpl_d, i, tup);
+		element e = get_element_from_tuple(tpl_d, i, tup);
 		switch(tpl_d->element_defs[i].type)
 		{
 			case UINT :
