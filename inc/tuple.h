@@ -18,7 +18,7 @@ uint32_t get_element_size(const tuple_def* tpl_d, uint16_t index, const void* tu
 
 uint32_t get_element_offset(const tuple_def* tpl_d, uint16_t index, const void* tupl);
 
-element get_element(const tuple_def* tpl_d, uint16_t index, const void* tupl);
+element get_element_from_tuple(const tuple_def* tpl_d, uint16_t index, const void* tupl);
 
 
 // tuple level functions
