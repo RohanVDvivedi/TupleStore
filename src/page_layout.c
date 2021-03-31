@@ -263,7 +263,7 @@ uint32_t get_minimum_page_size(uint8_t reference_pages_count, const tuple_def* t
 int init_page(void* page, uint32_t page_size, uint8_t page_type, uint8_t reference_pages_count, const tuple_def* tpl_d)
 {
 	// the page you decide to use must be able to accomodate atleast 4 tuples, if you have provided a tuple definition
-	if(page_size < get_minimum_page_size(reference_pages_count, tpl_d, ((tpl_d == NULL) ? 0 : 4)))
+	if(page_size < get_minimum_page_size(reference_pages_count, tpl_d, ((tpl_d == NULL) ? 0 : 1)))
 		return 0;
 
 	uint8_t* page_type_p = page + get_page_type_offset();
