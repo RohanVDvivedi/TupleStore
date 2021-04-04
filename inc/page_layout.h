@@ -68,7 +68,7 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 
 // returns 1, on success, if insert_tuple function would return with a success, without the actual insert happening
 // i.e. for simplicity it returns get_free_space_in_page() >= get_size(external_tuple)
-int can_accomodate_tuple_insert(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
+int can_accomodate_tuple_insert(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
 // inserts tuples from page_src starting with start_index and until end_index (or tuple_count - 1), 
 // it ignore copying all deleted tuples

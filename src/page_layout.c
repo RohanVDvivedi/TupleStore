@@ -865,7 +865,7 @@ uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, 
 	}
 }
 
-int can_accomodate_tuple_insert(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
+int can_accomodate_tuple_insert(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
 	uint32_t free_space_in_page = get_free_space_in_page(page, page_size, tpl_d);
 
