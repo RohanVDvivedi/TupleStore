@@ -1,5 +1,2 @@
-* Implement
- * can_accomodate
-  	* //  and use space related functions to check if the page can accomodate the new tuple
 
  * dynamic programming approach to calculate offsets in a variable sized tuple
