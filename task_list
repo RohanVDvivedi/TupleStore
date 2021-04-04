@@ -1,5 +1,4 @@
 * Implement
-  * get_space_allotted_for_all_tuples(uint32_t page_size, const tuple_def* tpl_d); -- // to fix
   * get_additional_space_required_per_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d);
   * can_accomodate
   	* //  and use space related functions to check if the page can accomodate the new tuple
