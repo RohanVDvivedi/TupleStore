@@ -846,6 +846,25 @@ uint32_t get_space_occupied_by_all_tuples(const void* page, uint32_t page_size, 
 		return get_space_occupied_by_tuples(page, page_size, tpl_d, 0, tuple_count - 1);
 }
 
+uint32_t get_additional_space_occupied_per_tuple(uint32_t page_size, const tuple_def* tpl_d)
+{
+	switch(get_page_layout_type(tpl_d))
+	{
+		case FIXED_ARRAY_PAGE_LAYOUT :
+		{
+			return 0;
+		}
+		case SLOTTED_PAGE_LAYOUT :
+		{
+			return get_data_type_size_for_page_offsets(page_size);
+		}
+		default :
+		{
+			return 0;
+		}
+	}
+}
+
 uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	switch(get_page_layout_type(tpl_d))
