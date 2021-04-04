@@ -117,6 +117,7 @@ int run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 // returns total free space inside a given page
 // free_space = total_space - space occupied by the tuples (including the deleted one's)
+// this is the space that will be used to accomodate every new insert
 uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 // returns the space that is used on this page for storing the tuples between indices start_index and end_index
@@ -133,6 +134,8 @@ uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, cons
 uint32_t get_space_occupied_by_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 // this is equivalent to free_space when the tuple_count = 0
+// it does not include the memory region of is_valid bitmap (- FIXED_ARRAY_PAGE_LAYOUT)
+// but it does include the memory region of the tuple_offsets (- SLOTTED_PAGE_LAYOUT)
 uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 
