@@ -852,7 +852,7 @@ uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, 
 	{
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
-			return page_size - get_bitmap_offset_FIXED_ARRAY(page);
+			return page_size - get_tuples_offset_FIXED_ARRAY(page, page_size, tpl_d->size);
 		}
 		case SLOTTED_PAGE_LAYOUT :
 		{
