@@ -912,7 +912,7 @@ void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 	else 								// case : SLOTTED PAGE
 		printf(") : tuple_offsets_data_type_size(%u) : end_of_free_space_offset(%u)", get_data_type_size_for_page_offsets(page_size), get_end_of_free_space_offset_SLOTTED(page, page_size));
 	printf(" : tuples_data_size(%u) : free_space(%u)", get_space_occupied_by_tuples(page, page_size, tpl_d, 0, tup_count - 1), get_free_space_in_page(page, page_size, tpl_d));
-	printf(" : efficiency(%u/%u) = %f\n\n", get_space_occupied_by_all_tuples(page, page_size, tpl_d), get_space_allotted_to_all_tuples(page, page_size, tpl_d),
+	printf(" : occupancy(%u/%u) = %f\n\n", get_space_occupied_by_all_tuples(page, page_size, tpl_d), get_space_allotted_to_all_tuples(page, page_size, tpl_d),
 		((float)get_space_occupied_by_all_tuples(page, page_size, tpl_d)) / get_space_allotted_to_all_tuples(page, page_size, tpl_d));
 
 	printf("Page references ::\n");
