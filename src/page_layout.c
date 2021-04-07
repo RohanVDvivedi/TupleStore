@@ -953,7 +953,7 @@ void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 		get_space_allotted_to_page_header(page, page_size, tpl_d), 
 		get_space_allotted_to_all_tuples(page, page_size, tpl_d), page_size);
 
-	printf("\ttuples_occupied_size(%u or %u) + free_space(%u) = tuples_allotted_size(%u)\n\n", 
+	printf("\ttuples_occupied_size(%u or %u) + free_space(%u) + wasted_space = tuples_allotted_size(%u)\n\n", 
 		get_space_occupied_by_tuples(page, page_size, tpl_d, 0, tup_count - 1),
 		get_space_occupied_by_all_tuples(page, page_size, tpl_d),
 		get_free_space_in_page(page, page_size, tpl_d),
