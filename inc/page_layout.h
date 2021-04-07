@@ -37,6 +37,17 @@ uint32_t get_minimum_page_size(uint8_t reference_pages_count, const tuple_def* t
 // if init_page fails, then it returns 0 (else 1 for success)
 int init_page(void* page, uint32_t page_size, uint8_t page_type, uint8_t reference_pages_count, const tuple_def* tpl_d);
 
+// this is includes space allotted for fields : page_type, reference_page_count, tuple_count, space required for all the referenece_page_id-s
+// it also includes the memory region of is_valid bitmap (- FIXED_ARRAY_PAGE_LAYOUT)
+// it also includes the space allotted for end_of_free_space_offset (- SLOTTED_PAGE_LAYOUT)
+uint32_t get_space_to_be_allotted_for_page_header(uint8_t reference_pages_count, uint32_t page_size, const tuple_def* tpl_d);
+
+// this is equivalent to free_space when the tuple_count = 0
+// it does not include the memory region of is_valid bitmap (- FIXED_ARRAY_PAGE_LAYOUT)
+// but it does include the memory region of the tuple_offsets (- SLOTTED_PAGE_LAYOUT)
+// it is equivalent to ==> page_size - get_space_to_be_allotted_to_page_header()
+uint32_t get_space_to_be_allotted_for_all_tuples(uint8_t reference_pages_count, uint32_t page_size, const tuple_def* tpl_d);
+
 // getter and setter for the page_type that the user mentioned
 uint8_t get_page_type(const void* page);
 void set_page_type(void* page, uint8_t page_type);

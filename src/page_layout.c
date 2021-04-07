@@ -280,6 +280,35 @@ int init_page(void* page, uint32_t page_size, uint8_t page_type, uint8_t referen
 	return 1;
 }
 
+uint32_t get_space_to_be_allotted_for_page_header(uint8_t reference_pages_count, uint32_t page_size, const tuple_def* tpl_d)
+{
+	uint32_t page_header_size = 1 + 1 + 2 + (reference_pages_count * 4);
+
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+		{
+			return page_header_size + get_data_type_size_for_page_offsets(page_size);
+		}
+		case FIXED_ARRAY_PAGE_LAYOUT :
+		{
+			// the below line is recalculation of function :
+			//		static inline uint16_t get_tuple_capacity_FIXED_ARRAY(const void* page, uint32_t page_size, uint32_t tuple_size)
+			uint16_t tuples_capacity = ((page_size - page_header_size) * 8) / (tpl_d->size * 8 + 1);
+			return page_header_size + bitmap_size_in_bytes(tuples_capacity);
+		}
+		default :
+		{
+			return 0;
+		}
+	}
+}
+
+uint32_t get_space_to_be_allotted_for_all_tuples(uint8_t reference_pages_count, uint32_t page_size, const tuple_def* tpl_d)
+{
+	return page_size - get_space_to_be_allotted_for_page_header(reference_pages_count, page_size, tpl_d);
+}
+
 uint8_t get_page_type(const void* page)
 {
 	const uint8_t* page_type = page + get_page_type_offset();
