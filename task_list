@@ -1,4 +1,2 @@
 
- * refactor print method and show parameters summations
-
  * dynamic programming approach to calculate offsets in a variable sized tuple
