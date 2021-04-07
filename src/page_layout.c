@@ -939,25 +939,21 @@ void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 	uint8_t ref_count = get_reference_pages_count(page);
 	uint16_t tup_count = get_tuple_count(page);
 
-	printf("%s", page_layout_type);
-	printf("\tpage_header_allotted_size(%u) + all_tuples_allotted_size(%u) = page_size(%u)\n",
+	printf("%s\n", page_layout_type);
+	printf("\tpage_header_allotted_size(%u) + all_tuples_allotted_size(%u) = page_size(%u)\n\n",
 		get_space_to_be_allotted_for_page_header(ref_count, page_size, tpl_d), 
 		get_space_to_be_allotted_for_all_tuples(ref_count, page_size, tpl_d), page_size);
 
-	printf("\treference_page_ids(%u) : tuples(%u", ref_count, tup_count);
-	if(tpl_d->size != VARIABLE_SIZED)	// case : FIXED ARRAY PAGE
-		printf(" of %u)\n", get_tuple_capacity_FIXED_ARRAY(page, page_size, tpl_d->size));
-	else 								// case : SLOTTED PAGE
-		printf(")\n");
+	printf("\n");
 
 	if(tpl_d->size == VARIABLE_SIZED)		// case : SLOTTED PAGE
-		printf("\ttuple_offsets_data_type_size(%u) : end_of_free_space_offset(%u)\n", get_data_type_size_for_page_offsets(page_size), get_end_of_free_space_offset_SLOTTED(page, page_size));
+		printf("\ttuple_offsets_data_type_size(%u) : end_of_free_space_offset(%u)\n\n", get_data_type_size_for_page_offsets(page_size), get_end_of_free_space_offset_SLOTTED(page, page_size));
 
-	printf("\tpage_header_allotted_size(%u) + all_tuples_allotted_size(%u) = page_size(%u)\n",
+	printf("\tpage_header_allotted_size(%u) + all_tuples_allotted_size(%u) = page_size(%u)\n\n",
 		get_space_allotted_to_page_header(page, page_size, tpl_d), 
 		get_space_allotted_to_all_tuples(page, page_size, tpl_d), page_size);
 
-	printf("\ttuples_occupied_size(%u or %u) + free_space(%u) = tuples_allotted_size(%u)\n", 
+	printf("\ttuples_occupied_size(%u or %u) + free_space(%u) = tuples_allotted_size(%u)\n\n", 
 		get_space_occupied_by_tuples(page, page_size, tpl_d, 0, tup_count - 1),
 		get_space_occupied_by_all_tuples(page, page_size, tpl_d),
 		get_free_space_in_page(page, page_size, tpl_d),
@@ -966,26 +962,32 @@ void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 	printf("\toccupancy(%u/%u) = %f\n\n", get_space_occupied_by_all_tuples(page, page_size, tpl_d), get_space_allotted_to_all_tuples(page, page_size, tpl_d),
 		((float)get_space_occupied_by_all_tuples(page, page_size, tpl_d)) / get_space_allotted_to_all_tuples(page, page_size, tpl_d));
 
-	printf("Page references ::\n");
+	printf("\tPage references :: (%u)\n", ref_count);
 	for(uint8_t i = 0; i < ref_count; i++)
-		printf("\t Reference page id [%u] : %u\n\n", i, get_reference_page_id(page, i));
+		printf("\t\tReference page id [%u] : %u\n\n", i, get_reference_page_id(page, i));
 
 	printf("\n");
 
+	printf("\tTuples :: (%u", tup_count);
+	if(tpl_d->size != VARIABLE_SIZED)	// case : FIXED ARRAY PAGE
+		printf(" of %u)\n", get_tuple_capacity_FIXED_ARRAY(page, page_size, tpl_d->size));
+	else 								// case : SLOTTED PAGE
+		printf(")\n");
+
 	for(uint16_t i = 0; i < tup_count; i++)
 	{
-		printf("\t Tuple %u\n", i);
+		printf("\t\ttuple %u\n", i);
 		if(exists_tuple(page, page_size, tpl_d, i))
 		{
 			const void* tuple = get_nth_tuple(page, page_size, tpl_d, i);
 			uint32_t tuple_size = get_tuple_size(tpl_d, tuple);
 			char* print_buffer = malloc(tuple_size + (tpl_d->element_count * 32));
 			sprint_tuple(print_buffer, tuple, tpl_d);
-			printf("\t\toffset[%lu] size(%u) :: %s\n\n", ((uintptr_t)(tuple - page)), tuple_size, print_buffer);
+			printf("\t\t\toffset[%lu] size(%u) :: %s\n\n", ((uintptr_t)(tuple - page)), tuple_size, print_buffer);
 			free(print_buffer);
 		}
 		else
-			printf("\t\t %s\n\n", "DELETED");
+			printf("\t\t\t%s\n\n", "DELETED");
 	}
 	printf("\n\n\n");
 }
