@@ -865,23 +865,28 @@ uint32_t get_additional_space_occupied_per_tuple(uint32_t page_size, const tuple
 	}
 }
 
-uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+uint32_t get_space_allotted_to_page_header(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
 		case FIXED_ARRAY_PAGE_LAYOUT :
 		{
-			return page_size - get_tuples_offset_FIXED_ARRAY(page, page_size, tpl_d->size);
+			return get_tuples_offset_FIXED_ARRAY(page, page_size, tpl_d->size);
 		}
 		case SLOTTED_PAGE_LAYOUT :
 		{
-			return page_size - get_tuple_offsets_offset_SLOTTED(page, page_size);
+			return get_tuple_offsets_offset_SLOTTED(page, page_size);
 		}
 		default :
 		{
 			return 0;
 		}
 	}
+}
+
+uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	return page_size - get_space_allotted_to_page_header(page, page_size, tpl_d);
 }
 
 int can_accomodate_tuple_insert(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)

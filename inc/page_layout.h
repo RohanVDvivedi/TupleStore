@@ -138,9 +138,15 @@ uint32_t get_space_occupied_by_all_tuples(const void* page, uint32_t page_size, 
 // this value is 0 for FIXED_ARRAY_PAGE_LAYOUT, while it is equal to size of a tuple offset for SLOTTED_PAGE_LAYOUT
 uint32_t get_additional_space_occupied_per_tuple(uint32_t page_size, const tuple_def* tpl_d);
 
+// this is includes space allotted for fields : page_type, reference_page_count, tuple_count, space required for all the referenece_page_id-s
+// it also includes the memory region of is_valid bitmap (- FIXED_ARRAY_PAGE_LAYOUT)
+// it also includes the space allotted for end_of_free_space_offset (- SLOTTED_PAGE_LAYOUT)
+uint32_t get_space_allotted_to_page_header(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+
 // this is equivalent to free_space when the tuple_count = 0
 // it does not include the memory region of is_valid bitmap (- FIXED_ARRAY_PAGE_LAYOUT)
 // but it does include the memory region of the tuple_offsets (- SLOTTED_PAGE_LAYOUT)
+// it is equivalent to ==> page_size - get_space_allotted_to_page_header()
 uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 
