@@ -2,4 +2,6 @@
  * get_space_to_be_allotted_for_page_header(uint8_t ref_count, uint32_t page_size, const tuple_def* tpl_d);
  * get_space_to_be_allotted_for_all_tuples(uint8_t ref_count, uint32_t page_size, const tuple_def* tpl_d);
 
+ * refactor print method and show parameters summations
+
  * dynamic programming approach to calculate offsets in a variable sized tuple
