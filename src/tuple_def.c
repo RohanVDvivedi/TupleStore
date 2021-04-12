@@ -194,3 +194,19 @@ void print_tuple_def(const tuple_def* tuple_d)
 		print_element_def((tuple_d->element_defs) + i);
 	}
 }
+
+void recalculate_size_AND_byte_offsets_for_tuple_def(tuple_def* tuple_d)
+{
+	tuple_d->size = 0;
+	for(uint16_t i = 0; i < tuple_d->element_count; i++)
+	{
+		if(tuple_d->element_defs[i].size == VARIABLE_SIZED)
+		{
+			tuple_d->size = VARIABLE_SIZED;
+			break;
+		}
+
+		tuple_d->element_defs[i].byte_offset = tuple_d->size;
+		tuple_d->size += tuple_d->element_defs[i].size;
+	}
+}
