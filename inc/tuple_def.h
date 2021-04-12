@@ -124,14 +124,6 @@ uint32_t get_minimum_tuple_size(const tuple_def* tpl_d);
 // to print a final tuple definition
 void print_tuple_def(const tuple_def* tuple_d);
 
-// == == OPTIONAL METHOD == ==
-
-// does exactly as the name suggests
-// you may not need this function for a very simplistic usage of tuple definition
-// call this method only if you are sure that the tuple is valid and is not empty
-// use this method as sparingly as possible
-void recalculate_size_AND_byte_offsets_for_tuple_def(tuple_def* tuple_d);
-
 #endif
 
 // before any operation initializing a tuple definiton for that tuple is very important
