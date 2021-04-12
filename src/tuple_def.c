@@ -108,28 +108,23 @@ int insert_element_def(tuple_def* tuple_d, element_type ele_type, uint32_t eleme
 	if(!init_element_def(new_element_def, ele_type, element_size))
 		return 0;
 
-	new_element_def->byte_offset = tuple_d->size;
-	
-	// update the tuple size
-	if(element_size == VARIABLE_SIZED)
-		tuple_d->size = 0;	// if a VARIABLE_SIZED element is encountered, then restart counting
-	else
-		tuple_d->size += new_element_def->size;
-
-	// increment element count in the tuple
-	tuple_d->element_count += 1;
+	tuple_d->element_count++;
 	return 1;
 }
 
 void finalize_tuple_def(tuple_def* tuple_d)
 {
-	for(int i = 0; i < tuple_d->element_count; i++)
+	tuple_d->size = 0;
+	for(uint16_t i = 0; i < tuple_d->element_count; i++)
 	{
 		if(tuple_d->element_defs[i].size == VARIABLE_SIZED)
 		{
 			tuple_d->size = VARIABLE_SIZED;
-			return;
+			break;
 		}
+
+		tuple_d->element_defs[i].byte_offset = tuple_d->size;
+		tuple_d->size += tuple_d->element_defs[i].size;
 	}
 }
 
@@ -192,21 +187,5 @@ void print_tuple_def(const tuple_def* tuple_d)
 	{
 		printf("\t\t Column : %u\n", i);
 		print_element_def((tuple_d->element_defs) + i);
-	}
-}
-
-void recalculate_size_AND_byte_offsets_for_tuple_def(tuple_def* tuple_d)
-{
-	tuple_d->size = 0;
-	for(uint16_t i = 0; i < tuple_d->element_count; i++)
-	{
-		if(tuple_d->element_defs[i].size == VARIABLE_SIZED)
-		{
-			tuple_d->size = VARIABLE_SIZED;
-			break;
-		}
-
-		tuple_d->element_defs[i].byte_offset = tuple_d->size;
-		tuple_d->size += tuple_d->element_defs[i].size;
 	}
 }
