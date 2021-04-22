@@ -76,7 +76,16 @@ void* seek_to_end_of_tuple(const tuple_def* tpl_d, const void* tupl)
 void copy_element_to_tuple(const tuple_def* tpl_d, uint16_t index, void* tupl, const void* value)
 {
 	element ele = get_element_from_tuple(tpl_d, index, tupl);
-	memmove(ele.BLOB, value, get_element_size(tpl_d, index, tupl));
+
+	if(tpl_d->element_defs[index].type == STRING)
+	{
+		uint32_t total_size = get_element_size(tpl_d, index, tupl);
+		uint32_t string_size = strnlen(value, total_size) + 1;
+		uint32_t copy_size = (total_size < string_size) ? total_size : string_size;
+		memmove(ele.STRING, value, copy_size);
+	}
+	else
+		memmove(ele.BLOB, value, get_element_size(tpl_d, index, tupl));
 }
 
 void copy_element_from_tuple(const tuple_def* tpl_d, uint16_t index, const void* tupl, void* value)
