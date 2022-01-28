@@ -110,6 +110,10 @@ int can_insert_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 
 int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
+	// index out of bounds
+	if(index >= get_tuple_count_slotted_page(page, page_size))
+		return 0;
+
 	void* ith_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, index);
 	uint32_t ith_tuple_offset_val = read_value_from_page(ith_tuple_offset, page_size);
 

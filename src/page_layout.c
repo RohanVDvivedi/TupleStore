@@ -68,9 +68,6 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_
 
 int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
-	if(index >= get_tuple_count(page, page_size, tpl_d))
-		return 0;
-
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
