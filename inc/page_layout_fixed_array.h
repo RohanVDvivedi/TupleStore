@@ -3,6 +3,8 @@
 
 uint32_t get_minimum_page_size_for_fixed_array_page(uint32_t page_header_size, const tuple_def* tpl_d, uint32_t tuple_count);
 
+int init_fixed_array_page(void* page, uint32_t page_size, uint8_t page_header_size, const tuple_def* tpl_d);
+
 #endif
 
 /****************************************************************************************
