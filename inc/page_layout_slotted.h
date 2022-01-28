@@ -13,6 +13,8 @@ int can_insert_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 
 int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
 
+int delete_all_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d);
+
 uint32_t get_free_space_slotted_page(const void* page, uint32_t page_size);
 
 #endif
