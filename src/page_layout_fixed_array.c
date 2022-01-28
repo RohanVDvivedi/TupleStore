@@ -80,3 +80,8 @@ uint32_t get_tuple_count_fixed_array_page(const void* page, uint32_t page_size)
 	const void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	return read_value_from_page(tuple_count, page_size);
 }
+
+int can_insert_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	return get_tuple_count_fixed_array_page(page, page_size) < get_tuple_capacity(page, page_size, tpl_d);
+}
