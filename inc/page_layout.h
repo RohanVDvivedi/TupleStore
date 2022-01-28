@@ -33,9 +33,6 @@ uint32_t get_minimum_page_size(uint32_t page_header_size, const tuple_def* tpl_d
 // initialize page to start using it
 int init_page(void* page, uint32_t page_size, uint8_t page_header_size, const tuple_def* tpl_d);
 
-// returns a value that equals free space when tuple count = 0 
-uint32_t get_space_to_be_allotted_for_all_tuples(uint32_t page_size, uint32_t page_header_size, const tuple_def* tpl_d);
-
 // returns the number of tuples in the page (including the deleted ones)
 uint32_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 

@@ -10,9 +10,9 @@
 /*
 ** tuple capacity for a fixed array page can be pre-calculated
 */
-static inline uint32_t get_offset_to_is_valid_bitmap(void* page, uint32_t page_size);
+static inline uint32_t get_offset_to_is_valid_bitmap(const void* page, uint32_t page_size);
 
-static inline uint32_t get_tuple_capacity(void* page, uint32_t page_size, const tuple_def* tpl_d)
+static inline uint32_t get_tuple_capacity(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	return (page_size - get_offset_to_is_valid_bitmap(page, page_size)) / ((tpl_d->size * 8) + 1);
 }
@@ -21,22 +21,22 @@ static inline uint32_t get_tuple_capacity(void* page, uint32_t page_size, const 
 ** 		offset calculation functions
 */
 
-static inline uint32_t get_offset_to_tuple_count(void* page, uint32_t page_size)
+static inline uint32_t get_offset_to_tuple_count(const void* page, uint32_t page_size)
 {
 	return get_offset_to_end_of_page_header(page, page_size);
 }
 
-static inline uint32_t get_offset_to_is_valid_bitmap(void* page, uint32_t page_size)
+static inline uint32_t get_offset_to_is_valid_bitmap(const void* page, uint32_t page_size)
 {
 	return get_offset_to_tuple_count(page, page_size) + get_value_size_on_page(page_size);
 }
 
-static inline uint32_t get_offset_to_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d)
+static inline uint32_t get_offset_to_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	return get_offset_to_is_valid_bitmap(page, page_size) + bitmap_size_in_bytes(get_tuple_capacity(page, page_size, tpl_d));
 }
 
-static inline uint32_t get_offset_to_ith_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t ith)
+static inline uint32_t get_offset_to_ith_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t ith)
 {
 	return get_offset_to_tuples(page, page_size, tpl_d) + (ith * tpl_d->size);
 }
@@ -73,4 +73,10 @@ int init_fixed_array_page(void* page, uint32_t page_size, uint8_t page_header_si
 	write_value_to_page(tuple_count, page_size, 0);
 
 	return 1;
+}
+
+uint32_t get_tuple_count_fixed_array_page(const void* page, uint32_t page_size)
+{
+	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	return read_value_from_page(tuple_count, page_size);
 }

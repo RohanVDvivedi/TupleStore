@@ -36,18 +36,6 @@ int init_page(void* page, uint32_t page_size, uint8_t page_header_size, const tu
 	return 0;
 }
 
-uint32_t get_space_to_be_allotted_for_tuples(uint32_t page_size, uint32_t page_header_size, const tuple_def* tpl_d)
-{
-	switch(get_page_layout_type(tpl_d))
-	{
-		case SLOTTED_PAGE_LAYOUT :
-			return get_space_to_be_allotted_for_tuples_slotted_page(page_size, page_header_size, tpl_d);
-		case FIXED_ARRAY_PAGE_LAYOUT :
-			return get_space_to_be_allotted_for_tuples_fixed_array_page(page_size, page_header_size, tpl_d);
-	}
-	return 0;
-}
-
 uint32_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	switch(get_page_layout_type(tpl_d))
