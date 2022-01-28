@@ -91,7 +91,7 @@ struct tuple_def
 	uint32_t size;
 
 	// total elements in the tuple
-	uint16_t element_count;
+	uint32_t element_count;
 
 	// definition of all of the elements
 	element_def element_defs[];
@@ -115,7 +115,7 @@ int is_empty_tuple_def(const tuple_def* tuple_d);
 
 // returns 1, if the element at the given index will be responsible
 // for specifing the size of a VARIABLE_SIZED tuple element at (index + 1).
-int is_size_specifying_element(const tuple_def* tuple_d, uint16_t index);
+int is_size_specifying_element(const tuple_def* tuple_d, uint32_t index);
 
 // this is the minimum size of any tuple that can be defined by the given tuple definition
 // the minimum sized tuple is the one where all variable size elements (as per the tuple definition) are 0 sized
@@ -128,7 +128,7 @@ void print_tuple_def(const tuple_def* tuple_d);
 
 // before any operation initializing a tuple definiton for that tuple is very important
 /*
-**	tuple_def* tuple_d = acclocate( sizeof(tuple_def) + NO_OF_ELEMENTS * sizeof(element_def) );
+**	tuple_def* tuple_d = allocate( size_of_tuple_def(NO_OF_ELEMENTS) );
 **
 **	init_tuple_def(tuple_d);
 **
@@ -140,8 +140,6 @@ void print_tuple_def(const tuple_def* tuple_d);
 **
 **	finalize_tuple_def(tuple_d);
 **
-**	if(is_empty_tuple_def(tuple_def))
-**		exit(-1);	// panic for the error
 **
 **	// you may call print_tuple_def or any of other functions from "tuple.h" header file
 **
