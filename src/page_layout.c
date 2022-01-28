@@ -14,9 +14,9 @@ uint32_t get_minimum_page_size(uint32_t page_header_size, const tuple_def* tpl_d
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			return get_minimum_page_size_slotted_page(page_header_size, tpl_d, tuple_count);
+			return get_minimum_page_size_for_slotted_page(page_header_size, tpl_d, tuple_count);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return get_minimum_page_size_fixed_array_page(page_header_size, tpl_d, tuple_count);
+			return get_minimum_page_size_for_fixed_array_page(page_header_size, tpl_d, tuple_count);
 	}
 	return 0;
 }
