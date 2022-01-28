@@ -29,6 +29,31 @@ static inline uint32_t get_offset_to_ith_tuple_offset(void* page, uint32_t page_
 	return get_offset_to_tuple_offsets(page, page_size) + (ith * get_value_size_on_page(page_size));
 }
 
+static inline uint32_t get_offset_to_start_of_free_space(void* page, uint32_t page_size)
+{
+	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
+	return get_offset_to_ith_tuple_offset(page, page_size, tuple_count_val);
+}
+
+static inline uint32_t get_offset_to_end_of_free_space(void* page, uint32_t page_size)
+{
+	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
+
+	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
+	uint32_t end_of_free_space_offset_val = read_value_from_page(end_of_free_space_offset, page_size);
+
+	// if the tuple_count == 0, the free space end with the end of page
+	return (tuple_count_val == 0) ? page_size : end_of_free_space_offset_val;
+}
+
+static inline uint32_t get_offset_to_ith_tuple(void* page, uint32_t page_size, uint32_t ith)
+{
+	void* ith_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, ith);
+	return read_value_from_page(ith_tuple_offset, page_size);
+}
+
 /*
 ***********************************************************************************************/
 
