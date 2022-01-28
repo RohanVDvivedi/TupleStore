@@ -31,17 +31,17 @@ static inline uint32_t get_offset_to_ith_tuple_offset(const void* page, uint32_t
 
 static inline uint32_t get_offset_to_start_of_free_space(const void* page, uint32_t page_size)
 {
-	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	const void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
 	return get_offset_to_ith_tuple_offset(page, page_size, tuple_count_val);
 }
 
 static inline uint32_t get_offset_to_end_of_free_space(const void* page, uint32_t page_size)
 {
-	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	const void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
 
-	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
+	const void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
 	uint32_t end_of_free_space_offset_val = read_value_from_page(end_of_free_space_offset, page_size);
 
 	// if the tuple_count == 0, the free space end with the end of page
@@ -50,7 +50,7 @@ static inline uint32_t get_offset_to_end_of_free_space(const void* page, uint32_
 
 static inline uint32_t get_offset_to_ith_tuple(const void* page, uint32_t page_size, uint32_t ith)
 {
-	void* ith_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, ith);
+	const void* ith_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, ith);
 	return read_value_from_page(ith_tuple_offset, page_size);
 }
 
@@ -94,6 +94,6 @@ int init_slotted_page(void* page, uint32_t page_size, uint8_t page_header_size, 
 
 uint32_t get_tuple_count_slotted_page(const void* page, uint32_t page_size)
 {
-	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	const void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	return read_value_from_page(tuple_count, page_size);
 }

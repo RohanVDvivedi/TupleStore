@@ -10,17 +10,17 @@ uint32_t get_value_size_on_page(uint32_t page_size)
 		return 4;
 }
 
-uint32_t read_value_from_page(void* value, uint32_t page_size)
+uint32_t read_value_from_page(const void* value, uint32_t page_size)
 {
 	switch(get_value_size_on_page(page_size))
 	{
 		case 1 :
-			return *((uint8_t*)value);
+			return *((const uint8_t*)value);
 		case 2 :
-			return *((uint16_t*)value);
+			return *((const uint16_t*)value);
 		case 4 :
 		default :
-			return *((uint32_t*)value);
+			return *((const uint32_t*)value);
 	}
 }
 

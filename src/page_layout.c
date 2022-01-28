@@ -41,9 +41,9 @@ uint32_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* 
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			return get_tuple_count_slotted_page(page_size, page_size);
+			return get_tuple_count_slotted_page(page, page_size);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return get_tuple_count_fixed_array_page(page_size, page_size);
+			return get_tuple_count_fixed_array_page(page, page_size);
 	}
 	return 0;
 }
