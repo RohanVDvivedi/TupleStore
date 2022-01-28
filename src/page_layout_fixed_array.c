@@ -2,6 +2,8 @@
 
 #include<stdint.h>
 
+#include<bitmap.h>
+
 #include<page_header.h>
 #include<page_layout_util.h>
 
@@ -31,7 +33,7 @@ static inline uint32_t get_offset_to_is_valid_bitmap(void* page, uint32_t page_s
 
 static inline uint32_t get_offset_to_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
-	return get_offset_to_is_valid_bitmap(page, page_size) + ((get_tuple_capacity(page, page_size, tpl_d) + 7) / 8);
+	return get_offset_to_is_valid_bitmap(page, page_size) + bitmap_size_in_bytes(get_tuple_capacity(page, page_size, tpl_d));
 }
 
 static inline uint32_t get_offset_to_ith_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t ith)
