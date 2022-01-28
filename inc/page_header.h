@@ -1,6 +1,8 @@
 #ifndef PAGE_HEADER_H
 #define PAGE_HEADER_H
 
+#include<stdint.h>
+
 // returns size of page header as stored on the page
 uint32_t get_page_header_size(void* page, uint32_t page_size);
 
