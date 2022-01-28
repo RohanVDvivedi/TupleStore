@@ -66,7 +66,20 @@ uint16_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def
 
 int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple);
 
-int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
+{
+	if(index >= get_tuple_count(page, page_size, tpl_d))
+		return 0;
+
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+			return delete_tuple_slotted_page(page, page_size, tpl_d, index);
+		case FIXED_ARRAY_PAGE_LAYOUT :
+			return delete_tuple_fixed_array_page(page, page_size, tpl_d, index);
+	}
+	return 0;
+}
 
 int delete_all_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d);
 
