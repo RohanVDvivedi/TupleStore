@@ -4,3 +4,25 @@
 uint32_t get_minimum_page_size_for_fixed_array_page(uint32_t page_header_size, const tuple_def* tpl_d, uint32_t tuple_count);
 
 #endif
+
+/****************************************************************************************
+**
+**					FIXED_ARRAY PAGE
+**
+**		tuple_capacity = (page_size - page_header_size - N) / (tuple_def->size * 8 + 1)
+**
+**		struct page_of_FIXED_ARRAY_PAGE
+**		{
+**			uintN_t 	page_header_size;
+**
+**			char		page_header[ page_header_size ];
+**
+**			uintN_t 	tuple_count;
+**
+**			char	 	is_valid_bitmap [ ceil_function( tuple_capacity / 8 ) ] ;
+**
+**			< tuples [ tuple_count ]; >
+**		}
+**
+**
+*****************************************************************************************/
