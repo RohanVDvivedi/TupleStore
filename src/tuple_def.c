@@ -115,7 +115,7 @@ int insert_element_def(tuple_def* tuple_d, element_type ele_type, uint32_t eleme
 void finalize_tuple_def(tuple_def* tuple_d)
 {
 	tuple_d->size = 0;
-	for(uint16_t i = 0; i < tuple_d->element_count; i++)
+	for(uint32_t i = 0; i < tuple_d->element_count; i++)
 	{
 		if(tuple_d->element_defs[i].size == VARIABLE_SIZED)
 		{
@@ -130,19 +130,17 @@ void finalize_tuple_def(tuple_def* tuple_d)
 
 int is_empty_tuple_def(const tuple_def* tuple_d)
 {
-	// an empty tuple definition is of no use to us
-	// an empty tuple definition can not represent any set of tuples
 	return tuple_d->element_count == 0;
 }
 
-int is_size_specifying_element(const tuple_def* tuple_d, uint16_t index)
+int is_size_specifying_element(const tuple_def* tuple_d, uint32_t index)
 {
 	// there must be atleast 2 elements, so that one element specifies the size of the other
 	if(tuple_d->element_count < 2)
 		return 0;
 
-	// index out of bounds
-	if(index >= tuple_d->element_count)
+	// index out of bounds, for being a size specifying element
+	if(index >= tuple_d->element_count - 1)
 		return 0;
 
 	// returns 1, if the next element (index + 1 th) is a variable sized element
@@ -183,7 +181,7 @@ void print_tuple_def(const tuple_def* tuple_d)
 	else
 		printf("\t tuple_size : %u\n", tuple_d->size);
 	printf("\t elements : (%u)\n", tuple_d->element_count);
-	for(uint16_t i = 0; i < tuple_d->element_count; i++)
+	for(uint32_t i = 0; i < tuple_d->element_count; i++)
 	{
 		printf("\t\t Column : %u\n", i);
 		print_element_def((tuple_d->element_defs) + i);
