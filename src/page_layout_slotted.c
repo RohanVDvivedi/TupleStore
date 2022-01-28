@@ -1,6 +1,9 @@
 #include<page_layout_slotted.h>
 
+#include<stdint.h>
+
 #include<page_header.h>
+#include<page_layout_util.h>
 
 /*
 ** 		offset calculation functions
@@ -60,4 +63,6 @@ int init_slotted_page(void* page, uint32_t page_size, uint8_t page_header_size, 
 	// write page_size to end_of_free_space_offset
 	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
 	write_value_to_page(end_of_free_space_offset, page_size, page_size);
+
+	return 1;
 }
