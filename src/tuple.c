@@ -6,7 +6,7 @@
 
 #include<string.h>
 
-uint32_t get_element_size(const tuple_def* tpl_d, uint16_t index, const void* tupl)
+uint32_t get_element_size(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
 	if(tpl_d->element_defs[index].size != VARIABLE_SIZED)
 		return tpl_d->element_defs[index].size;
@@ -28,7 +28,7 @@ uint32_t get_element_size(const tuple_def* tpl_d, uint16_t index, const void* tu
 	}
 }
 
-uint32_t get_element_offset(const tuple_def* tpl_d, uint16_t index, const void* tupl)
+uint32_t get_element_offset(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
 	if(tpl_d->size != VARIABLE_SIZED) // i.e. fixed sized
 		return tpl_d->element_defs[index].byte_offset;
@@ -42,7 +42,7 @@ uint32_t get_element_offset(const tuple_def* tpl_d, uint16_t index, const void* 
 			// TODO
 		#else	// loop over all the elements (until the index) and add their sizes
 
-			for(uint16_t i = 0; i < index; i++)
+			for(uint32_t i = 0; i < index; i++)
 				offset += get_element_size(tpl_d, i, tupl);
 
 		#endif
@@ -51,19 +51,21 @@ uint32_t get_element_offset(const tuple_def* tpl_d, uint16_t index, const void* 
 	}
 }
 
-element get_element_from_tuple(const tuple_def* tpl_d, uint16_t index, const void* tupl)
+element get_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
 	return (element){.BLOB = (void*)(tupl + get_element_offset(tpl_d, index, tupl))};
 }
 
 uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
 {
-	if(tpl_d->size != VARIABLE_SIZED) // i.e. fixed sized tuple
+	if(tpl_d->element_count == 0) // i.e. an empty tuple definition
+		return 0;
+	else if(tpl_d->size != VARIABLE_SIZED) // i.e. fixed sized tuple
 		return tpl_d->size;
 	else
 	{
 		// for VARIABLE_SIZED tuple return last_element's offset + last_element's size
-		uint16_t last_index = tpl_d->element_count - 1;
+		uint32_t last_index = tpl_d->element_count - 1;
 		return get_element_offset(tpl_d, last_index, tupl) + get_element_size(tpl_d, last_index, tupl);
 	}
 }
@@ -73,7 +75,7 @@ void* seek_to_end_of_tuple(const tuple_def* tpl_d, const void* tupl)
 	return (void*)(tupl + get_tuple_size(tpl_d, tupl));
 }
 
-void copy_element_to_tuple(const tuple_def* tpl_d, uint16_t index, void* tupl, const void* value)
+void copy_element_to_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value)
 {
 	element ele = get_element_from_tuple(tpl_d, index, tupl);
 
@@ -88,13 +90,13 @@ void copy_element_to_tuple(const tuple_def* tpl_d, uint16_t index, void* tupl, c
 		memmove(ele.BLOB, value, get_element_size(tpl_d, index, tupl));
 }
 
-void copy_element_from_tuple(const tuple_def* tpl_d, uint16_t index, const void* tupl, void* value)
+void copy_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl, void* value)
 {
 	element ele = get_element_from_tuple(tpl_d, index, tupl);
 	memmove(value, ele.BLOB, get_element_size(tpl_d, index, tupl));
 }
 
-int compare_elements(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint16_t index)
+int compare_elements(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint32_t index)
 {
 	// seek to the elements to be compared
 	element e1 = get_element_from_tuple(tpl_d, index, tup1);
@@ -139,7 +141,7 @@ int compare_elements(const void* tup1, const void* tup2, const tuple_def* tpl_d,
 int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d)
 {
 	int compare = 0;
-	for(uint16_t i = 0; ((i < tpl_d->element_count) && (compare == 0)); i++)
+	for(uint32_t i = 0; ((i < tpl_d->element_count) && (compare == 0)); i++)
 	{
 		// SKIP THE ELEMENT IF IT COMES BEFORE A VARIABLE SIZED ELEMENT, SINCE THIS ELEMENT IS NOT ACTUAL DATA
 		// IT IS ONLY NEEDED TO READ THE SIZE OF THE VARIABLE SIZED DATA
@@ -153,7 +155,7 @@ int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d)
 	return compare;
 }
 
-uint32_t hash_element(const void* tup, const tuple_def* tpl_d, uint16_t index, uint32_t (*hash_func)(const void* data, uint32_t size))
+uint32_t hash_element(const void* tup, const tuple_def* tpl_d, uint32_t index, uint32_t (*hash_func)(const void* data, uint32_t size))
 {
 	// seek to the elements to be compared
 	element ele = get_element_from_tuple(tpl_d, index, tup);
@@ -172,7 +174,7 @@ uint32_t hash_element(const void* tup, const tuple_def* tpl_d, uint16_t index, u
 uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_func)(const void* data, uint32_t size))
 {
 	uint32_t hash_value = 0;
-	for(uint16_t i = 0; i < tpl_d->element_count; i++)
+	for(uint32_t i = 0; i < tpl_d->element_count; i++)
 	{
 		// SKIP THE ELEMENT IF IT COMES BEFORE A VARIABLE SIZED ELEMENT, SINCE THIS ELEMENT IS NOT ACTUAL DATA
 		// IT IS ONLY NEEDED TO READ THE SIZE OF THE VARIABLE SIZED DATA
@@ -195,7 +197,7 @@ int sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 		return 4; 
 	}
 	int chars_written = 0;
-	for(uint16_t i = 0; i < tpl_d->element_count; i++)
+	for(uint32_t i = 0; i < tpl_d->element_count; i++)
 	{
 		if(i)
 			chars_written += sprintf(str + chars_written, ", ");
@@ -300,7 +302,7 @@ int sscan_tuple(const char* str, void* tup, const tuple_def* tpl_d)
 {
 	int nr = 0;
 	int chars_read = 0;
-	for(uint16_t i = 0; i < tpl_d->element_count; i++)
+	for(uint32_t i = 0; i < tpl_d->element_count; i++)
 	{
 		if(i)
 		{
