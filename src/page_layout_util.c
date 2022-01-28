@@ -19,6 +19,7 @@ uint32_t read_value_from_page(void* value, uint32_t page_size)
 		case 2 :
 			return *((uint16_t*)value);
 		case 4 :
+		default :
 			return *((uint32_t*)value);
 	}
 }
