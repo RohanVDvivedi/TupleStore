@@ -21,7 +21,7 @@ int init_page_header(void* page, uint32_t page_size, uint32_t page_header_size)
 	return 1;
 }
 
-uint32_t get_offset_to_end_of_page_header(void* page, uint32_t page_size)
+uint32_t get_offset_to_end_of_page_header(const void* page, uint32_t page_size)
 {
 	return get_value_size_on_page(page_size) + get_page_header_size(page, page_size);
 }

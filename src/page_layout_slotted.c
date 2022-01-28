@@ -9,34 +9,34 @@
 ** 		offset calculation functions
 */
 
-static inline uint32_t get_offset_to_tuple_count(void* page, uint32_t page_size)
+static inline uint32_t get_offset_to_tuple_count(const void* page, uint32_t page_size)
 {
 	return get_offset_to_end_of_page_header(page, page_size);
 }
 
-static inline uint32_t get_offset_to_end_of_free_space_offset(void* page, uint32_t page_size)
+static inline uint32_t get_offset_to_end_of_free_space_offset(const void* page, uint32_t page_size)
 {
 	return get_offset_to_tuple_count(page, page_size) + get_value_size_on_page(page_size);
 }
 
-static inline uint32_t get_offset_to_tuple_offsets(void* page, uint32_t page_size)
+static inline uint32_t get_offset_to_tuple_offsets(const void* page, uint32_t page_size)
 {
 	return get_offset_to_end_of_free_space_offset(page, page_size) + get_value_size_on_page(page_size);
 }
 
-static inline uint32_t get_offset_to_ith_tuple_offset(void* page, uint32_t page_size, uint32_t ith)
+static inline uint32_t get_offset_to_ith_tuple_offset(const void* page, uint32_t page_size, uint32_t ith)
 {
 	return get_offset_to_tuple_offsets(page, page_size) + (ith * get_value_size_on_page(page_size));
 }
 
-static inline uint32_t get_offset_to_start_of_free_space(void* page, uint32_t page_size)
+static inline uint32_t get_offset_to_start_of_free_space(const void* page, uint32_t page_size)
 {
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
 	return get_offset_to_ith_tuple_offset(page, page_size, tuple_count_val);
 }
 
-static inline uint32_t get_offset_to_end_of_free_space(void* page, uint32_t page_size)
+static inline uint32_t get_offset_to_end_of_free_space(const void* page, uint32_t page_size)
 {
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
@@ -48,7 +48,7 @@ static inline uint32_t get_offset_to_end_of_free_space(void* page, uint32_t page
 	return (tuple_count_val == 0) ? page_size : end_of_free_space_offset_val;
 }
 
-static inline uint32_t get_offset_to_ith_tuple(void* page, uint32_t page_size, uint32_t ith)
+static inline uint32_t get_offset_to_ith_tuple(const void* page, uint32_t page_size, uint32_t ith)
 {
 	void* ith_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, ith);
 	return read_value_from_page(ith_tuple_offset, page_size);
@@ -90,4 +90,10 @@ int init_slotted_page(void* page, uint32_t page_size, uint8_t page_header_size, 
 	write_value_to_page(end_of_free_space_offset, page_size, page_size);
 
 	return 1;
+}
+
+uint32_t get_tuple_count_slotted_page(const void* page, uint32_t page_size)
+{
+	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	return read_value_from_page(tuple_count, page_size);
 }
