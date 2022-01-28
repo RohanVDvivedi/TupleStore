@@ -11,6 +11,8 @@ uint32_t get_tuple_count_fixed_array_page(const void* page, uint32_t page_size);
 
 int can_insert_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
+uint32_t get_free_space_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+
 #endif
 
 /****************************************************************************************

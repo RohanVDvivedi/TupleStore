@@ -4,6 +4,8 @@
 
 #include<bitmap.h>
 
+#include<tuple.h>
+
 #include<page_header.h>
 #include<page_layout_util.h>
 
@@ -39,6 +41,19 @@ static inline uint32_t get_offset_to_tuples(const void* page, uint32_t page_size
 static inline uint32_t get_offset_to_ith_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t ith)
 {
 	return get_offset_to_tuples(page, page_size, tpl_d) + (ith * tpl_d->size);
+}
+
+static inline uint32_t get_offset_to_start_of_free_space(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	const void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
+
+	return get_offset_to_ith_tuple(page, page_size, tpl_d, tuple_count_val);
+}
+
+static inline uint32_t get_offset_to_end_of_free_space(uint32_t page_size)
+{
+	return page_size;
 }
 
 /*
@@ -84,4 +99,9 @@ uint32_t get_tuple_count_fixed_array_page(const void* page, uint32_t page_size)
 int can_insert_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	return get_tuple_count_fixed_array_page(page, page_size) < get_tuple_capacity(page, page_size, tpl_d);
+}
+
+uint32_t get_free_space_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	return get_offset_to_end_of_free_space(page_size) - get_offset_to_start_of_free_space(page, page_size, tpl_d);
 }
