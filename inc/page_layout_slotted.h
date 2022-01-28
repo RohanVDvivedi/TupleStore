@@ -1,0 +1,4 @@
+#ifndef PAGE_LAYOUT_SLOTTED_H
+#define PAGE_LAYOUT_SLOTTED_H
+
+#endif
