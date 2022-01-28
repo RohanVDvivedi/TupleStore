@@ -79,10 +79,10 @@ int is_size_allowed(element_type ele_type, uint32_t size);
 int init_element_def(element_def* element_d, element_type ele_type, uint32_t size);
 
 // returns true if an element is of a fixed sized
-int is_fixed_sized_element_def(element_def* element_d);
+int is_fixed_sized_element_def(const element_def* element_d);
 
 // returns true if an element is of a variable sized
-int is_variable_sized_element_def(element_def* element_d);
+int is_variable_sized_element_def(const element_def* element_d);
 
 // compare 2 elements, given their element definition
 // this function must be called only on fixed sized elements i.e. ele_d->size != VARIABLE_SIZED
@@ -121,10 +121,10 @@ int is_empty_tuple_def(const tuple_def* tuple_d);
 
 // returns true if the tuple definition is of a fixed sized
 // this includes a tuple definition with 0 element_count
-int is_fixed_sized_tuple_def(element_def* element_d);
+int is_fixed_sized_tuple_def(const tuple_def* tuple_d);
 
 // returns true if the tuple definition is of a variable sized
-int is_variable_sized_tuple_def(element_def* element_d);
+int is_variable_sized_tuple_def(const tuple_def* tuple_d);
 
 // returns 1, if the element at the given index will be responsible
 // for specifing the size of a VARIABLE_SIZED tuple element at (index + 1).
@@ -132,7 +132,7 @@ int is_size_specifying_element(const tuple_def* tuple_d, uint32_t index);
 
 // this is the minimum size of any tuple that can be defined by the given tuple definition
 // the minimum sized tuple is the one where all variable size elements (as per the tuple definition) are 0 sized
-uint32_t get_minimum_tuple_size(const tuple_def* tpl_d);
+uint32_t get_minimum_tuple_size(const tuple_def* tuple_d);
 
 // to print a final tuple definition
 void print_tuple_def(const tuple_def* tuple_d);
