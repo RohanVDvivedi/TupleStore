@@ -112,13 +112,17 @@ int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 	// mark deleted
 	reset_bit(is_valid, index);
 
+	// retract tuple_count if possible
+
 	return 1;
 }
 
 int delete_all_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
+	// just make tuple count as 0
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
-	return write_value_to_page(tuple_count, page_size, 0);
+	write_value_to_page(tuple_count, page_size, 0);
+	return 1;
 }
 
 uint32_t get_free_space_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
