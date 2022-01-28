@@ -50,7 +50,17 @@ uint32_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* 
 
 int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
-int can_insert_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
+int can_insert_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
+{
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+			return can_insert_tuple_slotted_page(page, page_size, tpl_d, external_tuple);
+		case FIXED_ARRAY_PAGE_LAYOUT :
+			return can_insert_tuple_fixed_array_page(page, page_size, tpl_d);
+	}
+	return 0;
+}
 
 uint16_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def* def, const void* page_src, uint16_t start_index, uint16_t last_index, int ignore_deleted);
 
