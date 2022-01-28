@@ -2,6 +2,8 @@
 
 #include<stdint.h>
 
+#include<tuple.h>
+
 #include<page_header.h>
 #include<page_layout_util.h>
 
@@ -96,4 +98,17 @@ uint32_t get_tuple_count_slotted_page(const void* page, uint32_t page_size)
 {
 	const void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	return read_value_from_page(tuple_count, page_size);
+}
+
+int can_insert_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
+{
+	// tuple needs space for itself and its offset
+	uint32_t size_required_for_new_tuple = get_value_size_on_page(page_size) + get_tuple_size(tpl_d, external_tuple);
+
+	return size_required_for_new_tuple <= get_free_space_slotted_page(page, page_size);
+}
+
+uint32_t get_free_space_slotted_page(const void* page, uint32_t page_size)
+{
+	return get_offset_to_end_of_free_space(page, page_size) - get_offset_to_start_of_free_space(page, page_size);
 }

@@ -86,7 +86,7 @@ void discard_all_deleted_tuples(void* page, uint32_t page_size, const tuple_def*
 // SPACE queries
 
 // returns total free space left inside a given page, that can be used to accomodate tuples
-uint32_t get_free_space_in_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+uint32_t get_free_space(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 // returns space_occupied by tuples on the page from start_index to last_index
 uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t start_index, uint16_t last_index);
