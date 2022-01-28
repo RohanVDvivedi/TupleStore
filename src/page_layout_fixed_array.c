@@ -1,8 +1,14 @@
 #include<page_layout_fixed_array.h>
 
+#include<stdint.h>
+
+#include<page_header.h>
+#include<page_layout_util.h>
+
 /*
 ** tuple capacity for a fixed array page can be pre-calculated
 */
+static inline uint32_t get_offset_to_is_valid_bitmap(void* page, uint32_t page_size);
 
 static inline uint32_t get_tuple_capacity(void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
@@ -63,4 +69,6 @@ int init_fixed_array_page(void* page, uint32_t page_size, uint8_t page_header_si
 	// write 0 to tuple_count
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	write_value_to_page(tuple_count, page_size, 0);
+
+	return 1;
 }

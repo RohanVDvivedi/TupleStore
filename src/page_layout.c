@@ -1,5 +1,8 @@
 #include<page_layout.h>
 
+#include<page_layout_slotted.h>
+#include<page_layout_fixed_array.h>
+
 // get page_layout to use for the given tuple definition
 page_layout get_page_layout_type(const tuple_def* tpl_d)
 {
@@ -45,7 +48,7 @@ uint32_t get_space_to_be_allotted_for_tuples(uint32_t page_size, uint32_t page_h
 	return 0;
 }
 
-uint32_t get_tuple_count(const void* page, uint32_t page_size)
+uint32_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
