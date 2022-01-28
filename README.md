@@ -1,4 +1,4 @@
-# SimpleTupleStorageModel
+# TupleStore
 
 This library provides you with a very simple 
  * **row oriented - slotted page & fixed array page storage models,**
@@ -15,10 +15,10 @@ It only provides primitive utility functions/structures to systematically organi
  * [Cutlery](https://github.com/RohanVDvivedi/Cutlery)
 
 **Download source code :**
- * `git clone https://github.com/RohanVDvivedi/SimpleTupleStorageModel.git`
+ * `git clone https://github.com/RohanVDvivedi/TupleStore.git`
 
 **Build from source :**
- * `cd SimpleTupleStorageModel`
+ * `cd TupleStore`
  * `make clean all`
 
 **Install from the build :**
@@ -26,7 +26,7 @@ It only provides primitive utility functions/structures to systematically organi
  * ***Once you have installed from source, you may discard the build by*** `make clean`
 
 ## Using The library
- * add `-lstupstom` linker flag, while compiling your application
+ * add `-ltuplestore` linker flag, while compiling your application
  * do not forget to include appropriate public api headers as and when needed. this includes
    * `#include<tuple_def.h>`
    * `#include<tuple.h>`
@@ -35,5 +35,5 @@ It only provides primitive utility functions/structures to systematically organi
 ## Instructions for uninstalling library
 
 **Uninstall :**
- * `cd SimpleTupleStorageModel`
+ * `cd TupleStore`
  * `sudo make uninstall`
