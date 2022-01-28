@@ -3,8 +3,6 @@
 
 #include<tuple_def.h>
 
-#include<page_header.h>
-
 typedef enum page_layout page_layout;
 enum page_layout
 {
@@ -15,6 +13,15 @@ enum page_layout
 // get the page layout that will be used by the functions below,
 // for storing the tuple definition given in the parameter
 page_layout get_page_layout_type(const tuple_def* tpl_d);
+
+
+// PAHE_HEADER public functions they are defined in the page_header.c
+
+// returns size of page header as stored on the page
+uint32_t get_page_header_size(void* page, uint32_t page_size);
+
+// returns pointer to the page header on the page
+void* get_page_header(void* page, uint32_t page_size);
 
 
 
