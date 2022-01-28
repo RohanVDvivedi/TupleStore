@@ -117,6 +117,21 @@ int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 	reset_bit(is_valid, index);
 
 	// retract tuple_count if possible
+	if(index == get_tuple_count_fixed_array_page(page, page_size))
+	{
+		void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+		while(1)
+		{
+			if(!get_bit(is_valid, index))
+				write_value_to_page(tuple_count, page_size, tuple_count);
+			else
+				break;
+
+			if(index == 0)
+				break;
+			index--;
+		}
+	}
 
 	return 1;
 }
