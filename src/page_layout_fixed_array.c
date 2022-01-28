@@ -103,6 +103,10 @@ int can_insert_tuple_fixed_array_page(const void* page, uint32_t page_size, cons
 
 int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
 {
+	// index out of bounds
+	if(index >= get_tuple_count_fixed_array_page(page, page_size))
+		return 0;
+
 	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
 
 	// indexed tuple does not exist, so can not delete it
