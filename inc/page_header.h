@@ -29,11 +29,10 @@ void* get_end_of_page_header(void* page, uint32_t page_size);
 **
 **	struct page_header
 **	{
-**
 **		uintN_t page_header_size;
 **
-**		char page_header[page_header_size];
-**
+**		char page_header[ page_header_size ];
 **	}
 **
+**	here N can be 8, 16 or 32
 */
