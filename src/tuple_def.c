@@ -38,11 +38,23 @@ int init_element_def(element_def* element_d, element_type ele_type, uint32_t siz
 	return 1;
 }
 
+int is_fixed_sized_element_def(element_def* element_d)
+{
+	return ele_d->size != VARIABLE_SIZED;
+}
+
+int is_variable_sized_element_def(element_def* element_d)
+{
+	return ele_d->size == VARIABLE_SIZED;
+}
+
 #define compare(a,b)	( ((a)>(b)) ? 1 : (((a)<(b)) ? (-1) : 0 ) )
 int compare_fixed_sized_elements(element e1, element e2, const element_def* ele_d)
 {
-	if(ele_d->size == VARIABLE_SIZED)
+	// return if an element is not fixed sized
+	if(!is_fixed_sized_element(ele_d))
 		return 0;
+
 	switch(ele_d->type)
 	{
 		case UINT :
@@ -117,7 +129,7 @@ void finalize_tuple_def(tuple_def* tuple_d)
 	tuple_d->size = 0;
 	for(uint32_t i = 0; i < tuple_d->element_count; i++)
 	{
-		if(tuple_d->element_defs[i].size == VARIABLE_SIZED)
+		if(is_variable_sized_element_def(tuple_d->element_defs + i))
 		{
 			tuple_d->size = VARIABLE_SIZED;
 			break;
@@ -133,6 +145,16 @@ int is_empty_tuple_def(const tuple_def* tuple_d)
 	return tuple_d->element_count == 0;
 }
 
+int is_fixed_sized_tuple_def(const tuple_def* tuple_d)
+{
+	return tuple_d->element_count == 0 || tuple_d->size != VARIABLE_SIZED;
+}
+
+int is_variable_sized_tuple_def(const tuple_def* tuple_d)
+{
+	return !is_fixed_sized_tuple_def(tuple_d);
+}
+
 int is_size_specifying_element(const tuple_def* tuple_d, uint32_t index)
 {
 	// there must be atleast 2 elements, so that one element specifies the size of the other
@@ -145,14 +167,15 @@ int is_size_specifying_element(const tuple_def* tuple_d, uint32_t index)
 
 	// returns 1, if the next element (index + 1 th) is a variable sized element
 	// and the index-ed element is of type UINT to specify its size
-	return (tuple_d->element_defs[index].type == UINT) && (tuple_d->element_defs[index + 1].size == VARIABLE_SIZED);
+	return (tuple_d->element_defs[index].type == UINT) 
+		&& is_variable_sized_element_def(tuple_d->element_defs + index + 1);
 }
 
 uint32_t get_minimum_tuple_size(const tuple_def* tpl_d)
 {
 	// if the tuple is not variable sized
 	// i.e. if the tuple is fixed sized, then return its size
-	if(tpl_d->size != VARIABLE_SIZED)
+	if(is_fixed_sized_tuple_def(tpl_d))
 		return tpl_d->size;
 
 	// for a VARIABLE_SIZED tuple definition
@@ -166,7 +189,7 @@ uint32_t get_minimum_tuple_size(const tuple_def* tpl_d)
 static void print_element_def(const element_def* element_d)
 {
 	printf("\t\t\t type : %s\n", type_as_string[element_d->type]);
-	if(element_d->size == VARIABLE_SIZED)
+	if(is_variable_sized_element_def(element_d))
 		printf("\t\t\t size : VARIABLE_SIZED (0)\n");
 	else
 		printf("\t\t\t size : %u\n", element_d->size);
@@ -176,7 +199,7 @@ static void print_element_def(const element_def* element_d)
 void print_tuple_def(const tuple_def* tuple_d)
 {
 	printf("Tuple definition : \n");
-	if(tuple_d->size == VARIABLE_SIZED)
+	if(is_variable_sized_tuple_def(tuple_d))
 		printf("\t tuple_size : VARIABLE_SIZED (0)\n");
 	else
 		printf("\t tuple_size : %u\n", tuple_d->size);

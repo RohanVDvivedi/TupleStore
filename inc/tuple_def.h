@@ -78,6 +78,12 @@ int is_size_allowed(element_type ele_type, uint32_t size);
 // it may fail if the size parameters is not valid for a given data type
 int init_element_def(element_def* element_d, element_type ele_type, uint32_t size);
 
+// returns true if an element is of a fixed sized
+int is_fixed_sized_element_def(element_def* element_d);
+
+// returns true if an element is of a variable sized
+int is_variable_sized_element_def(element_def* element_d);
+
 // compare 2 elements, given their element definition
 // this function must be called only on fixed sized elements i.e. ele_d->size != VARIABLE_SIZED
 // if the elements are variable sized, then we do not have enough information to compare them appropriately
@@ -112,6 +118,13 @@ void finalize_tuple_def(tuple_def* tuple_d);
 // no function can be called on a tuple definition in a valid way if the tuple is empty
 // the functions we are refering to are in the "tuple.h" header file
 int is_empty_tuple_def(const tuple_def* tuple_d);
+
+// returns true if the tuple definition is of a fixed sized
+// this includes a tuple definition with 0 element_count
+int is_fixed_sized_tuple_def(element_def* element_d);
+
+// returns true if the tuple definition is of a variable sized
+int is_variable_sized_tuple_def(element_def* element_d);
 
 // returns 1, if the element at the given index will be responsible
 // for specifing the size of a VARIABLE_SIZED tuple element at (index + 1).
