@@ -2,7 +2,7 @@
 
 #include<page_layout_util.h>
 
-uint32_t get_page_header_size(void* page, uint32_t page_size)
+uint32_t get_page_header_size(const void* page, uint32_t page_size)
 {
 	return read_value_from_page(page + 0, page_size);
 }

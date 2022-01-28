@@ -77,6 +77,6 @@ int init_fixed_array_page(void* page, uint32_t page_size, uint8_t page_header_si
 
 uint32_t get_tuple_count_fixed_array_page(const void* page, uint32_t page_size)
 {
-	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	const void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	return read_value_from_page(tuple_count, page_size);
 }
