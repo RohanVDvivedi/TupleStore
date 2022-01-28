@@ -136,6 +136,21 @@ int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 		write_value_to_page(end_of_free_space_offset, page_size, new_end_of_free_space_offset);
 	}
 
+	// retract tuple count if possible
+
+	return 1;
+}
+
+int delete_all_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	// write 0 to tuple_count
+	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	write_value_to_page(tuple_count, page_size, 0);
+
+	// write page_size to end_of_free_space_offset
+	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
+	write_value_to_page(end_of_free_space_offset, page_size, page_size);
+
 	return 1;
 }
 
