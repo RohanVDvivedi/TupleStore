@@ -8,7 +8,7 @@
 
 uint32_t get_element_size(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
-	if(tpl_d->element_defs[index].size != VARIABLE_SIZED)
+	if(is_fixed_sized_element_def(tpl_d->element_defs + index))
 		return tpl_d->element_defs[index].size;
 	else
 	{
@@ -30,7 +30,7 @@ uint32_t get_element_size(const tuple_def* tpl_d, uint32_t index, const void* tu
 
 uint32_t get_element_offset(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
-	if(tpl_d->size != VARIABLE_SIZED) // i.e. fixed sized
+	if(is_fixed_sized_tuple_def(tpl_d)) // i.e. fixed sized
 		return tpl_d->element_defs[index].byte_offset;
 	else
 	{
@@ -58,9 +58,7 @@ element get_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const voi
 
 uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
 {
-	if(tpl_d->element_count == 0) // i.e. an empty tuple definition
-		return 0;
-	else if(tpl_d->size != VARIABLE_SIZED) // i.e. fixed sized tuple
+	if(is_fixed_sized_tuple_def(tpl_d)) // i.e. fixed sized tuple
 		return tpl_d->size;
 	else
 	{
@@ -103,7 +101,7 @@ int compare_elements(const void* tup1, const void* tup2, const tuple_def* tpl_d,
 	element e2 = get_element_from_tuple(tpl_d, index, tup2);
 
 	// if fixed sized elements compare them directly
-	if(tpl_d->element_defs[index].size != VARIABLE_SIZED)
+	if(is_fixed_sized_element_def(tpl_d->element_defs + index))
 		return compare_fixed_sized_elements(e1, e2, tpl_d->element_defs + index);
 	else
 	{
