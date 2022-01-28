@@ -23,3 +23,17 @@ uint32_t read_value_from_page(void* value, uint32_t page_size)
 			return *((uint32_t*)value);
 	}
 }
+
+void write_value_to_page(void* value, uint32_t page_size, uint32_t to_write)
+{
+	switch(get_value_size_on_page(page_size))
+	{
+		case 1 :
+			{*((uint8_t*)value) = to_write;	return;}
+		case 2 :
+			{*((uint16_t*)value) = to_write; return;}
+		case 4 :
+		default :
+			{*((uint32_t*)value) = to_write; return;}
+	}
+}
