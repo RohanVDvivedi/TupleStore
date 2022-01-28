@@ -9,6 +9,8 @@ int init_fixed_array_page(void* page, uint32_t page_size, uint8_t page_header_si
 
 uint32_t get_tuple_count_fixed_array_page(const void* page, uint32_t page_size);
 
+int can_insert_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+
 #endif
 
 /****************************************************************************************
