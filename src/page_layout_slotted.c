@@ -108,6 +108,37 @@ int can_insert_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 	return size_required_for_new_tuple <= get_free_space_slotted_page(page, page_size);
 }
 
+int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
+{
+	void* ith_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, index);
+	uint32_t ith_tuple_offset_val = read_value_from_page(ith_tuple_offset, page_size);
+
+	// tuple offset at ith index is 0, indicating it does not exists
+	if(ith_tuple_offset_val == 0)
+		return 0;
+
+	// set the tuple offset of the tuple to be deleted to 0, i.e. mark deleted
+	write_value_to_page(ith_tuple_offset, page_size, 0);
+
+	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
+	uint32_t end_of_free_space_offset_val = get_offset_to_end_of_free_space(page, page_size);
+
+	// if the tuple to be removed is at the end of free space
+	// we need to find the min of the existing tuple offsets
+	if(end_of_free_space_offset_val == ith_tuple_offset_val)
+	{
+		uint32_t new_end_of_free_space_offset = page_size;
+		for(uint32_t i = 0; i < get_tuple_count_slotted_page(page, page_size); i++)
+		{
+			#define min(a,b) (((a)<(b))?(a):(b))
+			new_end_of_free_space_offset = min(get_offset_to_ith_tuple(page, page_size, i), new_end_of_free_space_offset);
+		}
+		write_value_to_page(end_of_free_space_offset, page_size, new_end_of_free_space_offset);
+	}
+
+	return 1;
+}
+
 uint32_t get_free_space_slotted_page(const void* page, uint32_t page_size)
 {
 	return get_offset_to_end_of_free_space(page, page_size) - get_offset_to_start_of_free_space(page, page_size);
