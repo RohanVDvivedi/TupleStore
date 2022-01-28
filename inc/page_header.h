@@ -9,6 +9,6 @@ void* get_page_header(void* page, uint32_t page_size);
 
 // returns pointer to the end of page header on the page
 // i.e. pointer to the start of data section on the page
-void* get_page_header_end(void* page, uint32_t page_size);
+void* get_end_of_page_header(void* page, uint32_t page_size);
 
 #endif
