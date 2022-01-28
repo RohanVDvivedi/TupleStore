@@ -45,6 +45,18 @@ uint32_t get_space_to_be_allotted_for_tuples(uint32_t page_size, uint32_t page_h
 	return 0;
 }
 
+uint32_t get_tuple_count(const void* page, uint32_t page_size)
+{
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+			return get_tuple_count_slotted_page(page_size, page_size);
+		case FIXED_ARRAY_PAGE_LAYOUT :
+			return get_tuple_count_fixed_array_page(page_size, page_size);
+	}
+	return 0;
+}
+
 void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 void print_page_in_hex(const void* page, uint32_t page_size)

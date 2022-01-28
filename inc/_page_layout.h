@@ -40,7 +40,7 @@ int init_page(void* page, uint32_t page_size, uint8_t page_type, uint8_t referen
 // this is includes space allotted for fields : page_type, reference_page_count, tuple_count, space required for all the referenece_page_id-s
 // it also includes the memory region of is_valid bitmap (- FIXED_ARRAY_PAGE_LAYOUT)
 // it also includes the space allotted for end_of_free_space_offset (- SLOTTED_PAGE_LAYOUT)
-uint32_t get_space_to_be_allotted_for_page_header(uint8_t reference_pages_count, uint32_t page_size, const tuple_def* tpl_d);
+//uint32_t get_space_to_be_allotted_for_page_header(uint8_t reference_pages_count, uint32_t page_size, const tuple_def* tpl_d);
 
 // this is equivalent to free_space when the tuple_count = 0
 // it does not include the memory region of is_valid bitmap (- FIXED_ARRAY_PAGE_LAYOUT)
@@ -49,12 +49,12 @@ uint32_t get_space_to_be_allotted_for_page_header(uint8_t reference_pages_count,
 uint32_t get_space_to_be_allotted_for_all_tuples(uint8_t reference_pages_count, uint32_t page_size, const tuple_def* tpl_d);
 
 // getter and setter for the page_type that the user mentioned
-uint8_t get_page_type(const void* page);
-void set_page_type(void* page, uint8_t page_type);
+//uint8_t get_page_type(const void* page);
+//void set_page_type(void* page, uint8_t page_type);
 
 // the total number of reference page count on this page
 // i.e. this is the number of page_ids, you may want to follow to continue your search operation
-uint8_t get_reference_pages_count(const void* page);
+//uint8_t get_reference_pages_count(const void* page);
 
 // returns the number of tuples in the page (including the deleted ones)
 uint16_t get_tuple_count(const void* page);
@@ -62,11 +62,11 @@ uint16_t get_tuple_count(const void* page);
 // get_reference_page_id() returns the page_id that you can refer to, for your further search
 // p_ref_id = index in the reference_page_ids array
 // must => index < get_reference_page_count()
-uint32_t get_reference_page_id(const void* page, uint8_t index);
+//uint32_t get_reference_page_id(const void* page, uint8_t index);
 
 // returns 1, if the reference_page_id at index was set to page_id in the reference_page_ids array
 // returns 0 if index >= get_reference_page_count()
-int set_reference_page_id(void* page, uint8_t index, uint32_t page_id);
+//int set_reference_page_id(void* page, uint8_t index, uint32_t page_id);
 
 
 
@@ -141,18 +141,18 @@ uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, cons
 
 
 
-// equivalent to get_space_occupied_by_tuples(0, tuple_count - 1)
+// equivalent to get_space_occupied_by_tuples[0, tuple_count - 1)
 uint32_t get_space_occupied_by_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 // this is additional space occupied by each tuple, while it is stored on the page with given page_size
 // space occupied by each tuple on the page = size_of(tuple) + additional_space(tuple)
 // this value is 0 for FIXED_ARRAY_PAGE_LAYOUT, while it is equal to size of a tuple offset for SLOTTED_PAGE_LAYOUT
-uint32_t get_additional_space_occupied_per_tuple(uint32_t page_size, const tuple_def* tpl_d);
+//uint32_t get_additional_space_occupied_per_tuple(uint32_t page_size, const tuple_def* tpl_d);
 
 // this is includes space allotted for fields : page_type, reference_page_count, tuple_count, space required for all the referenece_page_id-s
 // it also includes the memory region of is_valid bitmap (- FIXED_ARRAY_PAGE_LAYOUT)
 // it also includes the space allotted for end_of_free_space_offset (- SLOTTED_PAGE_LAYOUT)
-uint32_t get_space_allotted_to_page_header(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+//uint32_t get_space_allotted_to_page_header(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 // this is equivalent to free_space when the tuple_count = 0
 // it does not include the memory region of is_valid bitmap (- FIXED_ARRAY_PAGE_LAYOUT)
