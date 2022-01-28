@@ -13,7 +13,7 @@ void* get_page_header(void* page, uint32_t page_size)
 	return page + get_value_size_on_page(page_size);
 }
 
-void* get_page_header_end(void* page, uint32_t page_size)
+void* get_end_of_page_header(void* page, uint32_t page_size)
 {
 	return get_page_header(page, page_size) + get_page_header_size(page, page_size);
 }
