@@ -48,6 +48,24 @@ uint32_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* 
 	return 0;
 }
 
+int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
+
+int can_insert_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
+
+uint16_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def* def, const void* page_src, uint16_t start_index, uint16_t last_index, int ignore_deleted);
+
+int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple);
+
+int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+
+int delete_all_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d);
+
+int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+
+int swap_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t i1, uint16_t i2);
+
+const void* get_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+
 void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 void print_page_in_hex(const void* page, uint32_t page_size)
