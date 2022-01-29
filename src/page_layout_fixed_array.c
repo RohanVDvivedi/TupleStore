@@ -110,7 +110,7 @@ int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
 
 	// indexed tuple does not exist, so can not delete it
-	if(!get_bit(is_valid, index))
+	if(get_bit(is_valid, index) == 0)
 		return 0;
 
 	// mark deleted
@@ -122,8 +122,8 @@ int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 		void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 		while(1)
 		{
-			if(!get_bit(is_valid, index))
-				write_value_to_page(tuple_count, page_size, tuple_count);
+			if(get_bit(is_valid, index) == 0)
+				write_value_to_page(tuple_count, page_size, index);
 			else
 				break;
 
