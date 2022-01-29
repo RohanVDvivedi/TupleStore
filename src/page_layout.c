@@ -102,7 +102,17 @@ int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, u
 	return 0;
 }
 
-int swap_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t i1, uint32_t i2);
+int swap_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t i1, uint32_t i2)
+{
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+			return swap_tuples_slotted_page(page, page_size, tpl_d, i1, i2);
+		case FIXED_ARRAY_PAGE_LAYOUT :
+			return swap_tuples_fixed_array_page(page, page_size, tpl_d, i1, i2);
+	}
+	return 0;
+}
 
 const void* get_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
