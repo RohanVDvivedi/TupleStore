@@ -17,6 +17,8 @@ int delete_all_tuples_fixed_array_page(void* page, uint32_t page_size, const tup
 
 int exists_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
 
+const void* get_nth_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
+
 uint32_t get_free_space_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 #endif
