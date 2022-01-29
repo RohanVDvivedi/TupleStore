@@ -2,6 +2,7 @@
 
 #include<stdint.h>
 #include<stdlib.h>
+#include<string.h>
 
 #include<tuple.h>
 
@@ -103,7 +104,36 @@ uint32_t get_tuple_count_slotted_page(const void* page, uint32_t page_size)
 
 int insert_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
+	// if can not insert new tuple, then fail with 0
+	if(!can_insert_tuple_slotted_page(page, page_size, tpl_d, external_tuple))
+		return 0;
 
+	// calculate the size of tuple to be inserted
+	uint32_t external_tuple_size = get_tuple_size(tpl_d, external_tuple);
+
+	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
+
+	// increment tuple count on the page
+	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
+	write_value_to_page(tuple_count, page_size, ++tuple_count_val);
+
+	// update end of free space offset
+	uint32_t end_of_free_space_offset_val = read_value_from_page(end_of_free_space_offset, page_size);
+	end_of_free_space_offset_val -= external_tuple_size;
+	write_value_to_page(end_of_free_space_offset, page_size, end_of_free_space_offset_val);
+
+	// update offset where you want to place this tuple
+	void* new_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, tuple_count_val - 1);
+	write_value_to_page(new_tuple_offset, page_size, end_of_free_space_offset_val);
+
+	// find the new tuple on the page
+	void* new_tuple = page + end_of_free_space_offset_val;
+
+	// move data from external tuple to the tuple in the page
+	memmove(new_tuple, external_tuple, external_tuple_size);
+
+	return 1;
 }
 
 int can_insert_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
