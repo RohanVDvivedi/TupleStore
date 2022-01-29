@@ -225,3 +225,8 @@ uint32_t get_free_space_fixed_array_page(const void* page, uint32_t page_size, c
 {
 	return get_offset_to_end_of_free_space(page_size) - get_offset_to_start_of_free_space(page, page_size, tpl_d);
 }
+
+uint32_t get_space_allotted_to_all_tuples_in_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	return get_offset_to_tuples(page, page_size, tpl_d);
+}
