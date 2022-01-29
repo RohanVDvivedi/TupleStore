@@ -98,6 +98,34 @@ uint32_t get_tuple_count_fixed_array_page(const void* page, uint32_t page_size)
 	return read_value_from_page(tuple_count, page_size);
 }
 
+int insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
+{
+	if(!can_insert_tuple_fixed_array_page(page, page_size, tpl_d))
+		return 0;
+
+	uint16_t* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	char* is_valid  = page + get_offset_to_is_valid_bitmap(page, page_size);
+
+	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
+
+	// the index where this tuple will be inserted
+	uint16_t index = tuple_count_val;
+
+	// increment the tuple counter on the page
+	write_value_to_page(tuple_count, page_size, ++tuple_count_val);
+
+	// pointer to the new tuple in the page
+	void* new_tuple_p = page + get_offset_to_ith_tuple(page, page_size, tpl_d, index);
+
+	// move data from external tuple to the tuple in the page
+	memmove(new_tuple_p, external_tuple, tpl_d->size);
+
+	// set valid bit for the newly inserted tuple
+	set_bit(is_valid, index);
+
+	return 1;
+}
+
 int can_insert_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	return get_tuple_count_fixed_array_page(page, page_size) < get_tuple_capacity(page, page_size, tpl_d);
