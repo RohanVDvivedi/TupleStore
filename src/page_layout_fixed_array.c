@@ -131,6 +131,22 @@ int can_insert_tuple_fixed_array_page(const void* page, uint32_t page_size, cons
 	return get_tuple_count_fixed_array_page(page, page_size) < get_tuple_capacity(page, page_size, tpl_d);
 }
 
+int update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
+{
+	// index out of bounds
+	if(index >= get_tuple_count_fixed_array_page(page, page_size))
+		return 0;
+
+	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
+	void* new_tuple_p = page + get_offset_to_ith_tuple(page, page_size, tpl_d, index);
+
+	// copy external_tuple to the new_tuple (in the page)
+	memmove(new_tuple_p, external_tuple, tpl_d->size);
+	set_bit(is_valid, index);
+
+	return 1;
+}
+
 static inline void retract_tuple_count(void* page, uint32_t page_size)
 {
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
