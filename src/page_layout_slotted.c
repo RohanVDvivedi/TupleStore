@@ -182,6 +182,19 @@ int exists_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_
 	return get_offset_to_ith_tuple(page, page_size, index) != 0;
 }
 
+const void* get_nth_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
+{
+	// index out of bounds
+	if(index >= get_tuple_count_slotted_page(page, page_size))
+		return NULL;
+
+	// tuple offset at ith index is 0, indicating it does not exists
+	if(get_offset_to_ith_tuple(page, page_size, index) == 0)
+		return NULL;
+
+	return page + get_offset_to_ith_tuple(page, page_size, index);
+}
+
 uint32_t get_free_space_slotted_page(const void* page, uint32_t page_size)
 {
 	return get_offset_to_end_of_free_space(page, page_size) - get_offset_to_start_of_free_space(page, page_size);
