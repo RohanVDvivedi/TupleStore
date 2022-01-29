@@ -1,7 +1,10 @@
 #include<page_layout.h>
 
+#include<tuple.h>
+
 #include<page_layout_slotted.h>
 #include<page_layout_fixed_array.h>
+#include<page_layout_util.h>
 
 // get page_layout to use for the given tuple definition
 page_layout get_page_layout_type(const tuple_def* tpl_d)
@@ -164,7 +167,41 @@ uint32_t get_free_space(const void* page, uint32_t page_size, const tuple_def* t
 	return 0;
 }
 
-uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t start_index, uint32_t last_index);
+uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t start_index, uint32_t last_index)
+{
+	uint16_t tuple_count = get_tuple_count(page, page_size, tpl_d);
+	if((start_index > last_index) || (last_index >= tuple_count))
+		return 0;
+
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+		{
+			uint32_t tuples_total_size = 0;
+			uint32_t tuples_total_offsets_size = 0;
+			for(uint32_t i = start_index; i <= last_index; i++)
+			{
+				if(exists_tuple(page, page_size, tpl_d, i))
+				{
+					tuples_total_size += get_tuple_size(tpl_d, get_nth_tuple(page, page_size, tpl_d, i));
+					tuples_total_offsets_size += get_value_size_on_page(page_size);
+				}
+			}
+			return tuples_total_size + tuples_total_offsets_size;
+		}
+		case FIXED_ARRAY_PAGE_LAYOUT :
+		{
+			uint32_t tuples_existing = 0;
+			for(uint32_t i = start_index; i <= last_index; i++)
+			{
+				if(exists_tuple(page, page_size, tpl_d, i))
+					tuples_existing++;
+			}
+			return tuples_existing * tpl_d->size;
+		}
+	}
+	return 0;
+}
 
 uint32_t get_space_occupied_by_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
@@ -175,7 +212,7 @@ uint32_t get_space_occupied_by_all_tuples(const void* page, uint32_t page_size, 
 
 uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
-uint32_t get_fragmentation_space_in_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+uint32_t get_fragmentation_space(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	return 	get_space_allotted_to_all_tuples(page, page_size, tpl_d)
 		- ( get_space_occupied_by_all_tuples(page, page_size, tpl_d)
