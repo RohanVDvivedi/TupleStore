@@ -173,6 +173,15 @@ int delete_all_tuples_slotted_page(void* page, uint32_t page_size, const tuple_d
 	return 1;
 }
 
+int exists_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
+{
+	// index out of bounds
+	if(index >= get_tuple_count_slotted_page(page, page_size))
+		return 0;
+
+	return get_offset_to_ith_tuple(page, page_size, index) != 0;
+}
+
 uint32_t get_free_space_slotted_page(const void* page, uint32_t page_size)
 {
 	return get_offset_to_end_of_free_space(page, page_size) - get_offset_to_start_of_free_space(page, page_size);
