@@ -23,6 +23,8 @@ const void* get_nth_tuple_slotted_page(const void* page, uint32_t page_size, con
 
 uint32_t get_free_space_slotted_page(const void* page, uint32_t page_size);
 
+uint32_t get_space_allotted_to_all_tuples_in_slotted_page(const void* page, uint32_t page_size);
+
 #endif
 
 /*****************************************************************************************

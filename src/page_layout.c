@@ -215,7 +215,7 @@ uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, 
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			return get_space_allotted_to_all_tuples_in_slotted_page(page, page_size, tpl_d);
+			return get_space_allotted_to_all_tuples_in_slotted_page(page, page_size);
 		case FIXED_ARRAY_PAGE_LAYOUT :
 			return get_space_allotted_to_all_tuples_in_fixed_array_page(page, page_size, tpl_d);
 	}
