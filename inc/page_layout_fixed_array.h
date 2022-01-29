@@ -13,6 +13,8 @@ int insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 
 int can_insert_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
+int update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple);
+
 int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
 
 int delete_all_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d);

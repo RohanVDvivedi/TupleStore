@@ -103,7 +103,17 @@ uint32_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def
 	return tuples_copied;
 }
 
-int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple);
+int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
+{
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+			return update_tuple_slotted_page(page, page_size, tpl_d, index, external_tuple);
+		case FIXED_ARRAY_PAGE_LAYOUT :
+			return update_tuple_fixed_array_page(page, page_size, tpl_d, index, external_tuple);
+	}
+	return 0;
+}
 
 int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
