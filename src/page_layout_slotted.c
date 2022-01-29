@@ -146,7 +146,73 @@ int can_insert_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 
 int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
 {
+	// index out of bounds
+	uint32_t tuple_count_val = get_tuple_count_slotted_page(page, page_size);
+	if(index >= tuple_count_val)
+		return 0;
 
+	// calculate the size of tuple to be inserted in place of an old one
+	uint32_t external_tuple_size = get_tuple_size(tpl_d, external_tuple);
+
+	// get free space on page
+	uint32_t free_space = get_free_space_slotted_page(page, page_size);
+
+	// we might have to update this
+	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
+	uint32_t end_of_free_space_offset_val = get_offset_to_end_of_free_space(page, page_size);
+
+	if(exists_tuple_slotted_page(page, page_size, tpl_d, index))
+	{
+		void* existing_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, index);
+		uint32_t existing_tuple_offset_val = get_offset_to_ith_tuple(page, page_size, index);
+		void* existing_tuple = page + existing_tuple_offset_val;
+		uint32_t existing_tuple_size = get_tuple_size(tpl_d, existing_tuple);
+
+		if(existing_tuple_offset_val == end_of_free_space_offset_val)
+		{
+			if(free_space + existing_tuple_size >= external_tuple_size)
+			{
+				// move existing_tuple_offset and end_of_free_space_offset to accomodate the new tuple
+
+				end_of_free_space_offset_val = end_of_free_space_offset_val + existing_tuple_size - external_tuple_size;
+				write_value_to_page(end_of_free_space_offset, page_size, end_of_free_space_offset_val);
+
+				existing_tuple_offset_val = end_of_free_space_offset_val;
+				write_value_to_page(existing_tuple_offset, page_size, existing_tuple_offset_val);
+
+				existing_tuple = page + existing_tuple_offset_val;
+
+				// move data from external tuple to the tuple in the page
+				memmove(existing_tuple, external_tuple, external_tuple_size);
+
+				return 1;
+			}
+			else
+				return 0;
+		}
+	}
+	
+
+	if(free_space >= external_tuple_size)
+	{
+		// update end of free space offset
+		end_of_free_space_offset_val -= external_tuple_size;
+		write_value_to_page(end_of_free_space_offset, page_size, end_of_free_space_offset_val);
+
+		// update offset where you want to place this tuple
+		void* new_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, index);
+		write_value_to_page(new_tuple_offset, page_size, end_of_free_space_offset_val);
+
+		// find the new tuple on the page
+		void* new_tuple = page + end_of_free_space_offset_val;
+
+		// move data from external tuple to the tuple in the page
+		memmove(new_tuple, external_tuple, external_tuple_size);
+
+		return 1;
+	}
+	else
+		return 0;
 }
 
 static inline void retract_tuple_count(void* page, uint32_t page_size)
