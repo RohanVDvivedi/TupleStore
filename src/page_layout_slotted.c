@@ -141,6 +141,21 @@ int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 	}
 
 	// retract tuple count if possible
+	if(index == get_tuple_count_slotted_page(page, page_size))
+	{
+		void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+		while(1)
+		{
+			if(get_offset_to_ith_tuple(page, page_size, index) == 0)
+				write_value_to_page(tuple_count, page_size, index);
+			else
+				break;
+
+			if(index == 0)
+				break;
+			index--;
+		}
+	}
 
 	return 1;
 }
