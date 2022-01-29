@@ -269,15 +269,19 @@ void run_page_compaction_fixed_array_page(void* page, uint32_t page_size, const 
 {
 	if(discard_tomb_stones)
 	{
-		for(uint32_t i = 0, j = 0; i < get_tuple_count_fixed_array_page(page, page_size); i++)
+		uint32_t new_tuple_count = 0;
+		for(uint32_t i = 0; i < get_tuple_count_fixed_array_page(page, page_size); i++)
 		{
 			if(exists_tuple_fixed_array_page(page, page_size, tpl_d, i))
 			{
-				if(i != j)
-					swap_tuples_fixed_array_page(page, page_size, tpl_d, i, j);
-				j++;
+				if(i != new_tuple_count)
+					swap_tuples_fixed_array_page(page, page_size, tpl_d, i, new_tuple_count);
+				new_tuple_count++;
 			}
 		}
+
+		void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+		write_value_to_page(tuple_count, page_size, new_tuple_count);
 	}
 }
 
