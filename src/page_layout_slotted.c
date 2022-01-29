@@ -108,6 +108,26 @@ int can_insert_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 	return size_required_for_new_tuple <= get_free_space_slotted_page(page, page_size);
 }
 
+static inline void retract_tuple_count(void* page, uint32_t page_size)
+{
+	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+
+	// cache tuple count
+	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
+
+	// get a valif tuple count
+	while(tuple_count_val > 0)
+	{
+		if(get_offset_to_ith_tuple(page, page_size, tuple_count_val - 1) == 0)
+			tuple_count_val--;
+		else
+			break;
+	}
+
+	// write the calculated valid tuple count
+	write_value_to_page(tuple_count, page_size, tuple_count_val);
+}
+
 int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	// index out of bounds
@@ -141,21 +161,7 @@ int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 	}
 
 	// retract tuple count if possible
-	if(index == get_tuple_count_slotted_page(page, page_size))
-	{
-		void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
-		while(1)
-		{
-			if(get_offset_to_ith_tuple(page, page_size, index) == 0)
-				write_value_to_page(tuple_count, page_size, index);
-			else
-				break;
-
-			if(index == 0)
-				break;
-			index--;
-		}
-	}
+	retract_tuple_count(page, page_size);
 
 	return 1;
 }
@@ -203,6 +209,7 @@ int swap_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tp
 	write_value_to_page(i2th_tuple_offset, page_size, temp);
 
 	// retract tuple count if possible
+	retract_tuple_count(page, page_size);
 
 	return 1;
 }
