@@ -233,6 +233,8 @@ uint32_t get_space_allotted_to_all_tuples_in_fixed_array_page(const void* page, 
 
 void print_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
+	printf("FIXED ARRAY PAGE :\n\n");
+
 	uint32_t tup_count = get_tuple_count_fixed_array_page(page, page_size);
 	printf("\tTuples :: (%u of %u)\n", tup_count, get_tuple_capacity(page, page_size, tpl_d));
 

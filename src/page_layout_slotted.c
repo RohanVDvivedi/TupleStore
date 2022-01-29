@@ -240,6 +240,8 @@ uint32_t get_space_allotted_to_all_tuples_in_slotted_page(const void* page, uint
 
 void print_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
+	printf("SLOTTED PAGE :\n\n");
+
 	uint32_t tup_count = get_tuple_count_slotted_page(page, page_size);
 	printf("\tTuples :: (%u)\n", tup_count);
 
