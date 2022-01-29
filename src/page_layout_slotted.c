@@ -73,7 +73,7 @@ uint32_t get_minimum_page_size_for_slotted_page(uint32_t page_header_size, const
 	return min_size_32;
 }
 
-int init_slotted_page(void* page, uint32_t page_size, uint8_t page_header_size, const tuple_def* tpl_d)
+int init_slotted_page(void* page, uint32_t page_size, uint32_t page_header_size, const tuple_def* tpl_d)
 {
 	// the page must be able to accomodate atleast 1 tuple
 	if(page_size < get_minimum_page_size_for_slotted_page(page_header_size, tpl_d, 1))
@@ -108,7 +108,7 @@ int can_insert_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 	return size_required_for_new_tuple <= get_free_space_slotted_page(page, page_size);
 }
 
-int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
+int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	// index out of bounds
 	if(index >= get_tuple_count_slotted_page(page, page_size))
@@ -173,7 +173,7 @@ int delete_all_tuples_slotted_page(void* page, uint32_t page_size, const tuple_d
 	return 1;
 }
 
-int exists_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
+int exists_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	// index out of bounds
 	if(index >= get_tuple_count_slotted_page(page, page_size))

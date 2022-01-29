@@ -5,17 +5,17 @@
 
 uint32_t get_minimum_page_size_for_slotted_page(uint32_t page_header_size, const tuple_def* tpl_d, uint32_t tuple_count);
 
-int init_slotted_page(void* page, uint32_t page_size, uint8_t page_header_size, const tuple_def* tpl_d);
+int init_slotted_page(void* page, uint32_t page_size, uint32_t page_header_size, const tuple_def* tpl_d);
 
 uint32_t get_tuple_count_slotted_page(const void* page, uint32_t page_size);
 
 int can_insert_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
-int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
 
 int delete_all_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d);
 
-int exists_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+int exists_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
 
 uint32_t get_free_space_slotted_page(const void* page, uint32_t page_size);
 

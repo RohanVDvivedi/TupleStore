@@ -24,7 +24,7 @@ uint32_t get_minimum_page_size(uint32_t page_header_size, const tuple_def* tpl_d
 	return 0;
 }
 
-int init_page(void* page, uint32_t page_size, uint8_t page_header_size, const tuple_def* tpl_d)
+int init_page(void* page, uint32_t page_size, uint32_t page_header_size, const tuple_def* tpl_d)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -62,11 +62,11 @@ int can_insert_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_
 	return 0;
 }
 
-uint16_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def* def, const void* page_src, uint16_t start_index, uint16_t last_index, int ignore_deleted);
+uint32_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def* def, const void* page_src, uint32_t start_index, uint32_t last_index, int ignore_deleted);
 
-int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple);
+int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple);
 
-int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
+int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -90,7 +90,7 @@ int delete_all_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d)
 	return 0;
 }
 
-int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
+int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -102,9 +102,9 @@ int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, u
 	return 0;
 }
 
-int swap_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t i1, uint16_t i2);
+int swap_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t i1, uint32_t i2);
 
-const void* get_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+const void* get_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
 
 uint32_t get_free_space(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {

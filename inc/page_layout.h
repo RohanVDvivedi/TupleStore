@@ -31,7 +31,7 @@ void* get_page_header(void* page, uint32_t page_size);
 uint32_t get_minimum_page_size(uint32_t page_header_size, const tuple_def* tpl_d, uint32_t tuple_count);
 
 // initialize page to start using it
-int init_page(void* page, uint32_t page_size, uint8_t page_header_size, const tuple_def* tpl_d);
+int init_page(void* page, uint32_t page_size, uint32_t page_header_size, const tuple_def* tpl_d);
 
 // returns the number of tuples in the page (including the deleted ones)
 uint32_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* tpl_d);
@@ -47,13 +47,13 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 int can_insert_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
 // inserts tuples from page_src starting with start_index and until end_index (or its tuple_count - 1), 
-uint16_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def* def, const void* page_src, uint16_t start_index, uint16_t last_index, int ignore_deleted);
+uint32_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def* def, const void* page_src, uint32_t start_index, uint32_t last_index, int ignore_deleted);
 
 // update tuple at the specified index, fails if the page is out of space, or if the index is out of bounds i.e. when index >= get_tuple_count()
-int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index, const void* external_tuple);
+int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple);
 
 // to delete a tuple at the given index in the page, fails if index >= get_tuple_count()
-int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
 
 // deletes all the tuple in the page
 // for a slotted page it will also reset the end_of_free_space_offset
@@ -61,14 +61,14 @@ int delete_all_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 // to check if a tuple at the given index in the page exists
 // returns 0, if the tuple was deleted OR if the index is out of bounds i.e. when index >= get_tuple_count())
-int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
 
 // swap tuples at given indices i1 and i2
 // return 0, if the swap fails
-int swap_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t i1, uint16_t i2);
+int swap_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t i1, uint32_t i2);
 
 // returns pointer to nth tuple in the page, else returns NULL if exist_tuple fails
-const void* get_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+const void* get_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
 
 
 
@@ -89,7 +89,7 @@ void discard_all_deleted_tuples(void* page, uint32_t page_size, const tuple_def*
 uint32_t get_free_space(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 // returns space_occupied by tuples on the page from start_index to last_index
-uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t start_index, uint16_t last_index);
+uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t start_index, uint32_t last_index);
 
 // equivalent to get_space_occupied_by_tuples[0, tuple_count - 1)
 uint32_t get_space_occupied_by_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d);

@@ -5,17 +5,17 @@
 
 uint32_t get_minimum_page_size_for_fixed_array_page(uint32_t page_header_size, const tuple_def* tpl_d, uint32_t tuple_count);
 
-int init_fixed_array_page(void* page, uint32_t page_size, uint8_t page_header_size, const tuple_def* tpl_d);
+int init_fixed_array_page(void* page, uint32_t page_size, uint32_t page_header_size, const tuple_def* tpl_d);
 
 uint32_t get_tuple_count_fixed_array_page(const void* page, uint32_t page_size);
 
 int can_insert_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
-int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
 
 int delete_all_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d);
 
-int exists_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+int exists_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
 
 uint32_t get_free_space_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
