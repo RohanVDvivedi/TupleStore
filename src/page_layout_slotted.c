@@ -258,8 +258,12 @@ int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 		uint32_t new_end_of_free_space_offset = page_size;
 		for(uint32_t i = 0; i < get_tuple_count_slotted_page(page, page_size); i++)
 		{
-			#define min(a,b) (((a)<(b))?(a):(b))
-			new_end_of_free_space_offset = min(get_offset_to_ith_tuple(page, page_size, i), new_end_of_free_space_offset);
+			uint32_t ith_tuple_offset_val = get_offset_to_ith_tuple(page, page_size, i);
+			if(ith_tuple_offset_val != 0)
+			{
+				#define min(a,b) (((a)<(b))?(a):(b))
+				new_end_of_free_space_offset = min(ith_tuple_offset_val, new_end_of_free_space_offset);
+			}
 		}
 		write_value_to_page(end_of_free_space_offset, page_size, new_end_of_free_space_offset);
 	}
