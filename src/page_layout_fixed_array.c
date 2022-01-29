@@ -152,7 +152,7 @@ int exists_tuple_fixed_array_page(const void* page, uint32_t page_size, const tu
 
 	const char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
 
-	return get_bit(is_valid, index);
+	return get_bit(is_valid, index) != 0;
 }
 
 uint32_t get_free_space_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
