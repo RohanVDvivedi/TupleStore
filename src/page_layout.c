@@ -164,6 +164,24 @@ uint32_t get_free_space(const void* page, uint32_t page_size, const tuple_def* t
 	return 0;
 }
 
+uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t start_index, uint32_t last_index);
+
+uint32_t get_space_occupied_by_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	if(get_tuple_count(page, page_size, tpl_d) == 0)
+		return 0;
+	return get_space_occupied_by_tuples(page, page_size, tpl_d, 0, get_tuple_count(page, page_size, tpl_d) - 1);
+}
+
+uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+
+uint32_t get_fragmentation_space_in_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	return 	get_space_allotted_to_all_tuples(page, page_size, tpl_d)
+		- ( get_space_occupied_by_all_tuples(page, page_size, tpl_d)
+		+   get_free_space(page, page_size, tpl_d));
+}
+
 void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 void print_page_in_hex(const void* page, uint32_t page_size)
