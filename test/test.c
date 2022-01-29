@@ -78,6 +78,14 @@ void build_tuple_from_row_struct(const tuple_def* def, void* tuple, const row* r
 	printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 }
 
+// a row like struct for ease in building test tuples
+typedef struct hdr hdr;
+struct hdr
+{
+	char name[7];
+	int data[2];
+};
+
 int main()
 {
 	// allocate size of tuple definition
@@ -97,7 +105,7 @@ int main()
 
 	// ---------------  INITIALIZE PAGE
 
-	if(!init_page(page, PAGE_SIZE, 3, 7, def))
+	if(!init_page(page, PAGE_SIZE, sizeof(hdr), def))
 	{
 		printf("ERROR INITIALIZING THE PAGE\n");
 		exit(-1);
@@ -230,13 +238,12 @@ int main()
 	
 	print_page_in_hex(page, PAGE_SIZE);
 
-	// --------------- SET REFERENCE PAGE ID
+	// --------------- SET PAGE HEADER
 
-	printf("set reference no %d to %d : %d\n\n", 0, 6, set_reference_page_id(page, 0, 6));
-	printf("set reference no %d to %d : %d\n\n", 1, 7, set_reference_page_id(page, 1, 7));
-	printf("set reference no %d to %d : %d\n\n", 3, 5, set_reference_page_id(page, 3, 5));
-	printf("set reference no %d to %d : %d\n\n", 5, 3, set_reference_page_id(page, 5, 3));
-	printf("set reference no %d to %d : %d\n\n", 7, 1, set_reference_page_id(page, 7, 1));
+	hdr* hdr = get_page_header(page, PAGE_SIZE);
+	hdr->data[0] = 0x01234567;
+	hdr->data[0] = 0x89abcdef;
+	strcpy(hdr->name, "Rohn-pg");
 
 	// ---------------- PRINT PAGE
 
@@ -251,7 +258,7 @@ int main()
 
 	r = &(row){34, 13, "genre horror.", 7.121996};
 	build_tuple_from_row_struct(def, tuple_cache, r);
-	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
+	printf("Can insert : %d\n\n", can_insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 
 	// ---------------- PRINT PAGE
@@ -263,7 +270,7 @@ int main()
 
 	r = &(row){-35, 16, "Rohan is artist.", 7.12};
 	build_tuple_from_row_struct(def, tuple_cache, r);
-	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
+	printf("Can insert : %d\n\n", can_insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 
 	// ---------------- PRINT PAGE
@@ -275,7 +282,7 @@ int main()
 
 	r = &(row){36, 15, "Rohan is RohanD", 12.1996};
 	build_tuple_from_row_struct(def, tuple_cache, r);
-	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
+	printf("Can insert : %d\n\n", can_insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 
 	// ---------------- PRINT PAGE
@@ -287,7 +294,7 @@ int main()
 
 	r = &(row){36, 14, "Rohan is Rohan", 12.1996};
 	build_tuple_from_row_struct(def, tuple_cache, r);
-	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
+	printf("Can insert : %d\n\n", can_insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 
 	// ---------------- PRINT PAGE
@@ -299,7 +306,7 @@ int main()
 
 	r = &(row){35, 16, "Rohan is Dvivedi", 7.1996};
 	build_tuple_from_row_struct(def, tuple_cache, r);
-	printf("Can insert : %d\n\n", can_accomodate_tuple_insert(page, PAGE_SIZE, def, tuple_cache));
+	printf("Can insert : %d\n\n", can_insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 
 	// ---------------- PRINT PAGE
@@ -337,7 +344,7 @@ int main()
 
 	// ---------------  INSERT TUPLES IN TEMP PAGE BY INDEX RANGE
 
-	init_page(temp_page, PAGE_SIZE, 3, 0, def);
+	init_page(temp_page, PAGE_SIZE, sizeof(hdr), def);
 	uint16_t tuples_copied = insert_tuples_from_page(temp_page, PAGE_SIZE, def, page, 1, 4);
 	printf("\nTuples copied : %u\n", tuples_copied);
 	printf("\nCOPY PAGE :: \n");
@@ -350,14 +357,14 @@ int main()
 	delete_tuple(temp_page, PAGE_SIZE, def, 0);
 	delete_tuple(temp_page, PAGE_SIZE, def, 2);
 
-	printf("\nBefore compaction available_size(%u)\n", get_free_space_in_page(temp_page, PAGE_SIZE, def));
+	printf("\nBefore compaction available_size(%u)\n", get_free_space(temp_page, PAGE_SIZE, def));
 	printf("\nTEMP PAGE :: \n");
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
 
-	run_page_compaction(temp_page, PAGE_SIZE, def);
+	run_page_compaction(temp_page, PAGE_SIZE, def, 1);
 
-	printf("\nAfter compaction available_size(%u)\n", get_free_space_in_page(temp_page, PAGE_SIZE, def));
+	printf("\nAfter compaction available_size(%u)\n", get_free_space(temp_page, PAGE_SIZE, def));
 	printf("\nTEMP PAGE :: \n");
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
@@ -396,7 +403,7 @@ int main()
 	print_page(page, PAGE_SIZE, def);
 	printf("\n\n");
 
-	uint16_t tuples_to_delete = get_tuple_count(page);
+	uint16_t tuples_to_delete = get_tuple_count(page, PAGE_SIZE, def);
 	uint16_t mid = (tuples_to_delete/2);
 
 	for(uint16_t i = mid; i < tuples_to_delete; i++)
