@@ -17,6 +17,8 @@ int delete_all_tuples_slotted_page(void* page, uint32_t page_size, const tuple_d
 
 int exists_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
 
+int swap_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t i1, uint32_t i2);
+
 const void* get_nth_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
 
 uint32_t get_free_space_slotted_page(const void* page, uint32_t page_size);
