@@ -25,6 +25,8 @@ uint32_t get_free_space_fixed_array_page(const void* page, uint32_t page_size, c
 
 uint32_t get_space_allotted_to_all_tuples_in_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
+void print_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+
 #endif
 
 /****************************************************************************************
