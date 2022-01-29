@@ -73,7 +73,7 @@ uint32_t get_minimum_page_size_for_fixed_array_page(uint32_t page_header_size, c
 	return min_size_32;
 }
 
-int init_fixed_array_page(void* page, uint32_t page_size, uint8_t page_header_size, const tuple_def* tpl_d)
+int init_fixed_array_page(void* page, uint32_t page_size, uint32_t page_header_size, const tuple_def* tpl_d)
 {
 	// the page must be able to accomodate atleast 1 tuple
 	if(page_size < get_minimum_page_size_for_fixed_array_page(page_header_size, tpl_d, 1))
@@ -101,7 +101,7 @@ int can_insert_tuple_fixed_array_page(const void* page, uint32_t page_size, cons
 	return get_tuple_count_fixed_array_page(page, page_size) < get_tuple_capacity(page, page_size, tpl_d);
 }
 
-int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
+int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	// index out of bounds
 	if(index >= get_tuple_count_fixed_array_page(page, page_size))
@@ -144,7 +144,7 @@ int delete_all_tuples_fixed_array_page(void* page, uint32_t page_size, const tup
 	return 1;
 }
 
-int exists_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
+int exists_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	// index out of bounds
 	if(index >= get_tuple_count_fixed_array_page(page, page_size))
