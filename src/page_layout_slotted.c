@@ -231,3 +231,8 @@ uint32_t get_free_space_slotted_page(const void* page, uint32_t page_size)
 {
 	return get_offset_to_end_of_free_space(page, page_size) - get_offset_to_start_of_free_space(page, page_size);
 }
+
+uint32_t get_space_allotted_to_all_tuples_in_slotted_page(const void* page, uint32_t page_size)
+{
+	return page_size - get_offset_to_tuple_offsets(page, page_size);
+}
