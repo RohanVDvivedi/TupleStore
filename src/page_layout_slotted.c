@@ -42,14 +42,11 @@ static inline uint32_t get_offset_to_start_of_free_space(const void* page, uint3
 
 static inline uint32_t get_offset_to_end_of_free_space(const void* page, uint32_t page_size)
 {
-	const void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
-	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
-
 	const void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
 	uint32_t end_of_free_space_offset_val = read_value_from_page(end_of_free_space_offset, page_size);
 
 	// if the tuple_count == 0, the free space end with the end of page
-	return (tuple_count_val == 0) ? page_size : end_of_free_space_offset_val;
+	return (end_of_free_space_offset_val == 0) ? page_size : end_of_free_space_offset_val;
 }
 
 static inline uint32_t get_offset_to_ith_tuple(const void* page, uint32_t page_size, uint32_t ith)
@@ -119,7 +116,7 @@ int insert_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 	write_value_to_page(tuple_count, page_size, ++tuple_count_val);
 
 	// update end of free space offset
-	uint32_t end_of_free_space_offset_val = read_value_from_page(end_of_free_space_offset, page_size);
+	uint32_t end_of_free_space_offset_val = get_offset_to_end_of_free_space(page, page_size);
 	end_of_free_space_offset_val -= external_tuple_size;
 	write_value_to_page(end_of_free_space_offset, page_size, end_of_free_space_offset_val);
 
