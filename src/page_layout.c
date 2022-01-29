@@ -210,7 +210,17 @@ uint32_t get_space_occupied_by_all_tuples(const void* page, uint32_t page_size, 
 	return get_space_occupied_by_tuples(page, page_size, tpl_d, 0, get_tuple_count(page, page_size, tpl_d) - 1);
 }
 
-uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+			return get_space_allotted_to_all_tuples_in_slotted_page(page, page_size, tpl_d);
+		case FIXED_ARRAY_PAGE_LAYOUT :
+			return get_space_allotted_to_all_tuples_in_fixed_array_page(page, page_size, tpl_d);
+	}
+	return 0;
+}
 
 uint32_t get_fragmentation_space(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
