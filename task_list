@@ -1,16 +1,1 @@
 
- * dynamic programming approach to calculate offsets in a variable sized tuple
- * refactor page_layout into page_header_layout and page_data_layout
- * page_header would consists of
-   * page_type - 2 bytes
-   * page_references_n_count_byte_size - 1 byte - b1
-   * tuple_offset_n_count_byte_size - 1 byte - b2
-   * page_references_count - b1 bytes - r
-   * page_references - r values of b1 bytes each
- * page_data would consists of
-   * VARIABLE_SIZED_TUPLES_PAGE
-     * tuple_count - b2 bytes - n
-     * typle_offsets - n values requiring b2 bytes each
-   * FIXED_SIZED_TUPLES_PAGE
-     * tuple_count - b2 bytes - n
-     * tuples - n values requiring tuple_size number of bytes
