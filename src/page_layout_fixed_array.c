@@ -18,7 +18,7 @@ static inline uint32_t get_offset_to_is_valid_bitmap(const void* page, uint32_t 
 
 static inline uint32_t get_tuple_capacity(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
-	return (page_size - get_offset_to_is_valid_bitmap(page, page_size)) / ((tpl_d->size * 8) + 1);
+	return ((page_size - get_offset_to_is_valid_bitmap(page, page_size)) * 8) / ((tpl_d->size * 8) + 1);
 }
 
 /*
