@@ -90,7 +90,17 @@ int delete_all_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d)
 	return 0;
 }
 
-int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index);
+int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t index)
+{
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+			return exists_tuple_slotted_page(page, page_size, tpl_d, index);
+		case FIXED_ARRAY_PAGE_LAYOUT :
+			return exists_tuple_fixed_array_page(page, page_size, tpl_d, index);
+	}
+	return 0;
+}
 
 int swap_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d, uint16_t i1, uint16_t i2);
 
