@@ -265,6 +265,22 @@ const void* get_nth_tuple_fixed_array_page(const void* page, uint32_t page_size,
 	return page + get_offset_to_ith_tuple(page, page_size, tpl_d, index);
 }
 
+void run_page_compaction_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, int discard_tomb_stones)
+{
+	if(discard_tomb_stones)
+	{
+		for(uint32_t i = 0, j = 0; i < get_tuple_count_fixed_array_page(page, page_size); i++)
+		{
+			if(exists_tuple_fixed_array_page(page, page_size, tpl_d, i))
+			{
+				if(i != j)
+					swap_tuples_fixed_array_page(page, page_size, tpl_d, i, j);
+				j++;
+			}
+		}
+	}
+}
+
 uint32_t get_free_space_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	return get_offset_to_end_of_free_space(page_size) - get_offset_to_start_of_free_space(page, page_size, tpl_d);
