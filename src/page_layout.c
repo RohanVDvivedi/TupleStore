@@ -229,7 +229,16 @@ uint32_t get_fragmentation_space(const void* page, uint32_t page_size, const tup
 		+   get_free_space(page, page_size, tpl_d));
 }
 
-void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+			{print_slotted_page(page, page_size, tpl_d); return;}
+		case FIXED_ARRAY_PAGE_LAYOUT :
+			{print_fixed_array_page(page, page_size, tpl_d); return;}
+	}
+}
 
 void print_page_in_hex(const void* page, uint32_t page_size)
 {
