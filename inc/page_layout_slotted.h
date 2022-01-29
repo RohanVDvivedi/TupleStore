@@ -25,6 +25,8 @@ int swap_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tp
 
 const void* get_nth_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
 
+void run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, int discard_tomb_stones);
+
 uint32_t get_free_space_slotted_page(const void* page, uint32_t page_size);
 
 uint32_t get_space_allotted_to_all_tuples_in_slotted_page(const void* page, uint32_t page_size);
