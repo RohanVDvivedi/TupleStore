@@ -62,7 +62,33 @@ int can_insert_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_
 	return 0;
 }
 
-uint32_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def* def, const void* page_src, uint32_t start_index, uint32_t last_index, int ignore_deleted);
+uint32_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* page_src, uint32_t start_index, uint32_t last_index)
+{
+	uint16_t tuple_count = get_tuple_count(page_src, page_size, tpl_d);
+
+	// copy is not possible if
+	// start_index is greater than last_index or the last_index in the tuple
+	if((start_index > last_index) || (start_index >= tuple_count))
+		return 0;
+
+	if(last_index >= tuple_count)
+		last_index = tuple_count - 1;
+
+	uint16_t tuples_copied = 0;
+
+	for(uint16_t index = start_index; index <= last_index; index++, tuples_copied++)
+	{
+		if(exists_tuple(page_src, page_size, tpl_d, index))
+		{
+			const void* tuple = get_nth_tuple(page_src, page_size, tpl_d, index);
+			int inserted = insert_tuple(page, page_size, tpl_d, tuple);
+			if(!inserted)
+				break;
+		}
+	}
+
+	return tuples_copied;
+}
 
 int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple);
 
