@@ -218,7 +218,7 @@ int swap_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_def
 	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
 
 	int bit_i1 = get_bit(is_valid, i1);
-	int bit_i2 = get_bit(is_valid, i1);
+	int bit_i2 = get_bit(is_valid, i2);
 
 	if(bit_i1 == 0 && bit_i2 == 0)
 		return 0;
