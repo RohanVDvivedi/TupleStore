@@ -231,6 +231,12 @@ uint32_t get_fragmentation_space(const void* page, uint32_t page_size, const tup
 
 void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
+	printf("PAGE : \n");
+	printf("space allotted for tuples = %u\n", get_space_allotted_to_all_tuples(page, page_size, tpl_d));
+	printf("used up space    = %u\n", get_space_occupied_by_all_tuples(page, page_size, tpl_d));
+	printf("free space       = %u\n", get_free_space(page, page_size, tpl_d));
+	printf("fragmented space = %u\n", get_fragmentation_space(page, page_size, tpl_d));
+	printf("\n");
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
