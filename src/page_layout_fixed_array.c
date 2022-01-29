@@ -103,6 +103,28 @@ int can_insert_tuple_fixed_array_page(const void* page, uint32_t page_size, cons
 	return get_tuple_count_fixed_array_page(page, page_size) < get_tuple_capacity(page, page_size, tpl_d);
 }
 
+static inline void retract_tuple_count(void* page, uint32_t page_size)
+{
+	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+
+	// cache tuple count
+	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
+
+	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
+
+	// get a valif tuple count
+	while(tuple_count_val > 0)
+	{
+		if(get_bit(is_valid, tuple_count_val - 1) == 0)
+			tuple_count_val--;
+		else
+			break;
+	}
+
+	// write the calculated valid tuple count
+	write_value_to_page(tuple_count, page_size, tuple_count_val);
+}
+
 int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	// index out of bounds
@@ -119,21 +141,7 @@ int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 	reset_bit(is_valid, index);
 
 	// retract tuple_count if possible
-	if(index == get_tuple_count_fixed_array_page(page, page_size))
-	{
-		void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
-		while(1)
-		{
-			if(get_bit(is_valid, index) == 0)
-				write_value_to_page(tuple_count, page_size, index);
-			else
-				break;
-
-			if(index == 0)
-				break;
-			index--;
-		}
-	}
+	retract_tuple_count(page, page_size);
 
 	return 1;
 }
@@ -193,6 +201,7 @@ int swap_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_def
 	bit_i2 ? set_bit(is_valid, i1) : reset_bit(is_valid, i1);
 
 	// retract tuple count if possible
+	retract_tuple_count(page, page_size);
 
 	return 1;
 }
