@@ -74,12 +74,7 @@ const void* get_nth_tuple(const void* page, uint32_t page_size, const tuple_def*
 
 // PAGE COMPACTION and TOMB STONES removal functions
 
-// returns 1, if the page_compaction is not a NOOP
-// this function is a NOOP for FIXED_ARRAY_PAGE_LAYOUT
-void run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d);
-
-// discards all tomb stones on the page
-void discard_all_deleted_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d);
+void run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d, int discard_tomb_stones);
 
 
 
