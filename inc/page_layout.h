@@ -47,7 +47,7 @@ int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 int can_insert_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
 // inserts tuples from page_src starting with start_index and until end_index (or its tuple_count - 1), 
-uint32_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def* def, const void* page_src, uint32_t start_index, uint32_t last_index, int ignore_deleted);
+uint32_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* page_src, uint32_t start_index, uint32_t last_index);
 
 // update tuple at the specified index, fails if the page is out of space, or if the index is out of bounds i.e. when index >= get_tuple_count()
 int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple);
