@@ -1,0 +1,2 @@
+ * add int flag to run defragmentation only if it is set
+ * run defragmentation without allocating additional page (copy_page) worth of memory
