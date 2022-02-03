@@ -362,7 +362,7 @@ int main()
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
 
-	run_page_compaction(temp_page, PAGE_SIZE, def, 1);
+	run_page_compaction(temp_page, PAGE_SIZE, def, 1, 1);
 
 	printf("\nAfter compaction available_size(%u)\n", get_free_space(temp_page, PAGE_SIZE, def));
 	printf("\nTEMP PAGE :: \n");
