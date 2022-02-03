@@ -175,12 +175,12 @@ const void* get_nth_tuple(const void* page, uint32_t page_size, const tuple_def*
 	return 0;
 }
 
-void run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d, int discard_tomb_stones)
+void run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d, int discard_tomb_stones, int defragment)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			{run_page_compaction_slotted_page(page, page_size, tpl_d, discard_tomb_stones); return;}
+			{run_page_compaction_slotted_page(page, page_size, tpl_d, discard_tomb_stones, defragment); return;}
 		case FIXED_ARRAY_PAGE_LAYOUT :
 			{run_page_compaction_fixed_array_page(page, page_size, tpl_d, discard_tomb_stones); return;}
 	}

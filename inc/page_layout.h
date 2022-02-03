@@ -74,7 +74,7 @@ const void* get_nth_tuple(const void* page, uint32_t page_size, const tuple_def*
 
 // PAGE COMPACTION and TOMB STONES removal functions
 
-void run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d, int discard_tomb_stones);
+void run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d, int discard_tomb_stones, int defragment);
 
 
 
