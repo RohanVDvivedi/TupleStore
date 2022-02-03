@@ -335,7 +335,7 @@ const void* get_nth_tuple_slotted_page(const void* page, uint32_t page_size, con
 	return page + get_offset_to_ith_tuple(page, page_size, index);
 }
 
-void run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, int discard_tomb_stones)
+void run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, int discard_tomb_stones, int defragment)
 {
 	if(discard_tomb_stones)
 	{
@@ -356,33 +356,36 @@ void run_page_compaction_slotted_page(void* page, uint32_t page_size, const tupl
 
 	// now defragmenting the page
 
-	// create a copy page
-	void* copy_page = malloc(page_size);
-	memmove(copy_page, page, page_size);
-
-	uint16_t tuple_count = get_tuple_count_slotted_page(page, page_size);
-
-	// reset the allocator offset for the actual page
-	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
-	write_value_to_page(end_of_free_space_offset, page_size, page_size);
-
-	// now for each tuple in copy page
-	for(uint16_t index = 0; index <= tuple_count; index++)
+	if(defragment)
 	{
-		if(exists_tuple_slotted_page(copy_page, page_size, tpl_d, index))
+		// create a copy page
+		void* copy_page = malloc(page_size);
+		memmove(copy_page, page, page_size);
+
+		uint16_t tuple_count = get_tuple_count_slotted_page(page, page_size);
+
+		// reset the allocator offset for the actual page
+		void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
+		write_value_to_page(end_of_free_space_offset, page_size, page_size);
+
+		// now for each tuple in copy page
+		for(uint16_t index = 0; index <= tuple_count; index++)
 		{
-			const void* tuple = get_nth_tuple_slotted_page(copy_page, page_size, tpl_d, index);
+			if(exists_tuple_slotted_page(copy_page, page_size, tpl_d, index))
+			{
+				const void* tuple = get_nth_tuple_slotted_page(copy_page, page_size, tpl_d, index);
 
-			// set index the offset to 0, marking it as deleted
-			void* tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, index);
-			write_value_to_page(tuple_offset, page_size, 0);
+				// set index the offset to 0, marking it as deleted
+				void* tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, index);
+				write_value_to_page(tuple_offset, page_size, 0);
 
-			// now update the tuple at that index in the page
-			update_tuple_slotted_page(page, page_size, tpl_d, index, tuple);
+				// now update the tuple at that index in the page
+				update_tuple_slotted_page(page, page_size, tpl_d, index, tuple);
+			}
 		}
-	}
 
-	free(copy_page);
+		free(copy_page);
+	}
 }
 
 uint32_t get_free_space_slotted_page(const void* page, uint32_t page_size)
