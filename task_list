@@ -3,6 +3,6 @@
 
  * element_def inside tuple_def come with a dstring name
 
- * compare_tuples function takes a list of attribute indexes
+ * compare_tuples and hash_tuple function takes a list of attribute indexes
 
  * convert sprint_tuple function to use dstring
