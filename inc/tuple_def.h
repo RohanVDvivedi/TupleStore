@@ -6,9 +6,6 @@
 
 #include<var_sized.h>
 
-#define FIXED_SIZED_DATATYPES    5
-#define VARIABLE_SIZED_DATATYPES 2
-
 typedef enum element_type element_type;
 enum element_type
 {
@@ -24,7 +21,7 @@ enum element_type
 	// data of VAR_STRING or VAR_BLOB are of variable size
 };
 
-extern char type_as_string[][8];
+extern char type_as_string[][16];
 
 typedef union element element;
 union element
@@ -71,26 +68,23 @@ struct element_def
 
 		// used for type = VAR_STRING and VAR_BLOB
 		// this is the number of bytes used in prefix to specify the actual sizes of VAR_* datatypes
-		uint32_t size_specifier_size;
-	}
+		uint32_t size_specifier_prefix_size;
+	};
 
 	// byte offset in tuple for the given element definition
 	// valid only if the tuple is not VARIABLE_SIZED
 	uint32_t byte_offset;
 };
 
-// check if a given size is valid for an element's datatype
-int is_size_allowed(element_type ele_type, uint32_t size);
-
 // initialize an element's definition using its type and size
 // it may fail if the size parameters is not valid for a given data type
-int init_element_def(element_def* element_d, element_type ele_type, uint32_t size);
-
-// returns true if an element is of a fixed sized
-int is_fixed_sized_element_def(const element_def* element_d);
+int init_element_def(element_def* element_d, element_type ele_type, uint32_t size_OR_prefix_size);
 
 // returns true if an element is of a variable sized
 int is_variable_sized_element_def(const element_def* element_d);
+
+// returns true if an element is of a fixed sized
+int is_fixed_sized_element_def(const element_def* element_d);
 
 // returns size of element
 uint32_t get_element_size(element e, const element_def* ele_d);
@@ -119,7 +113,7 @@ void init_tuple_def(tuple_def* tuple_d);
 
 // insert the key or values, insert keys in their decreasing order of importance
 // mark the tuple_mark_key_complete, once all the keys are inserted
-int insert_element_def(tuple_def* tuple_d, element_type ele_type, uint32_t element_size);
+int insert_element_def(tuple_def* tuple_d, element_type ele_type, uint32_t element_size_OR_prefix_size);
 
 // after inserting all the elements call this function
 void finalize_tuple_def(tuple_def* tuple_d);
