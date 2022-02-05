@@ -7,7 +7,9 @@ char type_as_string[][8] = {
 								"INT",
 								"FLOAT",
 								"STRING",
-								"BLOB"
+								"BLOB",
+								"VAR_STRING",
+								"VAR_BLOB"
 							};
 
 int is_size_allowed(element_type ele_type, uint32_t size)
