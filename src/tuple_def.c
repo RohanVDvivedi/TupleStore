@@ -79,6 +79,26 @@ int is_fixed_sized_element_def(const element_def* element_d)
 	return !is_variable_sized_element_def(element_d);
 }
 
+uint32_t get_element_size(element e, const element_def* ele_d)
+{
+	if(is_fixed_sized_element_def(ele_d))
+		return ele_d->size;
+	else
+	{
+		switch(ele_d->size_specifier_prefix_size)
+		{
+			case 1 :
+				return 1 + e.VAR_STRING_1->size;
+			case 2 :
+				return 2 + e.VAR_STRING_2->size;
+			case 4 :
+				return 4 + e.VAR_STRING_4->size;
+			default :
+				return 0;
+		}
+	}
+}
+
 #define compare(a,b)	( ((a)>(b)) ? 1 : (((a)<(b)) ? (-1) : 0 ) )
 int compare_elements(element e1, element e2, const element_def* ele_d)
 {
