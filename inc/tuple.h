@@ -12,7 +12,7 @@
 // element level functions
 uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 
-uint32_t get_element_offset(const tuple_def* tpl_d, uint32_t index, const void* tupl);
+uint32_t get_element_offset_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 
 element get_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 
