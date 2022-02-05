@@ -6,29 +6,12 @@
 
 #include<string.h>
 
-uint32_t get_element_size(const tuple_def* tpl_d, uint32_t index, const void* tupl)
+uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
-	if(is_fixed_sized_element_def(tpl_d->element_defs + index))
-		return tpl_d->element_defs[index].size;
-	else
-	{
-		switch(tpl_d->element_defs[index - 1].size)
-		{
-			case 1 :
-				return (*(get_element_from_tuple(tpl_d, index - 1, tupl).UINT_1));
-			case 2 :
-				return (*(get_element_from_tuple(tpl_d, index - 1, tupl).UINT_2));
-			case 4 :
-				return (*(get_element_from_tuple(tpl_d, index - 1, tupl).UINT_4));
-
-			// this is the error case it may never occur
-			default:
-				return 0;
-		}
-	}
+	return get_element_size(get_element_from_tuple(tpl_d, index, tupl), tpl_d->element_defs + index);
 }
 
-uint32_t get_element_offset(const tuple_def* tpl_d, uint32_t index, const void* tupl)
+uint32_t get_element_offset_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
 	if(is_fixed_sized_tuple_def(tpl_d)) // i.e. fixed sized
 		return tpl_d->element_defs[index].byte_offset;
@@ -94,46 +77,13 @@ void copy_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void*
 	memmove(value, ele.BLOB, get_element_size(tpl_d, index, tupl));
 }
 
-int compare_elements(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint32_t index)
+int compare_elements_within_tuple(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint32_t index)
 {
 	// seek to the elements to be compared
 	element e1 = get_element_from_tuple(tpl_d, index, tup1);
 	element e2 = get_element_from_tuple(tpl_d, index, tup2);
 
-	// if fixed sized elements compare them directly
-	if(is_fixed_sized_element_def(tpl_d->element_defs + index))
-		return compare_fixed_sized_elements(e1, e2, tpl_d->element_defs + index);
-	else
-	{
-		element_type element_compare_type = tpl_d->element_defs[index].type;
-
-		uint32_t size1 = get_element_size(tpl_d, index, tup1);
-		uint32_t size2 = get_element_size(tpl_d, index, tup2);
-
-		uint32_t min_size = (size1 < size2) ? size1 : size2;
-
-		int compare = 0;
-		if(element_compare_type == STRING)
-			compare = strncmp(e1.STRING, e2.STRING, min_size);
-		else if(element_compare_type == BLOB)
-			compare = memcmp(e1.STRING, e2.STRING, min_size);
-
-		if(compare > 0)
-			compare = 1;
-		else if(compare < 0)
-			compare = -1;
-		else if((compare == 0) && (size1 != size2))
-		{
-			// in dictionary ordering if 1 string is a prefix of the other
-			// then the larger string comes latter in the order
-			if(size1 > size2)
-				compare = -1;
-			else if(size1 > size2)
-				compare = 1;
-		}
-
-		return compare;
-	}
+	return compare_elements(e1, e2, tpl_d->element_defs + index);
 }
 
 int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d)
@@ -141,19 +91,12 @@ int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d)
 	int compare = 0;
 	for(uint32_t i = 0; ((i < tpl_d->element_count) && (compare == 0)); i++)
 	{
-		// SKIP THE ELEMENT IF IT COMES BEFORE A VARIABLE SIZED ELEMENT, SINCE THIS ELEMENT IS NOT ACTUAL DATA
-		// IT IS ONLY NEEDED TO READ THE SIZE OF THE VARIABLE SIZED DATA
-
-		// do not compare a size specifying element
-		if(is_size_specifying_element(tpl_d, i))
-			continue;
-
 		compare = compare_elements(tup1, tup2, tpl_d, i);
 	}
 	return compare;
 }
 
-uint32_t hash_element(const void* tup, const tuple_def* tpl_d, uint32_t index, uint32_t (*hash_func)(const void* data, uint32_t size))
+uint32_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, uint32_t index, uint32_t (*hash_func)(const void* data, uint32_t size))
 {
 	// seek to the elements to be compared
 	element ele = get_element_from_tuple(tpl_d, index, tup);
@@ -174,13 +117,6 @@ uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_fun
 	uint32_t hash_value = 0;
 	for(uint32_t i = 0; i < tpl_d->element_count; i++)
 	{
-		// SKIP THE ELEMENT IF IT COMES BEFORE A VARIABLE SIZED ELEMENT, SINCE THIS ELEMENT IS NOT ACTUAL DATA
-		// IT IS ONLY NEEDED TO READ THE SIZE OF THE VARIABLE SIZED DATA
-
-		// do not hash a size specifying element
-		if(is_size_specifying_element(tpl_d, i))
-			continue;
-
 		hash_value += hash_element(tup, tpl_d, i, hash_func);
 	}
 	return hash_value;
