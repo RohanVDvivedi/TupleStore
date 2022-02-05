@@ -4,31 +4,24 @@
 #include<stdio.h>
 #include<stdint.h>
 
-typedef uint8_t  u1;
-typedef uint16_t u2;
-typedef uint32_t u4;
-typedef uint64_t u8;
+#include<var_sized.h>
 
-typedef int8_t   i1;
-typedef int16_t  i2;
-typedef int32_t  i4;
-typedef int64_t  i8;
-
-typedef float    f4;
-typedef double   f8;
+#define FIXED_SIZED_DATATYPES    5
+#define VARIABLE_SIZED_DATATYPES 2
 
 typedef enum element_type element_type;
 enum element_type
 {
-	UINT	= 0,
-	INT 	= 1,
-	FLOAT	= 2,
-	STRING  = 3,
-	BLOB 	= 4
-	// data of STRING or BLOB type can be of fixed_size or be VARIABLE_SIZED
+	UINT	   = 0,
+	INT 	   = 1,
+	FLOAT	   = 2,
+	STRING     = 3,
+	BLOB       = 4,
+	// above data types are fixed type
 
-	// a VARIABLE_SIZED STRING or BLOB data type must be preceded with a UINT type of sizes (1,2 or 4)
-	// such that the preceded data denotes its size in bytes
+	VAR_STRING = 5,
+	VAR_BLOB   = 6
+	// data of VAR_STRING or VAR_BLOB are of variable size
 };
 
 extern char type_as_string[][8];
@@ -36,22 +29,30 @@ extern char type_as_string[][8];
 typedef union element element;
 union element
 {
-	u1* 	UINT_1;
-	u2* 	UINT_2;
-	u4* 	UINT_4;
-	u8* 	UINT_8;
+	uint8_t*        UINT_1;
+	uint16_t*       UINT_2;
+	uint32_t*       UINT_4;
+	uint64_t*       UINT_8;
 
-	i1*		INT_1;
-	i2* 	INT_2;
-	i4* 	INT_4;
-	i8* 	INT_8;
+	int8_t*         INT_1;
+	int16_t*        INT_2;
+	int32_t*        INT_4;
+	int64_t*        INT_8;
 
-	f4* 	FLOAT_4;
-	f8* 	FLOAT_8;
+	float*          FLOAT_4;
+	double*         FLOAT_8;
 
-	char*	STRING;
+	char*           STRING;
 
-	void* 	BLOB;
+	void*           BLOB;
+
+	var_string8*    VAR_STRING_1;
+	var_string16*   VAR_STRING_2;
+	var_string32*   VAR_STRING_4;
+
+	var_blob8*      VAR_BLOB_1;
+	var_blob16*     VAR_BLOB_2;
+	var_blob32*     VAR_BLOB_4;
 };
 
 #define VARIABLE_SIZED 0
@@ -62,9 +63,16 @@ struct element_def
 	// datatype stored in the element
 	element_type type;
 
-	// size in bytes that may be occupied by the element
-	// size may be equal to VARIABLE_SIZED only for STRING and BLOB datatypes
-	uint32_t size;
+	union
+	{
+		// used for type == UINT, INT, FLOAT, STRING and BLOB
+		// size in bytes that may be occupied by the element
+		uint32_t size;
+
+		// used for type = VAR_STRING and VAR_BLOB
+		// this is the number of bytes used in prefix to specify the actual sizes of VAR_* datatypes
+		uint32_t size_specifier_size;
+	}
 
 	// byte offset in tuple for the given element definition
 	// valid only if the tuple is not VARIABLE_SIZED
@@ -84,10 +92,11 @@ int is_fixed_sized_element_def(const element_def* element_d);
 // returns true if an element is of a variable sized
 int is_variable_sized_element_def(const element_def* element_d);
 
+// returns size of element
+uint32_t get_element_size(element e, const element_def* ele_d);
+
 // compare 2 elements, given their element definition
-// this function must be called only on fixed sized elements i.e. ele_d->size != VARIABLE_SIZED
-// if the elements are variable sized, then we do not have enough information to compare them appropriately
-int compare_fixed_sized_elements(element e1, element e2, const element_def* ele_d);
+int compare_elements(element e1, element e2, const element_def* ele_d);
 
 typedef struct tuple_def tuple_def;
 struct tuple_def
@@ -115,8 +124,7 @@ int insert_element_def(tuple_def* tuple_d, element_type ele_type, uint32_t eleme
 // after inserting all the elements call this function
 void finalize_tuple_def(tuple_def* tuple_d);
 
-// no function can be called on a tuple definition in a valid way if the tuple is empty
-// the functions we are refering to are in the "tuple.h" header file
+// returns 1, if the tuple_d does not contain any elements
 int is_empty_tuple_def(const tuple_def* tuple_d);
 
 // returns true if the tuple definition is of a fixed sized
@@ -125,10 +133,6 @@ int is_fixed_sized_tuple_def(const tuple_def* tuple_d);
 
 // returns true if the tuple definition is of a variable sized
 int is_variable_sized_tuple_def(const tuple_def* tuple_d);
-
-// returns 1, if the element at the given index will be responsible
-// for specifing the size of a VARIABLE_SIZED tuple element at (index + 1).
-int is_size_specifying_element(const tuple_def* tuple_d, uint32_t index);
 
 // this is the minimum size of any tuple that can be defined by the given tuple definition
 // the minimum sized tuple is the one where all variable size elements (as per the tuple definition) are 0 sized

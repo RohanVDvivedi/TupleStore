@@ -10,7 +10,7 @@
 
 
 // element level functions
-uint32_t get_element_size(const tuple_def* tpl_d, uint32_t index, const void* tupl);
+uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 
 uint32_t get_element_offset(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 
@@ -30,13 +30,13 @@ void copy_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void*
 
 
 // compare functions for tuple and for an element inside the tuple
-int compare_elements(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint32_t index);
+int compare_elements_within_tuple(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint32_t index);
 
 int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d);
 
 
 // hash function for tuple and for an element inside the tuple at the specified index
-uint32_t hash_element(const void* tup, const tuple_def* tpl_d, uint32_t index, uint32_t (*hash_func)(const void* data, uint32_t size));
+uint32_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, uint32_t index, uint32_t (*hash_func)(const void* data, uint32_t size));
 
 uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_func)(const void* data, uint32_t size));
 
