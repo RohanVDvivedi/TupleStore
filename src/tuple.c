@@ -82,7 +82,6 @@ int compare_elements_within_tuple(const void* tup1, const void* tup2, const tupl
 	// seek to the elements to be compared
 	element e1 = get_element_from_tuple(tpl_d, index, tup1);
 	element e2 = get_element_from_tuple(tpl_d, index, tup2);
-
 	return compare_elements(e1, e2, tpl_d->element_defs + index);
 }
 
@@ -98,18 +97,8 @@ int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d)
 
 uint32_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, uint32_t index, uint32_t (*hash_func)(const void* data, uint32_t size))
 {
-	// seek to the elements to be compared
-	element ele = get_element_from_tuple(tpl_d, index, tup);
-
-	// size of the element
-	uint32_t size = get_element_size_within_tuple(tpl_d, index, tup);
-
-	// for a STRING type the size is the capacity, not the actual size, 
-	// the string may be smaller than the size
-	if(tpl_d->element_defs[index].type == STRING)
-		return hash_func(ele.STRING, strnlen(ele.STRING, size));
-	else
-		return hash_func(ele.BLOB, size);
+	element e = get_element_from_tuple(tpl_d, index, tup);
+	return hash_element(e, tpl_d->element_defs + index, hash_func);
 }
 
 uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_func)(const void* data, uint32_t size))
