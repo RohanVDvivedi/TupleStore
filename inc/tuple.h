@@ -24,7 +24,7 @@ void* get_end_of_tuple(const tuple_def* tpl_d, const void* tupl);
 
 
 // copy element to and from tuple functions
-void copy_element_to_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value);
+void copy_element_to_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t var_blob_size);
 
 void copy_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl, void* value);
 

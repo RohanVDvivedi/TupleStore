@@ -56,19 +56,87 @@ void* seek_to_end_of_tuple(const tuple_def* tpl_d, const void* tupl)
 	return (void*)(tupl + get_tuple_size(tpl_d, tupl));
 }
 
-void copy_element_to_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value)
+void copy_element_to_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t var_blob_size)
 {
 	element ele = get_element_from_tuple(tpl_d, index, tupl);
 
-	if(tpl_d->element_defs[index].type == STRING)
+	if(is_fixed_sized_element_def(tpl_d->element_defs + index))
 	{
-		uint32_t total_size = get_element_size_within_tuple(tpl_d, index, tupl);
-		uint32_t string_size = strnlen(value, total_size) + 1;
-		uint32_t copy_size = (total_size < string_size) ? total_size : string_size;
-		memmove(ele.STRING, value, copy_size);
+		if(tpl_d->element_defs[index].type == STRING)
+		{
+			uint32_t total_size = get_element_size_within_tuple(tpl_d, index, tupl);
+			uint32_t string_size = strnlen(value, total_size) + 1;
+			uint32_t copy_size = (total_size < string_size) ? total_size : string_size;
+			memmove(ele.STRING, value, copy_size);
+		}
+		else
+			memmove(ele.BLOB, value, get_element_size_within_tuple(tpl_d, index, tupl));
 	}
 	else
-		memmove(ele.BLOB, value, get_element_size_within_tuple(tpl_d, index, tupl));
+	{
+		switch(tpl_d->element_defs[index].type)
+		{
+			case VAR_STRING :
+			{
+				switch(tpl_d->element_defs[index].size_specifier_prefix_size)
+				{
+					case 1 :
+					{
+						uint32_t copy_size = strnlen(value, (1<<8)-1);
+						ele.VAR_STRING_1->size = copy_size;
+						memmove(ele.VAR_STRING_1->string, value, copy_size);
+						break;
+					}
+					case 2 :
+					{
+						uint32_t copy_size = strnlen(value, (1<<16)-1);
+						ele.VAR_STRING_2->size = copy_size;
+						memmove(ele.VAR_STRING_2->string, value, copy_size);
+						break;
+					}
+					case 4 :
+					{
+						uint32_t copy_size = strnlen(value, (1<<32)-1);
+						ele.VAR_STRING_4->size = copy_size;
+						memmove(ele.VAR_STRING_4->string, value, copy_size);
+						break;
+					}
+				}
+				break;
+			}
+			case VAR_BLOB :
+			{
+				switch(tpl_d->element_defs[index].size_specifier_prefix_size)
+				{
+					case 1 :
+					{
+						var_blob_size = (var_blob_size > ((1<<8)-1)) ? ((1<<8)-1) : var_blob_size;
+						ele.VAR_STRING_1->size = var_blob_size;
+						memmove(ele.VAR_BLOB_1->blob, value, var_blob_size);
+						break;
+					}
+					case 2 :
+					{
+						var_blob_size = (var_blob_size > ((1<<16)-1)) ? ((1<<16)-1) : var_blob_size;
+						ele.VAR_STRING_2->size = var_blob_size;
+						memmove(ele.VAR_BLOB_2->blob, value, var_blob_size);
+						break;
+					}
+					case 4 :
+					{
+						ele.VAR_STRING_4->size = var_blob_size;
+						memmove(ele.VAR_BLOB_4->blob, value, var_blob_size);
+						break;
+					}
+				}
+				break;
+			}
+			default :
+			{
+				break;
+			}
+		}
+	}
 }
 
 void copy_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl, void* value)
