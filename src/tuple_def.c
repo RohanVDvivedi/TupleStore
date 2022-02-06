@@ -83,7 +83,7 @@ uint32_t get_element_size(element e, const element_def* ele_d)
 {
 	if(is_fixed_sized_element_def(ele_d))
 		return ele_d->size;
-	else
+	else if(ele_d->type == VAR_STRING)
 	{
 		switch(ele_d->size_specifier_prefix_size)
 		{
@@ -97,6 +97,21 @@ uint32_t get_element_size(element e, const element_def* ele_d)
 				return 0;
 		}
 	}
+	else if(ele_d->type == VAR_BLOB)
+	{
+		switch(ele_d->size_specifier_prefix_size)
+		{
+			case 1 :
+				return 1 + e.VAR_BLOB_1->size;
+			case 2 :
+				return 2 + e.VAR_BLOB_2->size;
+			case 4 :
+				return 4 + e.VAR_BLOB_4->size;
+			default :
+				return 0;
+		}
+	}
+	return 0;
 }
 
 #define compare(a,b)	( ((a)>(b)) ? 1 : (((a)<(b)) ? (-1) : 0 ) )
@@ -257,6 +272,42 @@ int compare_elements(element e1, element e2, const element_def* ele_d)
 			return compare;
 		}
 	}
+	return 0;
+}
+
+uint32_t hash_element(element e, const element_def* ele_d, uint32_t (*hash_func)(const void* data, uint32_t size))
+{
+	// for a STRING or VAR_STRING type the size is the capacity, not the actual size, 
+	// the string may be smaller than the size
+	if(ele_d->type == STRING)
+		return hash_func(e.STRING, strnlen(e.STRING, get_element_size(e, ele_d)));
+	else if(ele_d->type == VAR_STRING)
+	{
+		switch(ele_d->size_specifier_prefix_size)
+		{
+			case 1 :
+				return hash_func(e.VAR_STRING_1->string, strnlen(e.VAR_STRING_1->string, e.VAR_STRING_1->size));
+			case 2 :
+				return hash_func(e.VAR_STRING_2->string, strnlen(e.VAR_STRING_2->string, e.VAR_STRING_2->size));
+			case 4 :
+				return hash_func(e.VAR_STRING_4->string, strnlen(e.VAR_STRING_4->string, e.VAR_STRING_4->size));
+		}
+	}
+	else if(ele_d->type == VAR_BLOB)
+	{
+		switch(ele_d->size_specifier_prefix_size)
+		{
+			case 1 :
+				return hash_func(e.VAR_BLOB_1->blob, e.VAR_BLOB_1->size);
+			case 2 :
+				return hash_func(e.VAR_BLOB_2->blob, e.VAR_BLOB_2->size);
+			case 4 :
+				return hash_func(e.VAR_BLOB_4->blob, e.VAR_BLOB_4->size);
+		}
+	}
+	else
+		return hash_func(e.BLOB, get_element_size(e, ele_d));
+
 	return 0;
 }
 
