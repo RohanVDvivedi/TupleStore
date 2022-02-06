@@ -8,12 +8,12 @@
 #include<page_layout.h>
 
 // comment the below macro to test the SLOTTED_PAGE_LAYOUT
-//#define TEST_FIXED_ARRAY_PAGE_LAYOUT
+#define TEST_FIXED_ARRAY_PAGE_LAYOUT
 #define VAR_STRING_SIZE_SPECIFICER_SIZE 1
 
 // uncomment the page size that you want to test with
-  #define PAGE_SIZE     256
-//#define PAGE_SIZE     512
+//#define PAGE_SIZE     256
+  #define PAGE_SIZE     512
 //#define PAGE_SIZE    1024
 //#define PAGE_SIZE    4096
 //#define PAGE_SIZE    8192
