@@ -152,11 +152,109 @@ int compare_elements(element e1, element e2, const element_def* ele_d)
 			return memcmp(e1.STRING, e2.STRING, ele_d->size);
 		case VAR_STRING :
 		{
-			// TODO
+			uint32_t size1;
+			uint32_t size2;
+
+			uint32_t min_size = (size1 < size2) ? size1 : size2;
+
+			int compare = 0;
+
+			switch(ele_d->size_specifier_prefix_size)
+			{
+				case 1 :
+				{
+					size1 = strnlen(e1.VAR_STRING_1->string, e1.VAR_STRING_1->size);
+					size2 = strnlen(e2.VAR_STRING_1->string, e2.VAR_STRING_1->size);
+					min_size = (size1 < size2) ? size1 : size2;
+					compare = strncmp(e1.VAR_STRING_1->string, e2.VAR_STRING_1->string, min_size);
+					break;
+				}
+				case 2 :
+				{
+					size1 = strnlen(e1.VAR_STRING_2->string, e1.VAR_STRING_2->size);
+					size2 = strnlen(e2.VAR_STRING_2->string, e2.VAR_STRING_2->size);
+					min_size = (size1 < size2) ? size1 : size2;
+					compare = strncmp(e1.VAR_STRING_2->string, e2.VAR_STRING_2->string, min_size);
+					break;
+				}
+				case 4 :
+				{
+					size1 = strnlen(e1.VAR_STRING_4->string, e1.VAR_STRING_4->size);
+					size2 = strnlen(e2.VAR_STRING_4->string, e2.VAR_STRING_4->size);
+					min_size = (size1 < size2) ? size1 : size2;
+					compare = strncmp(e1.VAR_STRING_4->string, e2.VAR_STRING_4->string, min_size);
+					break;
+				}
+			}
+
+			if(compare > 0)
+				compare = 1;
+			else if(compare < 0)
+				compare = -1;
+			else if((compare == 0) && (size1 != size2))
+			{
+				// in dictionary ordering if 1 string is a prefix of the other
+				// then the larger string comes latter in the order
+				if(size1 > size2)
+					compare = -1;
+				else if(size1 > size2)
+					compare = 1;
+			}
+
+			return compare;
 		}
 		case VAR_BLOB :
 		{
-			// TODO
+			uint32_t size1;
+			uint32_t size2;
+
+			uint32_t min_size = (size1 < size2) ? size1 : size2;
+
+			int compare = 0;
+
+			switch(ele_d->size_specifier_prefix_size)
+			{
+				case 1 :
+				{
+					size1 = e1.VAR_BLOB_1->size;
+					size2 = e2.VAR_BLOB_1->size;
+					min_size = (size1 < size2) ? size1 : size2;
+					compare = memcmp(e1.VAR_BLOB_1->blob, e2.VAR_BLOB_1->blob, min_size);
+					break;
+				}
+				case 2 :
+				{
+					size1 = e1.VAR_BLOB_2->size;
+					size2 = e2.VAR_BLOB_2->size;
+					min_size = (size1 < size2) ? size1 : size2;
+					compare = memcmp(e1.VAR_BLOB_2->blob, e2.VAR_BLOB_2->blob, min_size);
+					break;
+				}
+				case 4 :
+				{
+					size1 = e1.VAR_BLOB_4->size;
+					size2 = e2.VAR_BLOB_4->size;
+					min_size = (size1 < size2) ? size1 : size2;
+					compare = memcmp(e1.VAR_BLOB_4->blob, e2.VAR_BLOB_4->blob, min_size);
+					break;
+				}
+			}
+
+			if(compare > 0)
+				compare = 1;
+			else if(compare < 0)
+				compare = -1;
+			else if((compare == 0) && (size1 != size2))
+			{
+				// in dictionary ordering if 1 string is a prefix of the other
+				// then the larger string comes latter in the order
+				if(size1 > size2)
+					compare = -1;
+				else if(size1 > size2)
+					compare = 1;
+			}
+
+			return compare;
 		}
 	}
 	return 0;
