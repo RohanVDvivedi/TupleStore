@@ -155,7 +155,7 @@ int compare_elements(element e1, element e2, const element_def* ele_d)
 			uint32_t size1;
 			uint32_t size2;
 
-			uint32_t min_size = (size1 < size2) ? size1 : size2;
+			uint32_t min_size;
 
 			int compare = 0;
 
