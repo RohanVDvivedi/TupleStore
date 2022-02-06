@@ -348,6 +348,59 @@ int sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 				chars_written += sprintf(str + chars_written, "]");
 				break;
 			}
+			case VAR_STRING :
+			{
+				switch(tpl_d->element_defs[i].size_specifier_prefix_size)
+				{
+					case 1 :
+					{
+						chars_written += sprintf(str + chars_written, "\"%.*s\"", e.VAR_STRING_1->size, e.VAR_STRING_1->string);
+						break;
+					}
+					case 2 :
+					{
+						chars_written += sprintf(str + chars_written, "\"%.*s\"", e.VAR_STRING_2->size, e.VAR_STRING_2->string);
+						break;
+					}
+					case 4 :
+					{
+						chars_written += sprintf(str + chars_written, "\"%.*s\"", e.VAR_STRING_4->size, e.VAR_STRING_4->string);
+						break;
+					}
+				}
+				break;
+			}
+			case VAR_BLOB :
+			{
+				uint32_t size = 0;
+				char* blob_data = NULL;
+				switch(tpl_d->element_defs[i].size_specifier_prefix_size)
+				{
+					case 1 :
+					{
+						size = e.VAR_BLOB_1->size;
+						blob_data = e.VAR_BLOB_1->blob;
+						break;
+					}
+					case 2 :
+					{
+						size = e.VAR_BLOB_2->size;
+						blob_data = e.VAR_BLOB_2->blob;
+						break;
+					}
+					case 4 :
+					{
+						size = e.VAR_BLOB_4->size;
+						blob_data = e.VAR_BLOB_4->blob;
+						break;
+					}
+				}
+				chars_written += sprintf(str + chars_written, "BLOB(%u)[", size);
+				for(uint32_t i = 0; i < size; i++)
+					chars_written += sprintf(str + chars_written, " 0x%2x", *((uint8_t*)(blob_data + i)));
+				chars_written += sprintf(str + chars_written, "]");
+				break;
+			}
 		}
 	}
 	chars_written += sprintf(str + chars_written, "\n");
