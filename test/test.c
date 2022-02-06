@@ -56,20 +56,20 @@ void init_tuple_definition(tuple_def* def)
 typedef struct row row;
 struct row
 {
-	i8 c0;
-	u1 c1;
+	int64_t c0;
+	uint8_t c1;
 	char* c2;
-	f8 c3;
+	double c3;
 };
 
 void build_tuple_from_row_struct(const tuple_def* def, void* tuple, const row* r)
 {
 	int column_no = 0;
 
-	copy_element_to_tuple(def, column_no++, tuple, &(r->c0));
-	copy_element_to_tuple(def, column_no++, tuple, &(r->c1));
-	copy_element_to_tuple(def, column_no++, tuple,  (r->c2));
-	copy_element_to_tuple(def, column_no++, tuple, &(r->c3));
+	copy_element_to_tuple(def, column_no++, tuple, &(r->c0), -1);
+	copy_element_to_tuple(def, column_no++, tuple, &(r->c1), -1);
+	copy_element_to_tuple(def, column_no++, tuple,  (r->c2), -1);
+	copy_element_to_tuple(def, column_no++, tuple, &(r->c3), -1);
 
 	// output print string
 	char print_buffer[PAGE_SIZE];
