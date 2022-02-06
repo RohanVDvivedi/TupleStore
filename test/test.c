@@ -9,6 +9,7 @@
 
 // comment the below macro to test the SLOTTED_PAGE_LAYOUT
 #define TEST_FIXED_ARRAY_PAGE_LAYOUT
+#define VAR_STRING_SIZE_SPECIFICER_SIZE 1
 
 // uncomment the page size that you want to test with
   #define PAGE_SIZE     256
@@ -29,13 +30,12 @@ void init_tuple_definition(tuple_def* def)
 
 	insert_element_def(def,   INT, 8);
 
-	// a size specifier for a varibale sized string
 	insert_element_def(def,   UINT, 1);
 
 	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
 		insert_element_def(def, STRING, 15);
 	#else
-		insert_element_def(def, STRING, VARIABLE_SIZED);
+		insert_element_def(def, VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE);
 	#endif
 
 	insert_element_def(def,  FLOAT, 8);
@@ -113,7 +113,7 @@ int main()
 
 	// ---------------	INSERT
 
-	r = &(row){-123, 10, "Rohan good", 99.99};
+	r = &(row){-123, 5, "Rohan good", 99.99};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	res = insert_tuple(page, PAGE_SIZE, def, tuple_cache);
 	printf("Insert : %d\n\n\n", res);
@@ -127,14 +127,14 @@ int main()
 
 	// ---------------`INSERT
 
-	r = &(row){-12, 16, "Rohan is awesome", 20.21};
+	r = &(row){-12, 7, "Rohan is awesome", 20.21};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	insert_tuple(page, PAGE_SIZE, def, tuple_cache);
 	printf("Insert : %d\n\n\n", res);
 
 	// ---------------	INSERT
 
-	r = &(row){-53, 2, "ro", 20.21};
+	r = &(row){-53, 17, "ro", 20.21};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	insert_tuple(page, PAGE_SIZE, def, tuple_cache);
 	printf("Insert : %d\n\n\n", res);
@@ -164,7 +164,7 @@ int main()
 
 	// ---------------	UPDATE
 
-	r = &(row){-456, 8, "by Rohan", 65536};
+	r = &(row){-456, 18, "by Rohan", 65536};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	res = update_tuple(page, PAGE_SIZE, def, 1, tuple_cache);
 	printf("Update(1) : %d\n\n\n", res);
@@ -180,7 +180,7 @@ int main()
 
 	// ---------------	UPDATE
 
-	r = &(row){-789, 18, "Nam: Rohan Dvivedi", 99.99};
+	r = &(row){-789, 9, "Nam: Rohan Dvivedi", 99.99};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	res = update_tuple(page, PAGE_SIZE, def, 3, tuple_cache);
 	printf("Update(3) : %d\n\n\n", res);
@@ -224,7 +224,7 @@ int main()
 
 	// ---------------	UPDATE
 
-	r = &(row){-234, 17, "Project by Rohan.", 655.36};
+	r = &(row){-234, 11, "Project by Rohan.", 655.36};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	res = update_tuple(page, PAGE_SIZE, def, 1, tuple_cache);
 	printf("Update(1) : %d\n\n\n", res);
@@ -256,7 +256,7 @@ int main()
 
 	// ---------------- INSERT WHEN ABOUT TO BE FULL
 
-	r = &(row){34, 13, "genre horror.", 7.121996};
+	r = &(row){34, 173, "genre horror.", 7.121996};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	printf("Can insert : %d\n\n", can_insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
@@ -268,7 +268,7 @@ int main()
 
 	// ---------------- INSERT
 
-	r = &(row){-35, 16, "Rohan is artist.", 7.12};
+	r = &(row){-35, 13, "Rohan is artist.", 7.12};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	printf("Can insert : %d\n\n", can_insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
@@ -280,7 +280,7 @@ int main()
 
 	// ---------------- INSERT
 
-	r = &(row){36, 15, "Rohan is RohanD", 12.1996};
+	r = &(row){36, 153, "Rohan is RohanD", 12.1996};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	printf("Can insert : %d\n\n", can_insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
@@ -292,7 +292,7 @@ int main()
 
 	// ---------------- INSERT
 
-	r = &(row){36, 14, "Rohan is Rohan", 12.1996};
+	r = &(row){36, 143, "Rohan is Rohan", 12.1996};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	printf("Can insert : %d\n\n", can_insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
@@ -304,7 +304,7 @@ int main()
 
 	// ---------------- INSERT
 
-	r = &(row){35, 16, "Rohan is Dvivedi", 7.1996};
+	r = &(row){35, 49, "Rohan is Dvivedi", 7.1996};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	printf("Can insert : %d\n\n", can_insert_tuple(page, PAGE_SIZE, def, tuple_cache));
 	printf("Insert : %d\n\n\n\n", insert_tuple(page, PAGE_SIZE, def, tuple_cache));
@@ -320,7 +320,7 @@ int main()
 
 	// ---------------	UPDATE
 
-	r = &(row){-234, 15, "Project Stupstom", 655.36};
+	r = &(row){-234, 5, "Project Stupstom", 655.36};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	res = update_tuple(page, PAGE_SIZE, def, 5, tuple_cache);
 	printf("Update(5) : %d\n\n\n", res);
@@ -332,7 +332,7 @@ int main()
 
 	// ---------------	UPDATE
 
-	r = &(row){-234, 12, "Project Stupstom", 655.36};
+	r = &(row){-234, 3, "Project Stupstom", 655.36};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	res = update_tuple(page, PAGE_SIZE, def, 5, tuple_cache);
 	printf("Update(5) : %d\n\n\n", res);
@@ -442,15 +442,29 @@ int main()
 
 	// ---------------  UPDATE AT ARBITRARY PLACE
 
-	r = &(row){3, 15, "Rohan Dvivedi's, project.", 3.57};
+	r = &(row){3, 76, "Rohan Dvivedi's, project.", 3.57};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	res = update_tuple(page, PAGE_SIZE, def, 2, tuple_cache);
 	printf("Update(2) : %d\n\n\n", res);
 	print_page(page, PAGE_SIZE, def);
 
-	r = &(row){5, 13, "Rohan's, project : Simple Tuple Storage Model.", 35.7};
+	r = &(row){5, 94, "Rohan's, project : Simple Tuple Storage Model.", 35.7};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	res = update_tuple(page, PAGE_SIZE, def, 0, tuple_cache);
+	printf("Update(0) : %d\n\n\n", res);
+	print_page(page, PAGE_SIZE, def);
+
+	// ----------------  INSTEAD TRY INSERT
+
+	r = &(row){3, 76, "Rohan Dvivedi's, project.", 3.57};
+	build_tuple_from_row_struct(def, tuple_cache, r);
+	res = insert_tuple(page, PAGE_SIZE, def, tuple_cache);
+	printf("Update(2) : %d\n\n\n", res);
+	print_page(page, PAGE_SIZE, def);
+
+	r = &(row){5, 94, "Rohan's, project : Simple Tuple Storage Model.", 35.7};
+	build_tuple_from_row_struct(def, tuple_cache, r);
+	res = insert_tuple(page, PAGE_SIZE, def, tuple_cache);
 	printf("Update(0) : %d\n\n\n", res);
 	print_page(page, PAGE_SIZE, def);
 
