@@ -26,7 +26,7 @@ uint32_t get_element_offset_within_tuple(const tuple_def* tpl_d, uint32_t index,
 		#else	// loop over all the elements (until the index) and add their sizes
 
 			for(uint32_t i = 0; i < index; i++)
-				offset += get_element_size(tpl_d, i, tupl);
+				offset += get_element_size_within_tuple(tpl_d, i, tupl);
 
 		#endif
 
@@ -36,7 +36,7 @@ uint32_t get_element_offset_within_tuple(const tuple_def* tpl_d, uint32_t index,
 
 element get_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
-	return (element){.BLOB = (void*)(tupl + get_element_offset(tpl_d, index, tupl))};
+	return (element){.BLOB = (void*)(tupl + get_element_offset_within_tuple(tpl_d, index, tupl))};
 }
 
 uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
@@ -47,7 +47,7 @@ uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
 	{
 		// for VARIABLE_SIZED tuple return last_element's offset + last_element's size
 		uint32_t last_index = tpl_d->element_count - 1;
-		return get_element_offset(tpl_d, last_index, tupl) + get_element_size(tpl_d, last_index, tupl);
+		return get_element_offset_within_tuple(tpl_d, last_index, tupl) + get_element_size_within_tuple(tpl_d, last_index, tupl);
 	}
 }
 
@@ -62,19 +62,19 @@ void copy_element_to_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, c
 
 	if(tpl_d->element_defs[index].type == STRING)
 	{
-		uint32_t total_size = get_element_size(tpl_d, index, tupl);
+		uint32_t total_size = get_element_size_within_tuple(tpl_d, index, tupl);
 		uint32_t string_size = strnlen(value, total_size) + 1;
 		uint32_t copy_size = (total_size < string_size) ? total_size : string_size;
 		memmove(ele.STRING, value, copy_size);
 	}
 	else
-		memmove(ele.BLOB, value, get_element_size(tpl_d, index, tupl));
+		memmove(ele.BLOB, value, get_element_size_within_tuple(tpl_d, index, tupl));
 }
 
 void copy_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl, void* value)
 {
 	element ele = get_element_from_tuple(tpl_d, index, tupl);
-	memmove(value, ele.BLOB, get_element_size(tpl_d, index, tupl));
+	memmove(value, ele.BLOB, get_element_size_within_tuple(tpl_d, index, tupl));
 }
 
 int compare_elements_within_tuple(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint32_t index)
@@ -91,7 +91,7 @@ int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d)
 	int compare = 0;
 	for(uint32_t i = 0; ((i < tpl_d->element_count) && (compare == 0)); i++)
 	{
-		compare = compare_elements(tup1, tup2, tpl_d, i);
+		compare = compare_elements_within_tuple(tup1, tup2, tpl_d, i);
 	}
 	return compare;
 }
@@ -102,7 +102,7 @@ uint32_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, uint
 	element ele = get_element_from_tuple(tpl_d, index, tup);
 
 	// size of the element
-	uint32_t size = get_element_size(tpl_d, index, tup);
+	uint32_t size = get_element_size_within_tuple(tpl_d, index, tup);
 
 	// for a STRING type the size is the capacity, not the actual size, 
 	// the string may be smaller than the size
@@ -117,7 +117,7 @@ uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_fun
 	uint32_t hash_value = 0;
 	for(uint32_t i = 0; i < tpl_d->element_count; i++)
 	{
-		hash_value += hash_element(tup, tpl_d, i, hash_func);
+		hash_value += hash_element_within_tuple(tup, tpl_d, i, hash_func);
 	}
 	return hash_value;
 }
@@ -213,13 +213,13 @@ int sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 			}
 			case STRING :
 			{
-				uint32_t size = get_element_size(tpl_d, i, tup);
+				uint32_t size = get_element_size_within_tuple(tpl_d, i, tup);
 				chars_written += sprintf(str + chars_written, "\"%.*s\"", size, e.STRING);
 				break;
 			}
 			case BLOB :
 			{
-				uint32_t size = get_element_size(tpl_d, i, tup);
+				uint32_t size = get_element_size_within_tuple(tpl_d, i, tup);
 				chars_written += sprintf(str + chars_written, "BLOB(%u)[", size);
 				for(uint32_t i = 0; i < size; i++)
 					chars_written += sprintf(str + chars_written, " 0x%2x", (*((uint8_t*)(e.BLOB + i))));
@@ -248,7 +248,7 @@ int sscan_tuple(const char* str, void* tup, const tuple_def* tpl_d)
 		{
 			case UINT :
 			{
-				u8 temp;
+				uint64_t temp;
 				sscanf(str + chars_read, "%lu%n", &temp, &nr);			chars_read += nr;
 				switch(tpl_d->element_defs[i].size)
 				{
@@ -277,7 +277,7 @@ int sscan_tuple(const char* str, void* tup, const tuple_def* tpl_d)
 			}
 			case INT :
 			{
-				i8 temp;
+				int64_t temp;
 				sscanf(str + chars_read, "%ld%n", &temp, &nr);			chars_read += nr;
 				switch(tpl_d->element_defs[i].size)
 				{
@@ -310,14 +310,14 @@ int sscan_tuple(const char* str, void* tup, const tuple_def* tpl_d)
 				{
 					case 4 :
 					{
-						f4 temp;
+						float temp;
 						sscanf(str + chars_read, "%f%n", &temp, &nr); 	chars_read += nr;
 						(*(e.FLOAT_4)) = temp;
 						break;
 					}
 					case 8 :
 					{
-						f8 temp;
+						double temp;
 						sscanf(str + chars_read, "%lf%n", &temp, &nr);	chars_read += nr;
 						(*(e.FLOAT_8)) = temp;
 						break;
