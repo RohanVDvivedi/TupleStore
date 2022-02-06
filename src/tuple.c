@@ -94,7 +94,7 @@ void copy_element_to_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, c
 					}
 					case 4 :
 					{
-						ele.VAR_STRING_4->size = strnlen(value, (1<<32)-1);
+						ele.VAR_STRING_4->size = strlen(value);
 						memmove(ele.VAR_STRING_4->string, value, ele.VAR_STRING_4->size);
 						break;
 					}
@@ -155,7 +155,7 @@ void copy_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void*
 		{
 			case VAR_STRING :
 			{
-				uint32_t copy_size;
+				uint32_t copy_size = 0;
 				switch(tpl_d->element_defs[index].size_specifier_prefix_size)
 				{
 					case 1 :
