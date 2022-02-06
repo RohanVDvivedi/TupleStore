@@ -1,8 +1,1 @@
- * embed the size inside the STRING_VAR_SIZED_8, STRING_VAR_SIZED_16 and STRING_VAR_SIZED_32
- * similarly BLOB_VAR_SIZED_8, BLOB_VAR_SIZED_16 and BLOB_VAR_SIZED_32
-
- * element_def inside tuple_def come with a dstring name
-
  * compare_tuples and hash_tuple function takes a list of attribute indexes
-
- * convert sprint_tuple function to use dstring
