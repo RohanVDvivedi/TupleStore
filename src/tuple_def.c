@@ -397,7 +397,7 @@ uint32_t get_minimum_tuple_size(const tuple_def* tuple_d)
 
 static void print_element_def(const element_def* element_d)
 {
-	printf("\t\t\t type : %s\n", type_as_string[element_d->type]);
+	printf("\t\t\t \"%s\" of type : %s\n", element_d->name, type_as_string[element_d->type]);
 	if(is_variable_sized_element_def(element_d))
 		printf("\t\t\t size : VARIABLE_SIZED (%d + 0)\n", element_d->size_specifier_prefix_size);
 	else
@@ -407,7 +407,7 @@ static void print_element_def(const element_def* element_d)
 
 void print_tuple_def(const tuple_def* tuple_d)
 {
-	printf("Tuple definition : \n");
+	printf("Tuple definition for \"%s\" : \n", tuple_d->name);
 	if(is_variable_sized_tuple_def(tuple_d))
 		printf("\t tuple_size : VARIABLE_SIZED (0)\n");
 	else
