@@ -32,13 +32,17 @@ void copy_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void*
 // compare functions for tuple and for an element inside the tuple
 int compare_elements_within_tuple(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint32_t index);
 
-int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d);
+// if element_ids == NULL, then this functions compares the first element_count number of elements from both the tuples
+// else it compares the elements in the same order as provided in element_ids (here element_count denotes its size)
+int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint32_t element_count, uint32_t* element_ids);
 
 
 // hash function for tuple and for an element inside the tuple at the specified index
 uint32_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, uint32_t index, uint32_t (*hash_func)(const void* data, uint32_t size));
 
-uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_func)(const void* data, uint32_t size));
+// if element_ids == NULL, then this functions hashes the first element_count number of elements from the tuple
+// else it hashes the elements in the same order as provided in element_ids (here element_count denotes its size)
+uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_func)(const void* data, uint32_t size), uint32_t element_count, uint32_t* element_ids);
 
 
 // print and scan functions for tuple
