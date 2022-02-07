@@ -127,7 +127,7 @@ int main()
 
 	// ---------------`INSERT
 
-	r = &(row){-12, 12, "Rohan is awesome person", 20.21};
+	r = &(row){-12, 12, "Rohan is awesome person", 520.21};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	insert_tuple(page, PAGE_SIZE, def, tuple_cache);
 	printf("Insert : %d\n\n\n", res);
@@ -144,13 +144,43 @@ int main()
 	printf("compare(tuple_0 , tuple_1) = %d\n\n", 
 				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 0), 
 								get_nth_tuple(page, PAGE_SIZE, def, 1), 
-								def)
+								def,
+								def->element_count, NULL)
+			);
+
+	printf("compare(tuple_0 , tuple_1) = %d\n\n", 
+				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 0), 
+								get_nth_tuple(page, PAGE_SIZE, def, 1), 
+								def,
+								1, ((uint32_t[]){2}))
 			);
 
 	printf("compare(tuple_1 , tuple_2) = %d\n\n", 
 				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 1), 
 								get_nth_tuple(page, PAGE_SIZE, def, 2), 
-								def)
+								def,
+								def->element_count, NULL)
+			);
+
+	printf("compare(tuple_1 , tuple_2) = %d\n\n", 
+				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 1), 
+								get_nth_tuple(page, PAGE_SIZE, def, 2), 
+								def,
+								2, ((uint32_t[]){2, 3}))
+			);
+
+	printf("compare(tuple_1 , tuple_2) = %d\n\n", 
+				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 1), 
+								get_nth_tuple(page, PAGE_SIZE, def, 2), 
+								def,
+								2, ((uint32_t[]){1, 0}))
+			);
+
+	printf("compare(tuple_1 , tuple_2) = %d\n\n", 
+				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 1), 
+								get_nth_tuple(page, PAGE_SIZE, def, 2), 
+								def,
+								2, ((uint32_t[]){3, 2}))
 			);
 
 	// ---------------	PRINT PAGE
