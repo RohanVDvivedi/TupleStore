@@ -162,9 +162,15 @@ int compare_elements(element e1, element e2, const element_def* ele_d)
 			}
 		}
 		case STRING :
-			return strncmp(e1.STRING, e2.STRING, ele_d->size);
+		{
+			int compare = strncmp(e1.STRING, e2.STRING, ele_d->size);
+			return (compare != 0) ? ((compare > 0) ? 1 : -1) : 0;
+		}
 		case BLOB :
-			return memcmp(e1.STRING, e2.STRING, ele_d->size);
+		{
+			int compare =  memcmp(e1.STRING, e2.STRING, ele_d->size);
+			return (compare != 0) ? ((compare > 0) ? 1 : -1) : 0;
+		}
 		case VAR_STRING :
 		{
 			uint32_t size1;
