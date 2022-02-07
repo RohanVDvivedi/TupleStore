@@ -46,26 +46,34 @@ static int is_prefix_size_allowed_for_variable_sized_type(element_type ele_type,
 	}
 }
 
-int init_element_def(element_def* element_d, element_type ele_type, uint32_t size_OR_prefix_size)
+int init_element_def(element_def* element_d, char* name, element_type ele_type, uint32_t size_OR_prefix_size)
 {
 	if(is_variable_sized_element_type(ele_type))
 	{
 		if(!is_prefix_size_allowed_for_variable_sized_type(ele_type, size_OR_prefix_size))
 			return 0;
 
-		element_d->type = ele_type;
 		element_d->size_specifier_prefix_size = size_OR_prefix_size;
-		element_d->byte_offset = 0;
 	}
 	else
 	{
 		if(!is_size_allowed_for_fixed_sized_type(ele_type, size_OR_prefix_size))
 			return 0;
 
-		element_d->type = ele_type;
 		element_d->size = size_OR_prefix_size;
-		element_d->byte_offset = 0;
 	}
+
+	// set type to the ele_type as in parameter
+	element_d->type = ele_type;
+
+	// set the byte_offset to 0
+	// we don't know it yet
+	element_d->byte_offset = 0;
+
+	// add name to this element definition
+	strncpy(element_d->name, name, 63);
+	element_d->name[63] = '\0';
+
 	return 1;
 }
 
@@ -317,17 +325,19 @@ uint32_t hash_element(element e, const element_def* ele_d, uint32_t (*hash_func)
 	return 0;
 }
 
-void init_tuple_def(tuple_def* tuple_d)
+void init_tuple_def(tuple_def* tuple_d, char* name)
 {
 	tuple_d->size = 0;
 	tuple_d->element_count = 0;
+	strncpy(tuple_d->name, name, 63);
+	tuple_d->name[63] = '\0';
 }
 
-int insert_element_def(tuple_def* tuple_d, element_type ele_type, uint32_t element_size_OR_prefix_size)
+int insert_element_def(tuple_def* tuple_d, char* name, element_type ele_type, uint32_t element_size_OR_prefix_size)
 {
 	// if an element is not approved of appropriate size it can not be initialized
 	element_def* new_element_def = tuple_d->element_defs + tuple_d->element_count;
-	if(!init_element_def(new_element_def, ele_type, element_size_OR_prefix_size))
+	if(!init_element_def(new_element_def, name, ele_type, element_size_OR_prefix_size))
 		return 0;
 
 	tuple_d->element_count++;

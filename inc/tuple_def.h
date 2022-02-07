@@ -57,6 +57,9 @@ union element
 typedef struct element_def element_def;
 struct element_def
 {
+	// name of this attribute i.e. name of column
+	char name[64];
+
 	// datatype stored in the element
 	element_type type;
 
@@ -78,7 +81,7 @@ struct element_def
 
 // initialize an element's definition using its type and size
 // it may fail if the size parameters is not valid for a given data type
-int init_element_def(element_def* element_d, element_type ele_type, uint32_t size_OR_prefix_size);
+int init_element_def(element_def* element_d, char* name, element_type ele_type, uint32_t size_OR_prefix_size);
 
 // returns true if an element is of a variable sized
 int is_variable_sized_element_def(const element_def* element_d);
@@ -98,6 +101,9 @@ uint32_t hash_element(element e, const element_def* ele_d, uint32_t (*hash_func)
 typedef struct tuple_def tuple_def;
 struct tuple_def
 {
+	// name of the tuple type i.e. table/index name
+	char name[64];
+
 	// total size of tuple in bytes
 	// size = VARIABLE_SIZED, if atleast one of the element_defs is VARIABLE_SIZED
 	uint32_t size;
@@ -112,11 +118,11 @@ struct tuple_def
 #define size_of_tuple_def(element_count) (sizeof(tuple_def) + ((element_count) * sizeof(element_def)))
 
 // to initialize an empty tuple definition
-void init_tuple_def(tuple_def* tuple_d);
+void init_tuple_def(tuple_def* tuple_d, char* name);
 
 // insert the key or values, insert keys in their decreasing order of importance
 // mark the tuple_mark_key_complete, once all the keys are inserted
-int insert_element_def(tuple_def* tuple_d, element_type ele_type, uint32_t element_size_OR_prefix_size);
+int insert_element_def(tuple_def* tuple_d, char* name, element_type ele_type, uint32_t element_size_OR_prefix_size);
 
 // after inserting all the elements call this function
 void finalize_tuple_def(tuple_def* tuple_d);
