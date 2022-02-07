@@ -26,19 +26,19 @@ char temp_page[PAGE_SIZE] = {};
 void init_tuple_definition(tuple_def* def)
 {
 	// initialize tuple definition and insert element definitions
-	init_tuple_def(def);
+	init_tuple_def(def, "my_table");
 
-	insert_element_def(def,   INT, 8);
+	insert_element_def(def, "col_1", INT, 8);
 
-	insert_element_def(def,   UINT, 1);
+	insert_element_def(def, "col_2", UINT, 1);
 
 	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
-		insert_element_def(def, STRING, 15);
+		insert_element_def(def, "var_col_3", STRING, 15);
 	#else
-		insert_element_def(def, VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE);
+		insert_element_def(def, "fix_col_3", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE);
 	#endif
 
-	insert_element_def(def,  FLOAT, 8);
+	insert_element_def(def, "col_4", FLOAT, 8);
 
 	finalize_tuple_def(def);
 
