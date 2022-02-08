@@ -141,6 +141,11 @@ int is_variable_sized_tuple_def(const tuple_def* tuple_d);
 // the minimum sized tuple is the one where all variable size elements (as per the tuple definition) are 0 sized
 uint32_t get_minimum_tuple_size(const tuple_def* tuple_d);
 
+// gets index to an already existing element def in the given tuple def
+// if not found it returns NOT_FOUND
+#define NOT_FOUND (~((uint32_t)0))
+uint32_t get_element_def_id_by_name(const tuple_def* tuple_d, char* name);
+
 // to print a final tuple definition
 void print_tuple_def(const tuple_def* tuple_d);
 
