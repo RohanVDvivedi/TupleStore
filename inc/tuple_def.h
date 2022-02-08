@@ -118,7 +118,7 @@ struct tuple_def
 #define size_of_tuple_def(element_count) (sizeof(tuple_def) + ((element_count) * sizeof(element_def)))
 
 // to initialize an empty tuple definition
-void init_tuple_def(tuple_def* tuple_d, char* name);
+int init_tuple_def(tuple_def* tuple_d, char* name);
 
 // insert the key or values, insert keys in their decreasing order of importance
 // mark the tuple_mark_key_complete, once all the keys are inserted
