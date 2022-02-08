@@ -48,6 +48,10 @@ static int is_prefix_size_allowed_for_variable_sized_type(element_type ele_type,
 
 int init_element_def(element_def* element_d, char* name, element_type ele_type, uint32_t size_OR_prefix_size)
 {
+	// name larger than 63 bytes
+	if(strnlen(name, 64) == 64)
+		return 0;
+
 	if(is_variable_sized_element_type(ele_type))
 	{
 		if(!is_prefix_size_allowed_for_variable_sized_type(ele_type, size_OR_prefix_size))
@@ -325,17 +329,29 @@ uint32_t hash_element(element e, const element_def* ele_d, uint32_t (*hash_func)
 	return 0;
 }
 
-void init_tuple_def(tuple_def* tuple_d, char* name)
+int init_tuple_def(tuple_def* tuple_d, char* name)
 {
+	// name larger than 63 bytes
+	if(strnlen(name, 64) == 64)
+		return 0;
+
 	tuple_d->size = 0;
 	tuple_d->element_count = 0;
+
+	// copy name
 	strncpy(tuple_d->name, name, 63);
 	tuple_d->name[63] = '\0';
+
+	return 1;
 }
 
 int insert_element_def(tuple_def* tuple_d, char* name, element_type ele_type, uint32_t element_size_OR_prefix_size)
 {
-	// if an element is not approved of appropriate size it can not be initialized
+	// if an element definition by the name already exists then we fail an insertion
+	if(get_element_def_id_by_name(tuple_d, name) != NOT_FOUND)
+		return 0;
+
+	// attempt initializing the ith element def
 	element_def* new_element_def = tuple_d->element_defs + tuple_d->element_count;
 	if(!init_element_def(new_element_def, name, ele_type, element_size_OR_prefix_size))
 		return 0;
