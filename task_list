@@ -1,2 +1,0 @@
- * char [64] sized names for element defs and tuple defs
- * provide mapping from name of element_def to its index or its object
