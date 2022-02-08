@@ -26,19 +26,28 @@ char temp_page[PAGE_SIZE] = {};
 void init_tuple_definition(tuple_def* def)
 {
 	// initialize tuple definition and insert element definitions
-	init_tuple_def(def, "my_table");
+	int res = init_tuple_def(def, "my_table");
 
-	insert_element_def(def, "col_1", INT, 8);
+	res = insert_element_def(def, "col_1", INT, 8);
 
-	insert_element_def(def, "col_2", UINT, 1);
+	res = insert_element_def(def, "col_2", UINT, 1);
 
 	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
-		insert_element_def(def, "var_col_3", STRING, 15);
+		res = insert_element_def(def, "var_col_3", STRING, 15);
 	#else
-		insert_element_def(def, "fix_col_3", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE);
+		res = insert_element_def(def, "fix_col_3", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE);
 	#endif
 
-	insert_element_def(def, "col_4", FLOAT, 8);
+	res = insert_element_def(def, "col_4", FLOAT, 8);
+
+	res = insert_element_def(def, "col_2", FLOAT, 4);
+	printf("attempting to insert an element def with the 'col_2' name => %d\n", res);
+
+	res = insert_element_def(def, "col_1", FLOAT, 4);
+	printf("attempting to insert an element def with the 'col_1' name => %d\n", res);
+
+	res = insert_element_def(def, "col_4", FLOAT, 4);
+	printf("attempting to insert an element def with the 'col_4' name => %d\n", res);
 
 	finalize_tuple_def(def);
 
