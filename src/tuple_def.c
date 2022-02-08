@@ -395,6 +395,25 @@ uint32_t get_minimum_tuple_size(const tuple_def* tuple_d)
 	return minimum_size;
 }
 
+uint32_t get_element_def_id_by_name(const tuple_def* tuple_d, char* name)
+{
+	// if the name size is more than or equal to 64 we quit
+	uint32_t name_size = strnlen(name, 64);
+	if(name_size == 64)
+		return NOT_FOUND;
+
+	// we do a linear search here, it is not optimal
+	// it should have an associative map, but I dont want to clutter the implementation of tuple def any more 
+	// with any more complex data structures
+	for(uint32_t i = 0; i < tuple_d->element_count; i++)
+	{
+		if(0 == strcmp(tuple_d->element_defs[i].name, name))
+			return i;
+	}
+
+	return NOT_FOUND;
+}
+
 static void print_element_def(const element_def* element_d)
 {
 	printf("\t\t\t \"%s\" of type : %s\n", element_d->name, type_as_string[element_d->type]);
