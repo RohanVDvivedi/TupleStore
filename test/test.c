@@ -8,7 +8,7 @@
 #include<page_layout.h>
 
 // comment the below macro to test the SLOTTED_PAGE_LAYOUT
-#define TEST_FIXED_ARRAY_PAGE_LAYOUT
+//#define TEST_FIXED_ARRAY_PAGE_LAYOUT
 #define VAR_STRING_SIZE_SPECIFICER_SIZE 1
 
 // uncomment the page size that you want to test with
@@ -143,12 +143,19 @@ int main()
 
 	// ---------------	INSERT
 
-	r = &(row){-53, 17, "rohan", 20.21};
+	r = &(row){-53, 17, "Rohan", 20.21};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	insert_tuple(page, PAGE_SIZE, def, tuple_cache);
 	printf("Insert : %d\n\n\n", res);
 
 	// ---------------	COMPARE 2 TUPLES
+
+	printf("compare(tuple_2 , tuple_3) = %d\n\n", 
+				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 0), 
+								get_nth_tuple(page, PAGE_SIZE, def, 1), 
+								def,
+								1, ((uint32_t[]){2}))
+			);
 
 	printf("compare(tuple_0 , tuple_1) = %d\n\n", 
 				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 0), 
