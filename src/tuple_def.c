@@ -226,7 +226,6 @@ int compare_elements(element e1, element e2, const element_def* ele_d)
 				compare = -1;
 			else if((compare == 0) && (size1 != size2))
 			{
-				printf("sizes of VAR_STRINGS being compared = %u %u\n");
 				// in dictionary ordering if 1 string is a prefix of the other
 				// then the larger string comes latter in the order
 				if(size1 > size2)
