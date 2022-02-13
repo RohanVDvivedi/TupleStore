@@ -129,10 +129,6 @@ uint32_t get_element_size(element e, const element_def* ele_d)
 #define compare(a,b)	( ((a)>(b)) ? 1 : (((a)<(b)) ? (-1) : 0 ) )
 int compare_elements(element e1, element e2, const element_def* ele_d)
 {
-	// return if an element is not fixed sized
-	if(!is_fixed_sized_element_def(ele_d))
-		return 0;
-
 	switch(ele_d->type)
 	{
 		case UINT :
@@ -185,8 +181,8 @@ int compare_elements(element e1, element e2, const element_def* ele_d)
 		}
 		case VAR_STRING :
 		{
-			uint32_t size1;
-			uint32_t size2;
+			uint32_t size1 = 0;
+			uint32_t size2 = 0;
 
 			uint32_t min_size;
 
@@ -238,8 +234,8 @@ int compare_elements(element e1, element e2, const element_def* ele_d)
 		}
 		case VAR_BLOB :
 		{
-			uint32_t size1;
-			uint32_t size2;
+			uint32_t size1 = 0;
+			uint32_t size2 = 0;
 
 			uint32_t min_size = (size1 < size2) ? size1 : size2;
 
