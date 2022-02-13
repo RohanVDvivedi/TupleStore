@@ -151,8 +151,15 @@ int main()
 	// ---------------	COMPARE 2 TUPLES
 
 	printf("compare(tuple_2 , tuple_3) = %d\n\n", 
-				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 0), 
-								get_nth_tuple(page, PAGE_SIZE, def, 1), 
+				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 2), 
+								get_nth_tuple(page, PAGE_SIZE, def, 3), 
+								def,
+								1, ((uint32_t[]){2}))
+			);
+
+	printf("compare(tuple_3 , tuple_2) = %d\n\n", 
+				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 3), 
+								get_nth_tuple(page, PAGE_SIZE, def, 2), 
 								def,
 								1, ((uint32_t[]){2}))
 			);
