@@ -1,0 +1,3 @@
+ * optimize variable sized tuple -> in accessing their size, element offsets and element sizes, pre calculate their element_offsets using a function, and pass then arround
+ * re use memory on page (if the last slot is empty) in fixed sized array page to perform swap
+ * for SLOTTED_PAGE store tuple_size with the tuple offsets
