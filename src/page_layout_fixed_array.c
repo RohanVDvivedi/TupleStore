@@ -211,8 +211,10 @@ int exists_tuple_fixed_array_page(const void* page, uint32_t page_size, const tu
 
 int swap_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t i1, uint32_t i2)
 {
+	uint32_t tuple_count_val = get_tuple_count_fixed_array_page(page, page_size);
+
 	// index out of bounds
-	if(i1 == i2 || i1 >= get_tuple_count_fixed_array_page(page, page_size) || i2 >= get_tuple_count_fixed_array_page(page, page_size))
+	if(i1 == i2 || i1 >= tuple_count_val || i2 >= tuple_count_val)
 		return 0;
 
 	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
@@ -233,11 +235,25 @@ int swap_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_def
 		memmove(tuple_i2, tuple_i1, tpl_d->size);
 	else
 	{
-		void* temp = malloc(tpl_d->size);
+		int using_last_tuple_slot_as_temp_to_swap = 0;
+		void* temp = NULL;
+
+		uint32_t tuple_capacity = get_tuple_capacity(page, page_size, tpl_d);
+
+		if(tuple_capacity > tuple_count_val)
+		{
+			using_last_tuple_slot_as_temp_to_swap = 1;
+			temp = page + get_offset_to_ith_tuple(page, page_size, tpl_d, tuple_capacity - 1);
+		}
+		else
+			temp = malloc(tpl_d->size);
+
 		memmove(    temp, tuple_i1, tpl_d->size);
 		memmove(tuple_i1, tuple_i2, tpl_d->size);
 		memmove(tuple_i2,     temp, tpl_d->size);
-		free(temp);
+
+		if(!using_last_tuple_slot_as_temp_to_swap)
+			free(temp);
 	}
 
 	// swap bits of the is_valid bitmap
