@@ -331,6 +331,7 @@ int init_tuple_def(tuple_def* tuple_d, char* name)
 	if(strnlen(name, 64) == 64)
 		return 0;
 
+	tuple_d->is_variable_sized = 1;
 	tuple_d->size = 0;
 	tuple_d->element_count = 0;
 
@@ -379,7 +380,7 @@ int is_empty_tuple_def(const tuple_def* tuple_d)
 
 int is_fixed_sized_tuple_def(const tuple_def* tuple_d)
 {
-	return tuple_d->element_count == 0 || tuple_d->size != VARIABLE_SIZED;
+	return tuple_d->is_variable_sized == 0;
 }
 
 int is_variable_sized_tuple_def(const tuple_def* tuple_d)
@@ -389,22 +390,10 @@ int is_variable_sized_tuple_def(const tuple_def* tuple_d)
 
 uint32_t get_minimum_tuple_size(const tuple_def* tuple_d)
 {
-	// if the tuple is not variable sized
-	// i.e. if the tuple is fixed sized, then return its size
 	if(is_fixed_sized_tuple_def(tuple_d))
 		return tuple_d->size;
-
-	// for a VARIABLE_SIZED tuple definition
-	// consider all VARIABLE_SIZED elements to be of size of their prefix
-	uint32_t minimum_size = 0;
-	for(int i = 0; i < tuple_d->element_count; i++)
-	{
-		if(is_variable_sized_element_def(tuple_d->element_defs + i))
-			minimum_size += tuple_d->element_defs[i].size_specifier_prefix_size;
-		else
-			minimum_size += tuple_d->element_defs[i].size;
-	}
-	return minimum_size;
+	else
+		return tuple_d->min_size;
 }
 
 uint32_t get_element_def_id_by_name(const tuple_def* tuple_d, char* name)

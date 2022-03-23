@@ -104,9 +104,21 @@ struct tuple_def
 	// name of the tuple type i.e. table/index name
 	char name[64];
 
-	// total size of tuple in bytes
-	// size = VARIABLE_SIZED, if atleast one of the element_defs is VARIABLE_SIZED
-	uint32_t size;
+	// set to 1 for a variable sized tuple_def
+	// The tuple is VARIABLE_SIZED, if atleast one of the element_defs is VARIABLE_SIZED
+	int is_variable_sized;
+
+	// min total size of tuple in bytes
+	// i.e. size of tuple when all variable sized elements are NULL
+	// this will be same as tuple's size for a fixed sized tuple
+	union
+	{
+		// defined for variable sized tuple
+		uint32_t min_size;
+
+		// defined for fixed sized tuple
+		uint32_t size;
+	};
 
 	// total elements in the tuple
 	uint32_t element_count;
