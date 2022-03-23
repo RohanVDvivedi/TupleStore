@@ -3,11 +3,12 @@
 
 #include<tuple_def.h>
 
-// also the index must be an unsigned integral value between [0, tpl_d->element_count),
-// for the functions that are called on elements of a tuple for given a tuple definition.
+// the index must be an unsigned integral value between [0, tpl_d->element_count), for the functions that are called on elements of a tuple for given a tuple definition.
 // this is the mandatory condition, since, the functions do not check this condition to be true, repetitively.
 // and the functions assume that this condition holds true while you call that particular element level function.
 
+// initialized the tuple with all NULL attributes and its minimum size
+void init_tuple(const tuple_def* tpl_d, void* tupl);
 
 // element level functions
 uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);

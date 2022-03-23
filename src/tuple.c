@@ -2,9 +2,21 @@
 
 #include<stdio.h>
 #include<alloca.h>
-#include<tuple_def.h>
-
 #include<string.h>
+
+#include<bitmap.h>
+
+#include<tuple_def.h>
+#include<page_layout_util.h>
+
+void init_tuple(const tuple_def* tpl_d, void* tupl)
+{
+	set_all_bits(tupl + tpl_d->byte_offset_to_is_null_bitmap, tpl_d->element_count);
+
+	// set its size to min_size
+	if(is_variable_sized_tuple_def(tpl_d))
+		write_value_to_page(tupl, tpl_d->page_size, tpl_d->min_size);
+}
 
 uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {

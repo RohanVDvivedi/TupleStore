@@ -2,9 +2,9 @@
 
 #include<string.h>
 
-#include<page_layout_util.h>
-
 #include<bitmap.h>
+
+#include<page_layout_util.h>
 
 char type_as_string[][16] = {
 								"UINT",
