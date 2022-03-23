@@ -24,8 +24,11 @@ uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl);
 void* get_end_of_tuple(const tuple_def* tpl_d, const void* tupl);
 
 
+// check if the ith element in the tuple is NULL
+int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl);
+
 // copy element to and from tuple functions
-void copy_element_to_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t var_blob_size);
+void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t var_blob_size);
 
 void copy_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl, void* value);
 

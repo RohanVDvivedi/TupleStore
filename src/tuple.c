@@ -25,25 +25,10 @@ uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, c
 
 uint32_t get_element_offset_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
-	if(is_fixed_sized_tuple_def(tpl_d)) // i.e. fixed sized
+	if(is_fixed_sized_element_def(tpl_d->element_defs + index)) // i.e. fixed sized
 		return tpl_d->element_defs[index].byte_offset;
 	else
-	{
-		uint32_t offset = 0;
-
-		//#define USE_DYNAMIC_PROGRAMMING_APPROACH
-
-		#ifdef USE_DYNAMIC_PROGRAMMING_APPROACH
-			// TODO
-		#else	// loop over all the elements (until the index) and add their sizes
-
-			for(uint32_t i = 0; i < index; i++)
-				offset += get_element_size_within_tuple(tpl_d, i, tupl);
-
-		#endif
-
-		return offset;
-	}
+		return read_value_from(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets_to_variable_sized_elements);
 }
 
 element get_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
@@ -56,19 +41,22 @@ uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
 	if(is_fixed_sized_tuple_def(tpl_d)) // i.e. fixed sized tuple
 		return tpl_d->size;
 	else
-	{
-		// for VARIABLE_SIZED tuple return last_element's offset + last_element's size
-		uint32_t last_index = tpl_d->element_count - 1;
-		return get_element_offset_within_tuple(tpl_d, last_index, tupl) + get_element_size_within_tuple(tpl_d, last_index, tupl);
-	}
+		return read_value_from(tupl, tpl_d->size_of_byte_offsets_to_variable_sized_elements);
 }
 
-void* seek_to_end_of_tuple(const tuple_def* tpl_d, const void* tupl)
+void* get_end_of_tuple(const tuple_def* tpl_d, const void* tupl)
 {
 	return (void*)(tupl + get_tuple_size(tpl_d, tupl));
 }
 
-void copy_element_to_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t var_blob_size)
+int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl)
+{
+	return get_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+}
+
+void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t var_blob_size);
+
+static void copy_element_to_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t var_blob_size)
 {
 	element ele = get_element_from_tuple(tpl_d, index, tupl);
 
