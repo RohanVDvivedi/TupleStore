@@ -150,7 +150,9 @@ int init_tuple_def(tuple_def* tuple_d, char* name);
 int insert_element_def(tuple_def* tuple_d, char* name, element_type ele_type, uint32_t element_size_OR_prefix_size);
 
 // after inserting all the elements call this function
-void finalize_tuple_def(tuple_def* tuple_d);
+// here the parameter max_tuple_size is not required for fixed length tuples
+// it is used to calculate the size (in bytes) required for storing tuple_size and offsets to varable sized elements
+void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_tuple_size);
 
 // returns 1, if the tuple_d does not contain any elements
 int is_empty_tuple_def(const tuple_def* tuple_d);

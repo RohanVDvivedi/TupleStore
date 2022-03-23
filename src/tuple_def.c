@@ -2,6 +2,10 @@
 
 #include<string.h>
 
+#include<page_layout_util.h>
+
+#include<bitmap.h>
+
 char type_as_string[][16] = {
 								"UINT",
 								"INT",
@@ -362,20 +366,46 @@ int insert_element_def(tuple_def* tuple_d, char* name, element_type ele_type, ui
 	return 1;
 }
 
-void finalize_tuple_def(tuple_def* tuple_d)
+void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_tuple_size)
 {
+	// calcuate size required to store offsets on a page that is of size max_tuple_size
+	uint32_t size_of_offsets = get_value_size_on_page(max_tuple_size);
+
 	tuple_d->size = 0;
+	tuple_d->is_variable_sized = 0;
+
+	tuple_d->byte_offset_to_is_null_bitmap = 0;
+	tuple_d->size += tuple_d->byte_offset_to_is_null_bitmap;
+
 	for(uint32_t i = 0; i < tuple_d->element_count; i++)
 	{
 		if(is_variable_sized_element_def(tuple_d->element_defs + i))
 		{
-			tuple_d->size = VARIABLE_SIZED;
-			break;
+			tuple_d->is_variable_sized = 1;
+			tuple_d->element_defs[i].byte_offset_to_byte_offset = tuple_d->min_size;
+			tuple_d->min_size += size_of_offsets;
 		}
-
-		tuple_d->element_defs[i].byte_offset = tuple_d->size;
-		tuple_d->size += tuple_d->element_defs[i].size;
+		else
+		{
+			tuple_d->element_defs[i].byte_offset = tuple_d->size;
+			tuple_d->size += tuple_d->element_defs[i].size;
+		}
 	}
+
+	if(!tuple_d->is_variable_sized)
+		return;
+
+	// if the tuple_def is variable sized we move everything back by the size (in bytes) required to store the size of the tuple
+	tuple_d->min_size += size_of_offsets;
+	tuple_d->byte_offset_to_is_null_bitmap = size_of_offsets;
+	for(uint32_t i = 0; i < tuple_d->element_count; i++)
+	{
+		if(is_variable_sized_element_def(tuple_d->element_defs + i))
+			tuple_d->element_defs[i].byte_offset_to_byte_offset += size_of_offsets;
+		else
+			tuple_d->element_defs[i].byte_offset += size_of_offsets;
+	}
+
 }
 
 int is_empty_tuple_def(const tuple_def* tuple_d)
