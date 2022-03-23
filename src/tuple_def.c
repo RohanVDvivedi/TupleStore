@@ -58,6 +58,10 @@ int init_element_def(element_def* element_d, char* name, element_type ele_type, 
 			return 0;
 
 		element_d->size_specifier_prefix_size = size_OR_prefix_size;
+
+		// set the byte_offset_to_byte_offset to 0
+		// we don't know it yet
+		element_d->byte_offset_to_byte_offset = 0;
 	}
 	else
 	{
@@ -65,14 +69,14 @@ int init_element_def(element_def* element_d, char* name, element_type ele_type, 
 			return 0;
 
 		element_d->size = size_OR_prefix_size;
+
+		// set the byte_offset to 0
+		// we don't know it yet
+		element_d->byte_offset = 0;
 	}
 
 	// set type to the ele_type as in parameter
 	element_d->type = ele_type;
-
-	// set the byte_offset to 0
-	// we don't know it yet
-	element_d->byte_offset = 0;
 
 	// add name to this element definition
 	strncpy(element_d->name, name, 63);
@@ -331,8 +335,9 @@ int init_tuple_def(tuple_def* tuple_d, char* name)
 	if(strnlen(name, 64) == 64)
 		return 0;
 
-	tuple_d->is_variable_sized = 1;
+	tuple_d->is_variable_sized = 0;
 	tuple_d->size = 0;
+	tuple_d->byte_offset_to_is_null_bitmap = 0;
 	tuple_d->element_count = 0;
 
 	// copy name

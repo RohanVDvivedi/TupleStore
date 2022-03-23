@@ -81,8 +81,8 @@ struct element_def
 		uint32_t byte_offset;
 
 		// used for type = VAR_STRING and VAR_BLOB
-		// defined as byte offset to the offset of this element in the tuple
-		uint32_t byte_offset_of_offset;
+		// defined as byte offset to the byte offset of this element in the tuple
+		uint32_t byte_offset_to_byte_offset;
 	};
 };
 
