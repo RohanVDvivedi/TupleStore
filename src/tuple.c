@@ -15,7 +15,7 @@ void init_tuple(const tuple_def* tpl_d, void* tupl)
 
 	// set its size to min_size
 	if(is_variable_sized_tuple_def(tpl_d))
-		write_value_to_page(tupl, tpl_d->page_size, tpl_d->min_size);
+		write_value_to(tupl, tpl_d->size_of_byte_offsets_to_variable_sized_elements, tpl_d->min_size);
 }
 
 uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)

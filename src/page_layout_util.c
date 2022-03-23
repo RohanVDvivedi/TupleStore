@@ -10,9 +10,9 @@ uint32_t get_value_size_on_page(uint32_t page_size)
 		return 4;
 }
 
-uint32_t read_value_from_page(const void* value, uint32_t page_size)
+uint32_t read_value_from(const void* value, uint32_t bytes_to_read)
 {
-	switch(get_value_size_on_page(page_size))
+	switch(bytes_to_read)
 	{
 		case 1 :
 			return *((const uint8_t*)value);
@@ -24,9 +24,14 @@ uint32_t read_value_from_page(const void* value, uint32_t page_size)
 	}
 }
 
-void write_value_to_page(void* value, uint32_t page_size, uint32_t to_write)
+uint32_t read_value_from_page(const void* value, uint32_t page_size)
 {
-	switch(get_value_size_on_page(page_size))
+	return read_value_from(value, get_value_size_on_page(page_size));
+}
+
+void write_value_to(void* value, uint32_t bytes_to_read, uint32_t to_write)
+{
+	switch(bytes_to_read)
 	{
 		case 1 :
 			{*((uint8_t*)value) = to_write;	return;}
@@ -36,4 +41,9 @@ void write_value_to_page(void* value, uint32_t page_size, uint32_t to_write)
 		default :
 			{*((uint32_t*)value) = to_write; return;}
 	}
+}
+
+void write_value_to_page(void* value, uint32_t page_size, uint32_t to_write)
+{
+	write_value_to(value, get_value_size_on_page(page_size), to_write);
 }
