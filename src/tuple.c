@@ -33,6 +33,10 @@ uint32_t get_element_offset_within_tuple(const tuple_def* tpl_d, uint32_t index,
 
 element get_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
+	// return a NULL if the element id NULL
+	if(is_NULL_in_tuple(tpl_d, index, tupl))
+		return (element){.BLOB = NULL};
+
 	return (element){.BLOB = (void*)(tupl + get_element_offset_within_tuple(tpl_d, index, tupl))};
 }
 
@@ -49,7 +53,7 @@ void* get_end_of_tuple(const tuple_def* tpl_d, const void* tupl)
 	return (void*)(tupl + get_tuple_size(tpl_d, tupl));
 }
 
-int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl)
+int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
 	return get_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
 }
@@ -215,7 +219,20 @@ int compare_elements_within_tuple(const void* tup1, const void* tup2, const tupl
 {
 	element e1 = get_element_from_tuple(tpl_d, index, tup1);
 	element e2 = get_element_from_tuple(tpl_d, index, tup2);
-	return compare_elements(e1, e2, tpl_d->element_defs + index);
+
+	// handling case when elements are NULL
+	if(e1.BLOB == NULL && e2.BLOB == NULL)
+		return 0;
+	else if(e1.BLOB == NULL || e2.BLOB == NULL)
+	{
+		// a NULL element is always considered lesser than a NON NULL element
+		if(e1.BLOB == NULL)
+			return -1;
+		else
+			return 1;
+	}
+	else
+		return compare_elements(e1, e2, tpl_d->element_defs + index);
 }
 
 int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint32_t element_count, uint32_t* element_ids)
@@ -237,6 +254,10 @@ int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d, u
 uint32_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, uint32_t index, uint32_t (*hash_func)(const void* data, uint32_t size))
 {
 	element e = get_element_from_tuple(tpl_d, index, tup);
+
+	// hashing a NULL element returns a 0
+	if(e.BLOB == NULL)
+		return 0;
 	return hash_element(e, tpl_d->element_defs + index, hash_func);
 }
 
