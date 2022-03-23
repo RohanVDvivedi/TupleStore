@@ -130,7 +130,7 @@ struct tuple_def
 	// at this offset there is a bitmap of element_count number of bits
 	// if the corresponding bit is set then the value at that location is NULL
 	// for fixed length tuple this offset is 0
-	// for variale length tuple this offset is equal to the bytes required to store the page size / tuple size
+	// for variale length tuple this offset is equal to the bytes required to store the tuple size
 	uint32_t byte_offset_to_is_null_bitmap;
 
 	// total elements in the tuple
