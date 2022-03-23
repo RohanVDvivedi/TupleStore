@@ -74,9 +74,16 @@ struct element_def
 		uint32_t size_specifier_prefix_size;
 	};
 
-	// byte offset in tuple for the given element definition
-	// valid only if the tuple is not VARIABLE_SIZED
-	uint32_t byte_offset;
+	union
+	{
+		// used for type == UINT, INT, FLOAT, STRING and BLOB
+		// defined as byte offset of the element in the tuple
+		uint32_t byte_offset;
+
+		// used for type = VAR_STRING and VAR_BLOB
+		// defined as byte offset to the offset of this element in the tuple
+		uint32_t byte_offset_of_offset;
+	};
 };
 
 // initialize an element's definition using its type and size
@@ -119,6 +126,12 @@ struct tuple_def
 		// defined for fixed sized tuple
 		uint32_t size;
 	};
+
+	// at this offset there is a bitmap of element_count number of bits
+	// if the corresponding bit is set then the value at that location is NULL
+	// for fixed length tuple this offset is 0
+	// for variale length tuple this offset is equal to the bytes required to store the page size / tuple size
+	uint32_t byte_offset_to_is_null_bitmap;
 
 	// total elements in the tuple
 	uint32_t element_count;
