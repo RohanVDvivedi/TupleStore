@@ -135,7 +135,7 @@ struct tuple_def
 	{
 		uint32_t byte_offset_to_is_null_bitmap;
 
-		uint32_t size_of_byte_offsets_to_variable_sized_elements;
+		uint32_t size_of_byte_offsets;
 	};
 
 	// total elements in the tuple

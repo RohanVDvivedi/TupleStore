@@ -15,7 +15,7 @@ void init_tuple(const tuple_def* tpl_d, void* tupl)
 
 	// set its size to min_size
 	if(is_variable_sized_tuple_def(tpl_d))
-		write_value_to(tupl, tpl_d->size_of_byte_offsets_to_variable_sized_elements, tpl_d->min_size);
+		write_value_to(tupl, tpl_d->size_of_byte_offsets, tpl_d->min_size);
 }
 
 uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
@@ -28,7 +28,7 @@ uint32_t get_element_offset_within_tuple(const tuple_def* tpl_d, uint32_t index,
 	if(is_fixed_sized_element_def(tpl_d->element_defs + index)) // i.e. fixed sized
 		return tpl_d->element_defs[index].byte_offset;
 	else
-		return read_value_from(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets_to_variable_sized_elements);
+		return read_value_from(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets);
 }
 
 element get_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
@@ -45,7 +45,7 @@ uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
 	if(is_fixed_sized_tuple_def(tpl_d)) // i.e. fixed sized tuple
 		return tpl_d->size;
 	else
-		return read_value_from(tupl, tpl_d->size_of_byte_offsets_to_variable_sized_elements);
+		return read_value_from(tupl, tpl_d->size_of_byte_offsets);
 }
 
 void* get_end_of_tuple(const tuple_def* tpl_d, const void* tupl)
@@ -58,7 +58,77 @@ int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 	return get_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
 }
 
-void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t var_blob_size);
+void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t var_blob_size)
+{
+	element existing = get_element_from_tuple(tpl_d, index, tupl);
+	if(existing.BLOB == NULL && value == NULL)
+		return;
+
+	if(is_fixed_sized_element_def(tpl_d->element_defs + index))
+	{
+		// if the value to be set is NULL, then just set the corresponding bit in the is_null bitmap
+		if(value == NULL)
+			set_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+		else
+		{
+			// set the is_null bitmap bit to 0
+			reset_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+
+			// calculate total size occupied by the fixed length data type
+			uint32_t total_size = get_element_size_within_tuple(tpl_d, index, tupl);
+			if(tpl_d->element_defs[index].type == STRING)
+			{
+				// copy at most of string length + 1 bytes and total_size
+				uint32_t string_size = strnlen(value, total_size) + 1;
+				uint32_t copy_size = (total_size < string_size) ? total_size : string_size;
+				memmove(existing.STRING, value, copy_size);
+			}
+			else
+				memmove(existing.BLOB, value, total_size);
+		}
+	}
+	else
+	{
+		// if data existed at index
+		if(existing.BLOB != NULL)
+		{
+			uint32_t old_total_size = get_element_size_within_tuple(tpl_d, index, tupl);
+			uint32_t old_offset = get_element_offset_within_tuple(tpl_d, index, tupl);
+
+			uint32_t old_tuple_size = get_tuple_size(tpl_d, tupl);
+
+			// move all the bytes in the tuple after this element to front
+			memmove(tupl + old_offset, tupl + old_offset + old_total_size, old_tuple_size - (old_offset + old_total_size));
+
+			// decrease all tuple offsets for variable sized elements that were after the element by old_total_size
+			for(uint32_t i = 0; i < tpl_d->element_count; i++)
+			{
+				if(is_variable_sized_element_def(tpl_d->element_defs + i))
+				{
+					uint32_t offset = read_value_from(tupl + tpl_d->element_defs[i].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets);
+					if(offset > old_offset)
+						write_value_to(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, offset - old_total_size);
+				}
+			}
+
+			// update tuple size to old_tuple_size - old_total_size
+			write_value_to(tupl, tpl_d->size_of_byte_offsets, old_tuple_size - old_total_size);
+
+			// write offset to 0, for element at index
+			write_value_to(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, 0);
+			
+			// set is_null bit, for element at index
+			set_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+		}
+
+		// set the new data with value if it is not NULL 
+		if(value != NULL)
+		{
+			// set the is_null bitmap bit to 0
+			reset_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+		}
+	}
+}
 
 static void copy_element_to_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t var_blob_size)
 {
