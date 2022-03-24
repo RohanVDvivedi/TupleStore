@@ -9,7 +9,7 @@
 
 // comment the below macro to test the SLOTTED_PAGE_LAYOUT
 //#define TEST_FIXED_ARRAY_PAGE_LAYOUT
-#define VAR_STRING_SIZE_SPECIFICER_SIZE 1
+#define VAR_STRING_SIZE_SPECIFICER_SIZE 2
 
 // uncomment the page size that you want to test with
 //#define PAGE_SIZE     256
@@ -39,6 +39,12 @@ void init_tuple_definition(tuple_def* def)
 	#endif
 
 	res = insert_element_def(def, "col_4", FLOAT, 8);
+
+	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
+		res = insert_element_def(def, "col_5", STRING, 8);
+	#else
+		res = insert_element_def(def, "var_col_5", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE);
+	#endif
 
 	res = insert_element_def(def, "col_2", FLOAT, 4);
 	printf("attempting to insert an element def with the 'col_2' name => %d\n", res);
