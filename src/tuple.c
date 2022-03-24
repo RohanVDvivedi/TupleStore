@@ -74,6 +74,8 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 			// set the is_null bitmap bit to 0
 			reset_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
 
+			element ele = get_element_from_tuple(tpl_d, index, tupl);
+
 			// calculate total size occupied by the fixed length data type
 			uint32_t total_size = get_element_size_within_tuple(tpl_d, index, tupl);
 			if(tpl_d->element_defs[index].type == STRING)
@@ -81,10 +83,10 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 				// copy at most of string length + 1 bytes and total_size
 				uint32_t string_size = strnlen(value, total_size) + 1;
 				uint32_t copy_size = (total_size < string_size) ? total_size : string_size;
-				memmove(existing.STRING, value, copy_size);
+				memmove(ele.STRING, value, copy_size);
 			}
 			else
-				memmove(existing.BLOB, value, total_size);
+				memmove(ele.BLOB, value, total_size);
 		}
 	}
 	else
