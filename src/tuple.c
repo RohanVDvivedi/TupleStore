@@ -109,7 +109,7 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 				{
 					uint32_t offset = read_value_from(tupl + tpl_d->element_defs[i].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets);
 					if(offset > old_offset)
-						write_value_to(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, offset - old_total_size);
+						write_value_to(tupl + tpl_d->element_defs[i].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, offset - old_total_size);
 				}
 			}
 
