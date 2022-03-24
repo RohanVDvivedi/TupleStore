@@ -28,22 +28,22 @@ void init_tuple_definition(tuple_def* def)
 	// initialize tuple definition and insert element definitions
 	int res = init_tuple_def(def, "my_table");
 
-	res = insert_element_def(def, "col_1", INT, 8);
+	res = insert_element_def(def, "col_0", INT, 8);
 
-	res = insert_element_def(def, "col_2", UINT, 1);
+	res = insert_element_def(def, "col_1", UINT, 1);
 
 	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
-		res = insert_element_def(def, "col_3", STRING, 15);
+		res = insert_element_def(def, "col_2", STRING, 15);
 	#else
-		res = insert_element_def(def, "var_col_3", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE);
+		res = insert_element_def(def, "var_col_2", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE);
 	#endif
 
-	res = insert_element_def(def, "col_4", FLOAT, 8);
+	res = insert_element_def(def, "col_3", FLOAT, 8);
 
 	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
-		res = insert_element_def(def, "col_5", STRING, 8);
+		res = insert_element_def(def, "col_4", STRING, 8);
 	#else
-		res = insert_element_def(def, "var_col_5", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE);
+		res = insert_element_def(def, "var_col_4", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE);
 	#endif
 
 	res = insert_element_def(def, "col_2", FLOAT, 4);
@@ -75,6 +75,7 @@ struct row
 	uint8_t c1;
 	char* c2;
 	double c3;
+	char* c4;
 };
 
 void build_tuple_from_row_struct(const tuple_def* def, void* tuple, const row* r)
@@ -87,6 +88,7 @@ void build_tuple_from_row_struct(const tuple_def* def, void* tuple, const row* r
 	set_element_in_tuple(def, column_no++, tuple, &(r->c1), -1);
 	set_element_in_tuple(def, column_no++, tuple,  (r->c2), -1);
 	set_element_in_tuple(def, column_no++, tuple, &(r->c3), -1);
+	set_element_in_tuple(def, column_no++, tuple,  (r->c4), -1);
 
 	// output print string
 	char print_buffer[PAGE_SIZE];
