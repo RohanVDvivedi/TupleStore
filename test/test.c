@@ -46,13 +46,13 @@ void init_tuple_definition(tuple_def* def)
 		res = insert_element_def(def, "var_col_4", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE);
 	#endif
 
-	res = insert_element_def(def, "col_2", FLOAT, 4);
+	res = insert_element_def(def, "col_3", FLOAT, 4);
 	printf("attempting to insert an element def with the 'col_2' name => %d\n", res);
 
 	res = insert_element_def(def, "col_1", FLOAT, 4);
 	printf("attempting to insert an element def with the 'col_1' name => %d\n", res);
 
-	res = insert_element_def(def, "col_4", FLOAT, 4);
+	res = insert_element_def(def, "col_0", FLOAT, 4);
 	printf("attempting to insert an element def with the 'col_4' name => %d\n", res);
 
 	finalize_tuple_def(def, PAGE_SIZE);
@@ -573,33 +573,38 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 	}
 
 #ifndef TEST_FIXED_ARRAY_PAGE_LAYOUT
-	set_element_in_tuple(def, 0, tuple, "Rohan", -1);
-	set_element_in_tuple(def, 0, tuple, "Dvivedi", -1);
+	set_element_in_tuple(def, 2, tuple, "Rohan", -1);
+	set_element_in_tuple(def, 4, tuple, "Dvivedi", -1);
 
 	sprint_tuple(print_buffer, tuple, def);
 	printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 
 	{
+		set_element_in_tuple(def, 2, tuple, NULL, -1);
+
+		sprint_tuple(print_buffer, tuple, def);
+		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
+		
 		char* c2 = "Hello";
 
-		set_element_in_tuple(def, 0, tuple, c2, -1);
+		set_element_in_tuple(def, 2, tuple, c2, -1);
 
 		sprint_tuple(print_buffer, tuple, def);
 		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 
 		c2 = "World";
 
-		set_element_in_tuple(def, 0, tuple, c2, -1);
+		set_element_in_tuple(def, 2, tuple, c2, -1);
 
 		sprint_tuple(print_buffer, tuple, def);
 		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 
-		set_element_in_tuple(def, 0, tuple, NULL, -1);
+		set_element_in_tuple(def, 2, tuple, NULL, -1);
 
 		sprint_tuple(print_buffer, tuple, def);
 		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 
-		set_element_in_tuple(def, 0, tuple, NULL, -1);
+		set_element_in_tuple(def, 2, tuple, NULL, -1);
 
 		sprint_tuple(print_buffer, tuple, def);
 		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
