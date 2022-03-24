@@ -207,21 +207,9 @@ uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, cons
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-		{
-			uint32_t tuples_total_size = 0;
-			uint32_t tuples_total_offsets_size = 0;
-			for(uint32_t i = start_index; i <= last_index; i++)
-			{
-				if(exists_tuple(page, page_size, tpl_d, i))
-				{
-					tuples_total_size += get_tuple_size(tpl_d, get_nth_tuple(page, page_size, tpl_d, i));
-					tuples_total_offsets_size += get_value_size_on_page(page_size);
-				}
-			}
-			return tuples_total_size + tuples_total_offsets_size;
-		}
+			return get_space_occupied_by_tuples_slotted_page(page, page_size, tpl_d, start_index, last_index);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return get_space_occupied_by_tuples_on_fixed_array_page(page, page_size, tpl_d, start_index, last_index);
+			return get_space_occupied_by_tuples_fixed_array_page(page, page_size, tpl_d, start_index, last_index);
 	}
 	return 0;
 }
@@ -238,9 +226,9 @@ uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, 
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			return get_space_allotted_to_all_tuples_in_slotted_page(page, page_size);
+			return get_space_allotted_to_all_tuples_slotted_page(page, page_size);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return get_space_allotted_to_all_tuples_in_fixed_array_page(page, page_size, tpl_d);
+			return get_space_allotted_to_all_tuples_fixed_array_page(page, page_size, tpl_d);
 	}
 	return 0;
 }
