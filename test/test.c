@@ -584,7 +584,7 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 
 		sprint_tuple(print_buffer, tuple, def);
 		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
-		
+
 		char* c2 = "Hello";
 
 		set_element_in_tuple(def, 2, tuple, c2, -1);
@@ -594,7 +594,7 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 
 		c2 = "World";
 
-		set_element_in_tuple(def, 2, tuple, c2, -1);
+		set_element_in_tuple(def, 4, tuple, c2, -1);
 
 		sprint_tuple(print_buffer, tuple, def);
 		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
