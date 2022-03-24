@@ -8,7 +8,7 @@
 #include<page_layout.h>
 
 // comment the below macro to test the SLOTTED_PAGE_LAYOUT
-#define TEST_FIXED_ARRAY_PAGE_LAYOUT
+//#define TEST_FIXED_ARRAY_PAGE_LAYOUT
 #define VAR_STRING_SIZE_SPECIFICER_SIZE 1
 
 // uncomment the page size that you want to test with
@@ -33,9 +33,9 @@ void init_tuple_definition(tuple_def* def)
 	res = insert_element_def(def, "col_2", UINT, 1);
 
 	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
-		res = insert_element_def(def, "var_col_3", STRING, 15);
+		res = insert_element_def(def, "col_3", STRING, 15);
 	#else
-		res = insert_element_def(def, "fix_col_3", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE);
+		res = insert_element_def(def, "var_col_3", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE);
 	#endif
 
 	res = insert_element_def(def, "col_4", FLOAT, 8);
