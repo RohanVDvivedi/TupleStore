@@ -49,7 +49,7 @@ void init_tuple_definition(tuple_def* def)
 	res = insert_element_def(def, "col_4", FLOAT, 4);
 	printf("attempting to insert an element def with the 'col_4' name => %d\n", res);
 
-	finalize_tuple_def(def);
+	finalize_tuple_def(def, PAGE_SIZE);
 
 	if(is_empty_tuple_def(def))
 	{
@@ -75,10 +75,10 @@ void build_tuple_from_row_struct(const tuple_def* def, void* tuple, const row* r
 {
 	int column_no = 0;
 
-	copy_element_to_tuple(def, column_no++, tuple, &(r->c0), -1);
-	copy_element_to_tuple(def, column_no++, tuple, &(r->c1), -1);
-	copy_element_to_tuple(def, column_no++, tuple,  (r->c2), -1);
-	copy_element_to_tuple(def, column_no++, tuple, &(r->c3), -1);
+	set_element_in_tuple(def, column_no++, tuple, &(r->c0), -1);
+	set_element_in_tuple(def, column_no++, tuple, &(r->c1), -1);
+	set_element_in_tuple(def, column_no++, tuple,  (r->c2), -1);
+	set_element_in_tuple(def, column_no++, tuple, &(r->c3), -1);
 
 	// output print string
 	char print_buffer[PAGE_SIZE];
