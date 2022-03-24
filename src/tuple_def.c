@@ -375,7 +375,7 @@ void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_tuple_size)
 	tuple_d->is_variable_sized = 0;
 
 	tuple_d->byte_offset_to_is_null_bitmap = 0;
-	tuple_d->size += tuple_d->byte_offset_to_is_null_bitmap;
+	tuple_d->size += bitmap_size_in_bytes(tuple_d->element_count);
 
 	for(uint32_t i = 0; i < tuple_d->element_count; i++)
 	{
