@@ -75,6 +75,8 @@ void build_tuple_from_row_struct(const tuple_def* def, void* tuple, const row* r
 {
 	int column_no = 0;
 
+	init_tuple(def, tuple);
+
 	set_element_in_tuple(def, column_no++, tuple, &(r->c0), -1);
 	set_element_in_tuple(def, column_no++, tuple, &(r->c1), -1);
 	set_element_in_tuple(def, column_no++, tuple,  (r->c2), -1);
