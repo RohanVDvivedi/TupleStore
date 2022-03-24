@@ -363,8 +363,14 @@ int sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 		if(i)
 			chars_written += sprintf(str + chars_written, ", ");
 
-
 		element e = get_element_from_tuple(tpl_d, i, tup);
+
+		if(e.BLOB == NULL)
+		{
+			chars_written += sprintf(str + chars_written, "NULL");
+			continue;
+		}
+
 		switch(tpl_d->element_defs[i].type)
 		{
 			case UINT :
