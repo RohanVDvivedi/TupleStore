@@ -306,6 +306,17 @@ uint32_t get_free_space_fixed_array_page(const void* page, uint32_t page_size, c
 	return get_offset_to_end_of_free_space(page_size) - get_offset_to_start_of_free_space(page, page_size, tpl_d);
 }
 
+uint32_t get_space_occupied_by_tuples_on_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t start_index, uint32_t last_index)
+{
+	uint32_t tuples_existing = 0;
+	for(uint32_t i = start_index; i <= last_index; i++)
+	{
+		if(exists_tuple_fixed_array_page(page, page_size, tpl_d, i))
+			tuples_existing++;
+	}
+	return tuples_existing * tpl_d->size;
+}
+
 uint32_t get_space_allotted_to_all_tuples_in_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	return page_size - get_offset_to_tuples(page, page_size, tpl_d);

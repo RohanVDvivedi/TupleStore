@@ -221,15 +221,7 @@ uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, cons
 			return tuples_total_size + tuples_total_offsets_size;
 		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
-		{
-			uint32_t tuples_existing = 0;
-			for(uint32_t i = start_index; i <= last_index; i++)
-			{
-				if(exists_tuple(page, page_size, tpl_d, i))
-					tuples_existing++;
-			}
-			return tuples_existing * tpl_d->size;
-		}
+			return get_space_occupied_by_tuples_on_fixed_array_page(page, page_size, tpl_d, start_index, last_index);
 	}
 	return 0;
 }
