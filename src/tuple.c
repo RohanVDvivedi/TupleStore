@@ -374,7 +374,7 @@ int sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 		}
 
 		if(is_variable_sized_element_def(tpl_d->element_defs + i))
-			chars_written += sprintf(str + chars_written, "[%u]->", read_value_from(tupl + tpl_d->element_defs[i].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets));
+			chars_written += sprintf(str + chars_written, "[%u]->", read_value_from(tup + tpl_d->element_defs[i].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets));
 
 		switch(tpl_d->element_defs[i].type)
 		{
