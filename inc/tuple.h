@@ -54,3 +54,45 @@ uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_fun
 int sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d);
 
 #endif
+
+/*
+**	Tuple Layout on page
+**
+**	if all attributes are fixed length
+**  for example
+**   UINT   -  4 bytes
+**   STRING - 16 bytes
+**   INT    -  8 bytes
+**
+**	then all the attributes are stored side by side inline with each other after the "is null" bitmap
+**
+**	| is_null bitmap - 1 | UINT - 4 |        STRING - 16           |    INT - 8   |
+**
+**  Since there are only 3 attributes we need only 1 byte to store the is_null bitmap
+**  the ith bit of the is_null bitmap tells us that the ith field is null if the bit is set
+**
+**  similarly, for 17 attribute count we will require a bitmap of size 3 bytes
+**
+**  If there is atleast a variable sized element in the tuple definition
+**  Then the layout of a variable sized tuple definition is used
+**
+**	In variable sized tuple layout, 
+**  The first value that we store is the length of the tuple,
+**  then we store is_null bitmap just as in fixed length tuple layout
+**  then we store all the attributes inline just as in fixed length tuple layout
+**
+**  the only difference is that while storing the variable sized elements
+**  we only store the the offset of the variable sized element in line with other fixed sized elements
+**  the actual data of all variable sized elements are stored at the end of the tuple
+**	
+**	for example
+**   UINT       -  4 bytes
+**   VAR_STRING -  (2 bytes to store its length in its prefix)
+**   INT        -  8 bytes
+**
+**  the number of bytes taken by the tuple size and the offsets of the variable sized elements is given by the max tuple size or the size of the page
+**  Here we consider that the max tuple size is 4 KB i.e. these fields take up 2 bytes each
+**
+**	| tuple_size - 2 | is_null bitmap - 1 | UINT - 4 | VAR_STRING - 2 (only offset) |          INT - 8      | Actual VAR_STRING can have any number of bytes |
+**
+*/
