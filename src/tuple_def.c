@@ -134,8 +134,22 @@ uint32_t get_element_size(element e, const element_def* ele_d)
 	return 0;
 }
 
+int can_compare_element_defs(const element_def* ele_d_1, const element_def* ele_d_2)
+{
+	if((ele_d_1->type == UINT || ele_d_1->type == INT || ele_d_1->type == FLOAT)
+	 && (ele_d_2->type == UINT || ele_d_2->type == INT || ele_d_2->type == FLOAT))
+		return 1;
+	else if((ele_d_1->type == STRING || ele_d_1->type == VAR_STRING)
+	 && (ele_d_2->type == STRING || ele_d_2->type == VAR_STRING))
+		return 1;
+	else if((ele_d_1->type == BLOB || ele_d_1->type == VAR_BLOB)
+	 && (ele_d_2->type == BLOB || ele_d_2->type == VAR_BLOB))
+		return 1;
+	return 0;
+}
+
 #define compare(a,b)	( ((a)>(b)) ? 1 : (((a)<(b)) ? (-1) : 0 ) )
-int compare_elements(element e1, element e2, const element_def* ele_d)
+int compare_elements(element e1, const element_def* ele_d_1, element e2, const element_def* ele_d_2);
 {
 	switch(ele_d->type)
 	{
