@@ -99,8 +99,12 @@ int is_fixed_sized_element_def(const element_def* element_d);
 // returns size of element
 uint32_t get_element_size(element e, const element_def* ele_d);
 
-// compare 2 elements, given their element definition
-int compare_elements(element e1, element e2, const element_def* ele_d);
+// returns true if the two different element defs can be compared against one another
+int can_compare_element_defs(const element_def* ele_d_1, const element_def* ele_d_2);
+
+// compare 2 elements, given their element definitions
+// to use this function appropriately can_compare_element_defs on the corresponding element_defs must return true(1)
+int compare_elements(element e1, const element_def* ele_d_1, element e2, const element_def* ele_d_2);
 
 // hash element, given their element definition
 uint32_t hash_element(element e, const element_def* ele_d, uint32_t (*hash_func)(const void* data, uint32_t size));
