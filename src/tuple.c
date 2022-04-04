@@ -289,10 +289,10 @@ void copy_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void*
 	}
 }
 
-int compare_elements_within_tuple(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint32_t index)
+int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, uint32_t index1, const void* tup2, const tuple_def* tpl_d2, uint32_t index2)
 {
-	element e1 = get_element_from_tuple(tpl_d, index, tup1);
-	element e2 = get_element_from_tuple(tpl_d, index, tup2);
+	element e1 = get_element_from_tuple(tpl_d1, index1, tup1);
+	element e2 = get_element_from_tuple(tpl_d2, index2, tup2);
 
 	// handling case when elements are NULL
 	if(e1.BLOB == NULL && e2.BLOB == NULL)
@@ -306,21 +306,21 @@ int compare_elements_within_tuple(const void* tup1, const void* tup2, const tupl
 			return 1;
 	}
 	else
-		return compare_elements(e1, tpl_d->element_defs + index, e2, tpl_d->element_defs + index);
+		return compare_elements(e1, tpl_d1->element_defs + index1, e2, tpl_d2->element_defs + index2);
 }
 
-int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint32_t element_count, uint32_t* element_ids)
+int compare_tuples(const void* tup1, const tuple_def* tpl_d1, uint32_t* element_ids1, const void* tup2, const tuple_def* tpl_d2, uint32_t* element_ids2, uint32_t element_count)
 {
 	int compare = 0;
-	if(element_ids == NULL)
+	if(element_ids1 == NULL || element_ids2 == NULL)
 	{
 		for(uint32_t i = 0; ((i < element_count) && (compare == 0)); i++)
-			compare = compare_elements_within_tuple(tup1, tup2, tpl_d, i);
+			compare = compare_elements_of_tuple(tup1, tpl_d1, i, tup2, tpl_d2, i);
 	}
 	else
 	{
 		for(uint32_t i = 0; ((i < element_count) && (compare == 0)); i++)
-			compare = compare_elements_within_tuple(tup1, tup2, tpl_d, element_ids[i]);
+			compare = compare_elements_of_tuple(tup1, tpl_d1, element_ids1[i], tup2, tpl_d2, element_ids2[i]);
 	}
 	return compare;
 }
