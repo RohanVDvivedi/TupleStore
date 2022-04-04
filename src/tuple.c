@@ -306,7 +306,7 @@ int compare_elements_within_tuple(const void* tup1, const void* tup2, const tupl
 			return 1;
 	}
 	else
-		return compare_elements(e1, e2, tpl_d->element_defs + index);
+		return compare_elements(e1, tpl_d->element_defs + index, e2, tpl_d->element_defs + index);
 }
 
 int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint32_t element_count, uint32_t* element_ids)
