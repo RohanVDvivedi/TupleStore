@@ -30,6 +30,9 @@ int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 // set element (given at void* value) to tuple at a given index
 void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t var_blob_size);
 
+// set element (given at index_in in tuple_in) to tuple at a given index
+void set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const tuple_def* tpl_d_in, uint32_t index_in, void* tupl_in);
+
 // copy element from tuple functions to the value (void*)
 // make sure that the space allotted at the value pointer is atleast equal to its get_element_size_within_tuple()
 // value must be of appropriate c type and size, i.e. char* for  STRING or VAR_STRING and uint8_t* for a UINT 8
