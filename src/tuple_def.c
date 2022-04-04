@@ -149,13 +149,70 @@ int can_compare_element_defs(const element_def* ele_d_1, const element_def* ele_
 }
 
 #define compare(a,b)	( ((a)>(b)) ? 1 : (((a)<(b)) ? (-1) : 0 ) )
-int compare_elements(element e1, const element_def* ele_d_1, element e2, const element_def* ele_d_2);
+#define min(a,b) (((a)<(b))?(a):(b))
+#define max(a,b) (((a)>(b))?(a):(b))
+
+static int compare_string_types(char* s1, uint32_t s1_max_len, char* s2, uint32_t s2_max_len)
 {
-	switch(ele_d->type)
+	// find actual length of both the strings
+	uint32_t s1_len = strnlen(s1, s1_max_len);
+	uint32_t s2_len = strnlen(s2, s2_max_len);
+
+	// find min of their lengths
+	uint32_t min_len = min(s1_len, s2_len);
+
+	// compare only their min_len number of characters
+	int compare = strncmp(s1, s2, min_len);
+
+	if(compare > 0)
+		compare = 1;
+	else if(compare < 0)
+		compare = -1;
+	else if((compare == 0) && (s1_len != s2_len))
+	{
+		// in dictionary ordering if 1 string is a prefix of the other
+		// then the larger string comes latter in the order
+		if(s1_len > s2_len)
+			compare = 1;
+		else if(s1_len < s2_len)
+			compare = -1;
+	}
+
+	return compare;
+}
+
+static int compare_blob_types(void* b1, uint32_t b1_len, void* b2, uint32_t b2_len)
+{
+	// find min of their lengths
+	uint32_t min_len = min(b1_len, b2_len);
+
+	// compare only their min_len number of bytes
+	int compare = memcmp(b1, b2, min_len);
+
+	if(compare > 0)
+		compare = 1;
+	else if(compare < 0)
+		compare = -1;
+	else if((compare == 0) && (b1_len != b2_len))
+	{
+		// in dictionary ordering if 1 string is a prefix of the other
+		// then the larger string comes latter in the order
+		if(b1_len > b2_len)
+			compare = -1;
+		else if(b1_len > b2_len)
+			compare = 1;
+	}
+
+	return compare;
+}
+
+int compare_elements(element e1, const element_def* ele_d_1, element e2, const element_def* ele_d_2)
+{
+	switch(ele_d_1->type)
 	{
 		case UINT :
 		{
-			switch(ele_d->size)
+			switch(ele_d_1->size)
 			{
 				case 1 :
 					return compare(*e1.UINT_1, *e2.UINT_1);
@@ -169,7 +226,7 @@ int compare_elements(element e1, const element_def* ele_d_1, element e2, const e
 		}
 		case INT :
 		{
-			switch(ele_d->size)
+			switch(ele_d_1->size)
 			{
 				case 1 :
 					return compare(*e1.INT_1, *e2.INT_1);
@@ -183,7 +240,7 @@ int compare_elements(element e1, const element_def* ele_d_1, element e2, const e
 		}
 		case FLOAT :
 		{
-			switch(ele_d->size)
+			switch(ele_d_1->size)
 			{
 				case 4 :
 					return compare(*e1.FLOAT_4, *e2.FLOAT_4);
@@ -193,12 +250,12 @@ int compare_elements(element e1, const element_def* ele_d_1, element e2, const e
 		}
 		case STRING :
 		{
-			int compare = strncmp(e1.STRING, e2.STRING, ele_d->size);
+			int compare = strncmp(e1.STRING, e2.STRING, ele_d_1->size);
 			return (compare != 0) ? ((compare > 0) ? 1 : -1) : 0;
 		}
 		case BLOB :
 		{
-			int compare =  memcmp(e1.STRING, e2.STRING, ele_d->size);
+			int compare =  memcmp(e1.STRING, e2.STRING, ele_d_1->size);
 			return (compare != 0) ? ((compare > 0) ? 1 : -1) : 0;
 		}
 		case VAR_STRING :
@@ -210,7 +267,7 @@ int compare_elements(element e1, const element_def* ele_d_1, element e2, const e
 
 			int compare = 0;
 
-			switch(ele_d->size_specifier_prefix_size)
+			switch(ele_d_1->size_specifier_prefix_size)
 			{
 				case 1 :
 				{
@@ -263,7 +320,7 @@ int compare_elements(element e1, const element_def* ele_d_1, element e2, const e
 
 			int compare = 0;
 
-			switch(ele_d->size_specifier_prefix_size)
+			switch(ele_d_1->size_specifier_prefix_size)
 			{
 				case 1 :
 				{
