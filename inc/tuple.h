@@ -27,9 +27,12 @@ void* get_end_of_tuple(const tuple_def* tpl_d, const void* tupl);
 // check if the ith element in the tuple is NULL
 int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 
-// copy element to and from tuple functions
+// set element (given at void* value) to tuple at a given index
 void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t var_blob_size);
 
+// copy element from tuple functions to the value (void*)
+// make sure that the space allotted at the value pointer is atleast equal to its get_element_size_within_tuple()
+// value must be of appropriate c type and size, i.e. char* for  STRING or VAR_STRING and uint8_t* for a UINT 8
 void copy_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl, void* value);
 
 
