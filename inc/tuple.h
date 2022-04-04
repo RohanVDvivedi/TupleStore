@@ -34,11 +34,11 @@ void copy_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void*
 
 
 // compare functions for tuple and for an element inside the tuple
-int compare_elements_within_tuple(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint32_t index);
+int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, uint32_t index1, const void* tup2, const tuple_def* tpl_d2, uint32_t index2);
 
-// if element_ids == NULL, then this functions compares the first element_count number of elements from both the tuples
-// else it compares the elements in the same order as provided in element_ids (here element_count denotes its size)
-int compare_tuples(const void* tup1, const void* tup2, const tuple_def* tpl_d, uint32_t element_count, uint32_t* element_ids);
+// if element_ids* == NULL, then this functions compares the first element_count number of elements from both the tuples
+// else it compares the elements in the same order as provided in element_ids* (here element_count denotes size of element_ids* arrays)
+int compare_tuples(const void* tup1, const tuple_def* tpl_d1, uint32_t* element_ids1, const void* tup2, const tuple_def* tpl_d2, uint32_t* element_ids2, uint32_t element_count);
 
 
 // hash function for tuple and for an element inside the tuple at the specified index
