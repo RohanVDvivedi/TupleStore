@@ -163,59 +163,91 @@ int main()
 	// ---------------	COMPARE 2 TUPLES
 
 	printf("compare(tuple_2 , tuple_3) = %d\n\n", 
-				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 2), 
+				compare_tuples(
+								get_nth_tuple(page, PAGE_SIZE, def, 2), 
+								def,
+								((uint32_t[]){2}),
 								get_nth_tuple(page, PAGE_SIZE, def, 3), 
 								def,
-								1, ((uint32_t[]){2}))
+								((uint32_t[]){2}),
+								1)
 			);
 
 	printf("compare(tuple_3 , tuple_2) = %d\n\n", 
-				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 3), 
+				compare_tuples(
+								get_nth_tuple(page, PAGE_SIZE, def, 3), 
+								def,
+								((uint32_t[]){2}),
 								get_nth_tuple(page, PAGE_SIZE, def, 2), 
 								def,
-								1, ((uint32_t[]){2}))
+								((uint32_t[]){2}),
+								1)
 			);
 
 	printf("compare(tuple_0 , tuple_1) = %d\n\n", 
-				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 0), 
+				compare_tuples(
+								get_nth_tuple(page, PAGE_SIZE, def, 0), 
+								def,
+								NULL,
 								get_nth_tuple(page, PAGE_SIZE, def, 1), 
 								def,
-								def->element_count, NULL)
+								NULL,
+								def->element_count)
 			);
 
 	printf("compare(tuple_0 , tuple_1) = %d\n\n", 
-				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 0), 
+				compare_tuples(
+								get_nth_tuple(page, PAGE_SIZE, def, 0), 
+								def,
+								((uint32_t[]){2}),
 								get_nth_tuple(page, PAGE_SIZE, def, 1), 
 								def,
-								1, ((uint32_t[]){2}))
+								((uint32_t[]){2}),
+								1)
 			);
 
 	printf("compare(tuple_1 , tuple_2) = %d\n\n", 
-				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 1), 
+				compare_tuples(
+								get_nth_tuple(page, PAGE_SIZE, def, 1), 
+								def,
+								NULL,
 								get_nth_tuple(page, PAGE_SIZE, def, 2), 
 								def,
-								def->element_count, NULL)
+								NULL,
+								def->element_count)
 			);
 
 	printf("compare(tuple_1 , tuple_2) = %d\n\n", 
-				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 1), 
+				compare_tuples(
+								get_nth_tuple(page, PAGE_SIZE, def, 1), 
+								def,
+								((uint32_t[]){2, 3}),
 								get_nth_tuple(page, PAGE_SIZE, def, 2), 
 								def,
-								2, ((uint32_t[]){2, 3}))
+								((uint32_t[]){2, 3}),
+								2)
 			);
 
 	printf("compare(tuple_1 , tuple_2) = %d\n\n", 
-				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 1), 
+				compare_tuples(
+								get_nth_tuple(page, PAGE_SIZE, def, 1), 
+								def,
+								((uint32_t[]){1, 0}),
 								get_nth_tuple(page, PAGE_SIZE, def, 2), 
 								def,
-								2, ((uint32_t[]){1, 0}))
+								((uint32_t[]){1, 0}),
+								2)
 			);
 
 	printf("compare(tuple_1 , tuple_2) = %d\n\n", 
-				compare_tuples(	get_nth_tuple(page, PAGE_SIZE, def, 1), 
+				compare_tuples(
+								get_nth_tuple(page, PAGE_SIZE, def, 1), 
+								def,
+								((uint32_t[]){3, 2}),
 								get_nth_tuple(page, PAGE_SIZE, def, 2), 
 								def,
-								2, ((uint32_t[]){3, 2}))
+								((uint32_t[]){3, 2}),
+								2)
 			);
 
 	// ---------------	PRINT PAGE
