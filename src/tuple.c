@@ -216,6 +216,8 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void
 		set_element_in_tuple(tpl_d, index, tupl, NULL, 0);
 		return 1;
 	}
+
+	return 0;
 }
 
 void copy_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl, void* value)
