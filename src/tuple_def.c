@@ -215,13 +215,145 @@ int compare_elements(element e1, const element_def* ele_d_1, element e2, const e
 			switch(ele_d_1->size)
 			{
 				case 1 :
-					return compare(*e1.UINT_1, *e2.UINT_1);
+				{
+					switch(ele_d_2->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.UINT_1, *e2.UINT_1); }
+								case 2 : { return compare(*e1.UINT_1, *e2.UINT_2); }
+								case 4 : { return compare(*e1.UINT_1, *e2.UINT_4); }
+								case 8 : { return compare(*e1.UINT_1, *e2.UINT_8); }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.UINT_1, *e2.INT_1); }
+								case 2 : { return compare(*e1.UINT_1, *e2.INT_2); }
+								case 4 : { return compare(*e1.UINT_1, *e2.INT_4); }
+								case 8 : { return compare(*e1.UINT_1, *e2.INT_8); }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 4 : { return compare(*e1.UINT_1, *e2.FLOAT_4); }
+								case 8 : { return compare(*e1.UINT_1, *e2.FLOAT_8); }
+							}
+						}
+						default : {break;}
+					}
+				}
 				case 2 :
-					return compare(*e1.UINT_2, *e2.UINT_2);
+				{
+					switch(ele_d_2->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.UINT_2, *e2.UINT_1); }
+								case 2 : { return compare(*e1.UINT_2, *e2.UINT_2); }
+								case 4 : { return compare(*e1.UINT_2, *e2.UINT_4); }
+								case 8 : { return compare(*e1.UINT_2, *e2.UINT_8); }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.UINT_2, *e2.INT_1); }
+								case 2 : { return compare(*e1.UINT_2, *e2.INT_2); }
+								case 4 : { return compare(*e1.UINT_2, *e2.INT_4); }
+								case 8 : { return compare(*e1.UINT_2, *e2.INT_8); }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 4 : { return compare(*e1.UINT_2, *e2.FLOAT_4); }
+								case 8 : { return compare(*e1.UINT_2, *e2.FLOAT_8); }
+							}
+						}
+						default : {break;}
+					}
+				}
 				case 4 :
-					return compare(*e1.UINT_4, *e2.UINT_4);
+				{
+					switch(ele_d_2->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.UINT_4, *e2.UINT_1); }
+								case 2 : { return compare(*e1.UINT_4, *e2.UINT_2); }
+								case 4 : { return compare(*e1.UINT_4, *e2.UINT_4); }
+								case 8 : { return compare(*e1.UINT_4, *e2.UINT_8); }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.UINT_4, *e2.INT_1); }
+								case 2 : { return compare(*e1.UINT_4, *e2.INT_2); }
+								case 4 : { return compare(*e1.UINT_4, *e2.INT_4); }
+								case 8 : { return compare(*e1.UINT_4, *e2.INT_8); }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 4 : { return compare(*e1.UINT_4, *e2.FLOAT_4); }
+								case 8 : { return compare(*e1.UINT_4, *e2.FLOAT_8); }
+							}
+						}
+						default : {break;}
+					}
+				}
 				case 8 :
-					return compare(*e1.UINT_8, *e2.UINT_8);
+				{
+					switch(ele_d_2->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.UINT_8, *e2.UINT_1); }
+								case 2 : { return compare(*e1.UINT_8, *e2.UINT_2); }
+								case 4 : { return compare(*e1.UINT_8, *e2.UINT_4); }
+								case 8 : { return compare(*e1.UINT_8, *e2.UINT_8); }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.UINT_8, *e2.INT_1); }
+								case 2 : { return compare(*e1.UINT_8, *e2.INT_2); }
+								case 4 : { return compare(*e1.UINT_8, *e2.INT_4); }
+								case 8 : { return compare(*e1.UINT_8, *e2.INT_8); }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 4 : { return compare(*e1.UINT_8, *e2.FLOAT_4); }
+								case 8 : { return compare(*e1.UINT_8, *e2.FLOAT_8); }
+							}
+						}
+						default : {break;}
+					}
+				}
 			}
 		}
 		case INT :
@@ -229,13 +361,145 @@ int compare_elements(element e1, const element_def* ele_d_1, element e2, const e
 			switch(ele_d_1->size)
 			{
 				case 1 :
-					return compare(*e1.INT_1, *e2.INT_1);
+				{
+					switch(ele_d_2->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.INT_1, *e2.UINT_1); }
+								case 2 : { return compare(*e1.INT_1, *e2.UINT_2); }
+								case 4 : { return compare(*e1.INT_1, *e2.UINT_4); }
+								case 8 : { return compare(*e1.INT_1, *e2.UINT_8); }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.INT_1, *e2.INT_1); }
+								case 2 : { return compare(*e1.INT_1, *e2.INT_2); }
+								case 4 : { return compare(*e1.INT_1, *e2.INT_4); }
+								case 8 : { return compare(*e1.INT_1, *e2.INT_8); }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 4 : { return compare(*e1.INT_1, *e2.FLOAT_4); }
+								case 8 : { return compare(*e1.INT_1, *e2.FLOAT_8); }
+							}
+						}
+						default : {break;}
+					}
+				}
 				case 2 :
-					return compare(*e1.INT_2, *e2.INT_2);
+				{
+					switch(ele_d_2->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.INT_2, *e2.UINT_1); }
+								case 2 : { return compare(*e1.INT_2, *e2.UINT_2); }
+								case 4 : { return compare(*e1.INT_2, *e2.UINT_4); }
+								case 8 : { return compare(*e1.INT_2, *e2.UINT_8); }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.INT_2, *e2.INT_1); }
+								case 2 : { return compare(*e1.INT_2, *e2.INT_2); }
+								case 4 : { return compare(*e1.INT_2, *e2.INT_4); }
+								case 8 : { return compare(*e1.INT_2, *e2.INT_8); }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 4 : { return compare(*e1.INT_2, *e2.FLOAT_4); }
+								case 8 : { return compare(*e1.INT_2, *e2.FLOAT_8); }
+							}
+						}
+						default : {break;}
+					}
+				}
 				case 4 :
-					return compare(*e1.INT_4, *e2.INT_4);
+				{
+					switch(ele_d_2->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.INT_4, *e2.UINT_1); }
+								case 2 : { return compare(*e1.INT_4, *e2.UINT_2); }
+								case 4 : { return compare(*e1.INT_4, *e2.UINT_4); }
+								case 8 : { return compare(*e1.INT_4, *e2.UINT_8); }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.INT_4, *e2.INT_1); }
+								case 2 : { return compare(*e1.INT_4, *e2.INT_2); }
+								case 4 : { return compare(*e1.INT_4, *e2.INT_4); }
+								case 8 : { return compare(*e1.INT_4, *e2.INT_8); }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 4 : { return compare(*e1.INT_4, *e2.FLOAT_4); }
+								case 8 : { return compare(*e1.INT_4, *e2.FLOAT_8); }
+							}
+						}
+						default : {break;}
+					}
+				}
 				case 8 :
-					return compare(*e1.INT_8, *e2.INT_8);
+				{
+					switch(ele_d_2->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.INT_8, *e2.UINT_1); }
+								case 2 : { return compare(*e1.INT_8, *e2.UINT_2); }
+								case 4 : { return compare(*e1.INT_8, *e2.UINT_4); }
+								case 8 : { return compare(*e1.INT_8, *e2.UINT_8); }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.INT_8, *e2.INT_1); }
+								case 2 : { return compare(*e1.INT_8, *e2.INT_2); }
+								case 4 : { return compare(*e1.INT_8, *e2.INT_4); }
+								case 8 : { return compare(*e1.INT_8, *e2.INT_8); }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 4 : { return compare(*e1.INT_8, *e2.FLOAT_4); }
+								case 8 : { return compare(*e1.INT_8, *e2.FLOAT_8); }
+							}
+						}
+						default : {break;}
+					}
+				}
 			}
 		}
 		case FLOAT :
@@ -243,129 +507,229 @@ int compare_elements(element e1, const element_def* ele_d_1, element e2, const e
 			switch(ele_d_1->size)
 			{
 				case 4 :
-					return compare(*e1.FLOAT_4, *e2.FLOAT_4);
+				{
+					switch(ele_d_2->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.FLOAT_4, *e2.UINT_1); }
+								case 2 : { return compare(*e1.FLOAT_4, *e2.UINT_2); }
+								case 4 : { return compare(*e1.FLOAT_4, *e2.UINT_4); }
+								case 8 : { return compare(*e1.FLOAT_4, *e2.UINT_8); }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.FLOAT_4, *e2.INT_1); }
+								case 2 : { return compare(*e1.FLOAT_4, *e2.INT_2); }
+								case 4 : { return compare(*e1.FLOAT_4, *e2.INT_4); }
+								case 8 : { return compare(*e1.FLOAT_4, *e2.INT_8); }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 4 : { return compare(*e1.FLOAT_4, *e2.FLOAT_4); }
+								case 8 : { return compare(*e1.FLOAT_4, *e2.FLOAT_8); }
+							}
+						}
+						default : {break;}
+					}
+				}
 				case 8 :
-					return compare(*e1.FLOAT_8, *e2.FLOAT_8);
+				{
+					switch(ele_d_2->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.FLOAT_8, *e2.UINT_1); }
+								case 2 : { return compare(*e1.FLOAT_8, *e2.UINT_2); }
+								case 4 : { return compare(*e1.FLOAT_8, *e2.UINT_4); }
+								case 8 : { return compare(*e1.FLOAT_8, *e2.UINT_8); }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 1 : { return compare(*e1.FLOAT_8, *e2.INT_1); }
+								case 2 : { return compare(*e1.FLOAT_8, *e2.INT_2); }
+								case 4 : { return compare(*e1.FLOAT_8, *e2.INT_4); }
+								case 8 : { return compare(*e1.FLOAT_8, *e2.INT_8); }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_2->size)
+							{
+								case 4 : { return compare(*e1.FLOAT_8, *e2.FLOAT_4); }
+								case 8 : { return compare(*e1.FLOAT_8, *e2.FLOAT_8); }
+							}
+						}
+						default : {break;}
+					}
+				}
 			}
 		}
 		case STRING :
 		{
-			int compare = strncmp(e1.STRING, e2.STRING, ele_d_1->size);
-			return (compare != 0) ? ((compare > 0) ? 1 : -1) : 0;
-		}
-		case BLOB :
-		{
-			int compare =  memcmp(e1.STRING, e2.STRING, ele_d_1->size);
-			return (compare != 0) ? ((compare > 0) ? 1 : -1) : 0;
+			switch(ele_d_2->type)
+			{
+				case STRING : { return compare_string_types(e1.STRING, ele_d_1->size, e2.STRING, ele_d_2->size);}
+				case VAR_STRING :
+				{
+					switch(ele_d_2->size_specifier_prefix_size)
+					{
+						case 1 : { return compare_string_types(e1.STRING, ele_d_1->size, e2.VAR_STRING_1->string, e2.VAR_STRING_1->size);}
+						case 2 : { return compare_string_types(e1.STRING, ele_d_1->size, e2.VAR_STRING_2->string, e2.VAR_STRING_2->size);}
+						case 4 : { return compare_string_types(e1.STRING, ele_d_1->size, e2.VAR_STRING_4->string, e2.VAR_STRING_4->size);}
+					}
+				}
+				default : {break;}
+			}
 		}
 		case VAR_STRING :
 		{
-			uint32_t size1 = 0;
-			uint32_t size2 = 0;
-
-			uint32_t min_size;
-
-			int compare = 0;
-
 			switch(ele_d_1->size_specifier_prefix_size)
 			{
 				case 1 :
 				{
-					size1 = strnlen(e1.VAR_STRING_1->string, e1.VAR_STRING_1->size);
-					size2 = strnlen(e2.VAR_STRING_1->string, e2.VAR_STRING_1->size);
-					min_size = (size1 < size2) ? size1 : size2;
-					compare = strncmp(e1.VAR_STRING_1->string, e2.VAR_STRING_1->string, min_size);
-					break;
+					switch(ele_d_2->type)
+					{
+						case STRING : { return compare_string_types(e1.VAR_STRING_1->string, e1.VAR_STRING_1->size, e2.STRING, ele_d_2->size);}
+						case VAR_STRING :
+						{
+							switch(ele_d_2->size_specifier_prefix_size)
+							{
+								case 1 : { return compare_string_types(e1.VAR_STRING_1->string, e1.VAR_STRING_1->size, e2.VAR_STRING_1->string, e2.VAR_STRING_1->size);}
+								case 2 : { return compare_string_types(e1.VAR_STRING_1->string, e1.VAR_STRING_1->size, e2.VAR_STRING_2->string, e2.VAR_STRING_2->size);}
+								case 4 : { return compare_string_types(e1.VAR_STRING_1->string, e1.VAR_STRING_1->size, e2.VAR_STRING_4->string, e2.VAR_STRING_4->size);}
+							}
+						}
+						default : {break;}
+					}
 				}
 				case 2 :
 				{
-					size1 = strnlen(e1.VAR_STRING_2->string, e1.VAR_STRING_2->size);
-					size2 = strnlen(e2.VAR_STRING_2->string, e2.VAR_STRING_2->size);
-					min_size = (size1 < size2) ? size1 : size2;
-					compare = strncmp(e1.VAR_STRING_2->string, e2.VAR_STRING_2->string, min_size);
-					break;
+					switch(ele_d_2->type)
+					{
+						case STRING : { return compare_string_types(e1.VAR_STRING_2->string, e1.VAR_STRING_2->size, e2.STRING, ele_d_2->size);}
+						case VAR_STRING :
+						{
+							switch(ele_d_2->size_specifier_prefix_size)
+							{
+								case 1 : { return compare_string_types(e1.VAR_STRING_2->string, e1.VAR_STRING_2->size, e2.VAR_STRING_1->string, e2.VAR_STRING_1->size);}
+								case 2 : { return compare_string_types(e1.VAR_STRING_2->string, e1.VAR_STRING_2->size, e2.VAR_STRING_2->string, e2.VAR_STRING_2->size);}
+								case 4 : { return compare_string_types(e1.VAR_STRING_2->string, e1.VAR_STRING_2->size, e2.VAR_STRING_4->string, e2.VAR_STRING_4->size);}
+							}
+						}
+						default : {break;}
+					}
 				}
 				case 4 :
 				{
-					size1 = strnlen(e1.VAR_STRING_4->string, e1.VAR_STRING_4->size);
-					size2 = strnlen(e2.VAR_STRING_4->string, e2.VAR_STRING_4->size);
-					min_size = (size1 < size2) ? size1 : size2;
-					compare = strncmp(e1.VAR_STRING_4->string, e2.VAR_STRING_4->string, min_size);
-					break;
+					switch(ele_d_2->type)
+					{
+						case STRING : { return compare_string_types(e1.VAR_STRING_4->string, e1.VAR_STRING_4->size, e2.STRING, ele_d_2->size);}
+						case VAR_STRING :
+						{
+							switch(ele_d_2->size_specifier_prefix_size)
+							{
+								case 1 : { return compare_string_types(e1.VAR_STRING_4->string, e1.VAR_STRING_4->size, e2.VAR_STRING_1->string, e2.VAR_STRING_1->size);}
+								case 2 : { return compare_string_types(e1.VAR_STRING_4->string, e1.VAR_STRING_4->size, e2.VAR_STRING_2->string, e2.VAR_STRING_2->size);}
+								case 4 : { return compare_string_types(e1.VAR_STRING_4->string, e1.VAR_STRING_4->size, e2.VAR_STRING_4->string, e2.VAR_STRING_4->size);}
+							}
+						}
+						default : {break;}
+					}
 				}
 			}
-
-			if(compare > 0)
-				compare = 1;
-			else if(compare < 0)
-				compare = -1;
-			else if((compare == 0) && (size1 != size2))
+		}
+		case BLOB :
+		{
+			switch(ele_d_2->type)
 			{
-				// in dictionary ordering if 1 string is a prefix of the other
-				// then the larger string comes latter in the order
-				if(size1 > size2)
-					compare = 1;
-				else if(size1 < size2)
-					compare = -1;
+				case BLOB : { return compare_blob_types(e1.BLOB, ele_d_1->size, e2.BLOB, ele_d_2->size);}
+				case VAR_BLOB :
+				{
+					switch(ele_d_2->size_specifier_prefix_size)
+					{
+						case 1 : { return compare_blob_types(e1.BLOB, ele_d_1->size, e2.VAR_BLOB_1->blob, e2.VAR_BLOB_1->size);}
+						case 2 : { return compare_blob_types(e1.BLOB, ele_d_1->size, e2.VAR_BLOB_2->blob, e2.VAR_BLOB_2->size);}
+						case 4 : { return compare_blob_types(e1.BLOB, ele_d_1->size, e2.VAR_BLOB_4->blob, e2.VAR_BLOB_4->size);}
+					}
+				}
+				default : {break;}
 			}
-
-			return compare;
 		}
 		case VAR_BLOB :
 		{
-			uint32_t size1 = 0;
-			uint32_t size2 = 0;
-
-			uint32_t min_size = (size1 < size2) ? size1 : size2;
-
-			int compare = 0;
-
 			switch(ele_d_1->size_specifier_prefix_size)
 			{
 				case 1 :
 				{
-					size1 = e1.VAR_BLOB_1->size;
-					size2 = e2.VAR_BLOB_1->size;
-					min_size = (size1 < size2) ? size1 : size2;
-					compare = memcmp(e1.VAR_BLOB_1->blob, e2.VAR_BLOB_1->blob, min_size);
-					break;
+					switch(ele_d_2->type)
+					{
+						case BLOB : { return compare_blob_types(e1.VAR_BLOB_1->blob, e1.VAR_BLOB_1->size, e2.BLOB, ele_d_2->size);}
+						case VAR_BLOB :
+						{
+							switch(ele_d_2->size_specifier_prefix_size)
+							{
+								case 1 : { return compare_blob_types(e1.VAR_BLOB_1->blob, e1.VAR_BLOB_1->size, e2.VAR_BLOB_1->blob, e2.VAR_BLOB_1->size);}
+								case 2 : { return compare_blob_types(e1.VAR_BLOB_1->blob, e1.VAR_BLOB_1->size, e2.VAR_BLOB_2->blob, e2.VAR_BLOB_2->size);}
+								case 4 : { return compare_blob_types(e1.VAR_BLOB_1->blob, e1.VAR_BLOB_1->size, e2.VAR_BLOB_4->blob, e2.VAR_BLOB_4->size);}
+							}
+						}
+						default : {break;}
+					}
 				}
 				case 2 :
 				{
-					size1 = e1.VAR_BLOB_2->size;
-					size2 = e2.VAR_BLOB_2->size;
-					min_size = (size1 < size2) ? size1 : size2;
-					compare = memcmp(e1.VAR_BLOB_2->blob, e2.VAR_BLOB_2->blob, min_size);
-					break;
+					switch(ele_d_2->type)
+					{
+						case BLOB : { return compare_blob_types(e1.VAR_BLOB_2->blob, e1.VAR_BLOB_2->size, e2.BLOB, ele_d_2->size);}
+						case VAR_BLOB :
+						{
+							switch(ele_d_2->size_specifier_prefix_size)
+							{
+								case 1 : { return compare_blob_types(e1.VAR_BLOB_2->blob, e1.VAR_BLOB_2->size, e2.VAR_BLOB_1->blob, e2.VAR_BLOB_1->size);}
+								case 2 : { return compare_blob_types(e1.VAR_BLOB_2->blob, e1.VAR_BLOB_2->size, e2.VAR_BLOB_2->blob, e2.VAR_BLOB_2->size);}
+								case 4 : { return compare_blob_types(e1.VAR_BLOB_2->blob, e1.VAR_BLOB_2->size, e2.VAR_BLOB_4->blob, e2.VAR_BLOB_4->size);}
+							}
+						}
+						default : {break;}
+					}
 				}
 				case 4 :
 				{
-					size1 = e1.VAR_BLOB_4->size;
-					size2 = e2.VAR_BLOB_4->size;
-					min_size = (size1 < size2) ? size1 : size2;
-					compare = memcmp(e1.VAR_BLOB_4->blob, e2.VAR_BLOB_4->blob, min_size);
-					break;
+					switch(ele_d_2->type)
+					{
+						case BLOB : { return compare_blob_types(e1.VAR_BLOB_4->blob, e1.VAR_BLOB_4->size, e2.BLOB, ele_d_2->size);}
+						case VAR_BLOB :
+						{
+							switch(ele_d_2->size_specifier_prefix_size)
+							{
+								case 1 : { return compare_blob_types(e1.VAR_BLOB_4->blob, e1.VAR_BLOB_4->size, e2.VAR_BLOB_1->blob, e2.VAR_BLOB_1->size);}
+								case 2 : { return compare_blob_types(e1.VAR_BLOB_4->blob, e1.VAR_BLOB_4->size, e2.VAR_BLOB_2->blob, e2.VAR_BLOB_2->size);}
+								case 4 : { return compare_blob_types(e1.VAR_BLOB_4->blob, e1.VAR_BLOB_4->size, e2.VAR_BLOB_4->blob, e2.VAR_BLOB_4->size);}
+							}
+						}
+						default : {break;}
+					}
 				}
 			}
-
-			if(compare > 0)
-				compare = 1;
-			else if(compare < 0)
-				compare = -1;
-			else if((compare == 0) && (size1 != size2))
-			{
-				// in dictionary ordering if 1 string is a prefix of the other
-				// then the larger string comes latter in the order
-				if(size1 > size2)
-					compare = -1;
-				else if(size1 > size2)
-					compare = 1;
-			}
-
-			return compare;
 		}
 	}
-	return 0;
+
+	// a return value of -2 implies in comparable types
+	return -2;
 }
 
 uint32_t hash_element(element e, const element_def* ele_d, uint32_t (*hash_func)(const void* data, uint32_t size))
