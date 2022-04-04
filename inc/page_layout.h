@@ -137,7 +137,7 @@ void print_page_in_hex(const void* page, uint32_t page_size);
 **
 **					FIXED_ARRAY PAGE
 **
-**		tuple_capacity = (page_size - page_header_size - N) / (tuple_def->size * 8 + 1)
+**		tuple_capacity = ((page_size - page_header_size - N) * 8) / (tuple_def->size * 8 + 1)
 **
 **		struct page_of_FIXED_ARRAY_PAGE
 **		{
