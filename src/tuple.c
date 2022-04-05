@@ -58,7 +58,9 @@ int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 	return get_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
 }
 
-void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t var_blob_size)
+#define min(a,b) (((a)<(b))?(a):(b))
+
+void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t value_size)
 {
 	element existing = get_element_from_tuple(tpl_d, index, tupl);
 	if(existing.BLOB == NULL && value == NULL)
@@ -81,9 +83,18 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 			if(tpl_d->element_defs[index].type == STRING)
 			{
 				// copy at most of string length + 1 bytes and total_size
-				uint32_t string_size = strnlen(value, total_size) + 1;
-				uint32_t copy_size = (total_size < string_size) ? total_size : string_size;
+				uint32_t string_size = strnlen(value, value_size);
+				uint32_t copy_size = min(total_size, string_size);
 				memmove(ele.STRING, value, copy_size);
+
+				// if the string is going to occupy lesser characters than its size then we better have a null terminating character at the end
+				if(copy_size < total_size)
+					ele.STRING[copy_size] = '\0';
+			}
+			else if(tpl_d->element_defs[index].type == BLOB)
+			{
+				uint32_t copy_size = min(total_size, value_size);
+				memmove(ele.BLOB, value, copy_size);
 			}
 			else
 				memmove(ele.BLOB, value, total_size);
@@ -146,21 +157,23 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 					{
 						case 1 :
 						{
-							ele.VAR_STRING_1->size = strnlen(value, (1<<8)-1);
+							uint32_t string_size = strnlen(value, value_size);
+							ele.VAR_STRING_1->size = min(string_size, (1U<<8)-1);
 							memmove(ele.VAR_STRING_1->string, value, ele.VAR_STRING_1->size);
 							tuple_size += (ele.VAR_STRING_1->size + 1);
 							break;
 						}
 						case 2 :
 						{
-							ele.VAR_STRING_2->size = strnlen(value, (1<<16)-1);
+							uint32_t string_size = strnlen(value, value_size);
+							ele.VAR_STRING_2->size = min(string_size, (1U<<16)-1);
 							memmove(ele.VAR_STRING_2->string, value, ele.VAR_STRING_2->size);
 							tuple_size += (ele.VAR_STRING_2->size + 2);
 							break;
 						}
 						case 4 :
 						{
-							ele.VAR_STRING_4->size = strlen(value);
+							ele.VAR_STRING_4->size = strnlen(value, value_size);
 							memmove(ele.VAR_STRING_4->string, value, ele.VAR_STRING_4->size);
 							tuple_size += (ele.VAR_STRING_4->size + 4);
 							break;
@@ -174,21 +187,21 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 					{
 						case 1 :
 						{
-							ele.VAR_BLOB_1->size = (var_blob_size > ((1<<8)-1)) ? ((1<<8)-1) : var_blob_size;
+							ele.VAR_BLOB_1->size = min(value_size, ((1<<8)-1));
 							memmove(ele.VAR_BLOB_1->blob, value, ele.VAR_BLOB_1->size);
 							tuple_size += (ele.VAR_BLOB_1->size + 1);
 							break;
 						}
 						case 2 :
 						{
-							ele.VAR_BLOB_2->size = (var_blob_size > ((1<<16)-1)) ? ((1<<16)-1) : var_blob_size;
+							ele.VAR_BLOB_2->size = min(value_size, ((1<<16)-1));
 							memmove(ele.VAR_BLOB_2->blob, value, ele.VAR_BLOB_2->size);
 							tuple_size += (ele.VAR_BLOB_2->size + 2);
 							break;
 						}
 						case 4 :
 						{
-							ele.VAR_BLOB_4->size = var_blob_size;
+							ele.VAR_BLOB_4->size = value_size;
 							memmove(ele.VAR_BLOB_4->blob, value, ele.VAR_BLOB_4->size);
 							tuple_size += (ele.VAR_BLOB_4->size + 4);
 							break;
