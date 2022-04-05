@@ -217,6 +217,66 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void
 		return 1;
 	}
 
+	// For numeric types, the type and size of the elements must match up
+	if( (tpl_d->element_defs[index].type == UINT || tpl_d->element_defs[index].type == INT || tpl_d->element_defs[index].type == FLOAT)
+		&& (tpl_d->element_defs[index].type == tpl_d_in->element_defs[index_in].type)
+		&& (tpl_d->element_defs[index].size == tpl_d_in->element_defs[index_in].size) )
+	{
+		element existing = get_element_from_tuple(tpl_d_in, index_in, tupl_in);
+		set_element_in_tuple(tpl_d, index, tupl, existing.BLOB, tpl_d_in->element_defs[index_in].size);
+		return 1;
+	}
+
+	// if both of them are string like types then
+	else if( (tpl_d->element_defs[index].type == STRING || tpl_d->element_defs[index].type == VAR_STRING)
+		&& (tpl_d_in->element_defs[index_in].type == STRING || tpl_d_in->element_defs[index_in].type == VAR_STRING) )
+	{
+		element existing = get_element_from_tuple(tpl_d_in, index_in, tupl_in);
+
+		switch(tpl_d_in->element_defs[index_in].type)
+		{
+			case STRING : { set_element_in_tuple(tpl_d, index, tupl, existing.STRING, tpl_d_in->element_defs[index_in].size); break; }
+			case VAR_STRING :
+			{
+				switch(tpl_d_in->element_defs[index_in].size_specifier_prefix_size)
+				{
+					case 1 : { set_element_in_tuple(tpl_d, index, tupl, existing.VAR_STRING_1->string, existing.VAR_STRING_1->size); break; }
+					case 2 : { set_element_in_tuple(tpl_d, index, tupl, existing.VAR_STRING_2->string, existing.VAR_STRING_2->size); break; }
+					case 4 : { set_element_in_tuple(tpl_d, index, tupl, existing.VAR_STRING_4->string, existing.VAR_STRING_4->size); break; }
+				}
+				break;
+			}
+			default: {break;}
+		}
+
+		return 1;
+	}
+
+	// if both of them are blob like types then
+	else if( (tpl_d->element_defs[index].type == BLOB || tpl_d->element_defs[index].type == VAR_BLOB)
+		&& (tpl_d_in->element_defs[index_in].type == BLOB || tpl_d_in->element_defs[index_in].type == VAR_BLOB) )
+	{
+		element existing = get_element_from_tuple(tpl_d_in, index_in, tupl_in);
+
+		switch(tpl_d_in->element_defs[index_in].type)
+		{
+			case STRING : { set_element_in_tuple(tpl_d, index, tupl, existing.BLOB, tpl_d_in->element_defs[index_in].size); break; }
+			case VAR_STRING :
+			{
+				switch(tpl_d_in->element_defs[index_in].size_specifier_prefix_size)
+				{
+					case 1 : { set_element_in_tuple(tpl_d, index, tupl, existing.VAR_BLOB_1->blob, existing.VAR_BLOB_1->size); break; }
+					case 2 : { set_element_in_tuple(tpl_d, index, tupl, existing.VAR_BLOB_2->blob, existing.VAR_BLOB_2->size); break; }
+					case 4 : { set_element_in_tuple(tpl_d, index, tupl, existing.VAR_BLOB_4->blob, existing.VAR_BLOB_4->size); break; }
+				}
+				break;
+			}
+			default: {break;}
+		}
+
+		return 1;
+	}
+
 	return 0;
 }
 
