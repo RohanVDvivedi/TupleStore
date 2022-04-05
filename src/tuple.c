@@ -221,6 +221,8 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 	}
 }
 
+static void typecast_and_set_numeric_type(element e_to, const element_def* ele_d_to, element e_from, const element_def* ele_d_from);
+
 int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const tuple_def* tpl_d_in, uint32_t index_in, void* tupl_in)
 {
 	// if the index_in-th element in the tuple is NULL then set index-th element in tuple as NULL
@@ -232,11 +234,16 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void
 
 	// For numeric types, the type and size of the elements must match up
 	if( (tpl_d->element_defs[index].type == UINT || tpl_d->element_defs[index].type == INT || tpl_d->element_defs[index].type == FLOAT)
-		&& (tpl_d->element_defs[index].type == tpl_d_in->element_defs[index_in].type)
-		&& (tpl_d->element_defs[index].size == tpl_d_in->element_defs[index_in].size) )
+		&& (tpl_d_in->element_defs[index_in].type == UINT || tpl_d_in->element_defs[index_in].type == INT || tpl_d_in->element_defs[index_in].type == FLOAT) )
 	{
-		element existing = get_element_from_tuple(tpl_d_in, index_in, tupl_in);
-		set_element_in_tuple(tpl_d, index, tupl, existing.BLOB, tpl_d_in->element_defs[index_in].size);
+		// set the is_null bitmap bit to 0
+		reset_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+		
+		element e_from = get_element_from_tuple(tpl_d_in, index_in, tupl_in);
+		element e_to = get_element_from_tuple(tpl_d, index, tupl);
+
+		typecast_and_set_numeric_type(e_to, tpl_d->element_defs + index, e_from, tpl_d_in->element_defs + index_in);
+
 		return 1;
 	}
 
@@ -606,4 +613,380 @@ int sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 	}
 	chars_written += sprintf(str + chars_written, "\n");
 	return chars_written;
+}
+
+static void typecast_and_set_numeric_type(element e_to, const element_def* ele_d_to, element e_from, const element_def* ele_d_from)
+{
+	switch(ele_d_to->type)
+	{
+		case UINT :
+		{
+			switch(ele_d_to->size)
+			{
+				case 1 :
+				{
+					switch(ele_d_from->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.UINT_1 = *e_from.UINT_1; return; }
+								case 2 : { *e_to.UINT_1 = *e_from.UINT_2; return; }
+								case 4 : { *e_to.UINT_1 = *e_from.UINT_4; return; }
+								case 8 : { *e_to.UINT_1 = *e_from.UINT_8; return; }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.UINT_1 = *e_from.INT_1; return; }
+								case 2 : { *e_to.UINT_1 = *e_from.INT_2; return; }
+								case 4 : { *e_to.UINT_1 = *e_from.INT_4; return; }
+								case 8 : { *e_to.UINT_1 = *e_from.INT_8; return; }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 4 : { *e_to.UINT_1 = *e_from.FLOAT_4; return; }
+								case 8 : { *e_to.UINT_1 = *e_from.FLOAT_8; return; }
+							}
+						}
+						default : {break;}
+					}
+				}
+				case 2 :
+				{
+					switch(ele_d_from->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.UINT_2 = *e_from.UINT_1; return; }
+								case 2 : { *e_to.UINT_2 = *e_from.UINT_2; return; }
+								case 4 : { *e_to.UINT_2 = *e_from.UINT_4; return; }
+								case 8 : { *e_to.UINT_2 = *e_from.UINT_8; return; }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.UINT_2 = *e_from.INT_1; return; }
+								case 2 : { *e_to.UINT_2 = *e_from.INT_2; return; }
+								case 4 : { *e_to.UINT_2 = *e_from.INT_4; return; }
+								case 8 : { *e_to.UINT_2 = *e_from.INT_8; return; }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 4 : { *e_to.UINT_2 = *e_from.FLOAT_4; return; }
+								case 8 : { *e_to.UINT_2 = *e_from.FLOAT_8; return; }
+							}
+						}
+						default : {break;}
+					}
+				}
+				case 4 :
+				{
+					switch(ele_d_from->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.UINT_4 = *e_from.UINT_1; return; }
+								case 2 : { *e_to.UINT_4 = *e_from.UINT_2; return; }
+								case 4 : { *e_to.UINT_4 = *e_from.UINT_4; return; }
+								case 8 : { *e_to.UINT_4 = *e_from.UINT_8; return; }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.UINT_4 = *e_from.INT_1; return; }
+								case 2 : { *e_to.UINT_4 = *e_from.INT_2; return; }
+								case 4 : { *e_to.UINT_4 = *e_from.INT_4; return; }
+								case 8 : { *e_to.UINT_4 = *e_from.INT_8; return; }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 4 : { *e_to.UINT_4 = *e_from.FLOAT_4; return; }
+								case 8 : { *e_to.UINT_4 = *e_from.FLOAT_8; return; }
+							}
+						}
+						default : {break;}
+					}
+				}
+				case 8 :
+				{
+					switch(ele_d_from->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.UINT_8 = *e_from.UINT_1; return; }
+								case 2 : { *e_to.UINT_8 = *e_from.UINT_2; return; }
+								case 4 : { *e_to.UINT_8 = *e_from.UINT_4; return; }
+								case 8 : { *e_to.UINT_8 = *e_from.UINT_8; return; }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.UINT_8 = *e_from.INT_1; return; }
+								case 2 : { *e_to.UINT_8 = *e_from.INT_2; return; }
+								case 4 : { *e_to.UINT_8 = *e_from.INT_4; return; }
+								case 8 : { *e_to.UINT_8 = *e_from.INT_8; return; }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 4 : { *e_to.UINT_8 = *e_from.FLOAT_4; return; }
+								case 8 : { *e_to.UINT_8 = *e_from.FLOAT_8; return; }
+							}
+						}
+						default : {break;}
+					}
+				}
+			}
+		}
+		case INT :
+		{
+			switch(ele_d_to->size)
+			{
+				case 1 :
+				{
+					switch(ele_d_from->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.INT_1 = *e_from.UINT_1; return; }
+								case 2 : { *e_to.INT_1 = *e_from.UINT_2; return; }
+								case 4 : { *e_to.INT_1 = *e_from.UINT_4; return; }
+								case 8 : { *e_to.INT_1 = *e_from.UINT_8; return; }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.INT_1 = *e_from.INT_1; return; }
+								case 2 : { *e_to.INT_1 = *e_from.INT_2; return; }
+								case 4 : { *e_to.INT_1 = *e_from.INT_4; return; }
+								case 8 : { *e_to.INT_1 = *e_from.INT_8; return; }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 4 : { *e_to.INT_1 = *e_from.FLOAT_4; return; }
+								case 8 : { *e_to.INT_1 = *e_from.FLOAT_8; return; }
+							}
+						}
+						default : {break;}
+					}
+				}
+				case 2 :
+				{
+					switch(ele_d_from->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.INT_2 = *e_from.UINT_1; return; }
+								case 2 : { *e_to.INT_2 = *e_from.UINT_2; return; }
+								case 4 : { *e_to.INT_2 = *e_from.UINT_4; return; }
+								case 8 : { *e_to.INT_2 = *e_from.UINT_8; return; }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.INT_2 = *e_from.INT_1; return; }
+								case 2 : { *e_to.INT_2 = *e_from.INT_2; return; }
+								case 4 : { *e_to.INT_2 = *e_from.INT_4; return; }
+								case 8 : { *e_to.INT_2 = *e_from.INT_8; return; }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 4 : { *e_to.INT_2 = *e_from.FLOAT_4; return; }
+								case 8 : { *e_to.INT_2 = *e_from.FLOAT_8; return; }
+							}
+						}
+						default : {break;}
+					}
+				}
+				case 4 :
+				{
+					switch(ele_d_from->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.INT_4 = *e_from.UINT_1; return; }
+								case 2 : { *e_to.INT_4 = *e_from.UINT_2; return; }
+								case 4 : { *e_to.INT_4 = *e_from.UINT_4; return; }
+								case 8 : { *e_to.INT_4 = *e_from.UINT_8; return; }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.INT_4 = *e_from.INT_1; return; }
+								case 2 : { *e_to.INT_4 = *e_from.INT_2; return; }
+								case 4 : { *e_to.INT_4 = *e_from.INT_4; return; }
+								case 8 : { *e_to.INT_4 = *e_from.INT_8; return; }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 4 : { *e_to.INT_4 = *e_from.FLOAT_4; return; }
+								case 8 : { *e_to.INT_4 = *e_from.FLOAT_8; return; }
+							}
+						}
+						default : {break;}
+					}
+				}
+				case 8 :
+				{
+					switch(ele_d_from->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.INT_8 = *e_from.UINT_1; return; }
+								case 2 : { *e_to.INT_8 = *e_from.UINT_2; return; }
+								case 4 : { *e_to.INT_8 = *e_from.UINT_4; return; }
+								case 8 : { *e_to.INT_8 = *e_from.UINT_8; return; }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.INT_8 = *e_from.INT_1; return; }
+								case 2 : { *e_to.INT_8 = *e_from.INT_2; return; }
+								case 4 : { *e_to.INT_8 = *e_from.INT_4; return; }
+								case 8 : { *e_to.INT_8 = *e_from.INT_8; return; }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 4 : { *e_to.INT_8 = *e_from.FLOAT_4; return; }
+								case 8 : { *e_to.INT_8 = *e_from.FLOAT_8; return; }
+							}
+						}
+						default : {break;}
+					}
+				}
+			}
+		}
+		case FLOAT :
+		{
+			switch(ele_d_to->size)
+			{
+				case 4 :
+				{
+					switch(ele_d_from->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.FLOAT_4 = *e_from.UINT_1; return; }
+								case 2 : { *e_to.FLOAT_4 = *e_from.UINT_2; return; }
+								case 4 : { *e_to.FLOAT_4 = *e_from.UINT_4; return; }
+								case 8 : { *e_to.FLOAT_4 = *e_from.UINT_8; return; }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.FLOAT_4 = *e_from.INT_1; return; }
+								case 2 : { *e_to.FLOAT_4 = *e_from.INT_2; return; }
+								case 4 : { *e_to.FLOAT_4 = *e_from.INT_4; return; }
+								case 8 : { *e_to.FLOAT_4 = *e_from.INT_8; return; }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 4 : { *e_to.FLOAT_4 = *e_from.FLOAT_4; return; }
+								case 8 : { *e_to.FLOAT_4 = *e_from.FLOAT_8; return; }
+							}
+						}
+						default : {break;}
+					}
+				}
+				case 8 :
+				{
+					switch(ele_d_from->type)
+					{
+						case UINT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.FLOAT_8 = *e_from.UINT_1; return; }
+								case 2 : { *e_to.FLOAT_8 = *e_from.UINT_2; return; }
+								case 4 : { *e_to.FLOAT_8 = *e_from.UINT_4; return; }
+								case 8 : { *e_to.FLOAT_8 = *e_from.UINT_8; return; }
+							}
+						}
+						case INT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 1 : { *e_to.FLOAT_8 = *e_from.INT_1; return; }
+								case 2 : { *e_to.FLOAT_8 = *e_from.INT_2; return; }
+								case 4 : { *e_to.FLOAT_8 = *e_from.INT_4; return; }
+								case 8 : { *e_to.FLOAT_8 = *e_from.INT_8; return; }
+							}
+						}
+						case FLOAT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 4 : { *e_to.FLOAT_8 = *e_from.FLOAT_4; return; }
+								case 8 : { *e_to.FLOAT_8 = *e_from.FLOAT_8; return; }
+							}
+						}
+						default : {break;}
+					}
+				}
+			}
+		}
+		default : {break;}
+	}
 }
