@@ -789,7 +789,7 @@ int init_tuple_def(tuple_def* tuple_d, const char* name)
 int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_type, uint32_t element_size_OR_prefix_size)
 {
 	// if an element definition by the name already exists then we fail an insertion
-	if(get_element_def_id_by_name(tuple_d, name) != NOT_FOUND)
+	if(get_element_def_id_by_name(tuple_d, name) != ELEMENT_DEF_NOT_FOUND)
 		return 0;
 
 	// attempt initializing the ith element def
@@ -886,7 +886,7 @@ uint32_t get_element_def_id_by_name(const tuple_def* tuple_d, const char* name)
 	// if the name size is more than or equal to 64 we quit
 	uint32_t name_size = strnlen(name, 64);
 	if(name_size == 64)
-		return NOT_FOUND;
+		return ELEMENT_DEF_NOT_FOUND;
 
 	// we do a linear search here, it is not optimal
 	// it should have an associative map, but I dont want to clutter the implementation of tuple def any more 
@@ -897,7 +897,7 @@ uint32_t get_element_def_id_by_name(const tuple_def* tuple_d, const char* name)
 			return i;
 	}
 
-	return NOT_FOUND;
+	return ELEMENT_DEF_NOT_FOUND;
 }
 
 static void print_element_def(const element_def* element_d)
