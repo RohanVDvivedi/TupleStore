@@ -88,7 +88,7 @@ struct element_def
 
 // initialize an element's definition using its type and size
 // it may fail if the size parameters is not valid for a given data type
-int init_element_def(element_def* element_d, char* name, element_type ele_type, uint32_t size_OR_prefix_size);
+int init_element_def(element_def* element_d, const char* name, element_type ele_type, uint32_t size_OR_prefix_size);
 
 // returns true if an element is of a variable sized
 int is_variable_sized_element_def(const element_def* element_d);
@@ -152,11 +152,17 @@ struct tuple_def
 #define size_of_tuple_def(element_count) (sizeof(tuple_def) + ((element_count) * sizeof(element_def)))
 
 // to initialize an empty tuple definition
-int init_tuple_def(tuple_def* tuple_d, char* name);
+int init_tuple_def(tuple_def* tuple_d, const char* name);
 
-// insert the key or values, insert keys in their decreasing order of importance
-// mark the tuple_mark_key_complete, once all the keys are inserted
-int insert_element_def(tuple_def* tuple_d, char* name, element_type ele_type, uint32_t element_size_OR_prefix_size);
+// insert an element definition in this tuple definition
+// returns 1 on success
+int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_type, uint32_t element_size_OR_prefix_size);
+
+// insert an element definition in this tuple definition
+// such that it copies its type and size from "element_def_id"-th element definiton of "tuple_d_copy_from"
+// if the name parameter is NULL then we also copy the name from the corresponding element definition
+// returns 1 on success
+int insert_copy_of_element_def(tuple_def* tuple_d, const char* name, const tuple_def* tuple_d_copy_from, uint32_t element_def_id);
 
 // after inserting all the elements call this function
 // here the parameter max_tuple_size is not required for fixed length tuples
@@ -180,7 +186,7 @@ uint32_t get_minimum_tuple_size(const tuple_def* tuple_d);
 // gets index to an already existing element def in the given tuple def
 // if not found it returns NOT_FOUND
 #define NOT_FOUND (~((uint32_t)0))
-uint32_t get_element_def_id_by_name(const tuple_def* tuple_d, char* name);
+uint32_t get_element_def_id_by_name(const tuple_def* tuple_d, const char* name);
 
 // to print a final tuple definition
 void print_tuple_def(const tuple_def* tuple_d);

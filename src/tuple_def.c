@@ -50,7 +50,7 @@ static int is_prefix_size_allowed_for_variable_sized_type(element_type ele_type,
 	}
 }
 
-int init_element_def(element_def* element_d, char* name, element_type ele_type, uint32_t size_OR_prefix_size)
+int init_element_def(element_def* element_d, const char* name, element_type ele_type, uint32_t size_OR_prefix_size)
 {
 	// name larger than 63 bytes
 	if(strnlen(name, 64) == 64)
@@ -768,7 +768,7 @@ uint32_t hash_element(element e, const element_def* ele_d, uint32_t (*hash_func)
 	return 0;
 }
 
-int init_tuple_def(tuple_def* tuple_d, char* name)
+int init_tuple_def(tuple_def* tuple_d, const char* name)
 {
 	// name larger than 63 bytes
 	if(strnlen(name, 64) == 64)
@@ -786,7 +786,7 @@ int init_tuple_def(tuple_def* tuple_d, char* name)
 	return 1;
 }
 
-int insert_element_def(tuple_def* tuple_d, char* name, element_type ele_type, uint32_t element_size_OR_prefix_size)
+int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_type, uint32_t element_size_OR_prefix_size)
 {
 	// if an element definition by the name already exists then we fail an insertion
 	if(get_element_def_id_by_name(tuple_d, name) != NOT_FOUND)
@@ -799,6 +799,21 @@ int insert_element_def(tuple_def* tuple_d, char* name, element_type ele_type, ui
 
 	tuple_d->element_count++;
 	return 1;
+}
+
+int insert_copy_of_element_def(tuple_def* tuple_d, const char* name, const tuple_def* tuple_d_copy_from, uint32_t element_def_id)
+{
+	// element_def_id is out of bounds
+	if(element_def_id >= tuple_d_copy_from->element_count)
+		return 0;
+
+	if(name == NULL)
+		name = tuple_d_copy_from->element_defs[element_def_id].name;
+
+	if(is_fixed_sized_element_def(tuple_d_copy_from->element_defs + element_def_id))
+		return insert_element_def(tuple_d, name, tuple_d_copy_from->element_defs[element_def_id].type, tuple_d_copy_from->element_defs[element_def_id].size);
+	else
+		return insert_element_def(tuple_d, name, tuple_d_copy_from->element_defs[element_def_id].type, tuple_d_copy_from->element_defs[element_def_id].size_specifier_prefix_size);
 }
 
 void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_tuple_size)
@@ -866,7 +881,7 @@ uint32_t get_minimum_tuple_size(const tuple_def* tuple_d)
 		return tuple_d->min_size;
 }
 
-uint32_t get_element_def_id_by_name(const tuple_def* tuple_d, char* name)
+uint32_t get_element_def_id_by_name(const tuple_def* tuple_d, const char* name)
 {
 	// if the name size is more than or equal to 64 we quit
 	uint32_t name_size = strnlen(name, 64);
