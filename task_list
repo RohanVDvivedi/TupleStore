@@ -1,1 +1,2 @@
  * make provisions to reset the unused bytes on the page while performing init_page, run_page_compaction, deleting a tuple, updating a tuple and swaping the tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined on a swap, update or delete.
+  * this will avail better compression on the page
