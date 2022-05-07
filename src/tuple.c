@@ -404,16 +404,8 @@ int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, uint32_
 int compare_tuples(const void* tup1, const tuple_def* tpl_d1, uint32_t* element_ids1, const void* tup2, const tuple_def* tpl_d2, uint32_t* element_ids2, uint32_t element_count)
 {
 	int compare = 0;
-	if(element_ids1 == NULL || element_ids2 == NULL)
-	{
-		for(uint32_t i = 0; ((i < element_count) && (compare == 0)); i++)
-			compare = compare_elements_of_tuple(tup1, tpl_d1, i, tup2, tpl_d2, i);
-	}
-	else
-	{
-		for(uint32_t i = 0; ((i < element_count) && (compare == 0)); i++)
-			compare = compare_elements_of_tuple(tup1, tpl_d1, element_ids1[i], tup2, tpl_d2, element_ids2[i]);
-	}
+	for(uint32_t i = 0; ((i < element_count) && (compare == 0)); i++)
+		compare = compare_elements_of_tuple(tup1, tpl_d1, ((element_ids1 == NULL) ? i : element_ids1[i]), tup2, tpl_d2, ((element_ids2 == NULL) ? i : element_ids2[i]));
 	return compare;
 }
 
