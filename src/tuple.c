@@ -401,7 +401,7 @@ int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, uint32_
 		return compare_elements(e1, tpl_d1->element_defs + index1, e2, tpl_d2->element_defs + index2);
 }
 
-int compare_tuples(const void* tup1, const tuple_def* tpl_d1, uint32_t* element_ids1, const void* tup2, const tuple_def* tpl_d2, uint32_t* element_ids2, uint32_t element_count)
+int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const uint32_t* element_ids1, const void* tup2, const tuple_def* tpl_d2, const uint32_t* element_ids2, uint32_t element_count)
 {
 	int compare = 0;
 	for(uint32_t i = 0; ((i < element_count) && (compare == 0)); i++)
@@ -419,7 +419,7 @@ uint32_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, uint
 	return hash_element(e, tpl_d->element_defs + index, hash_func);
 }
 
-uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_func)(const void* data, uint32_t size), uint32_t element_count, uint32_t* element_ids)
+uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_func)(const void* data, uint32_t size), uint32_t element_count, const uint32_t* element_ids)
 {
 	uint32_t hash_value = 0;
 	if(element_ids == NULL)
