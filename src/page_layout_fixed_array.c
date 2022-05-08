@@ -89,6 +89,11 @@ int init_fixed_array_page(void* page, uint32_t page_size, uint32_t page_header_s
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	write_value_to_page(tuple_count, page_size, 0);
 
+	// initialize is_valid bitmap to all 0s
+	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
+	uint32_t tuple_capacity = get_tuple_capacity(page, page_size, tpl_d);
+	reset_all_bits(is_valid, tuple_capacity);
+
 	return 1;
 }
 
