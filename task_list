@@ -1,2 +1,8 @@
  * make provisions to reset the unused bytes on the page while performing init_page, run_page_compaction, deleting a tuple, updating a tuple and swaping the tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined on a swap, update or delete.
   * this will avail better compression on the page
+
+ * memset 0 when the fixed length field gets set to NULL
+ * memset 0 all the bytes at the end of the variable length tuple when the field is set to NULL
+
+ * provide an option to use is_NON_NULL_field, to save our selves from allocating a bit in the bitmap for the fields that can not be NULL
+ * non_null fields when written to by NULL are just set to 0
