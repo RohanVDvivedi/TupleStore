@@ -68,9 +68,17 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 
 	if(is_fixed_sized_element_def(tpl_d->element_defs + index))
 	{
-		// if the value to be set is NULL, then just set the corresponding bit in the is_null bitmap
+		// if the value to be set is NULL
 		if(value == NULL)
+		{
+			// then just set the corresponding bit in the is_null bitmap
 			set_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+
+			// and reset the corresponding bytes
+			uint32_t byte_offset_to_element = get_element_offset_within_tuple(tpl_d, index, tupl);
+			uint32_t bytes_occupied_by_element = get_element_size_within_tuple(tpl_d, index, tupl);
+			memset(tupl + byte_offset_to_element, 0, bytes_occupied_by_element);
+		}
 		else
 		{
 			// set the is_null bitmap bit to 0
