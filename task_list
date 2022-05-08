@@ -3,6 +3,8 @@
  * upon init set the page header to all 0s
  * memset 0 when any fixed length field gets set to NULL
  * memset 0 all the bytes at the end of the variable length tuple when the field is set to NULL
+ * implement get_additional_space_overhead_per_tuple function
+ * implement get_space_allotted_to_all_tuples function that takes only 2 parameters page_header_size and page_size
 
 2* implement it in a separate branch, since we need to test compatibility
  * provide an option to use is_NON_NULL_field, to save ourselves from allocating a bit in the bitmap for the fields that can not be NULL.
