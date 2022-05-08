@@ -1,5 +1,4 @@
 1* this features must be done at the earliest
- * ensure proper NULL handling when returned from get_element_from_tuple function, else use is_NULL_in_tuple and get_element_offset_within_tuple
  * implement get_additional_space_overhead_per_tuple function
  * implement get_space_allotted_to_all_tuples function that takes only 2 parameters page_header_size and page_size
 
