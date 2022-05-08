@@ -1,6 +1,5 @@
 1* this features must be done at the earliest
  * memset the is_valid_bitmap to 0 upon init of a fixed array page
- * upon init set the page header to all 0s
  * memset 0 when any fixed length field gets set to NULL
  * memset 0 all the bytes at the end of the variable length tuple when the field is set to NULL
  * implement get_additional_space_overhead_per_tuple function
