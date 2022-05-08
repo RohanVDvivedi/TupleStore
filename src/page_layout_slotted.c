@@ -453,6 +453,12 @@ uint32_t get_space_allotted_to_all_tuples_slotted_page(const void* page, uint32_
 	return page_size - get_offset_to_tuple_offsets(page, page_size);
 }
 
+uint32_t get_additional_space_overhead_per_tuple_slotted_page(uint32_t page_size, const tuple_def* tpl_d)
+{
+	// the additional space is taken up by tuple_offset per tuple, while storing the tuple
+	return get_value_size_on_page(page_size);
+}
+
 void print_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	printf("SLOTTED PAGE :\n\n");

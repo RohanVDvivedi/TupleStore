@@ -327,6 +327,11 @@ uint32_t get_space_allotted_to_all_tuples_fixed_array_page(const void* page, uin
 	return page_size - get_offset_to_tuples(page, page_size, tpl_d);
 }
 
+uint32_t get_additional_space_overhead_per_tuple_fixed_array_page(uint32_t page_size, const tuple_def* tpl_d)
+{
+	return 0;
+}
+
 void print_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	printf("FIXED ARRAY PAGE :\n\n");

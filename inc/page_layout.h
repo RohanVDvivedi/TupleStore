@@ -95,6 +95,11 @@ uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, 
 // this is equivalent to get_space_allotted_to_all_tuples() - ( get_free_space_in_page() + get_space_occupied_by_all_tuples() )
 uint32_t get_fragmentation_space(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
+// this the additional space in the "space_allotted_to_all_tuples" that will be used per tuple
+// when you insert a tuple 
+// the total space occupied by this tuple on the page is equal to the tuple_size + get_additional_space_overhead_per_tuple
+uint32_t get_additional_space_overhead_per_tuple(uint32_t page_size, const tuple_def* tpl_d);
+
 
 
 // DEBUG FUNCTIONS

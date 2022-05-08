@@ -240,6 +240,18 @@ uint32_t get_fragmentation_space(const void* page, uint32_t page_size, const tup
 		+   get_free_space(page, page_size, tpl_d));
 }
 
+uint32_t get_additional_space_overhead_per_tuple(uint32_t page_size, const tuple_def* tpl_d)
+{
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+			return get_additional_space_overhead_per_tuple_slotted_page(page_size, tpl_d);
+		case FIXED_ARRAY_PAGE_LAYOUT :
+			return get_additional_space_overhead_per_tuple_fixed_array_page(page_size, tpl_d);
+	}
+	return 0;
+}
+
 void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	printf("PAGE : \n");
