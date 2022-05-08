@@ -223,7 +223,7 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 
 static void typecast_and_set_numeric_type(element e_to, const element_def* ele_d_to, element e_from, const element_def* ele_d_from);
 
-int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const tuple_def* tpl_d_in, uint32_t index_in, void* tupl_in)
+int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const tuple_def* tpl_d_in, uint32_t index_in, const void* tupl_in)
 {
 	// if the index_in-th element in the tuple is NULL then set index-th element in tuple as NULL
 	if(is_NULL_in_tuple(tpl_d_in, index_in, tupl_in))

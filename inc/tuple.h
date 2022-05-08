@@ -33,7 +33,7 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 
 // set element (given at index_in in tuple_in) to tuple at a given index
 // returns 1 if the set operation was successfull, else returns 0 (this happens when the types are incompatible)
-int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const tuple_def* tpl_d_in, uint32_t index_in, void* tupl_in);
+int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const tuple_def* tpl_d_in, uint32_t index_in, const void* tupl_in);
 
 // copy element from tuple functions to the value (void*)
 // make sure that the space allotted at the value pointer is atleast equal to its get_element_size_within_tuple()
