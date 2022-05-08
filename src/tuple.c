@@ -66,8 +66,8 @@ int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 
 void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t value_size)
 {
-	element existing = get_element_from_tuple(tpl_d, index, tupl);
-	if(existing.BLOB == NULL && value == NULL)
+	// if the element inside tuple is NULL, and we are asked to set it to NULL, then return
+	if(is_NULL_in_tuple(tpl_d, index, tupl) && value == NULL)
 		return;
 
 	if(is_fixed_sized_element_def(tpl_d->element_defs + index))
@@ -75,19 +75,22 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 		// if the value to be set is NULL
 		if(value == NULL)
 		{
-			// then just set the corresponding bit in the is_null bitmap
-			set_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+			// here we are sure that the element in the tuple is not NULL
 
-			// and reset the corresponding bytes
+			// reset the corresponding bytes (of the fixed length element)
 			uint32_t byte_offset_to_element = get_element_offset_within_tuple(tpl_d, index, tupl);
 			uint32_t bytes_occupied_by_element = get_element_size_within_tuple(tpl_d, index, tupl);
 			memset(tupl + byte_offset_to_element, 0, bytes_occupied_by_element);
+
+			// then just set the corresponding bit in the is_null bitmap
+			set_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
 		}
 		else
 		{
 			// set the is_null bitmap bit to 0
 			reset_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
 
+			// this won't return a NULL element because, we just resetted this element's is_null_bitmap bit
 			element ele = get_element_from_tuple(tpl_d, index, tupl);
 
 			// calculate total size occupied by the fixed length data type
@@ -114,10 +117,10 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 	}
 	else
 	{
-		// if data existed at index
-		if(existing.BLOB != NULL)
+		// if data existed at index (is not NULL), then remove it (its allocated space), set its offset to 0 and set it's is_null_bitmap bit to 1
+		if(!is_NULL_in_tuple(tpl_d, index, tupl))
 		{
-			uint32_t old_total_size = get_element_size_within_tuple(tpl_d, index, tupl);
+			uint32_t old_total_size = get_element_size_within_tuple(tpl_d, index, tupl);	// this will not be 0 because the element is not NULL
 			uint32_t old_offset = get_element_offset_within_tuple(tpl_d, index, tupl);
 
 			uint32_t old_tuple_size = get_tuple_size(tpl_d, tupl);
@@ -139,26 +142,32 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 			// update tuple size to old_tuple_size - old_total_size
 			write_value_to(tupl, tpl_d->size_of_byte_offsets, old_tuple_size - old_total_size);
 
-			// write offset to 0, for element at index
+			// update offset of this (variable sized) element to 0
 			write_value_to(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, 0);
 			
 			// set is_null bit, for element at index
 			set_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
 		}
 
-		// set the new data with value if it is not NULL 
+		// at this point this element is NULL and has no space allocated for it on the tuple
+
+		// now if there is a value to set
+		// then reset its is_null_bitmap bit, allocate space for this new (variable sized) element, and set the new data with value
 		if(value != NULL)
 		{
-			// set the is_null bitmap bit to 0
+			// set the is_null bitmap bit of this element to 0
 			reset_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
 
+			// get current tuple_size
 			uint32_t tuple_size = get_tuple_size(tpl_d, tupl);
 
-			// write offset to 0, for element at index
+			// allocate space at the end of the tuple for this element
+			// its new offset will be tuple_size
+			// update its offset on the tuple
 			write_value_to(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, tuple_size);
 
 			// since the offset is set appropriately and the is_null bit is reset to 0
-			// we can access element directly
+			// we can access element directly and safely
 			element ele = get_element_from_tuple(tpl_d, index, tupl);
 
 			switch(tpl_d->element_defs[index].type)
