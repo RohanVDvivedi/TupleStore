@@ -11,6 +11,9 @@
 void init_tuple(const tuple_def* tpl_d, void* tupl);
 
 // element level functions
+
+// returns the space that has been allocated for the contents of the element of the tuple
+// it does not include the space overhead of the is_NULL_bitmap bit or its offset (for variable sized elements)
 uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 
 uint32_t get_element_offset_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);

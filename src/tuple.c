@@ -20,7 +20,11 @@ void init_tuple(const tuple_def* tpl_d, void* tupl)
 
 uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
-	return get_element_size(get_element_from_tuple(tpl_d, index, tupl), tpl_d->element_defs + index);
+	// for a NULL "variable sized element", no space is allocated for its actual contents (there is only space for its offset (from the first byte of the tuple))
+	if(is_variable_sized_element_def(tpl_d->element_defs + index) && is_NULL_in_tuple(tpl_d, index, tupl))
+		return 0;
+	else
+		return get_element_size(get_element_from_tuple(tpl_d, index, tupl), tpl_d->element_defs + index);
 }
 
 uint32_t get_element_offset_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
