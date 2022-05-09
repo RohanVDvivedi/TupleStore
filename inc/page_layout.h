@@ -92,6 +92,9 @@ uint32_t get_space_occupied_by_all_tuples(const void* page, uint32_t page_size, 
 // this is equivalent to free_space when the tuple_count = 0
 uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
+// this is a version 2 of the above method, it must return the same result
+uint32_t get_space_to_be_allotted_to_all_tuples(uint32_t page_header_size, uint32_t page_size, const tuple_def* tpl_d);
+
 // this is equivalent to get_space_allotted_to_all_tuples() - ( get_free_space_in_page() + get_space_occupied_by_all_tuples() )
 uint32_t get_fragmentation_space(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 

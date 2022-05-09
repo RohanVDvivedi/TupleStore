@@ -327,7 +327,12 @@ uint32_t get_space_allotted_to_all_tuples_fixed_array_page(const void* page, uin
 	return page_size - get_offset_to_tuples(page, page_size, tpl_d);
 }
 
-uint32_t get_additional_space_overhead_per_tuple_fixed_array_page(uint32_t page_size, const tuple_def* tpl_d)
+uint32_t get_space_to_be_allotted_to_all_tuples_fixed_array_page(uint32_t page_header_size, uint32_t page_size, const tuple_def* tpl_d)
+{
+
+}
+
+uint32_t get_additional_space_overhead_per_tuple_fixed_array_page()
 {
 	return 0;
 }

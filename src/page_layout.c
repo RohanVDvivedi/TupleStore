@@ -233,6 +233,18 @@ uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, 
 	return 0;
 }
 
+uint32_t get_space_to_be_allotted_to_all_tuples(uint32_t page_header_size, uint32_t page_size, const tuple_def* tpl_d)
+{
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+			return get_space_to_be_allotted_to_all_tuples_slotted_page(page_header_size, page_size);
+		case FIXED_ARRAY_PAGE_LAYOUT :
+			return get_space_to_be_allotted_to_all_tuples_fixed_array_page(page_header_size, page_size, tpl_d);
+	}
+	return 0;
+}
+
 uint32_t get_fragmentation_space(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	return 	get_space_allotted_to_all_tuples(page, page_size, tpl_d)
@@ -245,9 +257,9 @@ uint32_t get_additional_space_overhead_per_tuple(uint32_t page_size, const tuple
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			return get_additional_space_overhead_per_tuple_slotted_page(page_size, tpl_d);
+			return get_additional_space_overhead_per_tuple_slotted_page(page_size);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return get_additional_space_overhead_per_tuple_fixed_array_page(page_size, tpl_d);
+			return get_additional_space_overhead_per_tuple_fixed_array_page();
 	}
 	return 0;
 }
