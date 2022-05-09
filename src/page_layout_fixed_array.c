@@ -329,7 +329,10 @@ uint32_t get_space_allotted_to_all_tuples_fixed_array_page(const void* page, uin
 
 uint32_t get_space_to_be_allotted_to_all_tuples_fixed_array_page(uint32_t page_header_size, uint32_t page_size, const tuple_def* tpl_d)
 {
-
+	uint32_t space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes = page_size - (get_value_size_on_page(page_size) + page_header_size + get_value_size_on_page(page_size));
+	uint32_t tuple_capacity = (space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes * 8) / ((tpl_d->size * 8) + 1);
+	uint32_t is_valid_bitmap_size_in_bytes = bitmap_size_in_bytes(tuple_capacity);
+	return space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes - is_valid_bitmap_size_in_bytes;
 }
 
 uint32_t get_additional_space_overhead_per_tuple_fixed_array_page()
