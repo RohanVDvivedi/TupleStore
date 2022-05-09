@@ -1,11 +1,8 @@
+1* think how to do it (using a macro or a separate param to every function or just do it during compaction)
+ * make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction, deleting a tuple, updating a tuple and swaping the tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined on a swap, update or delete.
+  * this will avail better compression on the page
+
 2* implement it in a separate branch, since we need to test compatibility
  * provide an option to use is_NON_NULL_field, to save ourselves from allocating a bit in the bitmap for the fields that can not be NULL.
  * provide a bit_offset_to_is_null_bit_in_is_null_bitmap value attribute to element_def, since now each element's bit can be at a different location in the is_null_bitmap
  * non_null fields when written to by NULL are just set to 0
-
-3* think how to do it (using a macro or a separate param to every function or just do it during compaction)
- * make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction, deleting a tuple, updating a tuple and swaping the tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined on a swap, update or delete.
-  * this will avail better compression on the page
-
-4* Not sure if this shoudl be implemented, it complicates the page playout of fixed array page
- * provide a fixed length page layout in which the is_valid_bitmap is discarded, this layout can be used when the tuples are always going to be packed and fixed in number (like in the entries of a hash table) (* future task needs to be thought throughly)
