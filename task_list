@@ -1,6 +1,3 @@
-1* this features must be done at the earliest
- * implement clone_page function to make a page identical to an another one
-
 2* implement it in a separate branch, since we need to test compatibility
  * provide an option to use is_NON_NULL_field, to save ourselves from allocating a bit in the bitmap for the fields that can not be NULL.
  * provide a bit_offset_to_is_null_bit_in_is_null_bitmap value attribute to element_def, since now each element's bit can be at a different location in the is_null_bitmap
