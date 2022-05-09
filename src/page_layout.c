@@ -6,6 +6,8 @@
 #include<page_layout_fixed_array.h>
 #include<page_layout_util.h>
 
+#include<string.h>
+
 // get page_layout to use for the given tuple definition
 page_layout get_page_layout_type(const tuple_def* tpl_d)
 {
@@ -173,6 +175,31 @@ const void* get_nth_tuple(const void* page, uint32_t page_size, const tuple_def*
 			return get_nth_tuple_fixed_array_page(page, page_size, tpl_d, index);
 	}
 	return 0;
+}
+
+void clone_page(void* page, uint32_t page_size, const tuple_def* tpl_d, int discard_tomb_stones, const void* page_src)
+{
+	if(discard_tomb_stones)
+	{
+		uint32_t page_header_size = get_page_header_size(page_src, page_size);
+
+		// intialize page
+		init_page(page, page_size, page_header_size, tpl_d);
+
+		// copy header of the page
+		memmove(get_page_header(page, page_size), (const void*)get_page_header((void*)page_src, page_size), page_header_size);
+
+		uint32_t tuple_count = get_tuple_count(page_src, page_size, tpl_d);
+
+		// insert all tuples from page_src to page
+		if(tuple_count > 0)
+			insert_tuples_from_page(page, page_size, tpl_d, page_src, 0, tuple_count - 1);
+	}
+	else
+	{
+		// perform a plain copy that is easier and better
+		memmove(page, page_src, page_size);
+	}
 }
 
 void run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d, int discard_tomb_stones, int defragment)

@@ -18,7 +18,7 @@ page_layout get_page_layout_type(const tuple_def* tpl_d);
 // PAHE_HEADER public functions they are defined in the page_header.c
 
 // returns size of page header as stored on the page
-uint32_t get_page_header_size(void* page, uint32_t page_size);
+uint32_t get_page_header_size(const void* page, uint32_t page_size);
 
 // returns pointer to the page header on the page
 void* get_page_header(void* page, uint32_t page_size);
@@ -69,6 +69,13 @@ int swap_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t
 
 // returns pointer to nth tuple in the page, else returns NULL if exist_tuple fails
 const void* get_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
+
+
+
+// CLONE FUNCTION
+
+// creates a logical copy of page_src (with same logical copy of tuples and page_header) in to page
+void clone_page(void* page, uint32_t page_size, const tuple_def* tpl_d, int discard_tomb_stones, const void* page_src);
 
 
 
