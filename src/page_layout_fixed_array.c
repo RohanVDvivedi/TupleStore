@@ -108,7 +108,7 @@ int insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 	if(!can_insert_tuple_fixed_array_page(page, page_size, tpl_d))
 		return 0;
 
-	uint16_t* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	char* is_valid  = page + get_offset_to_is_valid_bitmap(page, page_size);
 
 	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
