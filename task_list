@@ -6,3 +6,7 @@
  * provide an option to use is_NON_NULL_field, to save ourselves from allocating a bit in the bitmap for the fields that can not be NULL.
  * provide a bit_offset_to_is_null_bit_in_is_null_bitmap value attribute to element_def, since now each element's bit can be at a different location in the is_null_bitmap
  * non_null fields when written to by NULL are just set to 0
+
+3* update read_value_from_page and write_value_to_page fuinctions to perform a memcpy when the access is unaligned
+  * unaligned access won't work on arm computers
+ * also allow 3 byte unsigned integers to be stored on the pages, this will help us save space
