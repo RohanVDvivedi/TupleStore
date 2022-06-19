@@ -10,6 +10,7 @@
 3* update read_value_from_page and write_value_to_page fuinctions to perform a memcpy when the access is unaligned
   * unaligned access won't work on arm computers
  * also allow 3 byte unsigned integers to be stored on the pages, this will help us save space
+ * build a header to read and write integers of length varying from 1 to 8 bytes, and return them only as specific type of ints 1-uint8_t 2-uint16_t 3,4-uint32_t 5,6,7 and 8 as uint64_t
 
 4* refactor element_def to a new file provide function pointers in a struct for operations on element_def
   * element should contain element_def*
