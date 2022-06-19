@@ -10,3 +10,11 @@
 3* update read_value_from_page and write_value_to_page fuinctions to perform a memcpy when the access is unaligned
   * unaligned access won't work on arm computers
  * also allow 3 byte unsigned integers to be stored on the pages, this will help us save space
+
+4* refactor element_def to a new file provide function pointers in a struct for operations on element_def
+  * element should contain element_def*
+  * make element_def shoudl contain ts own index in the tuple_def
+  * create an array to struct pointers that point to different struct that contain methods for different types
+  * method must include get_element_size, compare, hash, assign etc, (type of runtime polymorphism)
+  * once developed make sure this functions use unaligned accesses using memcpy
+  * finally make sure that element and element_def are not visible to the outside world
