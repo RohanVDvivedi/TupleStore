@@ -10,12 +10,13 @@
 3* update read_value_from_page and write_value_to_page fuinctions to perform a memcpy when the access is unaligned
   * unaligned access won't work on arm computers
  * also allow 3 byte unsigned integers to be stored on the pages, this will help us save space
- * build a header to read and write integers of length varying from 1 to 8 bytes, and return them only as specific type of ints 1-uint8_t 2-uint16_t 3,4-uint32_t 5,6,7 and 8 as uint64_t
+ * build a header to read and write integers of length varying from 1 to 8 bytes, and return them only as specific type of ints 1-uint8_t 2-uint16_t 3,4-uint32_t 5,6,7 and 8 as uint64_t, also built functions to read and write 1-8 bytes with number of bytes as parameters
+ * make the above task as a little/big endian format, give a macro to control that
+ * replace and use them for reading and writing data in the elements, from the elements
 
-4* refactor element_def to a new file provide function pointers in a struct for operations on element_def
-  * element should contain element_def*
-  * make element_def shoudl contain ts own index in the tuple_def
-  * create an array to struct pointers that point to different struct that contain methods for different types
-  * method must include get_element_size, compare, hash, assign etc, (type of runtime polymorphism)
-  * once developed make sure this functions use unaligned accesses using memcpy
-  * finally make sure that element and element_def are not visible to the outside world
+4* refactor element from a union of pointers to just a void* just like the representation of a tuple
+ * provide int, unsigned int types all the way from 1 to 8 bytes wide (all in between sizes included)
+ * refactor comparisions for unsigned int and int to upcast to uint64 and int64 before comparind
+ * segregate string/blob compare/assign/hash functions to a different different classes
+ * real compare assign functions to their classes
+ * int/uint compare assign functions to their separate classes
