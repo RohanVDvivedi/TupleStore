@@ -7,16 +7,9 @@
  * provide a bit_offset_to_is_null_bit_in_is_null_bitmap value attribute to element_def, since now each element's bit can be at a different location in the is_null_bitmap
  * non_null fields when written to by NULL are just set to 0
 
-3* update read_value_from_page and write_value_to_page fuinctions to perform a memcpy when the access is unaligned
-  * unaligned access won't work on arm computers
- * also allow 3 byte unsigned integers to be stored on the pages, this will help us save space
- * build a header to read and write integers of length varying from 1 to 8 bytes, and return them only as specific type of ints 1-uint8_t 2-uint16_t 3,4-uint32_t 5,6,7 and 8 as uint64_t, also built functions to read and write 1-8 bytes with number of bytes as parameters
- * make the above task as a little/big endian format, give a macro to control that
- * replace and use them for reading and writing data in the elements, from the elements
-
-4* refactor element from a union of pointers to just a void* just like the representation of a tuple
- * provide int, unsigned int types all the way from 1 to 8 bytes wide (all in between sizes included)
- * refactor comparisions for unsigned int and int to upcast to uint64 and int64 before comparind
- * segregate string/blob compare/assign/hash functions to a different different classes
- * real compare assign functions to their classes
- * int/uint compare assign functions to their separate classes
+3* build read_ux, read_ix, write_ux, write_ix (ix requires sign extension) to read and write_x byte integer values, and write/read_float/double - read/write only as little endian
+ * use them to read_value_from_page and write_value_from_page, allow 3 byte values on page and in tuple offsets
+ * refactor element from a union of pointers to just a void* just like the representation of a tuple
+ * provide int, unsigned int types the sizes all the way from 1 to 8 bytes wide
+ * perform comparisions for unsigned int and int by reading them as uint64 and int64 before comparing
+ * segregate string/blob compare/assign/hash functions to a different different classes, real compare assign functions to their classes, int/uint compare assign functions to their separate classes
