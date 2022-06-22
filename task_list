@@ -13,3 +13,51 @@
  * provide int, unsigned int types the sizes all the way from 1 to 8 bytes wide
  * perform comparisions for unsigned int and int by reading them as uint64 and int64 before comparing
  * segregate string/blob compare/assign/hash functions to a different different classes, real compare assign functions to their classes, int/uint compare assign functions to their separate classes
+Build this on similar lines of, also implement u32 and i32 fundtions
+uint64_t read_u64(const void* data, uint32_t size)
+{
+    if(size > 8)
+        return -1;
+    const uint8_t* data8 = data;
+    uint64_t res = 0;
+    for(uint32_t i = 0; i < size; i++)
+        res = (res << 8) | data8[i];
+    return res;
+}
+
+void write_u64(void* data, uint32_t size, uint64_t x)
+{
+    if(size > 8)
+        return;
+    uint8_t* data8 = data;
+    for(uint32_t i = 0; i < size; i++)
+    {
+        data8[size-1-i] = (x & 0xff);
+        x = x >> 8;
+    }
+}
+
+int64_t read_i64(const void* data, uint32_t size)
+{
+    if(size > 8)
+        return -1;
+    const uint8_t* data8 = data;
+    int64_t res = 0;
+    if(data8[0] & 0x80)
+        res = -1;
+    for(uint32_t i = 0; i < size; i++)
+        res = (res << 8) | data8[i];
+    return res;
+}
+
+void write_i64(void* data, uint32_t size, int64_t x)
+{
+    if(size > 8)
+        return;
+    uint8_t* data8 = data;
+    for(uint32_t i = 0; i < size; i++)
+    {
+        data8[size-1-i] = (x & 0xff);
+        x = x >> 8;
+    }
+}
