@@ -7,6 +7,7 @@
 #include<bitmap.h>
 
 #include<tuple_def.h>
+#include<int_accesses.h>
 #include<page_layout_util.h>
 
 void init_tuple(const tuple_def* tpl_d, void* tupl)
@@ -15,7 +16,7 @@ void init_tuple(const tuple_def* tpl_d, void* tupl)
 
 	// set its size to min_size
 	if(is_variable_sized_tuple_def(tpl_d))
-		write_value_to(tupl, tpl_d->size_of_byte_offsets, tpl_d->min_size);
+		write_uint32(tupl, tpl_d->size_of_byte_offsets, tpl_d->min_size);
 }
 
 uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
@@ -32,7 +33,7 @@ uint32_t get_element_offset_within_tuple(const tuple_def* tpl_d, uint32_t index,
 	if(is_fixed_sized_element_def(tpl_d->element_defs + index)) // i.e. fixed sized
 		return tpl_d->element_defs[index].byte_offset;
 	else
-		return read_value_from(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets);
+		return read_uint32(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets);
 }
 
 element get_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
@@ -49,7 +50,7 @@ uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
 	if(is_fixed_sized_tuple_def(tpl_d)) // i.e. fixed sized tuple
 		return tpl_d->size;
 	else
-		return read_value_from(tupl, tpl_d->size_of_byte_offsets);
+		return read_uint32(tupl, tpl_d->size_of_byte_offsets);
 }
 
 void* get_end_of_tuple(const tuple_def* tpl_d, const void* tupl)
@@ -133,17 +134,17 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 			{
 				if(is_variable_sized_element_def(tpl_d->element_defs + i))
 				{
-					uint32_t offset = read_value_from(tupl + tpl_d->element_defs[i].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets);
+					uint32_t offset = read_uint32(tupl + tpl_d->element_defs[i].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets);
 					if(offset > old_offset)
-						write_value_to(tupl + tpl_d->element_defs[i].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, offset - old_total_size);
+						write_uint32(tupl + tpl_d->element_defs[i].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, offset - old_total_size);
 				}
 			}
 
 			// update tuple size to old_tuple_size - old_total_size
-			write_value_to(tupl, tpl_d->size_of_byte_offsets, old_tuple_size - old_total_size);
+			write_uint32(tupl, tpl_d->size_of_byte_offsets, old_tuple_size - old_total_size);
 
 			// update offset of this (variable sized) element to 0
-			write_value_to(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, 0);
+			write_uint32(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, 0);
 			
 			// set is_null bit, for element at index
 			set_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
@@ -164,7 +165,7 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 			// allocate space at the end of the tuple for this element
 			// its new offset will be tuple_size
 			// update its offset on the tuple
-			write_value_to(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, tuple_size);
+			write_uint32(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, tuple_size);
 
 			// since the offset is set appropriately and the is_null bit is reset to 0
 			// we can access element directly and safely
@@ -237,7 +238,7 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 			}
 
 			// update tuple size to tuple_size
-			write_value_to(tupl, tpl_d->size_of_byte_offsets, tuple_size);
+			write_uint32(tupl, tpl_d->size_of_byte_offsets, tuple_size);
 		}
 	}
 }
@@ -479,7 +480,7 @@ int sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 		}
 
 		if(is_variable_sized_element_def(tpl_d->element_defs + i))
-			chars_written += sprintf(str + chars_written, "[%u]->", read_value_from(tup + tpl_d->element_defs[i].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets));
+			chars_written += sprintf(str + chars_written, "[%u]->", read_uint32(tup + tpl_d->element_defs[i].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets));
 
 		switch(tpl_d->element_defs[i].type)
 		{
