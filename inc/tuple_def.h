@@ -142,6 +142,10 @@ struct tuple_def
 		uint32_t size_of_byte_offsets;
 	};
 
+	// this is the page_size that this tuple_definition is built for
+	// size_of_byte_offsets = get_value_size_on_page(page_size)
+	uint32_t page_size;
+
 	// total elements in the tuple
 	uint32_t element_count;
 
@@ -165,9 +169,9 @@ int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_ty
 int insert_copy_of_element_def(tuple_def* tuple_d, const char* name, const tuple_def* tuple_d_copy_from, uint32_t element_def_id);
 
 // after inserting all the elements call this function
-// here the parameter max_tuple_size is not required for fixed length tuples
+// here the parameter page_size is not required for fixed length tuples
 // it is used to calculate the size (in bytes) required for storing tuple_size and offsets to varable sized elements
-void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_tuple_size);
+void finalize_tuple_def(tuple_def* tuple_d, uint32_t page_size);
 
 // returns 1, if the tuple_d does not contain any elements
 int is_empty_tuple_def(const tuple_def* tuple_d);

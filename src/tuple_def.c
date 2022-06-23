@@ -813,10 +813,12 @@ int insert_copy_of_element_def(tuple_def* tuple_d, const char* name, const tuple
 		return insert_element_def(tuple_d, name, tuple_d_copy_from->element_defs[element_def_id].type, tuple_d_copy_from->element_defs[element_def_id].size_specifier_prefix_size);
 }
 
-void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_tuple_size)
+void finalize_tuple_def(tuple_def* tuple_d, uint32_t page_size)
 {
-	// calcuate size required to store offsets on a page that is of size max_tuple_size
-	uint32_t size_of_offsets = get_value_size_on_page(max_tuple_size);
+	tuple_d->page_size = page_size;
+
+	// calcuate size required to store offsets on a page of size page_size
+	uint32_t size_of_offsets = get_value_size_on_page(tuple_d->page_size);
 
 	tuple_d->size = 0;
 	tuple_d->is_variable_sized = 0;
