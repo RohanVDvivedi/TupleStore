@@ -26,6 +26,7 @@
 	for a function operating on uintX_t or intX_t if data_size == 0
 	then the operation is a NO-OP (NOP)
 	if the data_size > X/8 then data_size is taken as X/8
+	if data_size is between 1 and X/8 then only the specified bytes are read or written to form the number
 */
 
 /*

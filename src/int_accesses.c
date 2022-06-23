@@ -4,6 +4,7 @@
 #include<limits.h>
 
 #define uint(X) uint ## X ## _t
+#define int(X) int ## X ## _t
 
 #define READ_UINT(X)						\
 {											\
@@ -15,7 +16,7 @@
 	const uint8_t* data8 = data;			\
 	for(uint32_t i = 0; i < data_size; i++)	\
 	{										\
-		uint(X) temp = data8[i];				\
+		uint(X) temp = data8[i];			\
 		x |= (temp << (i * CHAR_BIT));		\
 	}										\
 	return x;								\
@@ -31,10 +32,26 @@ int16_t read_int16(const void* data, uint32_t data_size);
 int32_t read_int32(const void* data, uint32_t data_size);
 int64_t read_int64(const void* data, uint32_t data_size);
 
-void write_uint8(void* data, uint32_t data_size, uint8_t x);
-void write_uint16(void* data, uint32_t data_size, uint16_t x);
-void write_uint32(void* data, uint32_t data_size, uint32_t x);
-void write_uint64(void* data, uint32_t data_size, uint64_t x);
+#define WRITE_UINT(X)								\
+{													\
+	if(data_size == 0)								\
+		return 0;									\
+	if(data_size > sizeof(uint(X)))					\
+		data_size = sizeof(uint(X));				\
+	const uint8_t* data8 = data;					\
+	for(uint32_t i = 0; i < data_size; i++)			\
+	{												\
+		uint(X) temp = x & UINT ## X ## _C(0xff);	\
+		data8[i] = (uint8_t)temp;					\
+		x >>= 8;									\
+	}												\
+	return x;										\
+}
+
+void write_uint8(void* data, uint32_t data_size, uint8_t x);	WRITE_UINT(8)
+void write_uint16(void* data, uint32_t data_size, uint16_t x);	WRITE_UINT(16)
+void write_uint32(void* data, uint32_t data_size, uint32_t x);	WRITE_UINT(32)
+void write_uint64(void* data, uint32_t data_size, uint64_t x);	WRITE_UINT(64)
 
 void write_int8(void* data, uint32_t data_size, int8_t x);
 void write_int16(void* data, uint32_t data_size, int16_t x);
