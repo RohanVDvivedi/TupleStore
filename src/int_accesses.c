@@ -48,10 +48,10 @@ uint64_t read_uint64(const void* data, uint32_t data_size)	READ_UINT(64)
 	return x;												\
 }
 
-int8_t read_int8(const void* data, uint32_t data_size);
-int16_t read_int16(const void* data, uint32_t data_size);
-int32_t read_int32(const void* data, uint32_t data_size);
-int64_t read_int64(const void* data, uint32_t data_size);
+int8_t read_int8(const void* data, uint32_t data_size)		READ_INT(8)
+int16_t read_int16(const void* data, uint32_t data_size)	READ_INT(16)
+int32_t read_int32(const void* data, uint32_t data_size)	READ_INT(32)
+int64_t read_int64(const void* data, uint32_t data_size)	READ_INT(64)
 
 #define WRITE_UINT(X)								\
 {													\
