@@ -79,11 +79,11 @@ void write_uint64(void* data, uint32_t data_size, uint64_t x)	WRITE_UINT(64)
 		return;										\
 	if(data_size > sizeof(sint(X)))					\
 		data_size = sizeof(sint(X));				\
-	int8_t* data8 = data;							\
+	uint8_t* data8 = data;							\
 	for(uint32_t i = 0; i < data_size; i++)			\
 	{												\
-		sint(X) temp = x & INT ## X ## _C(0xff);	\
-		data8[i] = (int8_t)temp;					\
+		uint(X) temp = x & UINT ## X ## _C(0xff);	\
+		data8[i] = (uint8_t)temp;					\
 		x >>= 8;									\
 	}												\
 }
