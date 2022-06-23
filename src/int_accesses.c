@@ -1,11 +1,30 @@
 #include<int_accesses.h>
 
 #include<string.h>
+#include<limits.h>
 
-uint8_t read_uint8(const void* data, uint32_t data_size);
-uint16_t read_uint16(const void* data, uint32_t data_size);
-uint32_t read_uint32(const void* data, uint32_t data_size);
-uint64_t read_uint64(const void* data, uint32_t data_size);
+#define uint(X) uint ## X ## _t
+
+#define READ_UINT(X)						\
+{											\
+	if(data_size == 0)						\
+		return 0;							\
+	if(data_size > sizeof(uint(X)))			\
+		data_size = sizeof(uint(X));		\
+	uint(X) x = 0;							\
+	const uint8_t* data8 = data;			\
+	for(uint32_t i = 0; i < data_size; i++)	\
+	{										\
+		uint(X) temp = data8[i];				\
+		x |= (temp << (i * CHAR_BIT));		\
+	}										\
+	return x;								\
+}
+
+uint8_t read_uint8(const void* data, uint32_t data_size)	READ_UINT(8)
+uint16_t read_uint16(const void* data, uint32_t data_size)	READ_UINT(16)
+uint32_t read_uint32(const void* data, uint32_t data_size)	READ_UINT(32)
+uint64_t read_uint64(const void* data, uint32_t data_size)	READ_UINT(64)
 
 int8_t read_int8(const void* data, uint32_t data_size);
 int16_t read_int16(const void* data, uint32_t data_size);
