@@ -1,5 +1,7 @@
 #include<int_accesses.h>
 
+#include<string.h>
+
 uint8_t read_uint8(const void* data, uint32_t data_size);
 uint16_t read_uint16(const void* data, uint32_t data_size);
 uint32_t read_uint32(const void* data, uint32_t data_size);
