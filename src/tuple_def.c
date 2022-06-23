@@ -4,6 +4,7 @@
 
 #include<bitmap.h>
 
+#include<int_accesses.h>
 #include<page_layout_util.h>
 
 char type_as_string[][16] = {
@@ -147,10 +148,6 @@ int can_compare_element_defs(const element_def* ele_d_1, const element_def* ele_
 		return 1;
 	return 0;
 }
-
-#define compare(a,b)	( ((a)>(b)) ? 1 : (((a)<(b)) ? (-1) : 0 ) )
-#define min(a,b) (((a)<(b))?(a):(b))
-#define max(a,b) (((a)>(b))?(a):(b))
 
 static int compare_string_types(char* s1, uint32_t s1_max_len, char* s2, uint32_t s2_max_len)
 {
