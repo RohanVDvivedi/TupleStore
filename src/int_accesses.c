@@ -27,6 +27,27 @@ uint16_t read_uint16(const void* data, uint32_t data_size)	READ_UINT(16)
 uint32_t read_uint32(const void* data, uint32_t data_size)	READ_UINT(32)
 uint64_t read_uint64(const void* data, uint32_t data_size)	READ_UINT(64)
 
+#define READ_INT(X)											\
+{															\
+	if(data_size == 0)										\
+		return 0;											\
+	if(data_size > sizeof(sint(X)))							\
+		data_size = sizeof(sint(X));						\
+	sint(X) x = 0;											\
+	const uint8_t* data8 = data;							\
+	for(uint32_t i = 0; i < data_size; i++)					\
+	{														\
+		uint(X) temp = data8[i];							\
+		x |= (temp << (i * CHAR_BIT));						\
+	}														\
+	int is_neg = data8[data_size - 1] & ((uint8_t)0x80);	\
+	if(!is_neg)												\
+		return x;											\
+	for(uint32_t i = data_size; i < sizeof(sint(X)); i++)	\
+		x |= (UINT ## X ## _C(0xff) << (i * CHAR_BIT));		\
+	return x;												\
+}
+
 int8_t read_int8(const void* data, uint32_t data_size);
 int16_t read_int16(const void* data, uint32_t data_size);
 int32_t read_int32(const void* data, uint32_t data_size);
