@@ -21,4 +21,6 @@ uint32_t get_data_size_for_variable_sized_non_numeral_element(const void* e, con
 // this includes the complete size of the data
 uint32_t get_element_size_for_variable_sized_non_numeral_element(const void* e, const element_def* ele_d);
 
+uint32_t get_string_length_for_string_type_element(const void* e, const element_def* ele_d);
+
 #endif
