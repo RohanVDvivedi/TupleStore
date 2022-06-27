@@ -3,4 +3,18 @@
 
 // user passes the parameters for assignement using this union
 
+typedef union user_value user_value;
+union user_value
+{
+	uint64_t uint_value;
+	int64_t int_value;
+	float float_value;
+	double double_value;
+	union
+	{
+		void* data;
+		uint32_t data_size;
+	};
+};
+
 #endif

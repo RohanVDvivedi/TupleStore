@@ -2,6 +2,8 @@
 
 #include<int_accesses.h>
 
+#include<user_value.h>
+
 int is_numeral_type_element_def(const element_def* ele_d)
 {
 	switch(ele_d->type)
