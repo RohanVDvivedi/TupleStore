@@ -173,5 +173,35 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 
 void set_numeral(void* e1, const element_def* ele_d, const user_value* uval)
 {
-
+	switch(ele_d->type)
+	{
+		case UINT :
+		{
+			write_uint64(e1, ele_d->size, uval->uint_value);
+			break;
+		}
+		case INT :
+		{
+			write_int64(e1, ele_d->size, uval->int_value);
+			break;
+		}
+		case FLOAT :
+		{
+			switch(ele_d->size)
+			{
+				case 4 :
+				{
+					write_float(e1, uval->float_value);
+					break;
+				}
+				case 8 :
+				{
+					write_double(e1, uval->double_value);
+					break;
+				}
+			}
+		}
+		default :
+			break;
+	}
 }
