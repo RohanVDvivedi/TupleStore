@@ -1,13 +1,14 @@
-1* think how to do it (using a macro or a separate param to every function or just do it during compaction)
- * make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction, deleting a tuple, updating a tuple and swaping the tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined on a swap, update or delete.
-  * this will avail better compression on the page
-
-2* implement it in a separate branch, since we need to test compatibility
- * provide an option to use is_NON_NULL_field, to save ourselves from allocating a bit in the bitmap for the fields that can not be NULL.
- * provide a bit_offset_to_is_null_bit_in_is_null_bitmap value attribute to element_def, since now each element's bit can be at a different location in the is_null_bitmap
- * non_null fields when written to by NULL are just set to 0
-
-3* refactor element from a union of pointers to just a void* just like the representation of a tuple
+1* refactor element from a union of pointers to just a void* just like the representation of a tuple
  * provide int, unsigned int types the sizes all the way from 1 to 8 bytes wide
+ * provide string and blob types sizes from 1 all the way to 4
+ * implement a union of uint64_t, int64_t, float, double, custom data holder types to pass to set functions
  * perform comparisions for unsigned int and int by reading them as uint64 and int64 before comparing
  * segregate string/blob compare/assign/hash functions to a different different classes, real compare assign functions to their classes, int/uint compare assign functions to their separate classes
+
+2* provide an option to use is_NON_NULL_field, to save ourselves from allocating a bit in the bitmap for the fields that can not be NULL.
+ * provide a bit_offset_to_is_null_bit_in_is_null_bitmap value attribute to element_def, since now each element's bit can be at a different location in the is_null_bitmap
+ * non_null fields when written to by NULL should fail
+
+3* think how to do it (using a macro or a separate param to every function or just do it during compaction)
+ * make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction, deleting a tuple, updating a tuple and swaping the tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined on a swap, update or delete.
+  * this will avail better compression on the page
