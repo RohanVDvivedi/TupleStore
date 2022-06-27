@@ -137,8 +137,7 @@ uint32_t get_element_size(element e, const element_def* ele_d)
 
 int can_compare_element_defs(const element_def* ele_d_1, const element_def* ele_d_2)
 {
-	if((ele_d_1->type == UINT || ele_d_1->type == INT || ele_d_1->type == FLOAT)
-	 && (ele_d_2->type == UINT || ele_d_2->type == INT || ele_d_2->type == FLOAT))
+	if(is_numeral_type_element_def(ele_d_1) && is_numeral_type_element_def(ele_d_2))
 		return 1;
 	else if((ele_d_1->type == STRING || ele_d_1->type == VAR_STRING)
 	 && (ele_d_2->type == STRING || ele_d_2->type == VAR_STRING))
