@@ -7,6 +7,7 @@
 #include<int_accesses.h>
 #include<page_layout_util.h>
 #include<numeral_element_types.h>
+#include<non_numeral_element_types.h>
 
 char type_as_string[][16] = {
 								"UINT",
@@ -140,11 +141,9 @@ int can_compare_element_defs(const element_def* ele_d_1, const element_def* ele_
 {
 	if(is_numeral_type_element_def(ele_d_1) && is_numeral_type_element_def(ele_d_2))
 		return 1;
-	else if((ele_d_1->type == STRING || ele_d_1->type == VAR_STRING)
-	 && (ele_d_2->type == STRING || ele_d_2->type == VAR_STRING))
+	else if(is_string_type_element_def(ele_d_1) && is_string_type_element_def(ele_d_2))
 		return 1;
-	else if((ele_d_1->type == BLOB || ele_d_1->type == VAR_BLOB)
-	 && (ele_d_2->type == BLOB || ele_d_2->type == VAR_BLOB))
+	else if(is_blob_type_element_def(ele_d_1) && is_blob_type_element_def(ele_d_2))
 		return 1;
 	return 0;
 }
