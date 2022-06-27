@@ -2,8 +2,6 @@
 
 #include<int_accesses.h>
 
-#include<user_value.h>
-
 int is_numeral_type_element_def(const element_def* ele_d)
 {
 	switch(ele_d->type)
@@ -171,4 +169,9 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 			break;
 	}
 	return -2;
+}
+
+void set_numeral(void* e1, const element_def* ele_d, const user_value* uval)
+{
+
 }
