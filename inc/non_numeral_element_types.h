@@ -7,6 +7,8 @@ int is_string_type_element_def(const element_def* ele_d);
 
 int is_blob_type_element_def(const element_def* ele_d);
 
+int is_variable_sized_non_numeral_element_def(const element_def* ele_d);
+
 // for variable sized blob or string i.e. VAR_BLOB or VAR_STRING,
 // the first element_def.size_specifier_prefix_size number of bytes are used to store the size of the actual data
 // and then the actual data begins

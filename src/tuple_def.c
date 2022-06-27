@@ -106,34 +106,8 @@ uint32_t get_element_size(element e, const element_def* ele_d)
 {
 	if(is_fixed_sized_element_def(ele_d))
 		return ele_d->size;
-	else if(ele_d->type == VAR_STRING)
-	{
-		switch(ele_d->size_specifier_prefix_size)
-		{
-			case 1 :
-				return 1 + e.VAR_STRING_1->size;
-			case 2 :
-				return 2 + e.VAR_STRING_2->size;
-			case 4 :
-				return 4 + e.VAR_STRING_4->size;
-			default :
-				return 0;
-		}
-	}
-	else if(ele_d->type == VAR_BLOB)
-	{
-		switch(ele_d->size_specifier_prefix_size)
-		{
-			case 1 :
-				return 1 + e.VAR_BLOB_1->size;
-			case 2 :
-				return 2 + e.VAR_BLOB_2->size;
-			case 4 :
-				return 4 + e.VAR_BLOB_4->size;
-			default :
-				return 0;
-		}
-	}
+	else if(is_variable_sized_non_numeral_element_def(ele_d))
+		return get_element_size_for_variable_sized_non_numeral_element(e.BLOB, ele_d);
 	return 0;
 }
 

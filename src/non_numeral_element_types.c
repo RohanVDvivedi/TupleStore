@@ -12,6 +12,11 @@ int is_blob_type_element_def(const element_def* ele_d)
 	return (ele_d->type == BLOB) || (ele_d->type == VAR_BLOB);
 }
 
+int is_variable_sized_non_numeral_element_def(const element_def* ele_d)
+{
+	return (ele_d->type == VAR_STRING) || (ele_d->type == VAR_BLOB);
+}
+
 uint32_t get_data_size_for_variable_sized_non_numeral_element(const void* e, const element_def* ele_d)
 {
 	return read_uint32(e, ele_d->size_specifier_prefix_size);
