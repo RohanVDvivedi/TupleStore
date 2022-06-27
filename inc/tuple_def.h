@@ -52,8 +52,6 @@ union element
 	var_blob32*     VAR_BLOB_4;
 };
 
-#define VARIABLE_SIZED 0
-
 typedef struct element_def element_def;
 struct element_def
 {
