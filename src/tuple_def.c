@@ -6,6 +6,7 @@
 
 #include<int_accesses.h>
 #include<page_layout_util.h>
+#include<numeral_element_types.h>
 
 char type_as_string[][16] = {
 								"UINT",
