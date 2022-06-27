@@ -27,4 +27,8 @@ uint32_t get_element_size_for_variable_sized_non_numeral_element(const void* e, 
 
 uint32_t get_string_length_for_string_type_element(const void* e, const element_def* ele_d);
 
+int compare_string_type_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2);
+
+int compare_blob_type_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2);
+
 #endif

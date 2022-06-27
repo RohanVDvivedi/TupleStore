@@ -41,3 +41,63 @@ uint32_t get_string_length_for_string_type_element(const void* e, const element_
 	else // else it must be VAR_STRING
 		return get_data_size_for_variable_sized_non_numeral_element(e, ele_d);
 }
+
+int compare_string_type_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2)
+{
+
+}
+
+static int compare_blob_types(const void* b1, uint32_t b1_len, const void* b2, uint32_t b2_len)
+{
+	// find min of their lengths
+	uint32_t min_len = min(b1_len, b2_len);
+
+	// compare only their min_len number of bytes
+	int compare = memcmp(b1, b2, min_len);
+
+	if(compare > 0)
+		compare = 1;
+	else if(compare < 0)
+		compare = -1;
+	else if((compare == 0) && (b1_len != b2_len))
+	{
+		// in dictionary ordering if 1 string is a prefix of the other
+		// then the larger string comes latter in the order
+		if(b1_len > b2_len)
+			compare = -1;
+		else if(b1_len > b2_len)
+			compare = 1;
+	}
+
+	return compare;
+}
+
+int compare_blob_type_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2)
+{
+	const void* b1;	uint32_t b1_len;
+	const void* b2;	uint32_t b2_len;
+
+	if(ele_d_1->type == BLOB)
+	{
+		b1 = e1;
+		b1_len = ele_d_1->size;
+	}
+	else // else it is var_blob
+	{
+		b1 = get_data_for_variable_sized_non_numeral_element(e1, ele_d_1);
+		b1_len = get_data_size_for_variable_sized_non_numeral_element(e1, ele_d_1);
+	}
+
+	if(ele_d_2->type == BLOB)
+	{
+		b2 = e2;
+		b2_len = ele_d_2->size;
+	}
+	else // else it is var_blob
+	{
+		b2 = get_data_for_variable_sized_non_numeral_element(e2, ele_d_2);
+		b2_len = get_data_size_for_variable_sized_non_numeral_element(e2, ele_d_2);
+	}
+
+	return compare_blob_types(b1, b1_len, b2, b2_len);
+}
