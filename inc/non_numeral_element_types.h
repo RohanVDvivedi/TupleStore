@@ -18,6 +18,10 @@ int is_variable_sized_non_numeral_element_def(const element_def* ele_d);
 // does not include the bytes required to store the size of this data (i.e. does not include element_def.size_specifier_prefix_size)
 uint32_t get_data_size_for_variable_sized_non_numeral_element(const void* e, const element_def* ele_d);
 
+// returns pointer in e, such that the returned pointer directly points to data of this
+// non-numeral variable sized element
+const void* get_data_for_variable_sized_non_numeral_element(const void* e, const element_def* ele_d);
+
 // this includes the complete size of the data
 uint32_t get_element_size_for_variable_sized_non_numeral_element(const void* e, const element_def* ele_d);
 
