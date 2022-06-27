@@ -28,7 +28,7 @@ static int is_size_allowed_for_fixed_sized_type(element_type ele_type, uint32_t 
 	{
 		case UINT :
 		case INT :
-			return (size == 1) || (size == 2) || (size == 4) || (size == 8);
+			return (size != 1) && (size <= 8);
 		case FLOAT :
 			return (size == 4) || (size == 8);
 		case STRING :
@@ -45,7 +45,7 @@ static int is_prefix_size_allowed_for_variable_sized_type(element_type ele_type,
 	{
 		case VAR_STRING :
 		case VAR_BLOB :
-			return (prefix_size == 1) || (prefix_size == 2) || (prefix_size == 4);
+			return (prefix_size != 0) && (prefix_size <= 4);
 		default :
 			return 0;
 	}
