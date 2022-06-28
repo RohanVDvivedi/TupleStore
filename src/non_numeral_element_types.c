@@ -47,31 +47,6 @@ int compare_string_type_elements(const void* e1, const element_def* ele_d_1, con
 
 }
 
-static int compare_blob_types(const void* b1, uint32_t b1_len, const void* b2, uint32_t b2_len)
-{
-	// find min of their lengths
-	uint32_t min_len = min(b1_len, b2_len);
-
-	// compare only their min_len number of bytes
-	int compare = memcmp(b1, b2, min_len);
-
-	if(compare > 0)
-		compare = 1;
-	else if(compare < 0)
-		compare = -1;
-	else if((compare == 0) && (b1_len != b2_len))
-	{
-		// in dictionary ordering if 1 string is a prefix of the other
-		// then the larger string comes latter in the order
-		if(b1_len > b2_len)
-			compare = -1;
-		else if(b1_len > b2_len)
-			compare = 1;
-	}
-
-	return compare;
-}
-
 int compare_blob_type_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2)
 {
 	const void* b1;	uint32_t b1_len;
@@ -99,5 +74,25 @@ int compare_blob_type_elements(const void* e1, const element_def* ele_d_1, const
 		b2_len = get_data_size_for_variable_sized_non_numeral_element(e2, ele_d_2);
 	}
 
-	return compare_blob_types(b1, b1_len, b2, b2_len);
+	// find min of their lengths
+	uint32_t min_len = min(b1_len, b2_len);
+
+	// compare only their min_len number of bytes
+	int compare = memcmp(b1, b2, min_len);
+
+	if(compare > 0)
+		compare = 1;
+	else if(compare < 0)
+		compare = -1;
+	else if((compare == 0) && (b1_len != b2_len))
+	{
+		// in dictionary ordering if 1 string is a prefix of the other
+		// then the larger string comes latter in the order
+		if(b1_len > b2_len)
+			compare = -1;
+		else if(b1_len > b2_len)
+			compare = 1;
+	}
+
+	return compare;
 }
