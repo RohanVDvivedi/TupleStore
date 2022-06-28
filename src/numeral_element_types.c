@@ -205,3 +205,188 @@ void set_numeral_element(void* e, const element_def* ele_d, const user_value* uv
 			break;
 	}
 }
+
+void set_numeral_element_from_element(void* e, const element_def* ele_d, const void* e_from, const element_def* ele_d_from)
+{
+	switch(ele_d->type)
+	{
+		case UINT :
+		{
+			uint64_t e_new_val = 0;
+			switch(ele_d_from->type)
+			{
+				case UINT :
+				{
+					uint64_t e_from_val = read_uint64(e_from, ele_d_from->size);
+					e_new_val = e_from_val;
+					break;
+				}
+				case INT :
+				{
+					int64_t e_from_val = read_int64(e_from, ele_d_from->size);
+					e_new_val = e_from_val;
+					break;
+				}
+				case FLOAT :
+				{
+					switch(ele_d_from->size)
+					{
+						case 4 :
+						{
+							float e_from_val = read_float(e_from);
+							e_new_val = e_from_val;
+							break;
+						}
+						case 8 :
+						{
+							double e_from_val = read_double(e_from);
+							e_new_val = e_from_val;
+							break;
+						}
+					}
+					break;
+				}
+				default :
+					break;
+			}
+			write_uint64(e, ele_d->size, e_new_val);
+			break;
+		}
+		case INT :
+		{
+			int64_t e_new_val = 0;
+			switch(ele_d_from->type)
+			{
+				case UINT :
+				{
+					uint64_t e_from_val = read_uint64(e_from, ele_d_from->size);
+					e_new_val = e_from_val;
+					break;
+				}
+				case INT :
+				{
+					int64_t e_from_val = read_int64(e_from, ele_d_from->size);
+					e_new_val = e_from_val;
+					break;
+				}
+				case FLOAT :
+				{
+					switch(ele_d_from->size)
+					{
+						case 4 :
+						{
+							float e_from_val = read_float(e_from);
+							e_new_val = e_from_val;
+							break;
+						}
+						case 8 :
+						{
+							double e_from_val = read_double(e_from);
+							e_new_val = e_from_val;
+							break;
+						}
+					}
+					break;
+				}
+				default :
+					break;
+			}
+			write_int64(e, ele_d->size, e_new_val);
+			break;
+		}
+		case FLOAT :
+		{
+			switch(ele_d->size)
+			{
+				case 4 :
+				{
+					float e_new_val = 0;
+					switch(ele_d_from->type)
+					{
+						case UINT :
+						{
+							uint64_t e_from_val = read_uint64(e_from, ele_d_from->size);
+							e_new_val = e_from_val;
+							break;
+						}
+						case INT :
+						{
+							int64_t e_from_val = read_int64(e_from, ele_d_from->size);
+							e_new_val = e_from_val;
+							break;
+						}
+						case FLOAT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 4 :
+								{
+									float e_from_val = read_float(e_from);
+									e_new_val = e_from_val;
+									break;
+								}
+								case 8 :
+								{
+									double e_from_val = read_double(e_from);
+									e_new_val = e_from_val;
+									break;
+								}
+							}
+							break;
+						}
+						default :
+							break;
+					}
+					write_float(e, e_new_val);
+					break;
+				}
+				case 8 :
+				{
+					double e_new_val = 0;
+					switch(ele_d_from->type)
+					{
+						case UINT :
+						{
+							uint64_t e_from_val = read_uint64(e_from, ele_d_from->size);
+							e_new_val = e_from_val;
+							break;
+						}
+						case INT :
+						{
+							int64_t e_from_val = read_int64(e_from, ele_d_from->size);
+							e_new_val = e_from_val;
+							break;
+						}
+						case FLOAT :
+						{
+							switch(ele_d_from->size)
+							{
+								case 4 :
+								{
+									float e_from_val = read_float(e_from);
+									e_new_val = e_from_val;
+									break;
+								}
+								case 8 :
+								{
+									double e_from_val = read_double(e_from);
+									e_new_val = e_from_val;
+									break;
+								}
+							}
+							break;
+						}
+						default :
+							break;
+					}
+					write_double(e, e_new_val);
+					break;
+				}
+				break;
+			}
+			break;
+		}
+		default :
+			break;
+	}
+}
