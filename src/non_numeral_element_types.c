@@ -44,7 +44,50 @@ uint32_t get_string_length_for_string_type_element(const void* e, const element_
 
 int compare_string_type_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2)
 {
+	const char* s1; uint32_t s1_max_len;
+	const char* s2; uint32_t s2_max_len;
 
+	if(ele_d_1->type == STRING)
+	{
+		s1 = e1;
+		s1_max_len = ele_d_1->size;
+	}
+	else // else it is var_string
+	{
+		s1 = get_data_for_variable_sized_non_numeral_element(e1, ele_d_1);
+		s1_max_len = get_data_size_for_variable_sized_non_numeral_element(e1, ele_d_1);
+	}
+
+	if(ele_d_2->type == STRING)
+	{
+		s2 = e2;
+		s2_max_len = ele_d_2->size;
+	}
+	else // else it is var_string
+	{
+		s2 = get_data_for_variable_sized_non_numeral_element(e2, ele_d_2);
+		s2_max_len = get_data_size_for_variable_sized_non_numeral_element(e2, ele_d_2);
+	}
+
+	uint32_t min_of_max_lens = min(s1_max_len, s2_max_len);
+
+	int compare = strncmp(s1, s2, min_of_max_lens);
+
+	if(compare > 0)
+		compare = 1;
+	else if(compare < 0)
+		compare = -1;
+	else
+	{
+		uint32_t s1_len = get_string_length_for_string_type_element(e1, ele_d_1);
+		uint32_t s2_len = get_string_length_for_string_type_element(e2, ele_d_2);
+		if(s1_len > s2_len)
+			compare = 1;
+		else if(s1_len < s2_len)
+			compare = -1;
+	}
+
+	return compare;
 }
 
 int compare_blob_type_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2)
