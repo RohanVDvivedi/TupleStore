@@ -140,32 +140,10 @@ uint32_t hash_element(element e, const element_def* ele_d, uint32_t (*hash_func)
 	// for a STRING or VAR_STRING type the size is the capacity, not the actual size, 
 	// the string may be smaller than the size
 	if(ele_d->type == STRING)
-		return hash_func(e.STRING, strnlen(e.STRING, get_element_size(e, ele_d)));
-	else if(ele_d->type == VAR_STRING)
-	{
-		switch(ele_d->size_specifier_prefix_size)
-		{
-			case 1 :
-				return hash_func(e.VAR_STRING_1->string, strnlen(e.VAR_STRING_1->string, e.VAR_STRING_1->size));
-			case 2 :
-				return hash_func(e.VAR_STRING_2->string, strnlen(e.VAR_STRING_2->string, e.VAR_STRING_2->size));
-			case 4 :
-				return hash_func(e.VAR_STRING_4->string, strnlen(e.VAR_STRING_4->string, e.VAR_STRING_4->size));
-		}
-	}
-	else if(ele_d->type == VAR_BLOB)
-	{
-		switch(ele_d->size_specifier_prefix_size)
-		{
-			case 1 :
-				return hash_func(e.VAR_BLOB_1->blob, e.VAR_BLOB_1->size);
-			case 2 :
-				return hash_func(e.VAR_BLOB_2->blob, e.VAR_BLOB_2->size);
-			case 4 :
-				return hash_func(e.VAR_BLOB_4->blob, e.VAR_BLOB_4->size);
-		}
-	}
-	else
+		return hash_func(e.STRING, get_string_length_for_string_type_element(e.BLOB, ele_d));
+	else if(is_variable_sized_non_numeral_element_def(ele_d)) // this works because for VAR_STRING, data_size is same as string length
+		return hash_func(get_data_for_variable_sized_non_numeral_element(e.BLOB, ele_d), get_data_size_for_variable_sized_non_numeral_element(e.BLOB, ele_d));
+	else // else this is fixed sized element def (except for STRING)
 		return hash_func(e.BLOB, get_element_size(e, ele_d));
 
 	return 0;
