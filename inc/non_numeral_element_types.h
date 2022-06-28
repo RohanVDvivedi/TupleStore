@@ -2,6 +2,7 @@
 #define NON_NUMERAL_ELEMENT_TYPES_H
 
 #include<tuple_def.h>
+#include<user_value.h>
 
 int is_string_type_element_def(const element_def* ele_d);
 
@@ -30,6 +31,8 @@ uint32_t get_string_length_for_string_type_element(const void* e, const element_
 int compare_string_type_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2);
 
 int compare_blob_type_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2);
+
+void set_variable_sized_non_numeral_element(void* e, const element_def* ele_d, const user_value* uval);
 
 void set_string_element(void* e, const element_def* ele_d, const user_value* uval);
 
