@@ -140,10 +140,15 @@ int compare_blob_type_elements(const void* e1, const element_def* ele_d_1, const
 	return compare;
 }
 
+static void set_variable_sized_non_numeral_element_INTERNAL(void* e, const element_def* ele_d, const void* data, uint32_t data_size)
+{
+	write_uint32(e, ele_d->size_specifier_prefix_size, data_size);
+	memmove(e + ele_d->size_specifier_prefix_size, data, data_size);
+}
+
 void set_variable_sized_non_numeral_element(void* e, const element_def* ele_d, const user_value* uval)
 {
-	write_uint32(e, ele_d->size_specifier_prefix_size, uval->data_size);
-	memmove(e + ele_d->size_specifier_prefix_size, uval->data, uval->data_size);
+	set_variable_sized_non_numeral_element_INTERNAL(e, ele_d, uval->data, uval->data_size);
 }
 
 void set_string_element(void* e, const element_def* ele_d, const user_value* uval);
