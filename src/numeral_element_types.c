@@ -171,18 +171,18 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 	return -2;
 }
 
-void set_numeral(void* e1, const element_def* ele_d, const user_value* uval)
+void set_numeral_element(void* e, const element_def* ele_d, const user_value* uval)
 {
 	switch(ele_d->type)
 	{
 		case UINT :
 		{
-			write_uint64(e1, ele_d->size, uval->uint_value);
+			write_uint64(e, ele_d->size, uval->uint_value);
 			break;
 		}
 		case INT :
 		{
-			write_int64(e1, ele_d->size, uval->int_value);
+			write_int64(e, ele_d->size, uval->int_value);
 			break;
 		}
 		case FLOAT :
@@ -191,12 +191,12 @@ void set_numeral(void* e1, const element_def* ele_d, const user_value* uval)
 			{
 				case 4 :
 				{
-					write_float(e1, uval->float_value);
+					write_float(e, uval->float_value);
 					break;
 				}
 				case 8 :
 				{
-					write_double(e1, uval->double_value);
+					write_double(e, uval->double_value);
 					break;
 				}
 			}
