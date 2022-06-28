@@ -34,8 +34,6 @@ int compare_blob_type_elements(const void* e1, const element_def* ele_d_1, const
 
 void set_variable_sized_non_numeral_element(void* e, const element_def* ele_d, const user_value* uval);
 
-void set_string_element(void* e, const element_def* ele_d, const user_value* uval);
-
-void set_blob_element(void* e, const element_def* ele_d, const user_value* uval);
+void set_string_OR_blob_element(void* e, const element_def* ele_d, const user_value* uval);
 
 #endif

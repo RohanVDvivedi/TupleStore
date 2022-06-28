@@ -151,6 +151,18 @@ void set_variable_sized_non_numeral_element(void* e, const element_def* ele_d, c
 	set_variable_sized_non_numeral_element_INTERNAL(e, ele_d, uval->data, uval->data_size);
 }
 
-void set_string_element(void* e, const element_def* ele_d, const user_value* uval);
+void set_string_OR_blob_element(void* e, const element_def* ele_d, const user_value* uval)
+{
+	if(is_fixed_sized_element_def(ele_d)) // for STRING or BLOB
+	{
+		uint32_t bytes_to_write = min(ele_d->size, uval->data_size);
 
-void set_blob_element(void* e, const element_def* ele_d, const user_value* uval);
+		memmove(e, uval->data, bytes_to_write);
+
+		// reset the unused bytes here
+		if(bytes_to_write < ele_d->size)
+			memset(e + bytes_to_write, 0, ele_d->size - bytes_to_write);
+	}
+	else // it is a VAR_BLOB or VAR_STRING
+		set_variable_sized_non_numeral_element(e, ele_d, uval);
+}
