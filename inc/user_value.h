@@ -10,7 +10,7 @@ union user_value
 	int64_t int_value;
 	float float_value;
 	double double_value;
-	union
+	struct
 	{
 		void* data;
 		uint32_t data_size;
