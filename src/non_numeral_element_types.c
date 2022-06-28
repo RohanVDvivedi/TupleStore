@@ -171,3 +171,28 @@ void set_string_OR_blob_element(void* e, const element_def* ele_d, const user_va
 {
 	set_string_OR_blob_element_INTERNAL(e, ele_d, uval->data, uval->data_size);
 }
+
+int set_string_OR_blob_element_from_element(void* e, const element_def* ele_d, const void* e_from, const element_def* ele_d_from)
+{
+	if( !( (is_string_type_element_def(ele_d) && is_string_type_element_def(ele_d_from)) 
+		|| (is_blob_type_element_def(ele_d) && is_blob_type_element_def(ele_d_from)) ) )
+		return 0;
+
+	const void* data;
+	if(is_fixed_sized_element_def(ele_d_from)) // for STRING or BLOB
+		data = e_from;
+	else // for VAR_STRING or VAR_BLOB
+		data = get_data_for_variable_sized_non_numeral_element(e_from, ele_d_from);
+
+	uint32_t data_size;
+	if(is_string_type_element_def(ele_d_from))
+		data_size = get_string_length_for_string_type_element(e_from, ele_d_from);
+	else if(ele_d->type == BLOB) // BLOB is fixed width element
+		data_size = ele_d_from->size;
+	else // it is VAR_BLOB
+		data_size = get_data_size_for_variable_sized_non_numeral_element(e_from, ele_d_from);
+
+	set_string_OR_blob_element_INTERNAL(e, ele_d, data, data_size);
+
+	return 1;
+}

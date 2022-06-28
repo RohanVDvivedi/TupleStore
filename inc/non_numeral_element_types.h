@@ -36,4 +36,9 @@ void set_variable_sized_non_numeral_element(void* e, const element_def* ele_d, c
 
 void set_string_OR_blob_element(void* e, const element_def* ele_d, const user_value* uval);
 
+// returns 0 if the assignement fails
+// it may fails because the types are in-compatible
+// both of them must pass is_string_type_element_def OR is_string_type_blob_def
+int set_string_OR_blob_element_from_element(void* e, const element_def* ele_d, const void* e_from, const element_def* ele_d_from);
+
 #endif
