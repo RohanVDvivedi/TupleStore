@@ -100,6 +100,10 @@ uint32_t get_element_size(element e, const element_def* ele_d);
 // returns true if the two different element defs can be compared against one another
 int can_compare_element_defs(const element_def* ele_d_1, const element_def* ele_d_2);
 
+// returns true if an element_defs are compatible to be set from each other
+// ideally if you can compare them, then you must be allowed to set one from another
+int can_set_from_element_defs(const element_def* ele_d_1, const element_def* ele_d_2);
+
 // compare 2 elements, given their element definitions
 // to use this function appropriately can_compare_element_defs on the corresponding element_defs must return true(1)
 int compare_elements(element e1, const element_def* ele_d_1, element e2, const element_def* ele_d_2);

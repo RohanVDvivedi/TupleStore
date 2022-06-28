@@ -122,6 +122,12 @@ int can_compare_element_defs(const element_def* ele_d_1, const element_def* ele_
 	return 0;
 }
 
+int can_set_from_element_defs(const element_def* ele_d_1, const element_def* ele_d_2)
+{
+	// ideal scenario, if you can compare elements, then you can assign one to the another
+	return can_compare_element_defs(ele_d_1, ele_d_2);
+}
+
 int compare_elements(element e1, const element_def* ele_d_1, element e2, const element_def* ele_d_2)
 {
 	if(is_numeral_type_element_def(ele_d_1) && is_numeral_type_element_def(ele_d_2))
