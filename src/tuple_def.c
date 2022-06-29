@@ -102,12 +102,12 @@ int is_fixed_sized_element_def(const element_def* element_d)
 	return !is_variable_sized_element_def(element_d);
 }
 
-uint32_t get_element_size(element e, const element_def* ele_d)
+uint32_t get_element_size(const void* e, const element_def* ele_d)
 {
 	if(is_fixed_sized_element_def(ele_d))
 		return ele_d->size;
 	else if(is_variable_sized_non_numeral_element_def(ele_d))
-		return get_element_size_for_variable_sized_non_numeral_element(e.BLOB, ele_d);
+		return get_element_size_for_variable_sized_non_numeral_element(e, ele_d);
 	return 0;
 }
 
@@ -128,29 +128,29 @@ int can_set_from_element_defs(const element_def* ele_d_1, const element_def* ele
 	return can_compare_element_defs(ele_d_1, ele_d_2);
 }
 
-int compare_elements(element e1, const element_def* ele_d_1, element e2, const element_def* ele_d_2)
+int compare_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2)
 {
 	if(is_numeral_type_element_def(ele_d_1) && is_numeral_type_element_def(ele_d_2))
-		return compare_numeral_type_elements(e1.BLOB, ele_d_1, e2.BLOB, ele_d_2);
+		return compare_numeral_type_elements(e1, ele_d_1, e2, ele_d_2);
 	else if(is_string_type_element_def(ele_d_1) && is_string_type_element_def(ele_d_2))
-		return compare_string_type_elements(e1.BLOB, ele_d_1, e2.BLOB, ele_d_2);
+		return compare_string_type_elements(e1, ele_d_1, e2, ele_d_2);
 	else if(is_blob_type_element_def(ele_d_1) && is_blob_type_element_def(ele_d_2))
-		return compare_blob_type_elements(e1.BLOB, ele_d_1, e2.BLOB, ele_d_2);;
+		return compare_blob_type_elements(e1, ele_d_1, e2, ele_d_2);;
 
 	// a return value of -2 implies in comparable types
 	return -2;
 }
 
-uint32_t hash_element(element e, const element_def* ele_d, uint32_t (*hash_func)(const void* data, uint32_t size))
+uint32_t hash_element(const void* e, const element_def* ele_d, uint32_t (*hash_func)(const void* data, uint32_t size))
 {
 	// for a STRING or VAR_STRING type the size is the capacity, not the actual size, 
 	// the string may be smaller than the size
 	if(ele_d->type == STRING)
-		return hash_func(e.STRING, get_string_length_for_string_type_element(e.BLOB, ele_d));
+		return hash_func(e, get_string_length_for_string_type_element(e, ele_d));
 	else if(is_variable_sized_non_numeral_element_def(ele_d)) // this works because for VAR_STRING, data_size is same as string length
-		return hash_func(get_data_for_variable_sized_non_numeral_element(e.BLOB, ele_d), get_data_size_for_variable_sized_non_numeral_element(e.BLOB, ele_d));
+		return hash_func(get_data_for_variable_sized_non_numeral_element(e, ele_d), get_data_size_for_variable_sized_non_numeral_element(e, ele_d));
 	else // else this is fixed sized element def (except for STRING)
-		return hash_func(e.BLOB, get_element_size(e, ele_d));
+		return hash_func(e, get_element_size(e, ele_d));
 
 	return 0;
 }

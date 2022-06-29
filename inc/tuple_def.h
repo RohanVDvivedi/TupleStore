@@ -23,35 +23,6 @@ enum element_type
 
 extern char type_as_string[][16];
 
-typedef union element element;
-union element
-{
-	uint8_t*        UINT_1;
-	uint16_t*       UINT_2;
-	uint32_t*       UINT_4;
-	uint64_t*       UINT_8;
-
-	int8_t*         INT_1;
-	int16_t*        INT_2;
-	int32_t*        INT_4;
-	int64_t*        INT_8;
-
-	float*          FLOAT_4;
-	double*         FLOAT_8;
-
-	char*           STRING;
-
-	void*           BLOB;
-
-	var_string8*    VAR_STRING_1;
-	var_string16*   VAR_STRING_2;
-	var_string32*   VAR_STRING_4;
-
-	var_blob8*      VAR_BLOB_1;
-	var_blob16*     VAR_BLOB_2;
-	var_blob32*     VAR_BLOB_4;
-};
-
 typedef struct element_def element_def;
 struct element_def
 {
@@ -95,7 +66,7 @@ int is_variable_sized_element_def(const element_def* element_d);
 int is_fixed_sized_element_def(const element_def* element_d);
 
 // returns size of element
-uint32_t get_element_size(element e, const element_def* ele_d);
+uint32_t get_element_size(const void* e, const element_def* ele_d);
 
 // returns true if the two different element defs can be compared against one another
 int can_compare_element_defs(const element_def* ele_d_1, const element_def* ele_d_2);
@@ -106,10 +77,10 @@ int can_set_from_element_defs(const element_def* ele_d_1, const element_def* ele
 
 // compare 2 elements, given their element definitions
 // to use this function appropriately can_compare_element_defs on the corresponding element_defs must return true(1)
-int compare_elements(element e1, const element_def* ele_d_1, element e2, const element_def* ele_d_2);
+int compare_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2);
 
 // hash element, given their element definition
-uint32_t hash_element(element e, const element_def* ele_d, uint32_t (*hash_func)(const void* data, uint32_t size));
+uint32_t hash_element(const void* e, const element_def* ele_d, uint32_t (*hash_func)(const void* data, uint32_t size));
 
 typedef struct tuple_def tuple_def;
 struct tuple_def
