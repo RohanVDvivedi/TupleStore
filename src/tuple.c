@@ -352,83 +352,16 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void
 
 user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
-	element ele = get_element_from_tuple(tpl_d, index, tupl);
+	const element_def* ele_d = tpl_d->element_defs + index;
+	const void* e = get_element_from_tuple(tpl_d, index, tupl);
 
-	if(ele.BLOB == NULL)
-		return;
+	if(e == NULL)
+		return (user_value){};
 
-	if(is_fixed_sized_element_def(tpl_d->element_defs + index))
-	{
-		uint32_t total_size = get_element_size_within_tuple(tpl_d, index, tupl);
-		if(tpl_d->element_defs[index].type == STRING)
-		{
-			uint32_t string_size = strnlen(ele.STRING, total_size);
-			memmove(value, ele.STRING, string_size);
-			((char*)value)[string_size] = '\0';
-		}
-		else
-			memmove(value, ele.BLOB, total_size);
-	}
+	if(is_numeral_type_element_def(ele_d))
+		return get_value_from_numeral_element(e, ele_d);
 	else
-	{
-		switch(tpl_d->element_defs[index].type)
-		{
-			case VAR_STRING :
-			{
-				uint32_t copy_size = 0;
-				switch(tpl_d->element_defs[index].size_specifier_prefix_size)
-				{
-					case 1 :
-					{
-						copy_size = strnlen(ele.VAR_STRING_1->string, ele.VAR_STRING_1->size);
-						memmove(value, ele.VAR_STRING_1->string, copy_size);
-						break;
-					}
-					case 2 :
-					{
-						copy_size = strnlen(ele.VAR_STRING_2->string, ele.VAR_STRING_2->size);
-						memmove(value, ele.VAR_STRING_2->string, copy_size);
-						break;
-					}
-					case 4 :
-					{
-						copy_size = strnlen(ele.VAR_STRING_4->string, ele.VAR_STRING_4->size);
-						memmove(value, ele.VAR_STRING_4->string, copy_size);
-						break;
-					}
-				}
-				((char*)value)[copy_size] = '\0';
-				break;
-			}
-			case VAR_BLOB :
-			{
-				switch(tpl_d->element_defs[index].size_specifier_prefix_size)
-				{
-					case 1 :
-					{
-						memmove(value, ele.VAR_BLOB_1->blob, ele.VAR_BLOB_1->size);
-						break;
-					}
-					case 2 :
-					{
-						memmove(value, ele.VAR_BLOB_2->blob, ele.VAR_BLOB_2->size);
-						break;
-					}
-					case 4 :
-					{
-						memmove(value, ele.VAR_BLOB_4->blob, ele.VAR_BLOB_4->size);
-						break;
-					}
-				}
-				break;
-			}
-			default :
-			{
-				break;
-			}
-		}
-
-	}
+		return get_value_from_non_numeral_element(e, ele_d);
 }
 
 int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, uint32_t index1, const void* tup2, const tuple_def* tpl_d2, uint32_t index2)

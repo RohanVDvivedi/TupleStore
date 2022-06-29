@@ -2,6 +2,7 @@
 #define TUPLE_H
 
 #include<tuple_def.h>
+#include<user_value.h>
 
 // the index must be an unsigned integral value between [0, tpl_d->element_count), for the functions that are called on elements of a tuple for given a tuple definition.
 // this is the mandatory condition, since, the functions do not check this condition to be true, repetitively.
