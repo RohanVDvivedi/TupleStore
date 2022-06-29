@@ -82,7 +82,14 @@ int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 	return get_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
 }
 
-#define min(a,b) (((a)<(b))?(a):(b))
+int set_is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, int is_NULL_bit_value)
+{
+	void* is_NULL_bitmap = tupl + tpl_d->byte_offset_to_is_null_bitmap;
+	if(is_NULL_bit_value)
+		set_bit(is_NULL_bitmap, index);
+	else
+		reset_bit(is_NULL_bitmap, index);
+}
 
 void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t value_size)
 {
