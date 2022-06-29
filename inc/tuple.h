@@ -10,22 +10,14 @@
 // initialized the tuple with all NULL attributes and its minimum size
 void init_tuple(const tuple_def* tpl_d, void* tupl);
 
-// element level functions
+// get the number of bytes required to store the element as a user_value
+uint32_t get_element_data_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 
-// returns the space that has been allocated for the contents of the element of the tuple
-// it does not include the space overhead of the is_NULL_bitmap bit or its offset (for variable sized elements)
+// actual size of the element in the tuple
 uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
-
-uint32_t get_element_offset_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
-
-element get_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
-
 
 // tuple level functions
 uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl);
-
-void* get_end_of_tuple(const tuple_def* tpl_d, const void* tupl);
-
 
 // check if the ith element in the tuple is NULL
 int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);

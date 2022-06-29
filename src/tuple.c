@@ -8,6 +8,8 @@
 
 #include<tuple_def.h>
 #include<int_accesses.h>
+#include<numeral_element_types.h>
+#include<non_numeral_element_types.h>
 #include<page_layout_util.h>
 
 void init_tuple(const tuple_def* tpl_d, void* tupl)
@@ -19,43 +21,60 @@ void init_tuple(const tuple_def* tpl_d, void* tupl)
 		write_uint32(tupl, tpl_d->size_of_byte_offsets, tpl_d->min_size);
 }
 
+// do not use this function directly, call get_element_from_tuple macro
+static uint32_t get_element_offset_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
+{
+	const element_def* ele_d = tpl_d->element_defs + index;
+	if(is_fixed_sized_element_def(ele_d)) // i.e. fixed sized
+		return ele_d->byte_offset;
+	else
+		return read_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets);
+}
+
+#define get_element_from_tuple(tpl_d, index, tupl) (is_NULL_in_tuple(tpl_d, index, tupl) ? NULL : ((tupl) + get_element_offset_within_tuple(tpl_d, index, tupl)))
+
 uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
+	const element_def* ele_d = tpl_d->element_defs + index;
+
 	// for a NULL "variable sized element", no space is allocated for its actual contents (there is only space for its offset (from the first byte of the tuple))
-	if(is_variable_sized_element_def(tpl_d->element_defs + index) && is_NULL_in_tuple(tpl_d, index, tupl))
+	if(is_variable_sized_element_def(ele_d) && is_NULL_in_tuple(tpl_d, index, tupl))
 		return 0;
 	else
-		return get_element_size(get_element_from_tuple(tpl_d, index, tupl), tpl_d->element_defs + index);
+	{
+		const void* e = get_element_from_tuple(tpl_d, index, tupl);
+		return get_element_size(e, ele_d);
+	}
 }
 
-uint32_t get_element_offset_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
+uint32_t get_element_data_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
-	if(is_fixed_sized_element_def(tpl_d->element_defs + index)) // i.e. fixed sized
-		return tpl_d->element_defs[index].byte_offset;
-	else
-		return read_uint32(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets);
-}
-
-element get_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
-{
-	// return a NULL if the element id NULL
+	// if the element is NULL no bytes must be required in user_value to store it
 	if(is_NULL_in_tuple(tpl_d, index, tupl))
-		return (element){.BLOB = NULL};
+		return 0;
 
-	return (element){.BLOB = (void*)(tupl + get_element_offset_within_tuple(tpl_d, index, tupl))};
+	const element_def* ele_d = tpl_d->element_defs + index;
+
+	if(is_fixed_sized_element_def(ele_d) && !is_string_type_element_def(ele_d)) // fixed sized except for a string
+		return ele_d->size;
+	else if(is_string_type_element_def(ele_d)) // fixed sized and a string
+	{
+		const void* e = get_element_from_tuple(tpl_d, index, tupl);
+		return get_string_length_for_string_type_element(e, ele_d) + 1;
+	}
+	else // it is VAR_BLOB
+	{
+		const void* e = get_element_from_tuple(tpl_d, index, tupl);
+		return get_data_size_for_variable_sized_non_numeral_element(e, ele_d);
+	}
 }
 
 uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
 {
 	if(is_fixed_sized_tuple_def(tpl_d)) // i.e. fixed sized tuple
 		return tpl_d->size;
-	else
+	else // for a variable sized tuple the first few bytes are used to store its size
 		return read_uint32(tupl, tpl_d->size_of_byte_offsets);
-}
-
-void* get_end_of_tuple(const tuple_def* tpl_d, const void* tupl)
-{
-	return (void*)(tupl + get_tuple_size(tpl_d, tupl));
 }
 
 int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
