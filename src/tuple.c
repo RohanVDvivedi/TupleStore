@@ -82,7 +82,9 @@ int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 	return get_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
 }
 
-int set_is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, int is_NULL_bit_value)
+// this function only sets the is_NULL bit, it is a utility function
+// call only set_element_* functions, this function will be used by the set_element_* function internally
+static int set_is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, int is_NULL_bit_value)
 {
 	void* is_NULL_bitmap = tupl + tpl_d->byte_offset_to_is_null_bitmap;
 	if(is_NULL_bit_value)
