@@ -1,6 +1,7 @@
 #include<tuple.h>
 
 #include<stdio.h>
+#include<inttypes.h>
 #include<alloca.h>
 #include<string.h>
 
@@ -272,8 +273,6 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 	}
 }
 
-static void typecast_and_set_numeric_type(element e_to, const element_def* ele_d_to, element e_from, const element_def* ele_d_from);
-
 int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const tuple_def* tpl_d_in, uint32_t index_in, const void* tupl_in)
 {
 	// if the index_in-th element in the tuple is NULL then set index-th element in tuple as NULL
@@ -437,7 +436,7 @@ int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, uint32_
 	const element_def* ele_d1 = tpl_d1->element_defs + index1;
 	const element_def* ele_d2 = tpl_d2->element_defs + index2;
 
-	if(!can_compare_elemen_defs(ele_d1, ele_d2))
+	if(!can_compare_element_defs(ele_d1, ele_d2))
 		return -2;
 
 	const void* e1 = get_element_from_tuple(tpl_d1, index1, tup1);
@@ -494,85 +493,39 @@ uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_fun
 	return hash_value;
 }
 
-int sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
+uint32_t sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 {
-	if(tup == NULL)
-	{
-		char* empty = "Empty\n";
-		strcpy(str, empty);
-		return 4; 
-	}
-	int chars_written = 0;
+	uint32_t chars_written = 0;
 	for(uint32_t i = 0; i < tpl_d->element_count; i++)
 	{
 		if(i)
 			chars_written += sprintf(str + chars_written, ", ");
 
-		element e = get_element_from_tuple(tpl_d, i, tup);
+		const void* e = get_element_from_tuple(tpl_d, i, tup);
 
-		if(e.BLOB == NULL)
+		if(e == NULL)
 		{
 			chars_written += sprintf(str + chars_written, "NULL");
 			continue;
 		}
 
-		if(is_variable_sized_element_def(tpl_d->element_defs + i))
-			chars_written += sprintf(str + chars_written, "[%u]->", read_uint32(tup + tpl_d->element_defs[i].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets));
+		const element_def* ele_d = tpl_d->element_defs + i;
 
-		switch(tpl_d->element_defs[i].type)
+		if(is_variable_sized_element_def(ele_d))
+			chars_written += sprintf(str + chars_written, "[%u]->", read_uint32(tup + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets));
+
+		switch(ele_d->type)
 		{
 			case UINT :
 			{
-				switch(tpl_d->element_defs[i].size)
-				{
-					case 1 :
-					{
-						chars_written += sprintf(str + chars_written, "%u",  *(e.UINT_1));
-						break;
-					}
-					case 2 :
-					{
-						chars_written += sprintf(str + chars_written, "%u",  *(e.UINT_2));
-						break;
-					}
-					case 4 :
-					{
-						chars_written += sprintf(str + chars_written, "%u", *(e.UINT_4));
-						break;
-					}
-					case 8 :
-					{
-						chars_written += sprintf(str + chars_written, "%lu", *(e.UINT_8));
-						break;
-					}
-				}
+				uint64_t uint_val = read_uint64(e, ele_d->size);
+				chars_written += sprintf(str + chars_written, PRIu64, uint_val);
 				break;
 			}
 			case INT :
 			{
-				switch(tpl_d->element_defs[i].size)
-				{
-					case 1 :
-					{
-						chars_written += sprintf(str + chars_written, "%d", *(e.INT_1));
-						break;
-					}
-					case 2 :
-					{
-						chars_written += sprintf(str + chars_written, "%d", *(e.INT_2));
-						break;
-					}
-					case 4 :
-					{
-						chars_written += sprintf(str + chars_written, "%d", *(e.INT_4));
-						break;
-					}
-					case 8 :
-					{
-						chars_written += sprintf(str + chars_written, "%ld", *(e.INT_8));
-						break;
-					}
-				}
+				int64_t int_val = read_int64(e, ele_d->size);
+				chars_written += sprintf(str + chars_written, PRId64, int_val);
 				break;
 			}
 			case FLOAT :
@@ -581,12 +534,14 @@ int sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 				{
 					case 4 :
 					{
-						chars_written += sprintf(str + chars_written, "%f", *(e.FLOAT_4));
+						float float_val = read_float(e);
+						chars_written += sprintf(str + chars_written, "%f", float_val);
 						break;
 					}
 					case 8 :
 					{
-						chars_written += sprintf(str + chars_written, "%lf", *(e.FLOAT_8));
+						float double_val = read_double(e);
+						chars_written += sprintf(str + chars_written, "%lf", double_val);
 						break;
 					}
 				}
@@ -594,69 +549,33 @@ int sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 			}
 			case STRING :
 			{
-				uint32_t size = get_element_size_within_tuple(tpl_d, i, tup);
-				chars_written += sprintf(str + chars_written, "\"%.*s\"", size, e.STRING);
+				uint32_t size = get_string_length_for_string_type_element(e, ele_d);
+				chars_written += sprintf(str + chars_written, "\"%.*s\"", size, (const char*)e);
 				break;
 			}
 			case BLOB :
 			{
-				uint32_t size = get_element_size_within_tuple(tpl_d, i, tup);
-				chars_written += sprintf(str + chars_written, "BLOB(%u)[", size);
+				uint32_t size = ele_d->size;
+				chars_written += sprintf(str + chars_written, "BLOB(%" PRIu32 ")[", size);
 				for(uint32_t i = 0; i < size; i++)
-					chars_written += sprintf(str + chars_written, " 0x%2x", (*((uint8_t*)(e.BLOB + i))));
+					chars_written += sprintf(str + chars_written, " 0x%2" PRIx8, *(((const uint8_t*)e)+i));
 				chars_written += sprintf(str + chars_written, "]");
 				break;
 			}
 			case VAR_STRING :
 			{
-				switch(tpl_d->element_defs[i].size_specifier_prefix_size)
-				{
-					case 1 :
-					{
-						chars_written += sprintf(str + chars_written, "\"%.*s\"", e.VAR_STRING_1->size, e.VAR_STRING_1->string);
-						break;
-					}
-					case 2 :
-					{
-						chars_written += sprintf(str + chars_written, "\"%.*s\"", e.VAR_STRING_2->size, e.VAR_STRING_2->string);
-						break;
-					}
-					case 4 :
-					{
-						chars_written += sprintf(str + chars_written, "\"%.*s\"", e.VAR_STRING_4->size, e.VAR_STRING_4->string);
-						break;
-					}
-				}
+				const char* data = get_data_for_variable_sized_non_numeral_element(e, ele_d);
+				uint32_t size = get_string_length_for_string_type_element(e, ele_d);
+				chars_written += sprintf(str + chars_written, "\"%.*s\"", size, data);
 				break;
 			}
 			case VAR_BLOB :
 			{
-				uint32_t size = 0;
-				char* blob_data = NULL;
-				switch(tpl_d->element_defs[i].size_specifier_prefix_size)
-				{
-					case 1 :
-					{
-						size = e.VAR_BLOB_1->size;
-						blob_data = e.VAR_BLOB_1->blob;
-						break;
-					}
-					case 2 :
-					{
-						size = e.VAR_BLOB_2->size;
-						blob_data = e.VAR_BLOB_2->blob;
-						break;
-					}
-					case 4 :
-					{
-						size = e.VAR_BLOB_4->size;
-						blob_data = e.VAR_BLOB_4->blob;
-						break;
-					}
-				}
-				chars_written += sprintf(str + chars_written, "BLOB(%u)[", size);
+				uint32_t size = get_data_size_for_variable_sized_non_numeral_element(e, ele_d);
+				const char* blob_data = get_data_for_variable_sized_non_numeral_element(e, ele_d);
+				chars_written += sprintf(str + chars_written, "BLOB(%" PRIu32 ")[", size);
 				for(uint32_t i = 0; i < size; i++)
-					chars_written += sprintf(str + chars_written, " 0x%2x", *((uint8_t*)(blob_data + i)));
+					chars_written += sprintf(str + chars_written, " 0x%2" PRIx8, *((uint8_t*)(blob_data + i)));
 				chars_written += sprintf(str + chars_written, "]");
 				break;
 			}
@@ -664,380 +583,4 @@ int sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 	}
 	chars_written += sprintf(str + chars_written, "\n");
 	return chars_written;
-}
-
-static void typecast_and_set_numeric_type(element e_to, const element_def* ele_d_to, element e_from, const element_def* ele_d_from)
-{
-	switch(ele_d_to->type)
-	{
-		case UINT :
-		{
-			switch(ele_d_to->size)
-			{
-				case 1 :
-				{
-					switch(ele_d_from->type)
-					{
-						case UINT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.UINT_1 = *e_from.UINT_1; return; }
-								case 2 : { *e_to.UINT_1 = *e_from.UINT_2; return; }
-								case 4 : { *e_to.UINT_1 = *e_from.UINT_4; return; }
-								case 8 : { *e_to.UINT_1 = *e_from.UINT_8; return; }
-							}
-						}
-						case INT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.UINT_1 = *e_from.INT_1; return; }
-								case 2 : { *e_to.UINT_1 = *e_from.INT_2; return; }
-								case 4 : { *e_to.UINT_1 = *e_from.INT_4; return; }
-								case 8 : { *e_to.UINT_1 = *e_from.INT_8; return; }
-							}
-						}
-						case FLOAT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 4 : { *e_to.UINT_1 = *e_from.FLOAT_4; return; }
-								case 8 : { *e_to.UINT_1 = *e_from.FLOAT_8; return; }
-							}
-						}
-						default : {break;}
-					}
-				}
-				case 2 :
-				{
-					switch(ele_d_from->type)
-					{
-						case UINT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.UINT_2 = *e_from.UINT_1; return; }
-								case 2 : { *e_to.UINT_2 = *e_from.UINT_2; return; }
-								case 4 : { *e_to.UINT_2 = *e_from.UINT_4; return; }
-								case 8 : { *e_to.UINT_2 = *e_from.UINT_8; return; }
-							}
-						}
-						case INT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.UINT_2 = *e_from.INT_1; return; }
-								case 2 : { *e_to.UINT_2 = *e_from.INT_2; return; }
-								case 4 : { *e_to.UINT_2 = *e_from.INT_4; return; }
-								case 8 : { *e_to.UINT_2 = *e_from.INT_8; return; }
-							}
-						}
-						case FLOAT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 4 : { *e_to.UINT_2 = *e_from.FLOAT_4; return; }
-								case 8 : { *e_to.UINT_2 = *e_from.FLOAT_8; return; }
-							}
-						}
-						default : {break;}
-					}
-				}
-				case 4 :
-				{
-					switch(ele_d_from->type)
-					{
-						case UINT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.UINT_4 = *e_from.UINT_1; return; }
-								case 2 : { *e_to.UINT_4 = *e_from.UINT_2; return; }
-								case 4 : { *e_to.UINT_4 = *e_from.UINT_4; return; }
-								case 8 : { *e_to.UINT_4 = *e_from.UINT_8; return; }
-							}
-						}
-						case INT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.UINT_4 = *e_from.INT_1; return; }
-								case 2 : { *e_to.UINT_4 = *e_from.INT_2; return; }
-								case 4 : { *e_to.UINT_4 = *e_from.INT_4; return; }
-								case 8 : { *e_to.UINT_4 = *e_from.INT_8; return; }
-							}
-						}
-						case FLOAT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 4 : { *e_to.UINT_4 = *e_from.FLOAT_4; return; }
-								case 8 : { *e_to.UINT_4 = *e_from.FLOAT_8; return; }
-							}
-						}
-						default : {break;}
-					}
-				}
-				case 8 :
-				{
-					switch(ele_d_from->type)
-					{
-						case UINT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.UINT_8 = *e_from.UINT_1; return; }
-								case 2 : { *e_to.UINT_8 = *e_from.UINT_2; return; }
-								case 4 : { *e_to.UINT_8 = *e_from.UINT_4; return; }
-								case 8 : { *e_to.UINT_8 = *e_from.UINT_8; return; }
-							}
-						}
-						case INT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.UINT_8 = *e_from.INT_1; return; }
-								case 2 : { *e_to.UINT_8 = *e_from.INT_2; return; }
-								case 4 : { *e_to.UINT_8 = *e_from.INT_4; return; }
-								case 8 : { *e_to.UINT_8 = *e_from.INT_8; return; }
-							}
-						}
-						case FLOAT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 4 : { *e_to.UINT_8 = *e_from.FLOAT_4; return; }
-								case 8 : { *e_to.UINT_8 = *e_from.FLOAT_8; return; }
-							}
-						}
-						default : {break;}
-					}
-				}
-			}
-		}
-		case INT :
-		{
-			switch(ele_d_to->size)
-			{
-				case 1 :
-				{
-					switch(ele_d_from->type)
-					{
-						case UINT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.INT_1 = *e_from.UINT_1; return; }
-								case 2 : { *e_to.INT_1 = *e_from.UINT_2; return; }
-								case 4 : { *e_to.INT_1 = *e_from.UINT_4; return; }
-								case 8 : { *e_to.INT_1 = *e_from.UINT_8; return; }
-							}
-						}
-						case INT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.INT_1 = *e_from.INT_1; return; }
-								case 2 : { *e_to.INT_1 = *e_from.INT_2; return; }
-								case 4 : { *e_to.INT_1 = *e_from.INT_4; return; }
-								case 8 : { *e_to.INT_1 = *e_from.INT_8; return; }
-							}
-						}
-						case FLOAT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 4 : { *e_to.INT_1 = *e_from.FLOAT_4; return; }
-								case 8 : { *e_to.INT_1 = *e_from.FLOAT_8; return; }
-							}
-						}
-						default : {break;}
-					}
-				}
-				case 2 :
-				{
-					switch(ele_d_from->type)
-					{
-						case UINT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.INT_2 = *e_from.UINT_1; return; }
-								case 2 : { *e_to.INT_2 = *e_from.UINT_2; return; }
-								case 4 : { *e_to.INT_2 = *e_from.UINT_4; return; }
-								case 8 : { *e_to.INT_2 = *e_from.UINT_8; return; }
-							}
-						}
-						case INT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.INT_2 = *e_from.INT_1; return; }
-								case 2 : { *e_to.INT_2 = *e_from.INT_2; return; }
-								case 4 : { *e_to.INT_2 = *e_from.INT_4; return; }
-								case 8 : { *e_to.INT_2 = *e_from.INT_8; return; }
-							}
-						}
-						case FLOAT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 4 : { *e_to.INT_2 = *e_from.FLOAT_4; return; }
-								case 8 : { *e_to.INT_2 = *e_from.FLOAT_8; return; }
-							}
-						}
-						default : {break;}
-					}
-				}
-				case 4 :
-				{
-					switch(ele_d_from->type)
-					{
-						case UINT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.INT_4 = *e_from.UINT_1; return; }
-								case 2 : { *e_to.INT_4 = *e_from.UINT_2; return; }
-								case 4 : { *e_to.INT_4 = *e_from.UINT_4; return; }
-								case 8 : { *e_to.INT_4 = *e_from.UINT_8; return; }
-							}
-						}
-						case INT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.INT_4 = *e_from.INT_1; return; }
-								case 2 : { *e_to.INT_4 = *e_from.INT_2; return; }
-								case 4 : { *e_to.INT_4 = *e_from.INT_4; return; }
-								case 8 : { *e_to.INT_4 = *e_from.INT_8; return; }
-							}
-						}
-						case FLOAT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 4 : { *e_to.INT_4 = *e_from.FLOAT_4; return; }
-								case 8 : { *e_to.INT_4 = *e_from.FLOAT_8; return; }
-							}
-						}
-						default : {break;}
-					}
-				}
-				case 8 :
-				{
-					switch(ele_d_from->type)
-					{
-						case UINT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.INT_8 = *e_from.UINT_1; return; }
-								case 2 : { *e_to.INT_8 = *e_from.UINT_2; return; }
-								case 4 : { *e_to.INT_8 = *e_from.UINT_4; return; }
-								case 8 : { *e_to.INT_8 = *e_from.UINT_8; return; }
-							}
-						}
-						case INT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.INT_8 = *e_from.INT_1; return; }
-								case 2 : { *e_to.INT_8 = *e_from.INT_2; return; }
-								case 4 : { *e_to.INT_8 = *e_from.INT_4; return; }
-								case 8 : { *e_to.INT_8 = *e_from.INT_8; return; }
-							}
-						}
-						case FLOAT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 4 : { *e_to.INT_8 = *e_from.FLOAT_4; return; }
-								case 8 : { *e_to.INT_8 = *e_from.FLOAT_8; return; }
-							}
-						}
-						default : {break;}
-					}
-				}
-			}
-		}
-		case FLOAT :
-		{
-			switch(ele_d_to->size)
-			{
-				case 4 :
-				{
-					switch(ele_d_from->type)
-					{
-						case UINT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.FLOAT_4 = *e_from.UINT_1; return; }
-								case 2 : { *e_to.FLOAT_4 = *e_from.UINT_2; return; }
-								case 4 : { *e_to.FLOAT_4 = *e_from.UINT_4; return; }
-								case 8 : { *e_to.FLOAT_4 = *e_from.UINT_8; return; }
-							}
-						}
-						case INT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.FLOAT_4 = *e_from.INT_1; return; }
-								case 2 : { *e_to.FLOAT_4 = *e_from.INT_2; return; }
-								case 4 : { *e_to.FLOAT_4 = *e_from.INT_4; return; }
-								case 8 : { *e_to.FLOAT_4 = *e_from.INT_8; return; }
-							}
-						}
-						case FLOAT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 4 : { *e_to.FLOAT_4 = *e_from.FLOAT_4; return; }
-								case 8 : { *e_to.FLOAT_4 = *e_from.FLOAT_8; return; }
-							}
-						}
-						default : {break;}
-					}
-				}
-				case 8 :
-				{
-					switch(ele_d_from->type)
-					{
-						case UINT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.FLOAT_8 = *e_from.UINT_1; return; }
-								case 2 : { *e_to.FLOAT_8 = *e_from.UINT_2; return; }
-								case 4 : { *e_to.FLOAT_8 = *e_from.UINT_4; return; }
-								case 8 : { *e_to.FLOAT_8 = *e_from.UINT_8; return; }
-							}
-						}
-						case INT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 1 : { *e_to.FLOAT_8 = *e_from.INT_1; return; }
-								case 2 : { *e_to.FLOAT_8 = *e_from.INT_2; return; }
-								case 4 : { *e_to.FLOAT_8 = *e_from.INT_4; return; }
-								case 8 : { *e_to.FLOAT_8 = *e_from.INT_8; return; }
-							}
-						}
-						case FLOAT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 4 : { *e_to.FLOAT_8 = *e_from.FLOAT_4; return; }
-								case 8 : { *e_to.FLOAT_8 = *e_from.FLOAT_8; return; }
-							}
-						}
-						default : {break;}
-					}
-				}
-			}
-		}
-		default : {break;}
-	}
 }

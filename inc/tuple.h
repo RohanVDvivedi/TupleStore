@@ -54,7 +54,7 @@ uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_fun
 
 // print and scan functions for tuple
 // returns number of characters written to the string
-int sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d);
+uint32_t sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d);
 
 #endif
 
