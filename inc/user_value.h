@@ -12,7 +12,7 @@ union user_value
 	double double_value;
 	struct
 	{
-		void* data;
+		const void* data;
 		uint32_t data_size;
 	};
 };

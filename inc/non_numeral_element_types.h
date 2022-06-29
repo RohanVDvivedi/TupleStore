@@ -41,4 +41,8 @@ void set_string_OR_blob_element(void* e, const element_def* ele_d, const user_va
 // both of them must pass is_string_type_element_def OR is_string_type_blob_def
 int set_string_OR_blob_element_from_element(void* e, const element_def* ele_d, const void* e_from, const element_def* ele_d_from);
 
+// returns user value that will point to blob or string of this element
+// it does not allocate memory
+user_value get_value_from_non_numeral_element(const void* e, const element_def* ele_d);
+
 #endif

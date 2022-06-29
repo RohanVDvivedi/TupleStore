@@ -196,3 +196,24 @@ int set_string_OR_blob_element_from_element(void* e, const element_def* ele_d, c
 
 	return 1;
 }
+
+user_value get_value_from_non_numeral_element(const void* e, const element_def* ele_d)
+{
+	user_value uval = {};
+
+	// assign data start pointer
+	if(is_fixed_sized_element_def(ele_d))
+	{
+		uval.data = e;
+		uval.data_size = ele_d->size;
+		if(is_string_type_element_def(ele_d))
+			uval.data_size = get_string_length_for_string_type_element(e, ele_d);
+	}
+	else
+	{
+		uval.data = get_data_for_variable_sized_non_numeral_element(e, ele_d);
+		uval.data_size = get_data_size_for_variable_sized_non_numeral_element(e, ele_d);
+	}
+
+	return uval;
+}
