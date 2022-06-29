@@ -91,6 +91,7 @@ static int set_is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tu
 		set_bit(is_NULL_bitmap, index);
 	else
 		reset_bit(is_NULL_bitmap, index);
+	return 1;
 }
 
 void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t value_size)
@@ -433,16 +434,22 @@ void copy_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void*
 
 int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, uint32_t index1, const void* tup2, const tuple_def* tpl_d2, uint32_t index2)
 {
-	element e1 = get_element_from_tuple(tpl_d1, index1, tup1);
-	element e2 = get_element_from_tuple(tpl_d2, index2, tup2);
+	const element_def* ele_d1 = tpl_d1->element_defs + index1;
+	const element_def* ele_d2 = tpl_d2->element_defs + index2;
+
+	if(!can_compare_elemen_defs(ele_d1, ele_d2))
+		return -2;
+
+	const void* e1 = get_element_from_tuple(tpl_d1, index1, tup1);
+	const void* e2 = get_element_from_tuple(tpl_d2, index2, tup2);
 
 	// handling case when elements are NULL
-	if(e1.BLOB == NULL && e2.BLOB == NULL)
+	if(e1 == NULL && e2 == NULL)
 		return 0;
-	else if(e1.BLOB == NULL || e2.BLOB == NULL)
+	else if(e1 == NULL || e2 == NULL)
 	{
 		// a NULL element is always considered lesser than a NON NULL element
-		if(e1.BLOB == NULL)
+		if(e1 == NULL)
 			return -1;
 		else
 			return 1;
@@ -461,12 +468,14 @@ int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const uint32_t* el
 
 uint32_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, uint32_t index, uint32_t (*hash_func)(const void* data, uint32_t size))
 {
-	element e = get_element_from_tuple(tpl_d, index, tup);
+	const void* e = get_element_from_tuple(tpl_d, index, tup);
 
 	// hashing a NULL element returns a 0
-	if(e.BLOB == NULL)
+	if(e == NULL)
 		return 0;
-	return hash_element(e, tpl_d->element_defs + index, hash_func);
+
+	const element_def* ele_d = tpl_d->element_defs + index;
+	return hash_element(e, ele_d, hash_func);
 }
 
 uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_func)(const void* data, uint32_t size), uint32_t element_count, const uint32_t* element_ids)
