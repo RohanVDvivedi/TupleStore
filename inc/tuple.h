@@ -30,10 +30,13 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 // returns 1 if the set operation was successfull, else returns 0 (this happens when the types are incompatible)
 int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const tuple_def* tpl_d_in, uint32_t index_in, const void* tupl_in);
 
-// copy element from tuple functions to the value (void*)
-// make sure that the space allotted at the value pointer is atleast equal to its get_element_size_within_tuple()
-// value must be of appropriate c type and size, i.e. char* for  STRING or VAR_STRING and uint8_t* for a UINT 8
-void copy_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl, void* value);
+// does not allocate any memeory
+// returns user_value as int_value, uint_value, float_value or double_value for numeral types
+// for non numeral types it returns data and data_size
+// no memory is allocated for non numeral types
+// the return of this function must not be used after the tuple has had any calls to set_element_in_tuple* functions
+// before you call this function you must check that the element is not NULL using "is_NULL_in_tuple function"
+user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 
 
 // compare functions for tuple and for an element inside the tuple

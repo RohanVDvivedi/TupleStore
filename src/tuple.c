@@ -350,7 +350,7 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void
 	return 0;
 }
 
-void copy_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl, void* value)
+user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
 	element ele = get_element_from_tuple(tpl_d, index, tupl);
 
