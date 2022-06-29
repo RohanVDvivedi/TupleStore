@@ -390,3 +390,40 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 			break;
 	}
 }
+
+user_value get_value_from_numeral_element(const void* e, const element_def* ele_d)
+{
+	user_value uval = {};
+	switch(ele_d->type)
+	{
+		case UINT :
+		{
+			uval.uint_value = read_uint64(e, ele_d->size);
+			break;
+		}
+		case INT :
+		{
+			uval.int_value = read_int64(e, ele_d->size);
+			break;
+		}
+		case FLOAT :
+		{
+			switch(ele_d->size)
+			{
+				case 4 :
+				{
+					uval.float_value = read_float(e);
+					break;
+				}
+				case 8 :
+				{
+					uval.double_value = read_double(e);
+					break;
+				}
+			}
+		}
+		default :
+			break;
+	}
+	return uval;
+}

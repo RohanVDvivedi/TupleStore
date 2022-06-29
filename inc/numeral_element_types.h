@@ -16,4 +16,6 @@ void set_numeral_element(void* e, const element_def* ele_d, const user_value* uv
 
 void set_numeral_element_from_element(void* e, const element_def* ele_d, const void* e_from, const element_def* ele_d_from);
 
+user_value get_value_from_numeral_element(const void* e, const element_def* ele_d);
+
 #endif
