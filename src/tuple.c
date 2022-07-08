@@ -102,7 +102,7 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 		return;
 
 	// element definition we are concerned with
-	element_def* ele_d = tpl_d->element_defs + index;
+	const element_def* ele_d = tpl_d->element_defs + index;
 
 	if(is_fixed_sized_element_def(ele_d))
 	{
@@ -138,33 +138,33 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 		// if data existed at index (is not NULL), then remove it (its allocated space), set its offset to 0 and set it's is_null_bitmap bit to 1
 		if(!is_NULL_in_tuple(tpl_d, index, tupl))
 		{
-			uint32_t old_total_size = get_element_size_within_tuple(tpl_d, index, tupl);	// this will not be 0 because the element is not NULL
-			uint32_t old_offset = get_element_offset_within_tuple(tpl_d, index, tupl);
+			uint32_t old_element_size = get_element_size_within_tuple(tpl_d, index, tupl);	// this will not be 0 because the element is not NULL
+			uint32_t old_element_offset = get_element_offset_within_tuple(tpl_d, index, tupl);
 
 			uint32_t old_tuple_size = get_tuple_size(tpl_d, tupl);
 
 			// move all the bytes in the tuple after this element to front
-			memmove(tupl + old_offset, tupl + old_offset + old_total_size, old_tuple_size - (old_offset + old_total_size));
+			memmove(tupl + old_element_offset, tupl + old_element_offset + old_element_size, old_tuple_size - (old_element_offset + old_element_size));
 
-			// decrease all tuple offsets for variable sized elements that were after the element by old_total_size
+			// decrease all tuple offsets for variable sized non null elements that were after the element by old_element_size
 			for(uint32_t i = 0; i < tpl_d->element_count; i++)
 			{
-				if(is_variable_sized_element_def(tpl_d->element_defs + i))
+				if(!is_NULL_in_tuple(tpl_d, index, tupl) && is_variable_sized_element_def(tpl_d->element_defs + i))
 				{
-					uint32_t offset = read_uint32(tupl + tpl_d->element_defs[i].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets);
-					if(offset > old_offset)
-						write_uint32(tupl + tpl_d->element_defs[i].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, offset - old_total_size);
+					uint32_t offset = get_element_offset_within_tuple(tpl_d, i, tupl);
+					if(offset > old_element_offset)
+						write_uint32(tupl + tpl_d->element_defs[i].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, offset - old_element_size);
 				}
 			}
 
-			// update tuple size to old_tuple_size - old_total_size
-			write_uint32(tupl, tpl_d->size_of_byte_offsets, old_tuple_size - old_total_size);
+			// update tuple size to old_tuple_size - old_element_size
+			write_uint32(tupl, tpl_d->size_of_byte_offsets, old_tuple_size - old_element_size);
 
 			// update offset of this (variable sized) element to 0
 			write_uint32(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, 0);
 			
 			// set is_null bit, for element at index
-			set_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+			set_is_NULL_in_tuple(tpl_d, index, tupl, 1);
 		}
 
 		// at this point this element is NULL and has no space allocated for it on the tuple
@@ -174,7 +174,7 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 		if(value != NULL)
 		{
 			// set the is_null bitmap bit of this element to 0
-			reset_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+			set_is_NULL_in_tuple(tpl_d, index, tupl, 0);
 
 			// get current tuple_size
 			uint32_t tuple_size = get_tuple_size(tpl_d, tupl);
@@ -186,75 +186,13 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 
 			// since the offset is set appropriately and the is_null bit is reset to 0
 			// we can access element directly and safely
-			element ele = get_element_from_tuple(tpl_d, index, tupl);
+			void* ele = get_element_from_tuple(tpl_d, index, tupl);
 
-			switch(tpl_d->element_defs[index].type)
-			{
-				case VAR_STRING :
-				{
-					switch(tpl_d->element_defs[index].size_specifier_prefix_size)
-					{
-						case 1 :
-						{
-							uint32_t string_size = strnlen(value, value_size);
-							ele.VAR_STRING_1->size = min(string_size, (1U<<8)-1);
-							memmove(ele.VAR_STRING_1->string, value, ele.VAR_STRING_1->size);
-							tuple_size += (ele.VAR_STRING_1->size + 1);
-							break;
-						}
-						case 2 :
-						{
-							uint32_t string_size = strnlen(value, value_size);
-							ele.VAR_STRING_2->size = min(string_size, (1U<<16)-1);
-							memmove(ele.VAR_STRING_2->string, value, ele.VAR_STRING_2->size);
-							tuple_size += (ele.VAR_STRING_2->size + 2);
-							break;
-						}
-						case 4 :
-						{
-							ele.VAR_STRING_4->size = strnlen(value, value_size);
-							memmove(ele.VAR_STRING_4->string, value, ele.VAR_STRING_4->size);
-							tuple_size += (ele.VAR_STRING_4->size + 4);
-							break;
-						}
-					}
-					break;
-				}
-				case VAR_BLOB :
-				{
-					switch(tpl_d->element_defs[index].size_specifier_prefix_size)
-					{
-						case 1 :
-						{
-							ele.VAR_BLOB_1->size = min(value_size, ((1<<8)-1));
-							memmove(ele.VAR_BLOB_1->blob, value, ele.VAR_BLOB_1->size);
-							tuple_size += (ele.VAR_BLOB_1->size + 1);
-							break;
-						}
-						case 2 :
-						{
-							ele.VAR_BLOB_2->size = min(value_size, ((1<<16)-1));
-							memmove(ele.VAR_BLOB_2->blob, value, ele.VAR_BLOB_2->size);
-							tuple_size += (ele.VAR_BLOB_2->size + 2);
-							break;
-						}
-						case 4 :
-						{
-							ele.VAR_BLOB_4->size = value_size;
-							memmove(ele.VAR_BLOB_4->blob, value, ele.VAR_BLOB_4->size);
-							tuple_size += (ele.VAR_BLOB_4->size + 4);
-							break;
-						}
-					}
-					break;
-				}
-				default :
-				{
-					break;
-				}
-			}
+			// set the string or blob element
+			set_string_OR_blob_element(ele, ele_d, value);
 
 			// update tuple size to tuple_size
+			tuple_size += get_element_size(ele, ele_d);
 			write_uint32(tupl, tpl_d->size_of_byte_offsets, tuple_size);
 		}
 	}
