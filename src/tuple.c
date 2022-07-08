@@ -95,13 +95,16 @@ static int set_is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tu
 	return 1;
 }
 
-void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const void* value, uint32_t value_size)
+void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value)
 {
 	// if the element inside tuple is NULL, and we are asked to set it to NULL, then return
 	if(is_NULL_in_tuple(tpl_d, index, tupl) && value == NULL)
 		return;
 
-	if(is_fixed_sized_element_def(tpl_d->element_defs + index))
+	// element definition we are concerned with
+	element_def* ele_d = tpl_d->element_defs + index;
+
+	if(is_fixed_sized_element_def(ele_d))
 	{
 		// if the value to be set is NULL
 		if(value == NULL)
@@ -109,41 +112,25 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 			// here we are sure that the element in the tuple is not NULL
 
 			// reset the corresponding bytes (of the fixed length element)
-			uint32_t byte_offset_to_element = get_element_offset_within_tuple(tpl_d, index, tupl);
-			uint32_t bytes_occupied_by_element = get_element_size_within_tuple(tpl_d, index, tupl);
-			memset(tupl + byte_offset_to_element, 0, bytes_occupied_by_element);
+			void* ele = get_element_from_tuple(tpl_d, index, tupl);
+			uint32_t ele_size = get_element_size_within_tuple(tpl_d, index, tupl);
+			memset(ele, 0, ele_size);
 
 			// then just set the corresponding bit in the is_null bitmap
-			set_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+			set_is_NULL_in_tuple(tpl_d, index, tupl, 1);
 		}
 		else
 		{
 			// set the is_null bitmap bit to 0
-			reset_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+			set_is_NULL_in_tuple(tpl_d, index, tupl, 0);
 
 			// this won't return a NULL element because, we just resetted this element's is_null_bitmap bit
-			element ele = get_element_from_tuple(tpl_d, index, tupl);
+			void* ele = get_element_from_tuple(tpl_d, index, tupl);
 
-			// calculate total size occupied by the fixed length data type
-			uint32_t total_size = get_element_size_within_tuple(tpl_d, index, tupl);
-			if(tpl_d->element_defs[index].type == STRING)
-			{
-				// copy at most of string length + 1 bytes and total_size
-				uint32_t string_size = strnlen(value, value_size);
-				uint32_t copy_size = min(total_size, string_size);
-				memmove(ele.STRING, value, copy_size);
-
-				// if the string is going to occupy lesser characters than its size then we better have a null terminating character at the end
-				if(copy_size < total_size)
-					ele.STRING[copy_size] = '\0';
-			}
-			else if(tpl_d->element_defs[index].type == BLOB)
-			{
-				uint32_t copy_size = min(total_size, value_size);
-				memmove(ele.BLOB, value, copy_size);
-			}
+			if(is_numeral_type_element_def(ele_d))
+				set_numeral_element(ele, ele_d, value);
 			else
-				memmove(ele.BLOB, value, total_size);
+				set_string_OR_blob_element(ele, ele_d, value);
 		}
 	}
 	else
