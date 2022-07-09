@@ -415,6 +415,18 @@ int main()
 
 	// ---------------	UPDATE
 
+	r = &(row){-237, 35, "Rohan is THE Rohan Dvivedi", 655.36};
+	build_tuple_from_row_struct(def, tuple_cache, r);
+	res = update_tuple(page, PAGE_SIZE, def, 5, tuple_cache);
+	printf("Update(5) : %d\n\n\n", res);
+
+	// ---------------	PRINT PAGE
+	
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	// ---------------	UPDATE
+
 	r = &(row){-234, 5, "Project TupleStore", 655.36};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	res = update_tuple(page, PAGE_SIZE, def, 5, tuple_cache);
@@ -428,6 +440,18 @@ int main()
 	// ---------------	UPDATE
 
 	r = &(row){-234, 3, "Project TupleStore", 655.36};
+	build_tuple_from_row_struct(def, tuple_cache, r);
+	res = update_tuple(page, PAGE_SIZE, def, 5, tuple_cache);
+	printf("Update(5) : %d\n\n\n", res);
+
+	// ---------------	PRINT PAGE
+	
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	// ---------------	UPDATE
+
+	r = &(row){1, 7, "Rohan is THE Rohan Dvivedi of this project", 7.12};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	res = update_tuple(page, PAGE_SIZE, def, 5, tuple_cache);
 	printf("Update(5) : %d\n\n\n", res);
