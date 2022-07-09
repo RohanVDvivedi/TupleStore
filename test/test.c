@@ -28,7 +28,7 @@ void init_tuple_definition(tuple_def* def)
 	// initialize tuple definition and insert element definitions
 	int res = init_tuple_def(def, "my_table");
 
-	res = insert_element_def(def, "col_0", INT, 8);
+	res = insert_element_def(def, "col_0", INT, 5);
 
 	res = insert_element_def(def, "col_1", UINT, 1);
 
@@ -554,13 +554,13 @@ int main()
 	r = &(row){3, 76, "Rohan Dvivedi's, project.", 3.57};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	res = insert_tuple(page, PAGE_SIZE, def, tuple_cache);
-	printf("Update(2) : %d\n\n\n", res);
+	printf("insert : %d\n\n\n", res);
 	print_page(page, PAGE_SIZE, def);
 
 	r = &(row){5, 94, "Rohan's, project : Simple Tuple Storage Model.", 35.7};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	res = insert_tuple(page, PAGE_SIZE, def, tuple_cache);
-	printf("Update(0) : %d\n\n\n", res);
+	printf("insert : %d\n\n\n", res);
 	print_page(page, PAGE_SIZE, def);
 
 	// -----------------  TESTING UPDATES AND DELETED INSIDE TUPLE
