@@ -337,7 +337,7 @@ uint32_t sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 		const element_def* ele_d = tpl_d->element_defs + i;
 
 		if(is_variable_sized_element_def(ele_d))
-			chars_written += sprintf(str + chars_written, "[%u]->", read_uint32(tup + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets));
+			chars_written += sprintf(str + chars_written, "[%"PRIu32"]->", read_uint32(tup + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets));
 
 		switch(ele_d->type)
 		{
@@ -381,9 +381,9 @@ uint32_t sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 			case BLOB :
 			{
 				uint32_t size = ele_d->size;
-				chars_written += sprintf(str + chars_written, "BLOB(%" PRIu32 ")[", size);
+				chars_written += sprintf(str + chars_written, "BLOB(%"PRIu32")[", size);
 				for(uint32_t i = 0; i < size; i++)
-					chars_written += sprintf(str + chars_written, " 0x%2" PRIx8, *(((const uint8_t*)e)+i));
+					chars_written += sprintf(str + chars_written, " 0x%2"PRIx8, *(((const uint8_t*)e)+i));
 				chars_written += sprintf(str + chars_written, "]");
 				break;
 			}
@@ -398,9 +398,9 @@ uint32_t sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 			{
 				uint32_t size = get_data_size_for_variable_sized_non_numeral_element(e, ele_d);
 				const char* blob_data = get_data_for_variable_sized_non_numeral_element(e, ele_d);
-				chars_written += sprintf(str + chars_written, "BLOB(%" PRIu32 ")[", size);
+				chars_written += sprintf(str + chars_written, "BLOB(%"PRIu32")[", size);
 				for(uint32_t i = 0; i < size; i++)
-					chars_written += sprintf(str + chars_written, " 0x%2" PRIx8, *((uint8_t*)(blob_data + i)));
+					chars_written += sprintf(str + chars_written, " 0x%2"PRIx8, *((uint8_t*)(blob_data + i)));
 				chars_written += sprintf(str + chars_written, "]");
 				break;
 			}

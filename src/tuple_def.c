@@ -292,29 +292,29 @@ static void print_element_def(const element_def* element_d)
 	printf("\t\t\t \"%s\" of type : %s\n", element_d->name, type_as_string[element_d->type]);
 	if(is_variable_sized_element_def(element_d))
 	{
-		printf("\t\t\t size_specifier_prefix_size : %u\n", element_d->size_specifier_prefix_size);
-		printf("\t\t\t byte_offset_to_byte_offset : %u\n", element_d->byte_offset_to_byte_offset);
+		printf("\t\t\t size_specifier_prefix_size : %"PRIu32"\n", element_d->size_specifier_prefix_size);
+		printf("\t\t\t byte_offset_to_byte_offset : %"PRIu32"\n", element_d->byte_offset_to_byte_offset);
 	}
 	else
 	{
-		printf("\t\t\t size : %u\n", element_d->size);
-		printf("\t\t\t byte_offset : %u\n", element_d->byte_offset);
+		printf("\t\t\t size : %"PRIu32"\n", element_d->size);
+		printf("\t\t\t byte_offset : %"PRIu32"\n", element_d->byte_offset);
 	}
 }
 
 void print_tuple_def(const tuple_def* tuple_d)
 {
 	printf("Tuple definition for \"%s\" : \n", tuple_d->name);
-	printf("is_variable_sized : %u\n", tuple_d->is_variable_sized);
+	printf("is_variable_sized : %d\n", tuple_d->is_variable_sized);
 	if(is_variable_sized_tuple_def(tuple_d))
-		printf("\t min_size : %u\n", tuple_d->min_size);
+		printf("\t min_size : %"PRIu32"\n", tuple_d->min_size);
 	else
-		printf("\t size : %u\n", tuple_d->size);
-	printf("\t byte_offset_to_is_null_bitmap : %u\n", tuple_d->byte_offset_to_is_null_bitmap);
-	printf("\t element_count : %u\n", tuple_d->element_count);
+		printf("\t size : %"PRIu32"\n", tuple_d->size);
+	printf("\t byte_offset_to_is_null_bitmap : %"PRIu32"\n", tuple_d->byte_offset_to_is_null_bitmap);
+	printf("\t element_count : %"PRIu32"\n", tuple_d->element_count);
 	for(uint32_t i = 0; i < tuple_d->element_count; i++)
 	{
-		printf("\t\t Column : %u\n", i);
+		printf("\t\t Column : %"PRIu32"\n", i);
 		print_element_def((tuple_d->element_defs) + i);
 	}
 }

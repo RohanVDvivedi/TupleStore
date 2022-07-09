@@ -345,18 +345,18 @@ void print_fixed_array_page(const void* page, uint32_t page_size, const tuple_de
 	printf("FIXED ARRAY PAGE :\n\n");
 
 	uint32_t tup_count = get_tuple_count_fixed_array_page(page, page_size);
-	printf("\tTuples :: (%u of %u)\n", tup_count, get_tuple_capacity(page, page_size, tpl_d));
+	printf("\tTuples :: (%"PRIu32" of %"PRIu32")\n", tup_count, get_tuple_capacity(page, page_size, tpl_d));
 
 	for(uint32_t i = 0; i < tup_count; i++)
 	{
-		printf("\t\ttuple %u\n", i);
+		printf("\t\ttuple %"PRIu32"\n", i);
 		if(exists_tuple_fixed_array_page(page, page_size, tpl_d, i))
 		{
 			const void* tuple = get_nth_tuple_fixed_array_page(page, page_size, tpl_d, i);
 			uint32_t tuple_size = get_tuple_size(tpl_d, tuple);
 			char* print_buffer = malloc(tuple_size + (tpl_d->element_count * 32));
 			sprint_tuple(print_buffer, tuple, tpl_d);
-			printf("\t\t\toffset[%lu] size(%u) :: %s\n\n", ((uintptr_t)(tuple - page)), tuple_size, print_buffer);
+			printf("\t\t\toffset[%"PRIu32"] size(%"PRIu32") :: %s\n\n", (uint32_t)((uintptr_t)(tuple - page)), tuple_size, print_buffer);
 			free(print_buffer);
 		}
 		else

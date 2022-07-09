@@ -2,6 +2,7 @@
 #define INT_ACCESSES_H
 
 #include<stdint.h>
+#include<inttypes.h>
 
 // utility macros to be used only for numeric types
 #define compare(a,b)	( ((a)>(b)) ? 1 : (((a)<(b)) ? (-1) : 0 ) )

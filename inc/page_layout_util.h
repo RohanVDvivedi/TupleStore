@@ -2,6 +2,7 @@
 #define PAGE_LAYOUT_UTIL_H
 
 #include<stdint.h>
+#include<inttypes.h>
 
 uint32_t get_value_size_on_page(uint32_t page_size);
 

@@ -294,10 +294,10 @@ uint32_t get_additional_space_overhead_per_tuple(uint32_t page_size, const tuple
 void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	printf("PAGE : \n");
-	printf("space allotted for tuples = %u\n", get_space_allotted_to_all_tuples(page, page_size, tpl_d));
-	printf("used up space    = %u\n", get_space_occupied_by_all_tuples(page, page_size, tpl_d));
-	printf("free space       = %u\n", get_free_space(page, page_size, tpl_d));
-	printf("fragmented space = %u\n", get_fragmentation_space(page, page_size, tpl_d));
+	printf("space allotted for tuples = %"PRIu32"\n", get_space_allotted_to_all_tuples(page, page_size, tpl_d));
+	printf("used up space    = %"PRIu32"\n", get_space_occupied_by_all_tuples(page, page_size, tpl_d));
+	printf("free space       = %"PRIu32"\n", get_free_space(page, page_size, tpl_d));
+	printf("fragmented space = %"PRIu32"\n", get_fragmentation_space(page, page_size, tpl_d));
 	printf("\n");
 	switch(get_page_layout_type(tpl_d))
 	{

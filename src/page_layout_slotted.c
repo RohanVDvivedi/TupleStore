@@ -469,18 +469,18 @@ void print_slotted_page(const void* page, uint32_t page_size, const tuple_def* t
 	printf("SLOTTED PAGE :\n\n");
 
 	uint32_t tup_count = get_tuple_count_slotted_page(page, page_size);
-	printf("\tTuples :: (%u)\n", tup_count);
+	printf("\tTuples :: (%"PRIu32")\n", tup_count);
 
 	for(uint16_t i = 0; i < tup_count; i++)
 	{
-		printf("\t\ttuple %u\n", i);
+		printf("\t\ttuple %"PRIu32"\n", i);
 		if(exists_tuple_slotted_page(page, page_size, tpl_d, i))
 		{
 			const void* tuple = get_nth_tuple_slotted_page(page, page_size, tpl_d, i);
 			uint32_t tuple_size = get_tuple_size(tpl_d, tuple);
 			char* print_buffer = malloc(tuple_size + (tpl_d->element_count * 32));
 			sprint_tuple(print_buffer, tuple, tpl_d);
-			printf("\t\t\toffset[%lu] size(%u) :: %s\n\n", ((uintptr_t)(tuple - page)), tuple_size, print_buffer);
+			printf("\t\t\toffset[%"PRIu32"] size(%"PRIu32") :: %s\n\n", (uint32_t)((uintptr_t)(tuple - page)), tuple_size, print_buffer);
 			free(print_buffer);
 		}
 		else
