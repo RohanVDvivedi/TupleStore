@@ -200,79 +200,46 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 
 int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const tuple_def* tpl_d_in, uint32_t index_in, const void* tupl_in)
 {
+	const element_def* ele_d = tpl_d->element_defs + index;
+	const element_def* ele_d_in = tpl_d_in->element_defs + index_in;
+
+	// if the elements can not be set from one another, then return 0 (failure)
+	if(!can_set_from_element_defs(ele_d, ele_d_in))
+		return 0;
+
 	// if the index_in-th element in the tuple is NULL then set index-th element in tuple as NULL
 	if(is_NULL_in_tuple(tpl_d_in, index_in, tupl_in))
 	{
-		set_element_in_tuple(tpl_d, index, tupl, NULL, 0);
+		set_element_in_tuple(tpl_d, index, tupl, NULL);
 		return 1;
 	}
 
 	// For numeric types, the type and size of the elements must match up
-	if( (tpl_d->element_defs[index].type == UINT || tpl_d->element_defs[index].type == INT || tpl_d->element_defs[index].type == FLOAT)
-		&& (tpl_d_in->element_defs[index_in].type == UINT || tpl_d_in->element_defs[index_in].type == INT || tpl_d_in->element_defs[index_in].type == FLOAT) )
+	if(is_numeral_type_element_def(ele_d) && is_numeral_type_element_def(ele_d_in))
 	{
 		// set the is_null bitmap bit to 0
 		reset_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
 		
-		element e_from = get_element_from_tuple(tpl_d_in, index_in, tupl_in);
-		element e_to = get_element_from_tuple(tpl_d, index, tupl);
+		const void* ele_in = get_element_from_tuple(tpl_d_in, index_in, tupl_in);
+		void* ele = get_element_from_tuple(tpl_d, index, tupl);
 
-		typecast_and_set_numeric_type(e_to, tpl_d->element_defs + index, e_from, tpl_d_in->element_defs + index_in);
+		// this function takes care of typecasting (when writing from lets sat FLOAT to UINT, etc)
+		set_numeral_element_from_element(ele, ele_d, ele_in, ele_d_in);
 
 		return 1;
 	}
 
-	// if both of them are string like types then
-	else if( (tpl_d->element_defs[index].type == STRING || tpl_d->element_defs[index].type == VAR_STRING)
-		&& (tpl_d_in->element_defs[index_in].type == STRING || tpl_d_in->element_defs[index_in].type == VAR_STRING) )
+	// if both of them are string or blob like types then
+	else
 	{
-		element existing = get_element_from_tuple(tpl_d_in, index_in, tupl_in);
+		// get a user value corresponding to the *_in element
+		user_value value_in = get_value_from_element_from_tuple(tpl_d_in, index_in, tupl_in);
 
-		switch(tpl_d_in->element_defs[index_in].type)
-		{
-			case STRING : { set_element_in_tuple(tpl_d, index, tupl, existing.STRING, tpl_d_in->element_defs[index_in].size); break; }
-			case VAR_STRING :
-			{
-				switch(tpl_d_in->element_defs[index_in].size_specifier_prefix_size)
-				{
-					case 1 : { set_element_in_tuple(tpl_d, index, tupl, existing.VAR_STRING_1->string, existing.VAR_STRING_1->size); break; }
-					case 2 : { set_element_in_tuple(tpl_d, index, tupl, existing.VAR_STRING_2->string, existing.VAR_STRING_2->size); break; }
-					case 4 : { set_element_in_tuple(tpl_d, index, tupl, existing.VAR_STRING_4->string, existing.VAR_STRING_4->size); break; }
-				}
-				break;
-			}
-			default: {break;}
-		}
-
-		return 1;
+		// and now set this user value in the tuple
+		set_element_in_tuple(tpl_d, index, tupl, &value_in);
 	}
 
-	// if both of them are blob like types then
-	else if( (tpl_d->element_defs[index].type == BLOB || tpl_d->element_defs[index].type == VAR_BLOB)
-		&& (tpl_d_in->element_defs[index_in].type == BLOB || tpl_d_in->element_defs[index_in].type == VAR_BLOB) )
-	{
-		element existing = get_element_from_tuple(tpl_d_in, index_in, tupl_in);
-
-		switch(tpl_d_in->element_defs[index_in].type)
-		{
-			case STRING : { set_element_in_tuple(tpl_d, index, tupl, existing.BLOB, tpl_d_in->element_defs[index_in].size); break; }
-			case VAR_STRING :
-			{
-				switch(tpl_d_in->element_defs[index_in].size_specifier_prefix_size)
-				{
-					case 1 : { set_element_in_tuple(tpl_d, index, tupl, existing.VAR_BLOB_1->blob, existing.VAR_BLOB_1->size); break; }
-					case 2 : { set_element_in_tuple(tpl_d, index, tupl, existing.VAR_BLOB_2->blob, existing.VAR_BLOB_2->size); break; }
-					case 4 : { set_element_in_tuple(tpl_d, index, tupl, existing.VAR_BLOB_4->blob, existing.VAR_BLOB_4->size); break; }
-				}
-				break;
-			}
-			default: {break;}
-		}
-
-		return 1;
-	}
-
-	return 0;
+	return 1;
 }
 
 user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
