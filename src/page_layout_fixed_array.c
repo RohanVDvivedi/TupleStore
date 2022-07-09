@@ -63,15 +63,19 @@ static inline uint32_t get_offset_to_end_of_free_space(uint32_t page_size)
 
 uint32_t get_minimum_page_size_for_fixed_array_page(uint32_t page_header_size, const tuple_def* tpl_d, uint32_t tuple_count)
 {
-	uint32_t min_size_8 = sizeof(uint8_t) + page_header_size + sizeof(uint8_t) + ((tuple_count + 7) / 8) + (tuple_count * tpl_d->size);
+	uint32_t min_size_8 = 1 + page_header_size + 1 + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size);
 	if(min_size_8 <= (1<<8))
 		return min_size_8;
 
-	uint32_t min_size_16 = sizeof(uint16_t) + page_header_size + sizeof(uint16_t) + ((tuple_count + 7) / 8) + (tuple_count * tpl_d->size);
+	uint32_t min_size_16 = 2 + page_header_size + 2 + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size);
 	if(min_size_16 <= (1<<16))
 		return min_size_16;
 
-	uint32_t min_size_32 = sizeof(uint32_t) + page_header_size + sizeof(uint32_t) + ((tuple_count + 7) / 8) + (tuple_count * tpl_d->size);
+	uint32_t min_size_24 = 3 + page_header_size + 3 + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size);
+	if(min_size_24 <= (1<<24))
+		return min_size_24;
+
+	uint32_t min_size_32 = 4 + page_header_size + 4 + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size);
 	return min_size_32;
 }
 

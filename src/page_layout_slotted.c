@@ -60,15 +60,19 @@ static inline uint32_t get_offset_to_ith_tuple(const void* page, uint32_t page_s
 
 uint32_t get_minimum_page_size_for_slotted_page(uint32_t page_header_size, const tuple_def* tpl_d, uint32_t tuple_count)
 {
-	uint32_t min_size_8 = sizeof(uint8_t) + page_header_size + ((2 + tuple_count) * sizeof(uint8_t)) + (tuple_count * get_minimum_tuple_size(tpl_d));
-	if(min_size_8 <= (1<<8))
+	uint32_t min_size_8 = 1 + page_header_size + ((2 + tuple_count) * 1) + (tuple_count * get_minimum_tuple_size(tpl_d));
+	if(min_size_8 <= (UINT32_C(1)<<8))
 		return min_size_8;
 
-	uint32_t min_size_16 = sizeof(uint16_t) + page_header_size + ((2 + tuple_count) * sizeof(uint16_t)) + (tuple_count * get_minimum_tuple_size(tpl_d));
-	if(min_size_16 <= (1<<16))
+	uint32_t min_size_16 = 2 + page_header_size + ((2 + tuple_count) * 2) + (tuple_count * get_minimum_tuple_size(tpl_d));
+	if(min_size_16 <= (UINT32_C(1)<<16))
 		return min_size_16;
 
-	uint32_t min_size_32 = sizeof(uint32_t) + page_header_size + ((2 + tuple_count) * sizeof(uint32_t)) + (tuple_count * get_minimum_tuple_size(tpl_d));
+	uint32_t min_size_24 = 3 + page_header_size + ((2 + tuple_count) * 3) + (tuple_count * get_minimum_tuple_size(tpl_d));
+	if(min_size_24 <= (UINT32_C(1)<<24))
+		return min_size_24;
+
+	uint32_t min_size_32 = 4 + page_header_size + ((2 + tuple_count) * 4) + (tuple_count * get_minimum_tuple_size(tpl_d));
 	return min_size_32;
 }
 
