@@ -84,11 +84,11 @@ void build_tuple_from_row_struct(const tuple_def* def, void* tuple, const row* r
 
 	init_tuple(def, tuple);
 
-	set_element_in_tuple(def, column_no++, tuple, &(r->c0), -1);
-	set_element_in_tuple(def, column_no++, tuple, &(r->c1), -1);
-	set_element_in_tuple(def, column_no++, tuple,  (r->c2), -1);
-	set_element_in_tuple(def, column_no++, tuple, &(r->c3), -1);
-	set_element_in_tuple(def, column_no++, tuple,  (r->c4), -1);
+	set_element_in_tuple(def, column_no++, tuple, &((user_value){.int_value = r->c0}));
+	set_element_in_tuple(def, column_no++, tuple, &((user_value){.uint_value = r->c1}));
+	set_element_in_tuple(def, column_no++, tuple, &((user_value){.data = r->c2, .data_size = strlen(r->c2)}));
+	set_element_in_tuple(def, column_no++, tuple, &((user_value){.double_value = r->c3}));
+	set_element_in_tuple(def, column_no++, tuple, &((user_value){.data = r->c4, .data_size = strlen(r->c4)}));
 
 	// output print string
 	char print_buffer[PAGE_SIZE];
@@ -581,62 +581,62 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 	{
 		int64_t c0 = 123;
 
-		set_element_in_tuple(def, 0, tuple, &c0, -1);
+		set_element_in_tuple(def, 0, tuple, &((user_value){.int_value = c0}));
 
 		sprint_tuple(print_buffer, tuple, def);
 		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 
 		c0 = 456;
 
-		set_element_in_tuple(def, 0, tuple, &c0, -1);
+		set_element_in_tuple(def, 0, tuple, &((user_value){.int_value = c0}));
 
 		sprint_tuple(print_buffer, tuple, def);
 		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 
-		set_element_in_tuple(def, 0, tuple, NULL, -1);
+		set_element_in_tuple(def, 0, tuple, NULL);
 
 		sprint_tuple(print_buffer, tuple, def);
 		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 
-		set_element_in_tuple(def, 0, tuple, NULL, -1);
+		set_element_in_tuple(def, 0, tuple, NULL);
 
 		sprint_tuple(print_buffer, tuple, def);
 		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 	}
 
 #ifndef TEST_FIXED_ARRAY_PAGE_LAYOUT
-	set_element_in_tuple(def, 2, tuple, "Rohan", -1);
-	set_element_in_tuple(def, 4, tuple, "Dvivedi", -1);
+	set_element_in_tuple(def, 2, tuple, &((user_value){.data = "Rohan", .data_size = strlen("Rohan")}));
+	set_element_in_tuple(def, 4, tuple, &((user_value){.data = "Dvivedi", .data_size = strlen("Dvivedi")}));
 
 	sprint_tuple(print_buffer, tuple, def);
 	printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 
 	{
-		set_element_in_tuple(def, 2, tuple, NULL, -1);
+		set_element_in_tuple(def, 2, tuple, NULL);
 
 		sprint_tuple(print_buffer, tuple, def);
 		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 
 		char* c2 = "Hello";
 
-		set_element_in_tuple(def, 2, tuple, c2, -1);
+		set_element_in_tuple(def, 2, tuple, &((user_value){.data = c2, .data_size = strlen(c2)}));
 
 		sprint_tuple(print_buffer, tuple, def);
 		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 
 		c2 = "World";
 
-		set_element_in_tuple(def, 4, tuple, c2, -1);
+		set_element_in_tuple(def, 4, tuple, &((user_value){.data = c2, .data_size = strlen(c2)}));
 
 		sprint_tuple(print_buffer, tuple, def);
 		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 
-		set_element_in_tuple(def, 2, tuple, NULL, -1);
+		set_element_in_tuple(def, 2, tuple, NULL);
 
 		sprint_tuple(print_buffer, tuple, def);
 		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 
-		set_element_in_tuple(def, 2, tuple, NULL, -1);
+		set_element_in_tuple(def, 2, tuple, NULL);
 
 		sprint_tuple(print_buffer, tuple, def);
 		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
