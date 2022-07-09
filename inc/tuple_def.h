@@ -4,8 +4,6 @@
 #include<stdio.h>
 #include<stdint.h>
 
-#include<var_sized.h>
-
 typedef enum element_type element_type;
 enum element_type
 {
