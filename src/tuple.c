@@ -344,13 +344,13 @@ uint32_t sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 			case UINT :
 			{
 				uint64_t uint_val = read_uint64(e, ele_d->size);
-				chars_written += sprintf(str + chars_written, PRIu64, uint_val);
+				chars_written += sprintf(str + chars_written, "%"PRIu64, uint_val);
 				break;
 			}
 			case INT :
 			{
 				int64_t int_val = read_int64(e, ele_d->size);
-				chars_written += sprintf(str + chars_written, PRId64, int_val);
+				chars_written += sprintf(str + chars_written, "%"PRId64, int_val);
 				break;
 			}
 			case FLOAT :
