@@ -169,6 +169,7 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 		void* existing_tuple = page + existing_tuple_offset_val;
 		uint32_t existing_tuple_size = get_tuple_size(tpl_d, existing_tuple);
 
+		// if the exiting tuple is physically the last tuple
 		if(existing_tuple_offset_val == end_of_free_space_offset_val)
 		{
 			if(free_space + existing_tuple_size >= external_tuple_size)
@@ -190,6 +191,13 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 			}
 			else
 				return 0;
+		}
+		// if exiting_tuple is larger than or equal to the external_tuple, then we can use the same slot
+		else if(existing_tuple_size >= external_tuple_size)
+		{
+			memmove(existing_tuple, external_tuple, external_tuple_size);
+
+			return 1;
 		}
 	}
 	
