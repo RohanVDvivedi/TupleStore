@@ -1,7 +1,3 @@
-1* refactor element from a union of pointers to just a void* just like the representation of a tuple
- * provide int, unsigned int types the sizes all the way from 1 to 8 bytes wide
- * provide string and blob types sizes from 1 all the way to 4
-
 2* provide an option to use is_NON_NULL_field, to save ourselves from allocating a bit in the bitmap for the fields that can not be NULL.
  * provide a bit_offset_to_is_null_bit_in_is_null_bitmap value attribute to element_def, since now each element's bit can be at a different location in the is_null_bitmap
  * non_null fields when written to by NULL should fail
