@@ -1,6 +1,5 @@
 OPTIMIZATION TASKS FOR COMPUTATION
-1*add total tuples size on page field
- *perfrom an inplace update when the external tuple is smaller than the existing tuple on the slotted page, this will reduce the requirement of compactions
+1*add total occupied tuples size on slotted page
 
 FEATURE TASKS REDUCE SPACE USED ON PAGE
 2* provide an option to use is_NON_NULL_field, to save ourselves from allocating a bit in the bitmap for the fields that can not be NULL.
