@@ -365,7 +365,7 @@ uint32_t sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
 					}
 					case 8 :
 					{
-						float double_val = read_double(e);
+						double double_val = read_double(e);
 						chars_written += sprintf(str + chars_written, "%lf", double_val);
 						break;
 					}
