@@ -93,7 +93,7 @@ void build_tuple_from_row_struct(const tuple_def* def, void* tuple, const row* r
 	sprint_tuple(print_buffer, tuple, def);
 	printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 
-	set_element_in_tuple(def, column_no++, tuple, &((user_value){.data = r->c2, .data_size = strlen(r->c2)}));printf("LOL3\n");
+	set_element_in_tuple(def, column_no++, tuple, (r->c2 == NULL) ? NULL : &((user_value){.data = r->c2, .data_size = strlen(r->c2)}));printf("LOL3\n");
 	sprint_tuple(print_buffer, tuple, def);
 	printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 
@@ -101,7 +101,7 @@ void build_tuple_from_row_struct(const tuple_def* def, void* tuple, const row* r
 	sprint_tuple(print_buffer, tuple, def);
 	printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 
-	set_element_in_tuple(def, column_no++, tuple, &((user_value){.data = r->c4, .data_size = strlen(r->c4)}));printf("LOL5\n");
+	set_element_in_tuple(def, column_no++, tuple, (r->c4 == NULL) ? NULL : &((user_value){.data = r->c4, .data_size = strlen(r->c4)}));printf("LOL5\n");
 	sprint_tuple(print_buffer, tuple, def);
 	printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
 }
