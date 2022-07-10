@@ -1,8 +1,9 @@
 OPTIMIZATION TASKS FOR COMPUTATION
-1*add total occupied tuples size on slotted page
+1*add total occupied tuples size on slotted page, and deleted_tuple_count on the fixed array page for faster calculation of space occupied by tuples on the page
 
 FEATURE TASKS REDUCE SPACE USED ON PAGE
-2* provide an option to use is_NON_NULL_field, to save ourselves from allocating a bit in the bitmap for the fields that can not be NULL.
+2* make user_value a struct with a 1 bit int filed is_NULL, write a function to check if a const user_value* is_NULL, if the user value pointer is NULL or is_NULL flag in the user_value is set then the user_value must be considered a NULL user_value
+ * provide an option to use is_NON_NULL_field, to save ourselves from allocating a bit in the bitmap for the fields that can not be NULL.
  * provide a bit_offset_to_is_null_bit_in_is_null_bitmap value attribute to element_def, since now each element's bit can be at a different location in the is_null_bitmap
  * non_null fields when written to by NULL should fail
 
