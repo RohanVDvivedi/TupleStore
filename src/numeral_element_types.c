@@ -173,6 +173,10 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 
 void set_numeral_element(void* e, const element_def* ele_d, const user_value* uval)
 {
+	// ensure that user value is not NULL
+	if(is_user_value_NULL(uval))
+		return;
+
 	switch(ele_d->type)
 	{
 		case UINT :

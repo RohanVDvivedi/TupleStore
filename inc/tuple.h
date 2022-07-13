@@ -11,9 +11,6 @@
 // initialized the tuple with all NULL attributes and its minimum size
 void init_tuple(const tuple_def* tpl_d, void* tupl);
 
-// get the number of bytes required to store the element as a user_value
-uint32_t get_element_data_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
-
 // actual size of the element in the tuple
 uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 
@@ -33,10 +30,9 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void
 
 // does not allocate any memeory
 // returns user_value as int_value, uint_value, float_value or double_value for numeral types
-// for non numeral types it returns data and data_size
-// no memory is allocated for non numeral types
+// for non numeral types it returns data and data_size, no memory is allocated for non numeral types
+// user_value.is_NULL will be set if the element was NULL in tuple
 // the return of this function must not be used after the tuple has had any calls to set_element_in_tuple* functions
-// before you call this function you must check that the element is not NULL using "is_NULL_in_tuple function"
 user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 
 

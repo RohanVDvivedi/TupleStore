@@ -48,28 +48,6 @@ uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, c
 	}
 }
 
-uint32_t get_element_data_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
-{
-	// if the element is NULL no bytes must be required in user_value to store it
-	if(is_NULL_in_tuple(tpl_d, index, tupl))
-		return 0;
-
-	const element_def* ele_d = tpl_d->element_defs + index;
-
-	if(is_fixed_sized_element_def(ele_d) && !is_string_type_element_def(ele_d)) // fixed sized except for a string
-		return ele_d->size;
-	else if(is_string_type_element_def(ele_d)) // fixed sized and a string
-	{
-		const void* e = get_element_from_tuple(tpl_d, index, tupl);
-		return get_string_length_for_string_type_element(e, ele_d) + 1;
-	}
-	else // it is VAR_BLOB
-	{
-		const void* e = get_element_from_tuple(tpl_d, index, tupl);
-		return get_data_size_for_variable_sized_non_numeral_element(e, ele_d);
-	}
-}
-
 uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
 {
 	if(is_fixed_sized_tuple_def(tpl_d)) // i.e. fixed sized tuple
@@ -98,7 +76,7 @@ static int set_is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tu
 void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value)
 {
 	// if the element inside tuple is NULL, and we are asked to set it to NULL, then return
-	if(is_NULL_in_tuple(tpl_d, index, tupl) && value == NULL)
+	if(is_NULL_in_tuple(tpl_d, index, tupl) && is_user_value_NULL(value))
 		return;
 
 	// element definition we are concerned with
@@ -248,7 +226,7 @@ user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, uint32_t in
 	const void* e = get_element_from_tuple(tpl_d, index, tupl);
 
 	if(e == NULL)
-		return (user_value){};
+		return (user_value){.is_NULL = 1};
 
 	if(is_numeral_type_element_def(ele_d))
 		return get_value_from_numeral_element(e, ele_d);

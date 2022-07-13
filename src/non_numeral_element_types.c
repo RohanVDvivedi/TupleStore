@@ -148,6 +148,10 @@ static void set_variable_sized_non_numeral_element_INTERNAL(void* e, const eleme
 
 void set_variable_sized_non_numeral_element(void* e, const element_def* ele_d, const user_value* uval)
 {
+	// ensure that user value is not NULL
+	if(is_user_value_NULL(uval))
+		return;
+	
 	set_variable_sized_non_numeral_element_INTERNAL(e, ele_d, uval->data, uval->data_size);
 }
 
@@ -169,6 +173,10 @@ static void set_string_OR_blob_element_INTERNAL(void* e, const element_def* ele_
 
 void set_string_OR_blob_element(void* e, const element_def* ele_d, const user_value* uval)
 {
+	// ensure that user value is not NULL
+	if(is_user_value_NULL(uval))
+		return;
+
 	set_string_OR_blob_element_INTERNAL(e, ele_d, uval->data, uval->data_size);
 }
 
