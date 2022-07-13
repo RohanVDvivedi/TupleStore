@@ -10,6 +10,7 @@
 
 #include<page_header.h>
 #include<page_layout_util.h>
+#include<memswap.h>
 
 /*
 ** tuple capacity for a fixed array page can be pre-calculated
@@ -238,32 +239,7 @@ int swap_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_def
 	void* tuple_i1 = page + get_offset_to_ith_tuple(page, page_size, tpl_d, i1);
 	void* tuple_i2 = page + get_offset_to_ith_tuple(page, page_size, tpl_d, i2);
 
-	if(bit_i1 == 0)
-		memmove(tuple_i1, tuple_i2, tpl_d->size);
-	else if(bit_i2 == 0)
-		memmove(tuple_i2, tuple_i1, tpl_d->size);
-	else
-	{
-		int using_last_tuple_slot_as_temp_to_swap = 0;
-		void* temp = NULL;
-
-		uint32_t tuple_capacity = get_tuple_capacity(page, page_size, tpl_d);
-
-		if(tuple_capacity > tuple_count_val)
-		{
-			using_last_tuple_slot_as_temp_to_swap = 1;
-			temp = page + get_offset_to_ith_tuple(page, page_size, tpl_d, tuple_capacity - 1);
-		}
-		else
-			temp = malloc(tpl_d->size);
-
-		memmove(    temp, tuple_i1, tpl_d->size);
-		memmove(tuple_i1, tuple_i2, tpl_d->size);
-		memmove(tuple_i2,     temp, tpl_d->size);
-
-		if(!using_last_tuple_slot_as_temp_to_swap)
-			free(temp);
-	}
+	memswap(tuple_i1, tuple_i2, tpl_d->size);
 
 	// swap bits of the is_valid bitmap
 	bit_i1 ? set_bit(is_valid, i2) : reset_bit(is_valid, i2);
