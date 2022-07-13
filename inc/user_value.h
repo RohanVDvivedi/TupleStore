@@ -1,20 +1,31 @@
 #ifndef USER_VALUE_H
 #define USER_VALUE_H
 
+#include<stdint.h>
+
 // user passes the parameters for assignement using this union
 
-typedef union user_value user_value;
-union user_value
+typedef struct user_value user_value;
+struct user_value
 {
-	uint64_t uint_value;
-	int64_t int_value;
-	float float_value;
-	double double_value;
-	struct
+	// if the user_value is NULL this bit must be set
+	int is_NULL:1;
+
+	// else one of the attributes of this union must be set, based on the given element_def
+	union
 	{
-		const void* data;
-		uint32_t data_size;
+		uint64_t uint_value;
+		int64_t int_value;
+		float float_value;
+		double double_value;
+		struct
+		{
+			const void* data;
+			uint32_t data_size;
+		};
 	};
 };
+
+int is_user_value_NULL(const user_value* uval);
 
 #endif
