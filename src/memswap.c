@@ -2,8 +2,6 @@
 
 #include<cutlery_stds.h>
 
-//#include<limits.h>
-
 int memswap(void* data1, void* data2, uint32_t size)
 {
 	if(size <= UINT_MAX)
