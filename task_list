@@ -8,7 +8,4 @@ FEATURE TASKS REDUCE SPACE USED ON PAGE
  * non_null fields when written to by NULL should fail
 
 OPTIMIZATION FOR COMPRESSION TASKS
-3* write an in-place memory_swap in cutlery and use it to swap tuples in fixed array page
- * think how to do it (using a macro or a separate param to every function or just do it during compaction)
- * make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction, deleting a tuple, updating a tuple and swaping the tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined on a swap, update or delete.
-  * this will avail better compression on the page
+3* make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction, deleting a tuple, or updating a tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined OR use a global variable for this.
