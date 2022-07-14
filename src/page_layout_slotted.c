@@ -520,7 +520,7 @@ uint32_t get_space_occupied_by_tuples_slotted_page(const void* page, uint32_t pa
 uint32_t get_space_occupied_by_all_tuples_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	// we cache space_occupied_by_tuples on the slotted page
-	void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
+	const void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
 	return read_value_from_page(space_occupied_by_tuples, page_size);
 }
 
