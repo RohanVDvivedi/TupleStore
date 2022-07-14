@@ -322,13 +322,6 @@ void run_page_compaction_fixed_array_page(void* page, uint32_t page_size, const 
 				new_tuple_count++;
 			}
 		}
-
-		void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
-		write_value_to_page(tuple_count, page_size, new_tuple_count);
-
-		// make tomb stone count as 0
-		void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
-		write_value_to_page(tomb_stone_count, page_size, 0);
 	}
 }
 
