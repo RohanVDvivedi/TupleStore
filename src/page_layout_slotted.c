@@ -378,7 +378,7 @@ int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 	{
 		void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
 		uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
-		space_occupied_by_tuples -= ith_tuple_old_size;
+		space_occupied_by_tuples_val -= ith_tuple_old_size;
 		write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
 	}
 
