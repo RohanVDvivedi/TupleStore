@@ -335,10 +335,10 @@ int main()
 
 	// --------------- SET PAGE HEADER
 
-	hdr* hdr = get_page_header(page, PAGE_SIZE);
-	hdr->data[0] = 0x01234567;
-	hdr->data[0] = 0x89abcdef;
-	strcpy(hdr->name, "Rohn-pg");
+	hdr* hdr_p = get_page_header(page, PAGE_SIZE);
+	hdr_p->data[0] = 0x01234567;
+	hdr_p->data[0] = 0x89abcdef;
+	strcpy(hdr_p->name, "Rohn-pg");
 
 	// ---------------- PRINT PAGE
 
