@@ -13,9 +13,14 @@
 ** 		offset calculation functions
 */
 
-static inline uint32_t get_offset_to_tuple_count(const void* page, uint32_t page_size)
+static inline uint32_t get_offset_to_space_occupied_by_tuples(const void* page, uint32_t page_size)
 {
 	return get_offset_to_end_of_page_header(page, page_size);
+}
+
+static inline uint32_t get_offset_to_tuple_count(const void* page, uint32_t page_size)
+{
+	return get_offset_to_space_occupied_by_tuples(page, page_size) + get_value_size_on_page(page_size);
 }
 
 static inline uint32_t get_offset_to_tomb_stone_count(const void* page, uint32_t page_size)
@@ -65,19 +70,19 @@ static inline uint32_t get_offset_to_ith_tuple(const void* page, uint32_t page_s
 
 uint32_t get_minimum_page_size_for_slotted_page(uint32_t page_header_size, const tuple_def* tpl_d, uint32_t tuple_count)
 {
-	uint32_t min_size_8 = 1 + page_header_size + ((3 + tuple_count) * 1) + (tuple_count * get_minimum_tuple_size(tpl_d));
+	uint32_t min_size_8 = 1 + page_header_size + ((4 + tuple_count) * 1) + (tuple_count * get_minimum_tuple_size(tpl_d));
 	if(min_size_8 <= (UINT32_C(1)<<8))
 		return min_size_8;
 
-	uint32_t min_size_16 = 2 + page_header_size + ((3 + tuple_count) * 2) + (tuple_count * get_minimum_tuple_size(tpl_d));
+	uint32_t min_size_16 = 2 + page_header_size + ((4 + tuple_count) * 2) + (tuple_count * get_minimum_tuple_size(tpl_d));
 	if(min_size_16 <= (UINT32_C(1)<<16))
 		return min_size_16;
 
-	uint32_t min_size_24 = 3 + page_header_size + ((3 + tuple_count) * 3) + (tuple_count * get_minimum_tuple_size(tpl_d));
+	uint32_t min_size_24 = 3 + page_header_size + ((4 + tuple_count) * 3) + (tuple_count * get_minimum_tuple_size(tpl_d));
 	if(min_size_24 <= (UINT32_C(1)<<24))
 		return min_size_24;
 
-	uint32_t min_size_32 = 4 + page_header_size + ((3 + tuple_count) * 4) + (tuple_count * get_minimum_tuple_size(tpl_d));
+	uint32_t min_size_32 = 4 + page_header_size + ((4 + tuple_count) * 4) + (tuple_count * get_minimum_tuple_size(tpl_d));
 	return min_size_32;
 }
 
@@ -90,6 +95,10 @@ int init_slotted_page(void* page, uint32_t page_size, uint32_t page_header_size,
 	// initialize page header
 	if(init_page_header(page, page_size, page_header_size) == 0)
 		return 0;
+
+	// write 0 to space_occupied_by_tuples
+	void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
+	write_value_to_page(space_occupied_by_tuples, page_size, 0);
 
 	// write 0 to tuple_count
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
@@ -328,6 +337,10 @@ int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 
 int delete_all_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
+	// write 0 to space_occupied_by_tuples
+	void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
+	write_value_to_page(space_occupied_by_tuples, page_size, 0);
+
 	// write 0 to tuple_count
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	write_value_to_page(tuple_count, page_size, 0);
@@ -506,9 +519,9 @@ uint32_t get_space_occupied_by_tuples_slotted_page(const void* page, uint32_t pa
 
 uint32_t get_space_occupied_by_all_tuples_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
-	if(get_tuple_count_slotted_page(page, page_size) == 0)
-		return 0;
-	return get_space_occupied_by_tuples_slotted_page(page, page_size, tpl_d, 0, get_tuple_count_slotted_page(page, page_size) - 1);
+	// we cache space_occupied_by_tuples on the slotted page
+	void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
+	return read_value_from_page(space_occupied_by_tuples, page_size);
 }
 
 uint32_t get_space_occupied_by_all_tomb_stones_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
@@ -523,7 +536,7 @@ uint32_t get_space_allotted_to_all_tuples_slotted_page(const void* page, uint32_
 
 uint32_t get_space_to_be_allotted_to_all_tuples_slotted_page(uint32_t page_header_size, uint32_t page_size)
 {
-	return page_size - (get_value_size_on_page(page_header_size) + page_header_size + (3 * get_value_size_on_page(page_header_size)));
+	return page_size - (get_value_size_on_page(page_header_size) + page_header_size + (4 * get_value_size_on_page(page_header_size)));
 }
 
 uint32_t get_additional_space_overhead_per_tuple_slotted_page(uint32_t page_size)
