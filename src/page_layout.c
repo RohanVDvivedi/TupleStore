@@ -258,9 +258,9 @@ uint32_t get_space_occupied_by_all_tuples(const void* page, uint32_t page_size, 
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			return get_space_occupied_by_all_tuples_slotted_page(page, page_size, tpl_d, start_index, last_index);
+			return get_space_occupied_by_all_tuples_slotted_page(page, page_size, tpl_d);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return get_space_occupied_by_all_tuples_fixed_array_page(page, page_size, tpl_d, start_index, last_index);
+			return get_space_occupied_by_all_tuples_fixed_array_page(page, page_size, tpl_d);
 	}
 	return 0;
 }
@@ -270,9 +270,9 @@ uint32_t get_space_occupied_by_all_tomb_stones(const void* page, uint32_t page_s
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			return get_space_occupied_by_all_tomb_stones_slotted_page(page, page_size, tpl_d, start_index, last_index);
+			return get_space_occupied_by_all_tomb_stones_slotted_page(page, page_size, tpl_d);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return get_space_occupied_by_all_tomb_stones_fixed_array_page(page, page_size, tpl_d, start_index, last_index);
+			return get_space_occupied_by_all_tomb_stones_fixed_array_page(page, page_size, tpl_d);
 	}
 	return 0;
 }
@@ -324,10 +324,11 @@ uint32_t get_additional_space_overhead_per_tuple(uint32_t page_size, const tuple
 void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	printf("PAGE : \n");
-	printf("space allotted for tuples = %"PRIu32"\n", get_space_allotted_to_all_tuples(page, page_size, tpl_d));
-	printf("used up space    = %"PRIu32"\n", get_space_occupied_by_all_tuples(page, page_size, tpl_d));
-	printf("free space       = %"PRIu32"\n", get_free_space(page, page_size, tpl_d));
-	printf("fragmented space = %"PRIu32"\n", get_fragmentation_space(page, page_size, tpl_d));
+	printf("space allotted for tuples  = %"PRIu32"\n", get_space_allotted_to_all_tuples(page, page_size, tpl_d));
+	printf("tuples occupied space      = %"PRIu32"\n", get_space_occupied_by_all_tuples(page, page_size, tpl_d));
+	printf("tomb stones occupied space = %"PRIu32"\n", get_space_occupied_by_all_tomb_stones(page, page_size, tpl_d));
+	printf("free space                 = %"PRIu32"\n", get_free_space(page, page_size, tpl_d));
+	printf("fragmented space           = %"PRIu32"\n", get_fragmentation_space(page, page_size, tpl_d));
 	printf("\n");
 	switch(get_page_layout_type(tpl_d))
 	{

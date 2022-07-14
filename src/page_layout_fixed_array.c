@@ -348,6 +348,16 @@ uint32_t get_space_occupied_by_tuples_fixed_array_page(const void* page, uint32_
 	return tuples_existing * tpl_d->size;
 }
 
+uint32_t get_space_occupied_by_all_tuples_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	return (get_tuple_count_fixed_array_page(page, page_size) - get_tomb_stone_count_fixed_array_page(page, page_size)) * tpl_d->size;
+}
+
+uint32_t get_space_occupied_by_all_tomb_stones_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	return get_tomb_stone_count_fixed_array_page(page, page_size) * tpl_d->size;
+}
+
 uint32_t get_space_allotted_to_all_tuples_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	return page_size - get_offset_to_tuples(page, page_size, tpl_d);
