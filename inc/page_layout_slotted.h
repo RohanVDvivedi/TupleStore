@@ -60,6 +60,8 @@ void print_slotted_page(const void* page, uint32_t page_size, const tuple_def* t
 **
 **			char 		page_header[ page_header_size ];
 **
+**			uintN_t		space_occupied_by_tuples;
+**
 **			uintN_t 	tuple_count;
 **
 **			uintN_t 	tomb_stone_count;
