@@ -69,19 +69,19 @@ static inline uint32_t get_offset_to_end_of_free_space(uint32_t page_size)
 
 uint32_t get_minimum_page_size_for_fixed_array_page(uint32_t page_header_size, const tuple_def* tpl_d, uint32_t tuple_count)
 {
-	uint32_t min_size_8 = 1 + page_header_size + 1 + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size);
+	uint32_t min_size_8 = 1 + page_header_size + (1 * 2) + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size);
 	if(min_size_8 <= (1<<8))
 		return min_size_8;
 
-	uint32_t min_size_16 = 2 + page_header_size + 2 + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size);
+	uint32_t min_size_16 = 2 + page_header_size + (2 * 2) + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size);
 	if(min_size_16 <= (1<<16))
 		return min_size_16;
 
-	uint32_t min_size_24 = 3 + page_header_size + 3 + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size);
+	uint32_t min_size_24 = 3 + page_header_size + (3 * 2) + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size);
 	if(min_size_24 <= (1<<24))
 		return min_size_24;
 
-	uint32_t min_size_32 = 4 + page_header_size + 4 + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size);
+	uint32_t min_size_32 = 4 + page_header_size + (4 * 2) + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size);
 	return min_size_32;
 }
 
@@ -98,6 +98,10 @@ int init_fixed_array_page(void* page, uint32_t page_size, uint32_t page_header_s
 	// write 0 to tuple_count
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	write_value_to_page(tuple_count, page_size, 0);
+
+	// write 0 to tomb_stone_count
+	void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+	write_value_to_page(tomb_stone_count, page_size, 0);
 
 	// initialize is_valid bitmap to all 0s
 	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
@@ -161,6 +165,15 @@ int update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
 	void* new_tuple_p = page + get_offset_to_ith_tuple(page, page_size, tpl_d, index);
 
+	// if the tuple at given index did not exist (was a tomb_stone) prior to this update
+	// then decrement the tomb_stone_count
+	if(get_bit(is_valid, index) == 0)
+	{
+		void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+		uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size) - 1;
+		write_value_to_page(tomb_stone_count, page_size, tomb_stone_count_val);
+	}
+
 	// copy external_tuple to the new_tuple (in the page)
 	memmove(new_tuple_p, external_tuple, tpl_d->size);
 	set_bit(is_valid, index);
@@ -171,9 +184,11 @@ int update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 static inline void retract_tuple_count(void* page, uint32_t page_size)
 {
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
 
-	// cache tuple count
+	// cache tuple count and tomb_stone_count
 	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
+	uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
 
 	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
 
@@ -181,13 +196,17 @@ static inline void retract_tuple_count(void* page, uint32_t page_size)
 	while(tuple_count_val > 0)
 	{
 		if(get_bit(is_valid, tuple_count_val - 1) == 0)
+		{
 			tuple_count_val--;
+			tomb_stone_count_val--;
+		}
 		else
 			break;
 	}
 
-	// write the calculated valid tuple count
+	// write the calculated valid tuple count and tomb_stone count
 	write_value_to_page(tuple_count, page_size, tuple_count_val);
+	write_value_to_page(tomb_stone_count, page_size, tomb_stone_count_val);
 }
 
 int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
@@ -205,6 +224,13 @@ int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 	// mark deleted
 	reset_bit(is_valid, index);
 
+	// increment tomb_stone_count
+	{
+		void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+		uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size) + 1;
+		write_value_to_page(tomb_stone_count, page_size, tomb_stone_count_val);
+	}
+
 	// retract tuple_count if possible
 	retract_tuple_count(page, page_size);
 
@@ -213,9 +239,14 @@ int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 
 int delete_all_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
-	// just make tuple count as 0
+	// make tuple count as 0
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	write_value_to_page(tuple_count, page_size, 0);
+
+	// make tomb stone count as 0
+	void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+	write_value_to_page(tomb_stone_count, page_size, 0);
+
 	return 1;
 }
 
@@ -294,6 +325,10 @@ void run_page_compaction_fixed_array_page(void* page, uint32_t page_size, const 
 
 		void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 		write_value_to_page(tuple_count, page_size, new_tuple_count);
+
+		// make tomb stone count as 0
+		void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+		write_value_to_page(tomb_stone_count, page_size, 0);
 	}
 }
 
@@ -320,7 +355,7 @@ uint32_t get_space_allotted_to_all_tuples_fixed_array_page(const void* page, uin
 
 uint32_t get_space_to_be_allotted_to_all_tuples_fixed_array_page(uint32_t page_header_size, uint32_t page_size, const tuple_def* tpl_d)
 {
-	uint32_t space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes = page_size - (get_value_size_on_page(page_size) + page_header_size + get_value_size_on_page(page_size));
+	uint32_t space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes = page_size - (get_value_size_on_page(page_size) + page_header_size + (get_value_size_on_page(page_size) * 2));
 	uint32_t tuple_capacity = (space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes * 8) / ((tpl_d->size * 8) + 1);
 	uint32_t is_valid_bitmap_size_in_bytes = bitmap_size_in_bytes(tuple_capacity);
 	return space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes - is_valid_bitmap_size_in_bytes;
