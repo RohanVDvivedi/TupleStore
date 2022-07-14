@@ -9,6 +9,8 @@ int init_slotted_page(void* page, uint32_t page_size, uint32_t page_header_size,
 
 uint32_t get_tuple_count_slotted_page(const void* page, uint32_t page_size);
 
+uint32_t get_tomb_stone_count_slotted_page(const void* page, uint32_t page_size);
+
 int insert_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
 int can_insert_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
@@ -55,6 +57,8 @@ void print_slotted_page(const void* page, uint32_t page_size, const tuple_def* t
 **			char 		page_header[ page_header_size ];
 **
 **			uintN_t 	tuple_count;
+**
+**			uintN_t 	tomb_stone_count;
 **
 **			uintN_t		end_of_free_space_offset;
 **

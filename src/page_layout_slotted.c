@@ -18,9 +18,14 @@ static inline uint32_t get_offset_to_tuple_count(const void* page, uint32_t page
 	return get_offset_to_end_of_page_header(page, page_size);
 }
 
-static inline uint32_t get_offset_to_end_of_free_space_offset(const void* page, uint32_t page_size)
+static inline uint32_t get_offset_to_tomb_stone_count(const void* page, uint32_t page_size)
 {
 	return get_offset_to_tuple_count(page, page_size) + get_value_size_on_page(page_size);
+}
+
+static inline uint32_t get_offset_to_end_of_free_space_offset(const void* page, uint32_t page_size)
+{
+	return get_offset_to_tomb_stone_count(page, page_size) + get_value_size_on_page(page_size);
 }
 
 static inline uint32_t get_offset_to_tuple_offsets(const void* page, uint32_t page_size)
@@ -60,19 +65,19 @@ static inline uint32_t get_offset_to_ith_tuple(const void* page, uint32_t page_s
 
 uint32_t get_minimum_page_size_for_slotted_page(uint32_t page_header_size, const tuple_def* tpl_d, uint32_t tuple_count)
 {
-	uint32_t min_size_8 = 1 + page_header_size + ((2 + tuple_count) * 1) + (tuple_count * get_minimum_tuple_size(tpl_d));
+	uint32_t min_size_8 = 1 + page_header_size + ((3 + tuple_count) * 1) + (tuple_count * get_minimum_tuple_size(tpl_d));
 	if(min_size_8 <= (UINT32_C(1)<<8))
 		return min_size_8;
 
-	uint32_t min_size_16 = 2 + page_header_size + ((2 + tuple_count) * 2) + (tuple_count * get_minimum_tuple_size(tpl_d));
+	uint32_t min_size_16 = 2 + page_header_size + ((3 + tuple_count) * 2) + (tuple_count * get_minimum_tuple_size(tpl_d));
 	if(min_size_16 <= (UINT32_C(1)<<16))
 		return min_size_16;
 
-	uint32_t min_size_24 = 3 + page_header_size + ((2 + tuple_count) * 3) + (tuple_count * get_minimum_tuple_size(tpl_d));
+	uint32_t min_size_24 = 3 + page_header_size + ((3 + tuple_count) * 3) + (tuple_count * get_minimum_tuple_size(tpl_d));
 	if(min_size_24 <= (UINT32_C(1)<<24))
 		return min_size_24;
 
-	uint32_t min_size_32 = 4 + page_header_size + ((2 + tuple_count) * 4) + (tuple_count * get_minimum_tuple_size(tpl_d));
+	uint32_t min_size_32 = 4 + page_header_size + ((3 + tuple_count) * 4) + (tuple_count * get_minimum_tuple_size(tpl_d));
 	return min_size_32;
 }
 
@@ -90,6 +95,10 @@ int init_slotted_page(void* page, uint32_t page_size, uint32_t page_header_size,
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	write_value_to_page(tuple_count, page_size, 0);
 
+	// write 0 to tomb_stone_count
+	void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+	write_value_to_page(tomb_stone_count, page_size, 0);
+
 	// write page_size to end_of_free_space_offset
 	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
 	write_value_to_page(end_of_free_space_offset, page_size, page_size);
@@ -101,6 +110,12 @@ uint32_t get_tuple_count_slotted_page(const void* page, uint32_t page_size)
 {
 	const void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	return read_value_from_page(tuple_count, page_size);
+}
+
+uint32_t get_tomb_stone_count_slotted_page(const void* page, uint32_t page_size)
+{
+	const void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+	return read_value_from_page(tomb_stone_count, page_size);
 }
 
 int insert_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
