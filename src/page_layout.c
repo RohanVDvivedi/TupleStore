@@ -330,6 +330,9 @@ void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 	printf("free space                 = %"PRIu32"\n", get_free_space(page, page_size, tpl_d));
 	printf("fragmented space           = %"PRIu32"\n", get_fragmentation_space(page, page_size, tpl_d));
 	printf("\n");
+	printf("tuple_count      = %"PRIu32"\n", get_tuple_count(page, page_size, tpl_d));
+	printf("tomb_stone_count = %"PRIu32"\n", get_tomb_stone_count(page, page_size, tpl_d));
+	printf("\n");
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
