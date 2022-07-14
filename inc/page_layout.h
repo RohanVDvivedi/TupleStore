@@ -33,8 +33,11 @@ uint32_t get_minimum_page_size(uint32_t page_header_size, const tuple_def* tpl_d
 // initialize page to start using it
 int init_page(void* page, uint32_t page_size, uint32_t page_header_size, const tuple_def* tpl_d);
 
-// returns the number of tuples in the page (including the deleted ones)
+// returns the number of tuples in the page (including the deleted ones, i.e. including tomb stones)
 uint32_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+
+// returns the number of deleted tuples (tomb stones) in the page
+uint32_t get_tomb_stone_count(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 
 
@@ -95,6 +98,9 @@ uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, cons
 
 // equivalent to get_space_occupied_by_tuples[0, tuple_count - 1)
 uint32_t get_space_occupied_by_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d);
+
+// returns space_occupied by deleted tuples (i.e. tomb_stones) on the page from start_index to last_index
+uint32_t get_space_occupied_by_all_tomb_stones(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 // this is equivalent to free_space when the tuple_count = 0
 uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d);
