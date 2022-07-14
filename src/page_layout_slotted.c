@@ -177,10 +177,12 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
 	uint32_t end_of_free_space_offset_val = get_offset_to_end_of_free_space(page, page_size);
 
-	if(exists_tuple_slotted_page(page, page_size, tpl_d, index))
+	void* existing_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, index);
+	uint32_t existing_tuple_offset_val = get_offset_to_ith_tuple(page, page_size, index);
+
+	// if a tuple already exists at the given index
+	if(existing_tuple_offset_val != 0)
 	{
-		void* existing_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, index);
-		uint32_t existing_tuple_offset_val = get_offset_to_ith_tuple(page, page_size, index);
 		void* existing_tuple = page + existing_tuple_offset_val;
 		uint32_t existing_tuple_size = get_tuple_size(tpl_d, existing_tuple);
 
@@ -216,9 +218,19 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 		}
 	}
 	
-
+	// either the existing_tuple is NULL (i.e. deleted or is tomb_stone) OR there isn't enough space to fit in the external tuple
+	// so we need a take space from the free space on the page
 	if(free_space >= external_tuple_size)
 	{
+		// now here if we are updating to a slot that was holding a tomb_stone
+		// then we need to decrement the tomb_stone count
+		if(existing_tuple_offset_val == 0)
+		{
+			void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+			uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size) - 1;
+			write_value_to_page(tomb_stone_count, page_size, tomb_stone_count_val);
+		}
+
 		// update end of free space offset
 		end_of_free_space_offset_val -= external_tuple_size;
 		write_value_to_page(end_of_free_space_offset, page_size, end_of_free_space_offset_val);
