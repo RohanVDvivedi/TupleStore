@@ -1,6 +1,9 @@
 OPTIMIZATION TASKS FOR COMPUTATION
-1*add tomb_stones_count on fixed array page to quickly calculate space_occupied_by_tuples
- *add space_occupied_by_tuples on slotted page to quickly calculate space_occupied_by_tuples
+1*add tomb_stone_count on fixed array page to quickly calculate space_occupied_by_tuples
+ *add space_occupied_by_tuples on slotted page to quickly calculate space_occupied_by_tuples\
+ *add tomb_stone_count on slotted page
+ *implement get_space_occupied_by_all_tomb_stones function for both the page types
+ *fragmented_space = space_allotted_to_tuples - space_occupied_by_tuples - space_occupied_by_tomb_stones - free_space
 
 FEATURE TASKS REDUCE SPACE USED ON PAGE
 2* do not store is_null bit for variable length tuples, instead make only their offsets as 0, this will save 1 bit worth of memory
