@@ -31,9 +31,14 @@ static inline uint32_t get_offset_to_tuple_count(const void* page, uint32_t page
 	return get_offset_to_end_of_page_header(page, page_size);
 }
 
-static inline uint32_t get_offset_to_is_valid_bitmap(const void* page, uint32_t page_size)
+static inline uint32_t get_offset_to_tomb_stone_count(const void* page, uint32_t page_size)
 {
 	return get_offset_to_tuple_count(page, page_size) + get_value_size_on_page(page_size);
+}
+
+static inline uint32_t get_offset_to_is_valid_bitmap(const void* page, uint32_t page_size)
+{
+	return get_offset_to_tomb_stone_count(page, page_size) + get_value_size_on_page(page_size);
 }
 
 static inline uint32_t get_offset_to_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d)
@@ -106,6 +111,12 @@ uint32_t get_tuple_count_fixed_array_page(const void* page, uint32_t page_size)
 {
 	const void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	return read_value_from_page(tuple_count, page_size);
+}
+
+uint32_t get_tomb_stone_count_fixed_array_page(const void* page, uint32_t page_size)
+{
+	const void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+	return read_value_from_page(tomb_stone_count, page_size);
 }
 
 int insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)

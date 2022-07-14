@@ -9,6 +9,8 @@ int init_fixed_array_page(void* page, uint32_t page_size, uint32_t page_header_s
 
 uint32_t get_tuple_count_fixed_array_page(const void* page, uint32_t page_size);
 
+uint32_t get_tomb_stone_count_fixed_array_page(const void* page, uint32_t page_size);
+
 int insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
 int can_insert_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
@@ -54,6 +56,8 @@ void print_fixed_array_page(const void* page, uint32_t page_size, const tuple_de
 **			char		page_header[ page_header_size ];
 **
 **			uintN_t 	tuple_count;
+**
+**			uintN_t 	tomb_stone_count;
 **
 **			char	 	is_valid_bitmap [ ceil_function( tuple_capacity / 8 ) ] ;
 **
