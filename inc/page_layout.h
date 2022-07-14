@@ -93,7 +93,7 @@ void run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d,
 // returns total free space left inside a given page, that can be used to accomodate tuples
 uint32_t get_free_space(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 
-// returns space_occupied by tuples on the page from start_index to last_index
+// returns space_occupied by tuples on the page from start_index to last_index, including the tomb_stones at those places
 uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t start_index, uint32_t last_index);
 
 // equivalent to get_space_occupied_by_tuples[0, tuple_count - 1)

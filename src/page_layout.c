@@ -305,7 +305,6 @@ uint32_t get_fragmentation_space(const void* page, uint32_t page_size, const tup
 {
 	return 	get_space_allotted_to_all_tuples(page, page_size, tpl_d)
 		- (	  get_space_occupied_by_all_tuples(page, page_size, tpl_d)
-			+ get_space_occupied_by_all_tomb_stones(page, page_size, tpl_d)
 			+ get_free_space(page, page_size, tpl_d)	);
 }
 
@@ -324,11 +323,10 @@ uint32_t get_additional_space_overhead_per_tuple(uint32_t page_size, const tuple
 void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	printf("PAGE : \n");
-	printf("space allotted for tuples  = %"PRIu32"\n", get_space_allotted_to_all_tuples(page, page_size, tpl_d));
-	printf("tuples occupied space      = %"PRIu32"\n", get_space_occupied_by_all_tuples(page, page_size, tpl_d));
-	printf("tomb stones occupied space = %"PRIu32"\n", get_space_occupied_by_all_tomb_stones(page, page_size, tpl_d));
-	printf("free space                 = %"PRIu32"\n", get_free_space(page, page_size, tpl_d));
-	printf("fragmented space           = %"PRIu32"\n", get_fragmentation_space(page, page_size, tpl_d));
+	printf("space allotted   = %"PRIu32"\n", get_space_allotted_to_all_tuples(page, page_size, tpl_d));
+	printf("space occupied   = %"PRIu32" (tomb_stones occupy %"PRIu32")\n", get_space_occupied_by_all_tuples(page, page_size, tpl_d), get_space_occupied_by_all_tomb_stones(page, page_size, tpl_d));
+	printf("free space       = %"PRIu32"\n", get_free_space(page, page_size, tpl_d));
+	printf("fragmented space = %"PRIu32"\n", get_fragmentation_space(page, page_size, tpl_d));
 	printf("\n");
 	printf("tuple_count      = %"PRIu32"\n", get_tuple_count(page, page_size, tpl_d));
 	printf("tomb_stone_count = %"PRIu32"\n", get_tomb_stone_count(page, page_size, tpl_d));
