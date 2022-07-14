@@ -222,6 +222,14 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 				// move data from external tuple to the tuple in the page
 				memmove(existing_tuple, external_tuple, external_tuple_size);
 
+				// modify the space_occupied_by_tuples
+				{
+					void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
+					uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
+					space_occupied_by_tuples_val = (space_occupied_by_tuples_val - existing_tuple_size) + external_tuple_size;
+					write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
+				}
+
 				return 1;
 			}
 			else
@@ -231,6 +239,14 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 		else if(existing_tuple_size >= external_tuple_size)
 		{
 			memmove(existing_tuple, external_tuple, external_tuple_size);
+
+			// modify the space_occupied_by_tuples
+			{
+				void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
+				uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
+				space_occupied_by_tuples_val = (space_occupied_by_tuples_val - existing_tuple_size) + external_tuple_size;
+				write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
+			}
 
 			return 1;
 		}
@@ -262,6 +278,21 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 
 		// move data from external tuple to the tuple in the page
 		memmove(new_tuple, external_tuple, external_tuple_size);
+
+		// modify the space_occupied_by_tuples
+		{
+			void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
+			uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
+			if(existing_tuple_offset_val == 0)
+				space_occupied_by_tuples_val = space_occupied_by_tuples_val + external_tuple_size;
+			else
+			{
+				void* existing_tuple = page + existing_tuple_offset_val;
+				uint32_t existing_tuple_size = get_tuple_size(tpl_d, existing_tuple);
+				space_occupied_by_tuples_val = (space_occupied_by_tuples_val - existing_tuple_size) + external_tuple_size;
+			}
+			write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
+		}
 
 		return 1;
 	}
@@ -317,7 +348,7 @@ int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 
 	// get the ith_tuple and also get its size
 	void* ith_tuple = page + ith_tuple_offset_old_val;
-	uint32_t ith_tuple_old_size = get_tuple_size(ith_tuple, tpl_d);
+	uint32_t ith_tuple_old_size = get_tuple_size(tpl_d, ith_tuple);
 
 	// set the tuple offset of the tuple to be deleted to 0, i.e. mark deleted
 	write_value_to_page(ith_tuple_offset, page_size, 0);
