@@ -332,10 +332,8 @@ static void print_element_def(const element_def* element_d)
 		printf("\t\t\t byte_offset : %"PRIu32"\n", element_d->byte_offset);
 	}
 	printf("\t\t\t NON_NULL : %d\n", element_d->is_non_NULLable);
-
-	// to be removed, once tested
-	// TODO
-	printf("\t\t\t is_NULL_bitmap_bit_offset : %"PRIu32"\n", element_d->is_NULL_bitmap_bit_offset);
+	if(has_bit_in_is_NULL_bitmap(element_d))
+		printf("\t\t\t is_NULL_bitmap_bit_offset : %"PRIu32"\n", element_d->is_NULL_bitmap_bit_offset);
 
 	// print default value
 	// TODO
