@@ -22,7 +22,8 @@ int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 
 // set element (given at void* value) to tuple at a given index
 // value size if disregarded (not required) for fixed length numeric types
-void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value);
+// this function may fail if you attempt to set NULL to a non NULLable element
+int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value);
 
 // set element (given at index_in in tuple_in) to tuple at a given index
 // returns 1 if the set operation was successfull, else returns 0 (this happens when the types are incompatible)

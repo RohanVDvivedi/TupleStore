@@ -81,31 +81,58 @@ int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 		return 0;
 }
 
-// this function only sets a NULLable  bit, it is a utility function
+// this function only sets an element to NULL, if possible, it is a utility function
 // public api must call only the set_element_* functions, this function will be used by the set_element_* function internally
 static int set_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl)
 {
 	// element_def in concern
 	const element_def* ele_d = tpl_d->element_defs + index;
 
-	if(has_bit_in_is_NULL_bitmap(ele_d))	// for a fixed sized element we store the element being NULL in its is_NULL bit
-		set_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
-	else if(is_variable_sized_element_def(ele_d)) // while we consider a variable sized element as NULL, if its offset is NULL
-		write_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, 0);
-	else // else there is no other way to set this element as NULL in the tuple
-		return 0;
+	int done = 0;
 
-	return 1;
+	// set its is_NULL bit if it has 1
+	if(has_bit_in_is_NULL_bitmap(ele_d))
+	{
+		set_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+		done = 1;
+	}
+
+	// for a variable sized element set its offset to 0
+	if(is_variable_sized_element_def(ele_d))
+	{
+		write_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, 0);
+		done = 1;
+	}
+
+	return done;
 }
 
-void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value)
+static int reset_NULL_bit_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl)
+{
+	// element_def in concern
+	const element_def* ele_d = tpl_d->element_defs + index;
+
+	// reset is_NULL bit if it has one
+	if(has_bit_in_is_NULL_bitmap(ele_d))
+	{
+		reset_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+		return 1;
+	}
+
+	return 0;
+}
+
+int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value)
 {
 	// if the element inside tuple is NULL, and we are asked to set it to NULL, then return
 	if(is_NULL_in_tuple(tpl_d, index, tupl) && is_user_value_NULL(value))
-		return;
+		return 1;
 
 	// element definition we are concerned with
 	const element_def* ele_d = tpl_d->element_defs + index;
+
+	if(is_user_value_NULL(value) && !is_NULLable_element_def(ele_d))
+		return 0;
 
 	if(is_fixed_sized_element_def(ele_d))
 	{
@@ -199,6 +226,8 @@ void set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, co
 			write_uint32(tupl, tpl_d->size_of_byte_offsets, tuple_size);
 		}
 	}
+
+	return 1;
 }
 
 int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const tuple_def* tpl_d_in, uint32_t index_in, const void* tupl_in)
@@ -212,16 +241,13 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void
 
 	// if the index_in-th element in the tuple is NULL then set index-th element in tuple as NULL
 	if(is_NULL_in_tuple(tpl_d_in, index_in, tupl_in))
-	{
-		set_element_in_tuple(tpl_d, index, tupl, NULL);
-		return 1;
-	}
+		return set_element_in_tuple(tpl_d, index, tupl, NULL);
 
-	// For numeric types, the type and size of the elements must match up
+	// For numeric types
 	if(is_numeral_type_element_def(ele_d) && is_numeral_type_element_def(ele_d_in))
 	{
-		// set the is_null bitmap bit to 0
-		reset_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+		// set the is_null bitmap bit to 0, of the corresponding element in tupl at the given index
+		reset_NULL_bit_in_tuple(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
 		
 		const void* ele_in = get_element_from_tuple(tpl_d_in, index_in, tupl_in);
 		void* ele = get_element_from_tuple(tpl_d, index, tupl);
@@ -239,10 +265,8 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void
 		user_value value_in = get_value_from_element_from_tuple(tpl_d_in, index_in, tupl_in);
 
 		// and now set this user value in the tuple
-		set_element_in_tuple(tpl_d, index, tupl, &value_in);
+		return set_element_in_tuple(tpl_d, index, tupl, &value_in);
 	}
-
-	return 1;
 }
 
 user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
