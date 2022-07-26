@@ -152,7 +152,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 		else
 		{
 			// set the is_null bitmap bit to 0
-			set_is_NULL_in_tuple(tpl_d, index, tupl, 0);
+			reset_NULL_bit_in_tuple(tpl_d, index, tupl);
 
 			// this won't return a NULL element because, we just resetted this element's is_null_bitmap bit
 			void* ele = get_element_from_tuple(tpl_d, index, tupl);
@@ -189,12 +189,9 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 
 			// update tuple size to old_tuple_size - old_element_size
 			write_uint32(tupl, tpl_d->size_of_byte_offsets, old_tuple_size - old_element_size);
-
-			// update offset of this (variable sized) element to 0
-			write_uint32(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, 0);
 			
-			// set is_null bit, for element at index
-			set_is_NULL_in_tuple(tpl_d, index, tupl, 1);
+			// set the offset of that element to 0, making it NULL
+			set_NULL_in_tuple(tpl_d, index, tupl);
 		}
 
 		// at this point this element is NULL and has no space allocated for it on the tuple
@@ -203,15 +200,13 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 		// then reset its is_null_bitmap bit, allocate space for this new (variable sized) element, and set the new data with value
 		if(is_user_value_NULL(value))
 		{
-			// set the is_null bitmap bit of this element to 0
-			set_is_NULL_in_tuple(tpl_d, index, tupl, 0);
-
 			// get current tuple_size
 			uint32_t tuple_size = get_tuple_size(tpl_d, tupl);
 
 			// allocate space at the end of the tuple for this element
 			// its new offset will be tuple_size
 			// update its offset on the tuple
+			// this will also make this element a non NULL
 			write_uint32(tupl + tpl_d->element_defs[index].byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, tuple_size);
 
 			// since the offset is set appropriately and the is_null bit is reset to 0
@@ -247,7 +242,7 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void
 	if(is_numeral_type_element_def(ele_d) && is_numeral_type_element_def(ele_d_in))
 	{
 		// set the is_null bitmap bit to 0, of the corresponding element in tupl at the given index
-		reset_NULL_bit_in_tuple(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+		reset_NULL_bit_in_tuple(tpl_d, index, tupl);
 		
 		const void* ele_in = get_element_from_tuple(tpl_d_in, index_in, tupl_in);
 		void* ele = get_element_from_tuple(tpl_d, index, tupl);
