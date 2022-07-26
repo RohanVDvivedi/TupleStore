@@ -1,9 +1,6 @@
-FEATURE TASKS REDUCE SPACE USED ON PAGE
-1* do not store is_null bit for variable length tuples, instead make only their offsets as 0, this will save 1 bit worth of memory
- * provide an option to use is_NON_NULL_field, to save ourselves from allocating a bit in the bitmap for the fields that can not be NULL.
- * store is_NULL_bitmap_size_in_bits in tuple def
- * provide a bit_offset_to_is_null_bit_in_is_null_bitmap value attribute to element_def, since now each element's bit can be at a different location in the is_null_bitmap
- * non_null fields when written to by NULL should fail
+* print function for user value
+* print get_value in sprint function
+* call printf instead of sprint for printing tuples
 
 OPTIMIZATION FOR COMPRESSION TASKS
 1* make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction, deleting a tuple, or updating a tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined OR use a global variable for this.
