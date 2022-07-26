@@ -27,6 +27,7 @@ struct user_value
 };
 
 extern const user_value NULL_USER_VALUE;
+extern const user_value ZERO_USER_VALUE;
 
 int is_user_value_NULL(const user_value* uval);
 
