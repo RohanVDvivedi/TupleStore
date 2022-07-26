@@ -202,7 +202,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 
 		// now if there is a value to set
 		// then reset its is_null_bitmap bit, allocate space for this new (variable sized) element, and set the new data with value
-		if(is_user_value_NULL(value))
+		if(!is_user_value_NULL(value))
 		{
 			// get current tuple_size
 			uint32_t tuple_size = get_tuple_size(tpl_d, tupl);
