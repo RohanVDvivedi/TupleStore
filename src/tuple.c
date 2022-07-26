@@ -15,11 +15,22 @@
 
 void init_tuple(const tuple_def* tpl_d, void* tupl)
 {
-	set_all_bits(tupl + tpl_d->byte_offset_to_is_null_bitmap, tpl_d->element_count);
+	set_all_bits(tupl + tpl_d->byte_offset_to_is_null_bitmap, tpl_d->is_NULL_bitmap_size_in_bits);
 
 	// set its size to min_size
 	if(is_variable_sized_tuple_def(tpl_d))
 		write_uint32(tupl, tpl_d->size_of_byte_offsets, tpl_d->min_size);
+
+	// set all offsets to variable sized elements to 0
+	for(uint32_t i = 0; i < tpl_d->element_count; i++)
+	{
+		const element_def* ele_d = tpl_d->element_defs + i;
+		if(is_variable_sized_element_def(ele_d))
+			write_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, 0);
+	}
+
+	// set all elements to their default values
+	// TODO
 }
 
 // do not use this function directly, call get_element_from_tuple macro
@@ -58,18 +69,32 @@ uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
 
 int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 {
-	return get_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+	// element_def in concern
+	const element_def* ele_d = tpl_d->element_defs + index;
+
+	// check the is_NULL bit for fixed sized element def
+	if(has_bit_in_is_NULL_bitmap(ele_d))
+		return get_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, ele_d->is_NULL_bitmap_bit_offset);
+	else if(is_variable_sized_element_def(ele_d))// else for a variable sized element, check its offset, if the offset is 0, then the element is NULL
+		return (0 == read_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets));
+	else // else it is NOT null or just can not be NULL
+		return 0;
 }
 
-// this function only sets the is_NULL bit, it is a utility function
-// call only set_element_* functions, this function will be used by the set_element_* function internally
-static int set_is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, int is_NULL_bit_value)
+// this function only sets a NULLable  bit, it is a utility function
+// public api must call only the set_element_* functions, this function will be used by the set_element_* function internally
+static int set_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl)
 {
-	void* is_NULL_bitmap = tupl + tpl_d->byte_offset_to_is_null_bitmap;
-	if(is_NULL_bit_value)
-		set_bit(is_NULL_bitmap, index);
-	else
-		reset_bit(is_NULL_bitmap, index);
+	// element_def in concern
+	const element_def* ele_d = tpl_d->element_defs + index;
+
+	if(has_bit_in_is_NULL_bitmap(ele_d))	// for a fixed sized element we store the element being NULL in its is_NULL bit
+		set_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+	else if(is_variable_sized_element_def(ele_d)) // while we consider a variable sized element as NULL, if its offset is NULL
+		write_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, 0);
+	else // else there is no other way to set this element as NULL in the tuple
+		return 0;
+
 	return 1;
 }
 
