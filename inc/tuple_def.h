@@ -125,12 +125,10 @@ struct tuple_def
 	// if the corresponding bit is set then the value at that location is NULL
 	// for fixed length tuple this offset is 0
 	// for variale length tuple this offset is equal to the bytes required to store the tuple size
-	union
-	{
-		uint32_t byte_offset_to_is_null_bitmap;
+	uint32_t byte_offset_to_is_null_bitmap;
 
-		uint32_t size_of_byte_offsets;
-	};
+	// size of offsets stored for the variable length elements
+	uint32_t size_of_byte_offsets;
 
 	// number of bits in is_NULL_bitmap
 	// to reiterate only NULLable fixed_sized_elements need a bit in is_NULL bitmap
