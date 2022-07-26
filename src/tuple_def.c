@@ -331,6 +331,14 @@ static void print_element_def(const element_def* element_d)
 		printf("\t\t\t size : %"PRIu32"\n", element_d->size);
 		printf("\t\t\t byte_offset : %"PRIu32"\n", element_d->byte_offset);
 	}
+	printf("\t\t\t NON_NULL : %d\n", element_d->is_non_NULLable);
+
+	// to be removed, once tested
+	// TODO
+	printf("\t\t\t is_NULL_bitmap_bit_offset : %"PRIu32"\n", element_d->is_NULL_bitmap_bit_offset);
+
+	// print default value
+	// TODO
 }
 
 void print_tuple_def(const tuple_def* tuple_d)
@@ -342,6 +350,9 @@ void print_tuple_def(const tuple_def* tuple_d)
 	else
 		printf("\t size : %"PRIu32"\n", tuple_d->size);
 	printf("\t byte_offset_to_is_null_bitmap : %"PRIu32"\n", tuple_d->byte_offset_to_is_null_bitmap);
+	if(is_variable_sized_tuple_def(tuple_d))
+		printf("\t size_of_byte_offsets : %"PRIu32"\n", tuple_d->size_of_byte_offsets);
+	printf("\t is_NULL_bitmap_size_in_bits : %"PRIu32"\n", tuple_d->is_NULL_bitmap_size_in_bits);
 	printf("\t element_count : %"PRIu32"\n", tuple_d->element_count);
 	for(uint32_t i = 0; i < tuple_d->element_count; i++)
 	{
