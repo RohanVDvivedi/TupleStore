@@ -15,7 +15,7 @@ int is_user_value_NULL(const user_value* uval)
 
 void print_user_value(const user_value* uval, const element_def* ele_d)
 {
-	if(uval->is_NULL)
+	if(is_user_value_NULL(uval))
 	{
 		printf("NULL");
 		return;

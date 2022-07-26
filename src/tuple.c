@@ -344,94 +344,27 @@ uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_fun
 	return hash_value;
 }
 
-uint32_t sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d)
+void print_tuple(const void* tup, const tuple_def* tpl_d)
 {
-	uint32_t chars_written = 0;
 	for(uint32_t i = 0; i < tpl_d->element_count; i++)
 	{
 		if(i)
-			chars_written += sprintf(str + chars_written, ", ");
+			printf(", ");
 
-		const void* e = get_element_from_tuple(tpl_d, i, tup);
+		user_value ele_val = get_value_from_element_from_tuple(tpl_d, i, tup);
 
-		if(e == NULL)
+		if(is_user_value_NULL(&ele_val))
 		{
-			chars_written += sprintf(str + chars_written, "NULL");
+			printf("NULL");
 			continue;
 		}
 
 		const element_def* ele_d = tpl_d->element_defs + i;
 
 		if(is_variable_sized_element_def(ele_d))
-			chars_written += sprintf(str + chars_written, "[%"PRIu32"]->", read_uint32(tup + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets));
+			printf("[%"PRIu32"]->", read_uint32(tup + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets));
 
-		switch(ele_d->type)
-		{
-			case UINT :
-			{
-				uint64_t uint_val = read_uint64(e, ele_d->size);
-				chars_written += sprintf(str + chars_written, "%"PRIu64, uint_val);
-				break;
-			}
-			case INT :
-			{
-				int64_t int_val = read_int64(e, ele_d->size);
-				chars_written += sprintf(str + chars_written, "%"PRId64, int_val);
-				break;
-			}
-			case FLOAT :
-			{
-				switch(tpl_d->element_defs[i].size)
-				{
-					case 4 :
-					{
-						float float_val = read_float(e);
-						chars_written += sprintf(str + chars_written, "%f", float_val);
-						break;
-					}
-					case 8 :
-					{
-						double double_val = read_double(e);
-						chars_written += sprintf(str + chars_written, "%lf", double_val);
-						break;
-					}
-				}
-				break;
-			}
-			case STRING :
-			{
-				uint32_t size = get_string_length_for_string_type_element(e, ele_d);
-				chars_written += sprintf(str + chars_written, "\"%.*s\"", size, (const char*)e);
-				break;
-			}
-			case BLOB :
-			{
-				uint32_t size = ele_d->size;
-				chars_written += sprintf(str + chars_written, "BLOB(%"PRIu32")[", size);
-				for(uint32_t i = 0; i < size; i++)
-					chars_written += sprintf(str + chars_written, " 0x%2"PRIx8, *(((const uint8_t*)e)+i));
-				chars_written += sprintf(str + chars_written, "]");
-				break;
-			}
-			case VAR_STRING :
-			{
-				const char* data = get_data_for_variable_sized_non_numeral_element(e, ele_d);
-				uint32_t size = get_string_length_for_string_type_element(e, ele_d);
-				chars_written += sprintf(str + chars_written, "\"%.*s\"", size, data);
-				break;
-			}
-			case VAR_BLOB :
-			{
-				uint32_t size = get_data_size_for_variable_sized_non_numeral_element(e, ele_d);
-				const char* blob_data = get_data_for_variable_sized_non_numeral_element(e, ele_d);
-				chars_written += sprintf(str + chars_written, "BLOB(%"PRIu32")[", size);
-				for(uint32_t i = 0; i < size; i++)
-					chars_written += sprintf(str + chars_written, " 0x%2"PRIx8, *((uint8_t*)(blob_data + i)));
-				chars_written += sprintf(str + chars_written, "]");
-				break;
-			}
-		}
+		print_user_value(&ele_val, ele_d);
 	}
-	chars_written += sprintf(str + chars_written, "\n");
-	return chars_written;
+	printf("\n");
 }
