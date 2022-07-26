@@ -53,10 +53,14 @@ static int is_prefix_size_allowed_for_variable_sized_type(element_type ele_type,
 	}
 }
 
-int init_element_def(element_def* element_d, const char* name, element_type ele_type, uint32_t size_OR_prefix_size)
+int init_element_def(element_def* element_d, const char* name, element_type ele_type, uint32_t size_OR_prefix_size, int is_non_NULLable, const user_value* default_value)
 {
 	// name larger than 63 bytes
 	if(strnlen(name, 64) == 64)
+		return 0;
+
+	// a non_NULLable can not have a NULL default value
+	if(is_non_NULLable && is_user_value_NULL(default_value))
 		return 0;
 
 	if(is_variable_sized_element_type(ele_type))
@@ -85,6 +89,10 @@ int init_element_def(element_def* element_d, const char* name, element_type ele_
 	// set type to the ele_type as in parameter
 	element_d->type = ele_type;
 
+	element_d->is_non_NULLable = is_non_NULLable;
+
+	element_d->default_value = (*default_value);
+
 	// add name to this element definition
 	strncpy(element_d->name, name, 63);
 	element_d->name[63] = '\0';
@@ -101,6 +109,18 @@ int is_fixed_sized_element_def(const element_def* element_d)
 {
 	return !is_variable_sized_element_def(element_d);
 }
+
+int is_NULLable_element_def(const element_def* element_d)
+{
+	return !(element_d->is_non_NULLable);
+}
+
+int has_bit_in_is_NULL_bitmap(const element_def* element_d)
+{
+	return is_fixed_sized_element_def(element_d) && is_NULLable_element_def(element_d);
+}
+
+#define needs_bit_in_is_NULL_bitmap has_bit_in_is_NULL_bitmap
 
 uint32_t get_element_size(const void* e, const element_def* ele_d)
 {
@@ -164,6 +184,7 @@ int init_tuple_def(tuple_def* tuple_d, const char* name)
 	tuple_d->is_variable_sized = 0;
 	tuple_d->size = 0;
 	tuple_d->byte_offset_to_is_null_bitmap = 0;
+	tuple_d->is_NULL_bitmap_size_in_bits = 0;
 	tuple_d->element_count = 0;
 
 	// copy name
@@ -173,7 +194,7 @@ int init_tuple_def(tuple_def* tuple_d, const char* name)
 	return 1;
 }
 
-int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_type, uint32_t element_size_OR_prefix_size)
+int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_type, uint32_t element_size_OR_prefix_size, int is_non_NULLable, const user_value* default_value)
 {
 	// if an element definition by the name already exists then we fail an insertion
 	if(get_element_def_id_by_name(tuple_d, name) != ELEMENT_DEF_NOT_FOUND)
@@ -181,7 +202,7 @@ int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_ty
 
 	// attempt initializing the ith element def
 	element_def* new_element_def = tuple_d->element_defs + tuple_d->element_count;
-	if(!init_element_def(new_element_def, name, ele_type, element_size_OR_prefix_size))
+	if(!init_element_def(new_element_def, name, ele_type, element_size_OR_prefix_size, is_non_NULLable, default_value))
 		return 0;
 
 	tuple_d->element_count++;
@@ -198,9 +219,9 @@ int insert_copy_of_element_def(tuple_def* tuple_d, const char* name, const tuple
 		name = tuple_d_copy_from->element_defs[element_def_id].name;
 
 	if(is_fixed_sized_element_def(tuple_d_copy_from->element_defs + element_def_id))
-		return insert_element_def(tuple_d, name, tuple_d_copy_from->element_defs[element_def_id].type, tuple_d_copy_from->element_defs[element_def_id].size);
+		return insert_element_def(tuple_d, name, tuple_d_copy_from->element_defs[element_def_id].type, tuple_d_copy_from->element_defs[element_def_id].size, tuple_d_copy_from->element_defs[element_def_id].is_non_NULLable, &(tuple_d_copy_from->element_defs[element_def_id].default_value));
 	else
-		return insert_element_def(tuple_d, name, tuple_d_copy_from->element_defs[element_def_id].type, tuple_d_copy_from->element_defs[element_def_id].size_specifier_prefix_size);
+		return insert_element_def(tuple_d, name, tuple_d_copy_from->element_defs[element_def_id].type, tuple_d_copy_from->element_defs[element_def_id].size_specifier_prefix_size, tuple_d_copy_from->element_defs[element_def_id].is_non_NULLable, &(tuple_d_copy_from->element_defs[element_def_id].default_value));
 }
 
 void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_tuple_size)

@@ -4,6 +4,8 @@
 #include<stdio.h>
 #include<stdint.h>
 
+#include<user_value.h>
+
 typedef enum element_type element_type;
 enum element_type
 {
@@ -66,13 +68,19 @@ struct element_def
 
 // initialize an element's definition using its type and size
 // it may fail if the size parameters is not valid for a given data type
-int init_element_def(element_def* element_d, const char* name, element_type ele_type, uint32_t size_OR_prefix_size);
+int init_element_def(element_def* element_d, const char* name, element_type ele_type, uint32_t size_OR_prefix_size, int is_non_NULLable, const user_value* default_value);
 
 // returns true if an element is of a variable sized
 int is_variable_sized_element_def(const element_def* element_d);
 
 // returns true if an element is of a fixed sized
 int is_fixed_sized_element_def(const element_def* element_d);
+
+// returns 1, if the element_def can be set to a NULL
+int is_NULLable_element_def(const element_def* element_d);
+
+// returns 1, if this element_def will need/(or has) a bit in the is_NULL bitmap
+int has_bit_in_is_NULL_bitmap(const element_def* element_d);
 
 // returns size of element
 uint32_t get_element_size(const void* e, const element_def* ele_d);
@@ -142,7 +150,7 @@ int init_tuple_def(tuple_def* tuple_d, const char* name);
 
 // insert an element definition in this tuple definition
 // returns 1 on success
-int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_type, uint32_t element_size_OR_prefix_size);
+int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_type, uint32_t element_size_OR_prefix_size, int is_non_NULLable, const user_value* default_value);
 
 // insert an element definition in this tuple definition
 // such that it copies its type and size from "element_def_id"-th element definiton of "tuple_d_copy_from"
