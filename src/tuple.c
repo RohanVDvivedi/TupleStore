@@ -137,7 +137,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 	if(is_fixed_sized_element_def(ele_d))
 	{
 		// if the value to be set is NULL
-		if(value == NULL)
+		if(is_user_value_NULL(value))
 		{
 			// here we are sure that the element in the tuple is not NULL
 
@@ -147,7 +147,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 			memset(ele, 0, ele_size);
 
 			// then just set the corresponding bit in the is_null bitmap
-			set_is_NULL_in_tuple(tpl_d, index, tupl, 1);
+			set_NULL_in_tuple(tpl_d, index, tupl);
 		}
 		else
 		{
@@ -201,7 +201,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 
 		// now if there is a value to set
 		// then reset its is_null_bitmap bit, allocate space for this new (variable sized) element, and set the new data with value
-		if(value != NULL)
+		if(is_user_value_NULL(value))
 		{
 			// set the is_null bitmap bit of this element to 0
 			set_is_NULL_in_tuple(tpl_d, index, tupl, 0);
