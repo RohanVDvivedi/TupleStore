@@ -31,4 +31,10 @@ extern const user_value ZERO_USER_VALUE;
 
 int is_user_value_NULL(const user_value* uval);
 
+// forward declaration for element_def struct
+typedef struct element_def element_def;
+struct element_def;
+
+void print_user_value(const user_value* uval, const element_def* ele_d);
+
 #endif
