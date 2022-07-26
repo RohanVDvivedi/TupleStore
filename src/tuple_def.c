@@ -91,7 +91,10 @@ int init_element_def(element_def* element_d, const char* name, element_type ele_
 
 	element_d->is_non_NULLable = is_non_NULLable;
 
-	element_d->default_value = (*default_value);
+	if(is_user_value_NULL(default_value))
+		element_d->default_value = NULL_USER_VALUE;
+	else
+		element_d->default_value = (*default_value);
 
 	// add name to this element definition
 	strncpy(element_d->name, name, 63);
