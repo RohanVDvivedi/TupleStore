@@ -46,6 +46,11 @@ void init_tuple_definition(tuple_def* def)
 		res = insert_element_def(def, "var_col_4", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE);
 	#endif
 
+	res = insert_element_def(def, "col_5", INT, 1);
+	res = insert_element_def(def, "col_6", INT, 1);
+	res = insert_element_def(def, "col_7", INT, 1);
+	res = insert_element_def(def, "col_8", INT, 1);
+
 	res = insert_element_def(def, "col_3", FLOAT, 4);
 	printf("attempting to insert an element def with the 'col_2' name => %d\n", res);
 
