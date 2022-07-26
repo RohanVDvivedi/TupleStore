@@ -54,12 +54,13 @@ struct element_def
 
 	// set if the element is non NULL-able
 	// i.e. if this bit is set, the element can not be a NULL
-	in is_non_NULLable;
+	int is_non_NULLable;
 
 	// valid only for NULLable fixed_sized_element_def
 	uint32_t is_NULL_bitmap_bit_offset;
 
 	// if the element_def is non NULLable then this is the default vaue it must be set to
+	// default_value of is_NON_NULLable element can not be (user_value){.is_NULL = 1}
 	user_value default_value;
 };
 
@@ -122,6 +123,10 @@ struct tuple_def
 
 		uint32_t size_of_byte_offsets;
 	};
+
+	// number of bits in is_NULL_bitmap
+	// to reiterate only NULLable fixed_sized_elements need a bit in is_NULL bitmap
+	uint32_t is_NULL_bitmap_size_in_bits;
 
 	// total elements in the tuple
 	uint32_t element_count;
