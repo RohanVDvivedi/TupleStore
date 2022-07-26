@@ -1,4 +1,3 @@
-* print function for user value
 * print get_value in sprint function
 * call printf instead of sprint for printing tuples
 
