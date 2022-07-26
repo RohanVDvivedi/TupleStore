@@ -97,7 +97,7 @@ static int set_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl)
 	// set its is_NULL bit if it has 1
 	if(has_bit_in_is_NULL_bitmap(ele_d))
 	{
-		set_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+		set_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, tupl->is_NULL_bitmap_bit_offset);
 		done = 1;
 	}
 
@@ -119,7 +119,7 @@ static int reset_NULL_bit_in_tuple(const tuple_def* tpl_d, uint32_t index, void*
 	// reset is_NULL bit if it has one
 	if(has_bit_in_is_NULL_bitmap(ele_d))
 	{
-		reset_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, index);
+		reset_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, tupl->is_NULL_bitmap_bit_offset);
 		return 1;
 	}
 
