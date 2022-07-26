@@ -51,6 +51,16 @@ struct element_def
 		// defined as byte offset to the byte offset of this element in the tuple
 		uint32_t byte_offset_to_byte_offset;
 	};
+
+	// set if the element is non NULL-able
+	// i.e. if this bit is set, the element can not be a NULL
+	in is_non_NULLable;
+
+	// valid only for NULLable fixed_sized_element_def
+	uint32_t is_NULL_bitmap_bit_offset;
+
+	// if the element_def is non NULLable then this is the default vaue it must be set to
+	user_value default_value;
 };
 
 // initialize an element's definition using its type and size
