@@ -28,36 +28,36 @@ void init_tuple_definition(tuple_def* def)
 	// initialize tuple definition and insert element definitions
 	int res = init_tuple_def(def, "my_table");
 
-	res = insert_element_def(def, "col_0", INT, 5);
+	res = insert_element_def(def, "col_0", INT, 5, 0, NULL);
 
-	res = insert_element_def(def, "col_1", UINT, 1);
-
-	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
-		res = insert_element_def(def, "col_2", STRING, 15);
-	#else
-		res = insert_element_def(def, "var_col_2", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE);
-	#endif
-
-	res = insert_element_def(def, "col_3", FLOAT, 8);
+	res = insert_element_def(def, "col_1", UINT, 1, 0, NULL);
 
 	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
-		res = insert_element_def(def, "col_4", STRING, 8);
+		res = insert_element_def(def, "col_2", STRING, 15, 0, NULL);
 	#else
-		res = insert_element_def(def, "var_col_4", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE);
+		res = insert_element_def(def, "var_col_2", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE, 0, NULL);
 	#endif
 
-	res = insert_element_def(def, "col_5", INT, 1);
-	res = insert_element_def(def, "col_6", INT, 1);
-	res = insert_element_def(def, "col_7", INT, 1);
-	res = insert_element_def(def, "col_8", INT, 1);
+	res = insert_element_def(def, "col_3", FLOAT, 8, 0, NULL);
 
-	res = insert_element_def(def, "col_3", FLOAT, 4);
+	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
+		res = insert_element_def(def, "col_4", STRING, 8, 0, NULL);
+	#else
+		res = insert_element_def(def, "var_col_4", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE, 0, NULL);
+	#endif
+
+	res = insert_element_def(def, "col_5", INT, 1, 0, NULL);
+	res = insert_element_def(def, "col_6", INT, 1, 0, NULL);
+	res = insert_element_def(def, "col_7", INT, 1, 0, NULL);
+	res = insert_element_def(def, "col_8", INT, 1, 0, NULL);
+
+	res = insert_element_def(def, "col_3", FLOAT, 4, 0, NULL);
 	printf("attempting to insert an element def with the 'col_2' name => %d\n", res);
 
-	res = insert_element_def(def, "col_1", FLOAT, 4);
+	res = insert_element_def(def, "col_1", FLOAT, 4, 0, NULL);
 	printf("attempting to insert an element def with the 'col_1' name => %d\n", res);
 
-	res = insert_element_def(def, "col_0", FLOAT, 4);
+	res = insert_element_def(def, "col_0", FLOAT, 4, 0, NULL);
 	printf("attempting to insert an element def with the 'col_4' name => %d\n", res);
 
 	finalize_tuple_def(def, PAGE_SIZE);
