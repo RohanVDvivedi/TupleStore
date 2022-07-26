@@ -53,9 +53,8 @@ uint32_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, uint
 uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_func)(const void* data, uint32_t size), uint32_t element_count, const uint32_t* element_ids);
 
 
-// print and scan functions for tuple
-// returns number of characters written to the string
-uint32_t sprint_tuple(char* str, const void* tup, const tuple_def* tpl_d);
+// print function for tuple
+void print_tuple(const void* tup, const tuple_def* tpl_d);
 
 #endif
 
