@@ -95,9 +95,9 @@ void build_tuple_from_row_struct(const tuple_def* def, void* tuple, const row* r
 	set_element_in_tuple(def, column_no++, tuple, &((user_value){.double_value = r->c3}));
 	set_element_in_tuple(def, column_no++, tuple, (r->c4 == NULL) ? NULL : &((user_value){.data = r->c4, .data_size = strlen(r->c4)}));
 	
-	char print_buffer[PAGE_SIZE];
-	sprint_tuple(print_buffer, tuple, def);
-	printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
+	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
+	print_tuple(tuple, def);
+	printf("\n\n");
 }
 
 // a row like struct for ease in building test tuples
@@ -601,8 +601,6 @@ int main()
 
 void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 {
-	// output print string
-	char print_buffer[PAGE_SIZE];
 	init_tuple(def, tuple);
 
 	{
@@ -610,63 +608,73 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 
 		set_element_in_tuple(def, 0, tuple, &((user_value){.int_value = c0}));
 
-		sprint_tuple(print_buffer, tuple, def);
-		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
+		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
+		print_tuple(tuple, def);
+		printf("\n\n");
 
 		c0 = 456;
 
 		set_element_in_tuple(def, 0, tuple, &((user_value){.int_value = c0}));
 
-		sprint_tuple(print_buffer, tuple, def);
-		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
+		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
+		print_tuple(tuple, def);
+		printf("\n\n");
 
 		set_element_in_tuple(def, 0, tuple, NULL);
 
-		sprint_tuple(print_buffer, tuple, def);
-		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
+		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
+		print_tuple(tuple, def);
+		printf("\n\n");
 
 		set_element_in_tuple(def, 0, tuple, NULL);
 
-		sprint_tuple(print_buffer, tuple, def);
-		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
+		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
+		print_tuple(tuple, def);
+		printf("\n\n");
 	}
 
 #ifndef TEST_FIXED_ARRAY_PAGE_LAYOUT
 	set_element_in_tuple(def, 2, tuple, &((user_value){.data = "Rohan", .data_size = strlen("Rohan")}));
 	set_element_in_tuple(def, 4, tuple, &((user_value){.data = "Dvivedi", .data_size = strlen("Dvivedi")}));
 
-	sprint_tuple(print_buffer, tuple, def);
-	printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
+	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
+	print_tuple(tuple, def);
+	printf("\n\n");
 
 	{
 		set_element_in_tuple(def, 2, tuple, NULL);
 
-		sprint_tuple(print_buffer, tuple, def);
-		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
+		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
+		print_tuple(tuple, def);
+		printf("\n\n");
 
 		char* c2 = "Hello";
 
 		set_element_in_tuple(def, 2, tuple, &((user_value){.data = c2, .data_size = strlen(c2)}));
 
-		sprint_tuple(print_buffer, tuple, def);
-		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
+		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
+		print_tuple(tuple, def);
+		printf("\n\n");
 
 		c2 = "World";
 
 		set_element_in_tuple(def, 4, tuple, &((user_value){.data = c2, .data_size = strlen(c2)}));
 
-		sprint_tuple(print_buffer, tuple, def);
-		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
+		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
+		print_tuple(tuple, def);
+		printf("\n\n");
 
 		set_element_in_tuple(def, 2, tuple, NULL);
 
-		sprint_tuple(print_buffer, tuple, def);
-		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
+		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
+		print_tuple(tuple, def);
+		printf("\n\n");
 
 		set_element_in_tuple(def, 2, tuple, NULL);
 
-		sprint_tuple(print_buffer, tuple, def);
-		printf("Built tuple : size(%u)\n\t%s\n\n", get_tuple_size(def, tuple), print_buffer);
+		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
+		print_tuple(tuple, def);
+		printf("\n\n");
 	}
 #endif
 }
