@@ -377,10 +377,9 @@ void print_fixed_array_page(const void* page, uint32_t page_size, const tuple_de
 		{
 			const void* tuple = get_nth_tuple_fixed_array_page(page, page_size, tpl_d, i);
 			uint32_t tuple_size = get_tuple_size(tpl_d, tuple);
-			char* print_buffer = malloc(tuple_size + (tpl_d->element_count * 32));
-			sprint_tuple(print_buffer, tuple, tpl_d);
-			printf("\t\t\toffset[%"PRIu32"] size(%"PRIu32") :: %s\n\n", (uint32_t)((uintptr_t)(tuple - page)), tuple_size, print_buffer);
-			free(print_buffer);
+			printf("\t\t\toffset[%"PRIu32"] size(%"PRIu32") :: ", (uint32_t)((uintptr_t)(tuple - page)), tuple_size);
+			print_tuple(tuple, tpl_d);
+			printf("\n\n");
 		}
 		else
 			printf("\t\t\t%s\n\n", "DELETED");
