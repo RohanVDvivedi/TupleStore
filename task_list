@@ -1,5 +1,2 @@
-* print get_value in sprint function
-* call printf instead of sprint for printing tuples
-
 OPTIMIZATION FOR COMPRESSION TASKS
 1* make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction, deleting a tuple, or updating a tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined OR use a global variable for this.
