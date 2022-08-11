@@ -13,7 +13,7 @@
  set a element to NULL if it is NULLable and the user is asking for a min. we have yet to figure out a max of string or blob type of variable length.
 
 4 OPTIMIZATION FOR COMPRESSION TASKS
-* make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction, deleting a tuple, or updating a tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined OR use a global variable for this.
+ * make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction, deleting a tuple, or updating a tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined OR use a global variable for this.
 
 5 FUTURE FEATURES
-* additional data types, varibale length encoded (signed and unsigned) integers and nested_tuple datatype
+ * additional data types, varibale length encoded (signed and unsigned) integers and nested_tuple datatype
