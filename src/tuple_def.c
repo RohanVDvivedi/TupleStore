@@ -216,8 +216,10 @@ tuple_def* get_new_tuple_def(const char* name, uint32_t element_capacity)
 	tuple_def* tuple_d = malloc(sizeof(tuple_def));
 	tuple_d->element_capacity = element_capacity;
 	tuple_d->element_defs = malloc(sizeof(element_def) * tuple_d->element_capacity);
-	init_tuple_def(tuple_d, name);
-	return tuple_d;
+	if(init_tuple_def(tuple_d, name))
+		return tuple_d;
+	free(tuple_d);
+	return NULL;
 }
 
 tuple_def* clone_tuple_def(const tuple_def* tuple_d)

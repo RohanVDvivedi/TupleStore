@@ -142,6 +142,7 @@ struct tuple_def
 
 // returns a new tuple_def that can accomodate atleast element_capacity number of element defs, but contains 0 element_defs
 // element_capacity can not be modified for a tuple_def once it has been created by this function
+// this functions fails with NULL, if the name is longer than 63 bytes
 tuple_def* get_new_tuple_def(const char* name, uint32_t element_capacity);
 
 // create a new tuple def that is identical to the given tuple def

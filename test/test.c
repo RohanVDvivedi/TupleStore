@@ -23,10 +23,10 @@ char page[PAGE_SIZE] = {};
 
 char temp_page[PAGE_SIZE] = {};
 
-void init_tuple_definition(tuple_def* def)
+tuple_def* get_tuple_definition()
 {
 	// initialize tuple definition and insert element definitions
-	int res = init_tuple_def(def, "my_table");
+	tuple_def* def = get_new_tuple_def(def, "my_table");
 
 	res = insert_element_def(def, "col_0", INT, 5, 0, NULL);
 
