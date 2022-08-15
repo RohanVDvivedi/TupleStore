@@ -1,12 +1,12 @@
 
-2 PAGE LAYOUT PRE-ALLOCATION AND TUPLE SIZE PRE-CALCULATION TASKS
- * allow to pre_calculate size of a tuple, before we even assemble the tuple
- * add pre_allocate_for_insert_tuple(tuple_size) and pre_allocate_for_tuple_update(index, tuple_size) to pre_allocate_for a given operation for a given tuple size. it will return a pointer to the tuple in the page that has atleast tuple_size number of bytes. This will reduce malloc calls for the user. these functions return NULL if the allocation is not possible. add a comment to this new pre_allocate_* functions that they must be used avoided and if used, then you may not write a tuple larger than the tuple, they requested is pre allocation for.
-
-3 MIN MAX UTILITY FUNCTIONS
+1 MIN MAX UTILITY FUNCTIONS
  * int_accesses.h -> get_INTX_MIN(size), get_UINTX_MIN(), get_INTX_MAX(size) and get_UINTX_MAX(), get_DOUBLE_MIN(), get_DOUBLE_MAX, get_FLOAT_MIN() and get_FLOAT_MAX() values. X can be anywhere from 1 to 8 both inclusive. each returns a uintX_t or intX_t or float or double.
  * use the above mentioned functions to build get_user_value_MAX(element_def* ) and get_user_value_MIN(element_def* ).
  * set a element to NULL if it is NULLable and the user is asking for a min. we have yet to figure out a max of string or blob type of variable length.
+
+2 PAGE LAYOUT PRE-ALLOCATION AND TUPLE SIZE PRE-CALCULATION TASKS
+ * allow to pre_calculate size of a tuple, before we even assemble the tuple
+ * add pre_allocate_for_insert_tuple(tuple_size) and pre_allocate_for_tuple_update(index, tuple_size) to pre_allocate_for a given operation for a given tuple size. it will return a pointer to the tuple in the page that has atleast tuple_size number of bytes. This will reduce malloc calls for the user. these functions return NULL if the allocation is not possible. add a comment to this new pre_allocate_* functions that they must be used avoided and if used, then you may not write a tuple larger than the tuple, they requested is pre allocation for.
 
 4 OPTIMIZATION FOR COMPRESSION TASKS
  * make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction, deleting a tuple, or updating a tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined OR use a global variable for this.
