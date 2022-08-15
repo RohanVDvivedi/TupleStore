@@ -32,10 +32,7 @@ void init_tuple(const tuple_def* tpl_d, void* tupl)
 
 	// set all elements to their default values
 	for(uint32_t i = 0; i < tpl_d->element_count; i++)
-	{
-		const element_def* ele_d = tpl_d->element_defs + i;
-		set_element_in_tuple(tpl_d, i, tupl, &(ele_d->default_value));
-	}
+		set_element_in_tuple(tpl_d, i, tupl, DEFAULT_USER_VALUE);
 }
 
 // do not use this function directly, call get_element_from_tuple macro
