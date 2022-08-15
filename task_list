@@ -3,6 +3,8 @@
  * make element_def an array pointed to by tuple_def.
  * write get_new_tuple_def and destroy_tuple_def functions.
  * implement const tuple_def* get_clone(const tuple_def* ) and deep_copy(const tuple_def*, tuple_def*) functions for tuple_def
+ * add get_element_def and deep_copy element def functions
+ * add element_capacity in tuple_def and fail element_def insertion if the new index is equal to element_capacity.
  * allocation and deallocation of data, data_size in default_value in element_def.
 
 2 PAGE LAYOUT PRE-ALLOCATION AND TUPLE SIZE PRE-CALCULATION TASKS
