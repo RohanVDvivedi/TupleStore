@@ -93,6 +93,16 @@ void write_int16(void* data, uint32_t data_size, int16_t x)		WRITE_INT(16)
 void write_int32(void* data, uint32_t data_size, int32_t x)		WRITE_INT(32)
 void write_int64(void* data, uint32_t data_size, int64_t x)		WRITE_INT(64)
 
+uint8_t get_UINT8_MIN(uint32_t data_size)		{return 0;}
+uint16_t get_UINT16_MIN(uint32_t data_size)		{return 0;}
+uint32_t get_UINT32_MIN(uint32_t data_size)		{return 0;}
+uint64_t get_UINT64_MIN(uint32_t data_size)		{return 0;}
+
+uint8_t get_UINT8_MAX(uint32_t data_size);
+uint16_t get_UINT16_MAX(uint32_t data_size);
+uint32_t get_UINT32_MAX(uint32_t data_size);
+uint64_t get_UINT64_MAX(uint32_t data_size);
+
 float read_float(const void* data)
 {
 	float x;
@@ -119,20 +129,20 @@ void write_double(void* data, double x)
 
 float get_FLOAT_MIN()
 {
-	return (float)(((float)(-1.0))/0.0);
+	return -1.0f/0.0f;
 }
 
 double get_DOUBLE_MIN()
 {
-	return (double)(((double)(-1.0))/0.0);
+	return -1.0/0.0;
 }
 
 float get_FLOAT_MAX()
 {
-	return (float)(((float)(1.0))/0.0);
+	return 1.0f/0.0f;
 }
 
 double get_DOUBLE_MAX()
 {
-	return (double)(((double)(1.0))/0.0);
+	return 1.0/0.0;
 }

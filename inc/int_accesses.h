@@ -72,10 +72,10 @@ void write_int64(void* data, uint32_t data_size, int64_t x);
 	returns minimum and maximum number that can be represented in data_size number of bytes for an unsigned intteger
 */
 
-uint8_t get_UINT8_MAX(uint32_t data_size);
-uint16_t get_UINT16_MAX(uint32_t data_size);
-uint32_t get_UINT32_MAX(uint32_t data_size);
-uint64_t get_UINT64_MAX(uint32_t data_size);
+uint8_t get_UINT8_MIN(uint32_t data_size);
+uint16_t get_UINT16_MIN(uint32_t data_size);
+uint32_t get_UINT32_MIN(uint32_t data_size);
+uint64_t get_UINT64_MIN(uint32_t data_size);
 
 uint8_t get_UINT8_MAX(uint32_t data_size);
 uint16_t get_UINT16_MAX(uint32_t data_size);
