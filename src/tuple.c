@@ -126,10 +126,6 @@ static int reset_NULL_bit_in_tuple(const tuple_def* tpl_d, uint32_t index, void*
 
 int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value)
 {
-	// if the element inside tuple is NULL, and we are asked to set it to NULL, then return
-	if(is_NULL_in_tuple(tpl_d, index, tupl) && is_user_value_NULL(value))
-		return 1;
-
 	// element definition we are concerned with
 	const element_def* ele_d = tpl_d->element_defs + index;
 
@@ -140,6 +136,10 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 
 	if(is_user_value_NULL(value) && !is_NULLable_element_def(ele_d))
 		return 0;
+
+	// if the element inside tuple is NULL, and we are asked to set it to NULL, then return
+	if(is_NULL_in_tuple(tpl_d, index, tupl) && is_user_value_NULL(value))
+		return 1;
 
 	if(is_fixed_sized_element_def(ele_d))
 	{
