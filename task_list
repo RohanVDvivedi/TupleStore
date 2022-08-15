@@ -1,4 +1,4 @@
-1 BUGS
+1 TUPLE_DEF REVAMP
  * In tuple_def, add tuple_def->initial_size being the size of the tuple when it gets created.
  * make element_def an array pointed to by tuple_def.
  * write get_new_tuple_def and destroy_tuple_def functions.
