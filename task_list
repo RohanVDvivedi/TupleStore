@@ -1,5 +1,3 @@
-1 TUPLE_DEF REVAMP
- * implement const tuple_def* get_clone(const tuple_def* ) and deep_copy(const tuple_def*, tuple_def*) functions for tuple_def
 
 2 PAGE LAYOUT PRE-ALLOCATION AND TUPLE SIZE PRE-CALCULATION TASKS
  * allow to pre_calculate size of a tuple, before we even assemble the tuple
