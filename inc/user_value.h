@@ -34,6 +34,8 @@ extern user_value const * const ZERO_USER_VALUE;
 
 int is_user_value_NULL(const user_value* uval);
 
+user_value clone_user_value_with_data(const user_value* uval);
+
 // forward declaration for element_def struct
 typedef struct element_def element_def;
 struct element_def;

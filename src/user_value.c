@@ -4,6 +4,7 @@
 
 #include<inttypes.h>
 #include<stdlib.h>
+#include<string.h>
 
 user_value const * const DEFAULT_USER_VALUE = &((const user_value){});
 
@@ -13,6 +14,14 @@ user_value const * const ZERO_USER_VALUE = &((const user_value){.is_NULL = 0});
 int is_user_value_NULL(const user_value* uval)
 {
 	return (uval == NULL) || (uval->is_NULL);
+}
+
+user_value clone_user_value_with_data(const user_value* uval)
+{
+	void* new_data = malloc(uval->data_size);
+	memmove(new_data, uval->data, uval->data_size);
+	user_value res = {.data = new_data, .data_size = uval->data_size};
+	return res;
 }
 
 void print_user_value(const user_value* uval, const element_def* ele_d)

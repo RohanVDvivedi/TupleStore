@@ -98,11 +98,13 @@ static int init_element_def(element_def* element_d, const char* name, element_ty
 
 	if(is_user_value_NULL(default_value))
 		element_d->default_value = *NULL_USER_VALUE;
+
+	// data and data_size in user_value is only used for string and blob data types
+	// so only they need allocation
+	else if(is_string_type_element_def(element_d) || is_blob_type_element_def(element_d))
+		element_d->default_value = clone_user_value_with_data(default_value);
 	else
 		element_d->default_value = (*default_value);
-
-	// TODO
-	// allocate for default value if required
 
 	return 1;
 }
@@ -184,8 +186,10 @@ uint32_t hash_element(const void* e, const element_def* ele_d, uint32_t (*hash_f
 
 static void deinit_element_def(element_def* ele_d)
 {
-	// TODO
-	// destroy default value if required
+	// data and data_size in user_value is only used for string and blob data types
+	if((is_string_type_element_def(ele_d) || is_blob_type_element_def(ele_d)) && ele_d->default_value.data != NULL)
+		free((void*)(ele_d->default_value.data));
+	memset(ele_d, 0, sizeof(element_def));
 }
 
 static int init_tuple_def(tuple_def* tuple_d, const char* name)
