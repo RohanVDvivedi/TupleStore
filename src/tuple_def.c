@@ -382,6 +382,7 @@ static void print_element_def(const element_def* element_d)
 		printf("\t\t\t is_NULL_bitmap_bit_offset : %"PRIu32"\n", element_d->is_NULL_bitmap_bit_offset);
 	printf("\t\t\t default : ");
 	print_user_value(&(element_d->default_value), element_d);
+	printf("\n");
 }
 
 void print_tuple_def(const tuple_def* tuple_d)
