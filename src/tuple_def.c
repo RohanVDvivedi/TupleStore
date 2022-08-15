@@ -92,6 +92,10 @@ static int init_element_def(element_def* element_d, const char* name, element_ty
 
 	element_d->is_non_NULLable = is_non_NULLable;
 
+	// add name to this element definition
+	strncpy(element_d->name, name, 63);
+	element_d->name[63] = '\0';
+
 	if(is_user_value_NULL(default_value))
 		element_d->default_value = *NULL_USER_VALUE;
 	else
@@ -99,10 +103,6 @@ static int init_element_def(element_def* element_d, const char* name, element_ty
 
 	// TODO
 	// allocate for default value if required
-
-	// add name to this element definition
-	strncpy(element_d->name, name, 63);
-	element_d->name[63] = '\0';
 
 	return 1;
 }
@@ -366,9 +366,8 @@ static void print_element_def(const element_def* element_d)
 	printf("\t\t\t NON_NULL : %d\n", element_d->is_non_NULLable);
 	if(has_bit_in_is_NULL_bitmap(element_d))
 		printf("\t\t\t is_NULL_bitmap_bit_offset : %"PRIu32"\n", element_d->is_NULL_bitmap_bit_offset);
-
-	// print default value
-	// TODO
+	printf("\t\t\t default : ");
+	print_user_value(&(element_d->default_value), element_d);
 }
 
 void print_tuple_def(const tuple_def* tuple_d)
