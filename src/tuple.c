@@ -13,7 +13,7 @@
 #include<non_numeral_element_types.h>
 #include<page_layout_util.h>
 
-void init_tuple(const tuple_def* tpl_d, void* tupl, int set_all_defaults)
+void init_tuple(const tuple_def* tpl_d, void* tupl)
 {
 	// set all the is_NULL_bitmap bits to 1
 	set_all_bits(tupl + tpl_d->byte_offset_to_is_null_bitmap, tpl_d->is_NULL_bitmap_size_in_bits);
@@ -29,13 +29,6 @@ void init_tuple(const tuple_def* tpl_d, void* tupl, int set_all_defaults)
 		if(is_variable_sized_element_def(ele_d))
 			write_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, 0);
 	}
-
-	if(!set_all_defaults)
-		return;
-
-	// set all elements to their default values
-	for(uint32_t i = 0; i < tpl_d->element_count; i++)
-		set_element_in_tuple(tpl_d, i, tupl, DEFAULT_USER_VALUE);
 }
 
 // do not use this function directly, call get_element_from_tuple macro
