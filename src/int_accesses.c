@@ -116,3 +116,23 @@ void write_double(void* data, double x)
 {
 	memcpy(data, &x, sizeof(double));
 }
+
+float get_FLOAT_MIN()
+{
+	return (float)(((float)(-1.0))/0.0);
+}
+
+double get_DOUBLE_MIN()
+{
+	return (double)(((double)(-1.0))/0.0);
+}
+
+float get_FLOAT_MAX()
+{
+	return (float)(((float)(1.0))/0.0);
+}
+
+double get_DOUBLE_MAX()
+{
+	return (double)(((double)(1.0))/0.0);
+}
