@@ -9,7 +9,8 @@
 // and the functions assume that this condition holds true while you call that particular element level function.
 
 // initialized the tuple with all NULL attributes and its minimum size
-void init_tuple(const tuple_def* tpl_d, void* tupl);
+// note: if the set_all_defaults is set then all the elements of the tuple are set to their default values
+void init_tuple(const tuple_def* tpl_d, void* tupl, int set_all_defaults);
 
 // actual size of the element in the tuple
 uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
