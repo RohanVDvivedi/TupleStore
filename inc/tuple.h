@@ -8,7 +8,8 @@
 // this is the mandatory condition, since, the functions do not check this condition to be true, repetitively.
 // and the functions assume that this condition holds true while you call that particular element level function.
 
-// initialized the tuple with all NULL attributes and its minimum size
+// initialized the tuple with all NULL attributes 
+// (whereever a NULL is possible, this includes varibale length elements even if they are marked as non-NULLable) and its minimum size
 // note: if the set_all_defaults is set then all the elements of the tuple are set to their default values
 void init_tuple(const tuple_def* tpl_d, void* tupl, int set_all_defaults);
 
