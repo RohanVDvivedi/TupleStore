@@ -15,6 +15,7 @@
 
 void init_tuple(const tuple_def* tpl_d, void* tupl)
 {
+	// set all the is_NULL_bitmap bits to 1
 	set_all_bits(tupl + tpl_d->byte_offset_to_is_null_bitmap, tpl_d->is_NULL_bitmap_size_in_bits);
 
 	// set its size to min_size
