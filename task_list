@@ -1,5 +1,7 @@
 1 BUGS
- * tuple_def->min_size is not the real min size. add tuple_def->min_size_WHEN_ALL_NULL (tuple_def->min_size = tuple_def->min_size_WHEN_ALL_NULL + size_of_offsets * (number of non_null variable length blob and string elments)).
+ * In tuple_def, add tuple_def->initial_size being the size of the tuple when it gets created.
+ * make element_def an array pointed to by tuple_def.
+ * write get_new_tuple_def and destroy_tuple_def functions.
  * allocation and deallocation of data,data_size in default_value in element_def.
 
 2 PAGE LAYOUT PRE-ALLOCATION AND TUPLE SIZE PRE-CALCULATION TASKS
