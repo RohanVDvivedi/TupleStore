@@ -98,10 +98,22 @@ uint16_t get_UINT16_MIN(uint32_t data_size)		{return 0;}
 uint32_t get_UINT32_MIN(uint32_t data_size)		{return 0;}
 uint64_t get_UINT64_MIN(uint32_t data_size)		{return 0;}
 
-uint8_t get_UINT8_MAX(uint32_t data_size);
-uint16_t get_UINT16_MAX(uint32_t data_size);
-uint32_t get_UINT32_MAX(uint32_t data_size);
-uint64_t get_UINT64_MAX(uint32_t data_size);
+#define GET_UINT_MAX(X)									\
+{														\
+	if(data_size == 0)									\
+		return 0;										\
+	if(data_size > sizeof(uint(X)))						\
+		data_size = sizeof(uint(X));					\
+	uint(X) x = 0;										\
+	for(uint32_t i = 0; i < data_size; i++)				\
+		x = ((x << CHAR_BIT) | UINT ## X ## _C(0xff));	\
+	return x;											\
+}
+
+uint8_t get_UINT8_MAX(uint32_t data_size)	GET_UINT_MAX(8)
+uint16_t get_UINT16_MAX(uint32_t data_size)	GET_UINT_MAX(16)
+uint32_t get_UINT32_MAX(uint32_t data_size)	GET_UINT_MAX(32)
+uint64_t get_UINT64_MAX(uint32_t data_size)	GET_UINT_MAX(64)
 
 float read_float(const void* data)
 {
