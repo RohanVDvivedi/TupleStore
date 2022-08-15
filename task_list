@@ -1,6 +1,4 @@
 1 TUPLE_DEF REVAMP
- * in init_tuple add a flag to return default initialized tuple
- * create dummy global DEFAULT_USER_VALUE, to be used when you want the set functions to set to default values 
  * make element_def an array pointed to by tuple_def.
  * write get_new_tuple_def and destroy_tuple_def functions.
  * implement const tuple_def* get_clone(const tuple_def* ) and deep_copy(const tuple_def*, tuple_def*) functions for tuple_def
