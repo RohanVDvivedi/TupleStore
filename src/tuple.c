@@ -136,6 +136,11 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 	// element definition we are concerned with
 	const element_def* ele_d = tpl_d->element_defs + index;
 
+	// if the user has requested to set the value to default value
+	// then set the value to the specific default value provided by the user in the element def
+	if(value == DEFAULT_USER_VALUE)
+		value = &(ele_d->default_value);
+
 	if(is_user_value_NULL(value) && !is_NULLable_element_def(ele_d))
 		return 0;
 
