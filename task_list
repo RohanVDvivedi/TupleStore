@@ -2,7 +2,7 @@
  * In tuple_def, add tuple_def->initial_size being the size of the tuple when it gets created.
  * make element_def an array pointed to by tuple_def.
  * write get_new_tuple_def and destroy_tuple_def functions.
- * allocation and deallocation of data,data_size in default_value in element_def.
+ * allocation and deallocation of data, data_size in default_value in element_def.
 
 2 PAGE LAYOUT PRE-ALLOCATION AND TUPLE SIZE PRE-CALCULATION TASKS
  * allow to pre_calculate size of a tuple, before we even assemble the tuple
