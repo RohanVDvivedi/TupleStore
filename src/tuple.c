@@ -241,6 +241,10 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void
 	if(!can_set_from_element_defs(ele_d, ele_d_in))
 		return 0;
 
+	// attmepting to set a NULL to a non-NULLable field must fail
+	if(is_NULL_in_tuple(tpl_d_in, index_in, tupl_in) && !is_NULLable_element_def(ele_d))
+		return 0;
+
 	// if the index_in-th element in the tuple is NULL then set index-th element in tuple as NULL
 	if(is_NULL_in_tuple(tpl_d_in, index_in, tupl_in))
 		return set_element_in_tuple(tpl_d, index, tupl, NULL);
