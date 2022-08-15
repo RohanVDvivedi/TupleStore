@@ -1,6 +1,7 @@
 #include<tuple_def.h>
 
 #include<string.h>
+#include<stdlib.h>
 
 #include<bitmap.h>
 
@@ -53,7 +54,7 @@ static int is_prefix_size_allowed_for_variable_sized_type(element_type ele_type,
 	}
 }
 
-int init_element_def(element_def* element_d, const char* name, element_type ele_type, uint32_t size_OR_prefix_size, int is_non_NULLable, const user_value* default_value)
+static int init_element_def(element_def* element_d, const char* name, element_type ele_type, uint32_t size_OR_prefix_size, int is_non_NULLable, const user_value* default_value)
 {
 	// name larger than 63 bytes
 	if(strnlen(name, 64) == 64)
@@ -95,6 +96,9 @@ int init_element_def(element_def* element_d, const char* name, element_type ele_
 		element_d->default_value = *NULL_USER_VALUE;
 	else
 		element_d->default_value = (*default_value);
+
+	// TODO
+	// allocate for default value if required
 
 	// add name to this element definition
 	strncpy(element_d->name, name, 63);
@@ -178,7 +182,13 @@ uint32_t hash_element(const void* e, const element_def* ele_d, uint32_t (*hash_f
 	return 0;
 }
 
-int init_tuple_def(tuple_def* tuple_d, const char* name)
+static void deinit_element_def(element_def* ele_d)
+{
+	// TODO
+	// destroy default value if required
+}
+
+static int init_tuple_def(tuple_def* tuple_d, const char* name)
 {
 	// name larger than 63 bytes
 	if(strnlen(name, 64) == 64)
@@ -195,6 +205,15 @@ int init_tuple_def(tuple_def* tuple_d, const char* name)
 	tuple_d->name[63] = '\0';
 
 	return 1;
+}
+
+tuple_def* get_new_tuple_def(const char* name, uint32_t element_capacity)
+{
+	tuple_def* tuple_d = malloc(sizeof(tuple_def));
+	tuple_d->element_capacity = element_capacity;
+	tuple_d->element_defs = malloc(sizeof(element_def) * tuple_d->element_capacity);
+	init_tuple_def(tuple_d, name);
+	return tuple_d;
 }
 
 int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_type, uint32_t element_size_OR_prefix_size, int is_non_NULLable, const user_value* default_value)
@@ -316,6 +335,19 @@ uint32_t get_element_def_id_by_name(const tuple_def* tuple_d, const char* name)
 	}
 
 	return ELEMENT_DEF_NOT_FOUND;
+}
+
+const element_def* get_element_def_by_id(const tuple_def* tuple_d, uint32_t index)
+{
+	return tuple_d->element_defs + index;
+}
+
+void delete_tuple_def(tuple_def* tuple_d)
+{
+	for(uint32_t i = 0; i < tuple_d->element_count; i++)
+		deinit_element_def(tuple_d->element_defs + i);
+	free(tuple_d->element_defs);
+	free(tuple_d);
 }
 
 static void print_element_def(const element_def* element_d)

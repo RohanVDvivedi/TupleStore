@@ -66,10 +66,6 @@ struct element_def
 	user_value default_value;
 };
 
-// initialize an element's definition using its type and size
-// it may fail if the size parameters is not valid for a given data type
-int init_element_def(element_def* element_d, const char* name, element_type ele_type, uint32_t size_OR_prefix_size, int is_non_NULLable, const user_value* default_value);
-
 // returns true if an element is of a variable sized
 int is_variable_sized_element_def(const element_def* element_d);
 
@@ -138,13 +134,15 @@ struct tuple_def
 	uint32_t element_count;
 
 	// definition of all of the elements
-	element_def element_defs[];
+	element_def* element_defs;
+
+	// total elements that can be accomodated in element_defs array
+	uint32_t element_capacity;
 };
 
-#define size_of_tuple_def(element_count) (sizeof(tuple_def) + ((element_count) * sizeof(element_def)))
-
-// to initialize an empty tuple definition
-int init_tuple_def(tuple_def* tuple_d, const char* name);
+// returns a new tuple_def that can accomodate atleast element_capacity number of element defs, but contains 0 element_defs
+// element_capacity can not be modified for a tuple_def once it has been created by this function
+tuple_def* get_new_tuple_def(const char* name, uint32_t element_capacity);
 
 // insert an element definition in this tuple definition
 // returns 1 on success
@@ -179,6 +177,9 @@ uint32_t get_minimum_tuple_size(const tuple_def* tuple_d);
 // if not found it returns ELEMENT_DEF_NOT_FOUND
 #define ELEMENT_DEF_NOT_FOUND (~((uint32_t)0))
 uint32_t get_element_def_id_by_name(const tuple_def* tuple_d, const char* name);
+
+// returns pointer to the ith element_def
+const element_def* get_element_def_by_id(const tuple_def* tuple_d, uint32_t index);
 
 // to print a final tuple definition
 void print_tuple_def(const tuple_def* tuple_d);
