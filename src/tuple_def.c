@@ -222,9 +222,10 @@ tuple_def* get_new_tuple_def(const char* name, uint32_t element_capacity)
 
 tuple_def* clone_tuple_def(const tuple_def* tuple_d)
 {
-	tuple_def* tuple_d = get_new_tuple_def(tuple_d->name, tuple_d->element_count);
+	tuple_def* clone_tuple_d = get_new_tuple_def(tuple_d->name, tuple_d->element_count);
 	for(uint32_t i = 0; i < tuple_d->element_count; i++)
-		insert_copy_of_element_def(tuple_d, NULL, tuple_d, i);
+		insert_copy_of_element_def(clone_tuple_d, NULL, tuple_d, i);
+	return clone_tuple_d;
 }
 
 int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_type, uint32_t element_size_OR_prefix_size, int is_non_NULLable, const user_value* default_value)
