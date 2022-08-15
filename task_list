@@ -2,6 +2,7 @@
  * In tuple_def, add tuple_def->initial_size being the size of the tuple when it gets created.
  * make element_def an array pointed to by tuple_def.
  * write get_new_tuple_def and destroy_tuple_def functions.
+ * implement const tuple_def* get_clone(const tuple_def* ) and deep_copy(const tuple_def*, tuple_def*) functions for tuple_def
  * allocation and deallocation of data, data_size in default_value in element_def.
 
 2 PAGE LAYOUT PRE-ALLOCATION AND TUPLE SIZE PRE-CALCULATION TASKS
