@@ -144,6 +144,11 @@ struct tuple_def
 // element_capacity can not be modified for a tuple_def once it has been created by this function
 tuple_def* get_new_tuple_def(const char* name, uint32_t element_capacity);
 
+// create a new tuple def that is identical to the given tuple def
+// you may only use the tuple_def returned by this function after you have called finalize on it
+// the tuple_def returned by this function is not finalized, please call finalize_tuple_def on it before using it
+tuple_def* clone_tuple_def(const tuple_def* tuple_d);
+
 // insert an element definition in this tuple definition
 // returns 1 on success
 int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_type, uint32_t element_size_OR_prefix_size, int is_non_NULLable, const user_value* default_value);
