@@ -26,9 +26,9 @@ char temp_page[PAGE_SIZE] = {};
 tuple_def* get_tuple_definition()
 {
 	// initialize tuple definition and insert element definitions
-	tuple_def* def = get_new_tuple_def(def, "my_table");
+	tuple_def* def = get_new_tuple_def("my_table", 16);
 
-	res = insert_element_def(def, "col_0", INT, 5, 0, NULL);
+	int res = insert_element_def(def, "col_0", INT, 5, 0, NULL);
 
 	res = insert_element_def(def, "col_1", UINT, 1, 0, NULL);
 
@@ -70,6 +70,8 @@ tuple_def* get_tuple_definition()
 
 	print_tuple_def(def);
 	printf("\n\n");
+
+	return def;
 }
 
 // a row like struct for ease in building test tuples
@@ -112,11 +114,8 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple);
 
 int main()
 {
-	// allocate size of tuple definition
-	tuple_def* def = alloca(size_of_tuple_def(16));
-
-	// initialize tuple definition and insert element definitions
-	init_tuple_definition(def);
+	// create tuple_def for the test cases
+	tuple_def* def = get_tuple_definition();
 
 	// ---------------	DECLARE TEMP variables
 
@@ -595,6 +594,9 @@ int main()
 	// -----------------  TESTING UPDATES AND DELETED INSIDE TUPLE
 
 	test_updates_inserts_inside_tuple(def, tuple_cache);
+
+	// delete tuple_def
+	delete_tuple_def(def);
 
 	return 0;
 }
