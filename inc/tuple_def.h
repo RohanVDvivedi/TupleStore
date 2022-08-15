@@ -187,6 +187,9 @@ uint32_t get_element_def_id_by_name(const tuple_def* tuple_d, const char* name);
 // returns pointer to the ith element_def
 const element_def* get_element_def_by_id(const tuple_def* tuple_d, uint32_t index);
 
+// delete a tuple_def built earlier
+void delete_tuple_def(tuple_def* tuple_d);
+
 // to print a final tuple definition
 void print_tuple_def(const tuple_def* tuple_d);
 
