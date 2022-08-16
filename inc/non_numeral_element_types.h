@@ -19,14 +19,6 @@ int is_variable_sized_string_OR_blob_element_def(const element_def* ele_d);
 // and then the actual data begins
 // VAR_STRING are not NULL terminated, unlike the STRING which may be NULL terminated, if the string length is lesser than its fixed size
 
-// this only includes the actual size of the data
-// does not include the bytes required to store the size of this data (i.e. does not include element_def.size_specifier_prefix_size)
-uint32_t get_data_size_for_string_OR_blob_element(const void* e, const element_def* ele_d);
-
-// returns pointer in e, such that the returned pointer directly points to data of this
-// non-numeral variable sized element
-const void* get_data_for_string_OR_blob_element(const void* e, const element_def* ele_d);
-
 // this includes the complete size of the data
 uint32_t get_element_size_for_string_OR_blob_element(const void* e, const element_def* ele_d);
 

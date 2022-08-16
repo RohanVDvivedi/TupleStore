@@ -31,7 +31,7 @@ int is_variable_sized_string_OR_blob_element_def(const element_def* ele_d)
 
 static uint32_t get_data_size_for_string_OR_blob_element(const void* e, const element_def* ele_d)
 {
-	if(is_variable_sized_non_numeral_element_def(ele_d))	// for VAR_STRING and VAR_BLOB
+	if(is_variable_sized_string_OR_blob_element_def(ele_d))	// for VAR_STRING and VAR_BLOB
 		return read_uint32(e, ele_d->size_specifier_prefix_size);
 	else // STRING and BLOB
 		return ele_d->size;
@@ -39,7 +39,7 @@ static uint32_t get_data_size_for_string_OR_blob_element(const void* e, const el
 
 static const void* get_data_for_string_OR_blob_element(const void* e, const element_def* ele_d)
 {
-	if(is_variable_sized_non_numeral_element_def(ele_d))	// for VAR_STRING and VAR_BLOB
+	if(is_variable_sized_string_OR_blob_element_def(ele_d))	// for VAR_STRING and VAR_BLOB
 		return e + ele_d->size_specifier_prefix_size;
 	else // STRING and BLOB
 		return e;
@@ -47,7 +47,7 @@ static const void* get_data_for_string_OR_blob_element(const void* e, const elem
 
 uint32_t get_element_size_for_string_OR_blob_element(const void* e, const element_def* ele_d)
 {
-	if(is_variable_sized_non_numeral_element_def(ele_d))
+	if(is_variable_sized_string_OR_blob_element_def(ele_d))
 		return ele_d->size_specifier_prefix_size + get_data_size_for_string_OR_blob_element(e, ele_d);
 	else
 		return ele_d->size;
@@ -158,19 +158,13 @@ int set_string_OR_blob_element_from_element(void* e, const element_def* ele_d, c
 		|| (is_blob_type_element_def(ele_d) && is_blob_type_element_def(ele_d_from)) ) )
 		return 0;
 
-	const void* data;
-	if(is_fixed_sized_element_def(ele_d_from)) // for STRING or BLOB
-		data = e_from;
-	else // for VAR_STRING or VAR_BLOB
-		data = get_data_for_variable_sized_non_numeral_element(e_from, ele_d_from);
+	const void* data = get_data_for_string_OR_blob_element(e_from, ele_d_from);
 
 	uint32_t data_size;
 	if(is_string_type_element_def(ele_d_from))
 		data_size = get_string_length_for_string_type_element(e_from, ele_d_from);
-	else if(ele_d->type == BLOB) // BLOB is fixed width element
-		data_size = ele_d_from->size;
-	else // it is VAR_BLOB
-		data_size = get_data_size_for_variable_sized_non_numeral_element(e_from, ele_d_from);
+	else // BLOB / VAR_BLOB is fixed width element
+		data_size = get_data_size_for_string_OR_blob_element(e_from, ele_d_from);
 
 	set_string_OR_blob_element_INTERNAL(e, ele_d, data, data_size);
 
@@ -181,19 +175,12 @@ user_value get_value_from_string_OR_blob_element(const void* e, const element_de
 {
 	user_value uval = {};
 
-	// assign data start pointer
-	if(is_fixed_sized_element_def(ele_d))
-	{
-		uval.data = e;
-		uval.data_size = ele_d->size;
-		if(is_string_type_element_def(ele_d))
-			uval.data_size = get_string_length_for_string_type_element(e, ele_d);
-	}
+	uval.data = get_data_for_string_OR_blob_element(e, ele_d);
+
+	if(is_string_type_element_def(ele_d))
+		uval.data_size = get_string_length_for_string_type_element(e, ele_d);
 	else
-	{
-		uval.data = get_data_for_variable_sized_non_numeral_element(e, ele_d);
-		uval.data_size = get_data_size_for_variable_sized_non_numeral_element(e, ele_d);
-	}
+		uval.data_size = get_data_size_for_string_OR_blob_element(e, ele_d);
 
 	return uval;
 }
