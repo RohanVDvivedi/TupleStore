@@ -3,7 +3,7 @@
 #include<tuple_def.h>
 
 #include<numeral_element_types.h>
-#include<non_numeral_element_types.h>
+#include<string_or_blob_element_types_util.h>
 
 #include<inttypes.h>
 #include<stdlib.h>
@@ -35,7 +35,7 @@ user_value get_MIN_user_value(const element_def* ele_d)
 	if(is_numeral_type_element_def(ele_d))
 		return get_MIN_value_for_numeral_element_def(ele_d);
 	else
-		return get_MIN_value_for_non_numeral_element_def(ele_d);
+		return get_MIN_value_for_string_OR_blob_element_def(ele_d);
 }
 
 user_value get_MAX_user_value_for_numeral_element_def(const element_def* ele_d)

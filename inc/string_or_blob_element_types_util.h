@@ -40,6 +40,6 @@ int set_string_OR_blob_element_from_element(void* e, const element_def* ele_d, c
 user_value get_value_from_string_OR_blob_element(const void* e, const element_def* ele_d);
 
 // gives out a length of 0 bytes long STRING, BLOB, VAR_STRING or VAR_BLOB
-user_value get_MIN_value_for_string_OR_blob(const element_def* ele_d);
+user_value get_MIN_value_for_string_OR_blob_element_def(const element_def* ele_d);
 
 #endif

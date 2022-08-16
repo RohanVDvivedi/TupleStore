@@ -8,7 +8,7 @@
 #include<int_accesses.h>
 #include<page_layout_util.h>
 #include<numeral_element_types.h>
-#include<non_numeral_element_types.h>
+#include<string_or_blob_element_types_util.h>
 
 char type_as_string[][16] = {
 								"UINT",
@@ -135,8 +135,8 @@ uint32_t get_element_size(const void* e, const element_def* ele_d)
 {
 	if(is_fixed_sized_element_def(ele_d))
 		return ele_d->size;
-	else if(is_variable_sized_non_numeral_element_def(ele_d))
-		return get_element_size_for_variable_sized_non_numeral_element(e, ele_d);
+	else if(is_variable_sized_string_OR_blob_element_def(ele_d))
+		return get_element_size_for_string_OR_blob_element(e, ele_d);
 	return 0;
 }
 
@@ -176,7 +176,7 @@ uint32_t hash_element(const void* e, const element_def* ele_d, uint32_t (*hash_f
 	// the string may be smaller than the size
 	if(ele_d->type == STRING)
 		return hash_func(e, get_string_length_for_string_type_element(e, ele_d));
-	else if(is_variable_sized_non_numeral_element_def(ele_d)) // this works because for VAR_STRING, data_size is same as string length
+	else if(is_variable_sized_string_OR_blob_element_def(ele_d)) // this works because for VAR_STRING, data_size is same as string length
 		return hash_func(get_data_for_variable_sized_non_numeral_element(e, ele_d), get_data_size_for_variable_sized_non_numeral_element(e, ele_d));
 	else // else this is fixed sized element def (except for STRING)
 		return hash_func(e, get_element_size(e, ele_d));

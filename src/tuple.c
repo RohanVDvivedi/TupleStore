@@ -10,7 +10,7 @@
 #include<tuple_def.h>
 #include<int_accesses.h>
 #include<numeral_element_types.h>
-#include<non_numeral_element_types.h>
+#include<string_or_blob_element_types_util.h>
 #include<page_layout_util.h>
 
 void init_tuple(const tuple_def* tpl_d, void* tupl)
@@ -282,7 +282,7 @@ user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, uint32_t in
 	if(is_numeral_type_element_def(ele_d))
 		return get_value_from_numeral_element(e, ele_d);
 	else
-		return get_value_from_non_numeral_element(e, ele_d);
+		return get_value_from_string_OR_blob_element(e, ele_d);
 }
 
 int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, uint32_t index1, const void* tup2, const tuple_def* tpl_d2, uint32_t index2)
