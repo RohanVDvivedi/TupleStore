@@ -225,3 +225,9 @@ user_value get_value_from_non_numeral_element(const void* e, const element_def* 
 
 	return uval;
 }
+
+user_value get_MIN_value_for_non_numeral_element_def(const element_def* ele_d)
+{
+	// gives out a length of 0 bytes long string or blob
+	return *ZERO_USER_VALUE;
+}

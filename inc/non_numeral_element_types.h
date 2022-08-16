@@ -45,4 +45,7 @@ int set_string_OR_blob_element_from_element(void* e, const element_def* ele_d, c
 // it does not allocate memory
 user_value get_value_from_non_numeral_element(const void* e, const element_def* ele_d);
 
+// gives out a length of 0 bytes long STRING, BLOB, VAR_STRING or VAR_BLOB
+user_value get_MIN_value_for_non_numeral_element_def(const element_def* ele_d);
+
 #endif

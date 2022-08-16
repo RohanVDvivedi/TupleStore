@@ -2,6 +2,9 @@
 
 #include<tuple_def.h>
 
+#include<numeral_element_types.h>
+#include<non_numeral_element_types.h>
+
 #include<inttypes.h>
 #include<stdlib.h>
 #include<string.h>
@@ -30,19 +33,17 @@ user_value get_MIN_user_value(const element_def* ele_d)
 		return (*NULL_USER_VALUE);
 
 	if(is_numeral_type_element_def(ele_d))
-		return get_MIN_value_for_numeral_element(ele_d);
+		return get_MIN_value_for_numeral_element_def(ele_d);
 	else
-		// TODO
-		return ;
+		return get_MIN_value_for_non_numeral_element_def(ele_d);
 }
 
-user_value get_MAX_user_value(const element_def* ele_d)
+user_value get_MAX_user_value_for_numeral_element_def(const element_def* ele_d)
 {
 	if(is_numeral_type_element_def(ele_d))
-		return get_MAX_value_for_numeral_element(ele_d);
+		return get_MAX_value_for_numeral_element_def(ele_d);
 	else
-		// TODO
-		return ;
+		return (*NULL_USER_VALUE);
 }
 
 void print_user_value(const user_value* uval, const element_def* ele_d)
