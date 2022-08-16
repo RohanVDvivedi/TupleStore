@@ -140,12 +140,6 @@ int compare_blob_type_elements(const void* e1, const element_def* ele_d_1, const
 	return compare;
 }
 
-static void set_variable_sized_non_numeral_element_INTERNAL(void* e, const element_def* ele_d, const void* data, uint32_t data_size)
-{
-	write_uint32(e, ele_d->size_specifier_prefix_size, data_size);
-	memmove(e + ele_d->size_specifier_prefix_size, data, data_size);
-}
-
 static void set_string_OR_blob_element_INTERNAL(void* e, const element_def* ele_d, const void* data, uint32_t data_size)
 {
 	if(is_fixed_sized_element_def(ele_d)) // for STRING or BLOB
@@ -159,7 +153,13 @@ static void set_string_OR_blob_element_INTERNAL(void* e, const element_def* ele_
 			memset(e + bytes_to_write, 0, ele_d->size - bytes_to_write);
 	}
 	else // it is a VAR_BLOB or VAR_STRING
-		set_variable_sized_non_numeral_element_INTERNAL(e, ele_d, data, data_size);
+	{
+		// set the data size in the specified location, it will be be followed by data
+		write_uint32(e, ele_d->size_specifier_prefix_size, data_size);
+
+		// copy the actual data now
+		memmove(e + ele_d->size_specifier_prefix_size, data, data_size);
+	}
 }
 
 void set_string_OR_blob_element(void* e, const element_def* ele_d, const user_value* uval)
