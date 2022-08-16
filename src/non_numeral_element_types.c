@@ -146,15 +146,6 @@ static void set_variable_sized_non_numeral_element_INTERNAL(void* e, const eleme
 	memmove(e + ele_d->size_specifier_prefix_size, data, data_size);
 }
 
-void set_variable_sized_non_numeral_element(void* e, const element_def* ele_d, const user_value* uval)
-{
-	// ensure that user value is not NULL
-	if(is_user_value_NULL(uval))
-		return;
-	
-	set_variable_sized_non_numeral_element_INTERNAL(e, ele_d, uval->data, uval->data_size);
-}
-
 static void set_string_OR_blob_element_INTERNAL(void* e, const element_def* ele_d, const void* data, uint32_t data_size)
 {
 	if(is_fixed_sized_element_def(ele_d)) // for STRING or BLOB
