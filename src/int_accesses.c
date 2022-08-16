@@ -98,22 +98,53 @@ uint16_t get_UINT16_MIN(uint32_t data_size)		{return 0;}
 uint32_t get_UINT32_MIN(uint32_t data_size)		{return 0;}
 uint64_t get_UINT64_MIN(uint32_t data_size)		{return 0;}
 
-#define GET_UINT_MAX(X)									\
+#define GET_UINT_MAX(X)											\
+{																\
+	if(data_size == 0)											\
+		return 0;												\
+	if(data_size > sizeof(uint(X)))								\
+		data_size = sizeof(uint(X));							\
+	uint(X) x = INT ## X ## _C(-1);								\
+	x = x >> ((sizeof(uint(X)) - data_size) * CHAR_BIT);	\
+	return x;													\
+}
+
+uint8_t get_UINT8_MAX(uint32_t data_size)		GET_UINT_MAX(8)
+uint16_t get_UINT16_MAX(uint32_t data_size)		GET_UINT_MAX(16)
+uint32_t get_UINT32_MAX(uint32_t data_size)		GET_UINT_MAX(32)
+uint64_t get_UINT64_MAX(uint32_t data_size)		GET_UINT_MAX(64)
+
+#define GET_INT_MIN(X)									\
 {														\
 	if(data_size == 0)									\
 		return 0;										\
-	if(data_size > sizeof(uint(X)))						\
-		data_size = sizeof(uint(X));					\
-	uint(X) x = 0;										\
-	for(uint32_t i = 0; i < data_size; i++)				\
-		x = ((x << CHAR_BIT) | UINT ## X ## _C(0xff));	\
+	if(data_size > sizeof(sint(X)))						\
+		data_size = sizeof(sint(X));					\
+	sint(X) x = INT ## X ## _C(-1);						\
+	x = x << ((CHAR_BIT * data_size) - 1);				\
 	return x;											\
 }
 
-uint8_t get_UINT8_MAX(uint32_t data_size)	GET_UINT_MAX(8)
-uint16_t get_UINT16_MAX(uint32_t data_size)	GET_UINT_MAX(16)
-uint32_t get_UINT32_MAX(uint32_t data_size)	GET_UINT_MAX(32)
-uint64_t get_UINT64_MAX(uint32_t data_size)	GET_UINT_MAX(64)
+int8_t get_INT8_MIN(uint32_t data_size)			GET_INT_MIN(8)
+int16_t get_INT16_MIN(uint32_t data_size)		GET_INT_MIN(16)
+int32_t get_INT32_MIN(uint32_t data_size)		GET_INT_MIN(32)
+int64_t get_INT64_MIN(uint32_t data_size)		GET_INT_MIN(64)
+
+#define GET_INT_MAX(X)											\
+{																\
+	if(data_size == 0)											\
+		return 0;												\
+	if(data_size > sizeof(sint(X)))								\
+		data_size = sizeof(sint(X));							\
+	uint(X) x = INT ## X ## _C(-1);								\
+	x = x >> (((sizeof(uint(X)) - data_size) * CHAR_BIT) + 1);	\
+	return x;													\
+}
+
+int8_t get_INT8_MAX(uint32_t data_size)			GET_INT_MAX(8)
+int16_t get_INT16_MAX(uint32_t data_size)		GET_INT_MAX(16)
+int32_t get_INT32_MAX(uint32_t data_size)		GET_INT_MAX(32)
+int64_t get_INT64_MAX(uint32_t data_size)		GET_INT_MAX(64)
 
 float read_float(const void* data)
 {

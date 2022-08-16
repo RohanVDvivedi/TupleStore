@@ -72,15 +72,15 @@ void write_int64(void* data, uint32_t data_size, int64_t x);
 	returns minimum and maximum number that can be represented in data_size number of bytes for an unsigned intteger
 */
 
-uint8_t get_INT8_MIN(uint32_t data_size);
-uint16_t get_INT16_MIN(uint32_t data_size);
-uint32_t get_INT32_MIN(uint32_t data_size);
-uint64_t get_INT64_MIN(uint32_t data_size);
+uint8_t get_UINT8_MIN(uint32_t data_size);
+uint16_t get_UINT16_MIN(uint32_t data_size);
+uint32_t get_UINT32_MIN(uint32_t data_size);
+uint64_t get_UINT64_MIN(uint32_t data_size);
 
-uint8_t get_INT8_MAX(uint32_t data_size);
-uint16_t get_INT16_MAX(uint32_t data_size);
-uint32_t get_INT32_MAX(uint32_t data_size);
-uint64_t get_INT64_MAX(uint32_t data_size);
+uint8_t get_UINT8_MAX(uint32_t data_size);
+uint16_t get_UINT16_MAX(uint32_t data_size);
+uint32_t get_UINT32_MAX(uint32_t data_size);
+uint64_t get_UINT64_MAX(uint32_t data_size);
 
 /*
 	uintX_t get_INTX_MIN(uint32_t data_size) and
@@ -88,15 +88,15 @@ uint64_t get_INT64_MAX(uint32_t data_size);
 	returns minimum and maximum number that can be represented in data_size number of bytes for a signed integer
 */
 
-uint8_t get_INT8_MIN(uint32_t data_size);
-uint16_t get_INT16_MIN(uint32_t data_size);
-uint32_t get_INT32_MIN(uint32_t data_size);
-uint64_t get_INT64_MIN(uint32_t data_size);
+int8_t get_INT8_MIN(uint32_t data_size);
+int16_t get_INT16_MIN(uint32_t data_size);
+int32_t get_INT32_MIN(uint32_t data_size);
+int64_t get_INT64_MIN(uint32_t data_size);
 
-uint8_t get_INT8_MAX(uint32_t data_size);
-uint16_t get_INT16_MAX(uint32_t data_size);
-uint32_t get_INT32_MAX(uint32_t data_size);
-uint64_t get_INT64_MAX(uint32_t data_size);
+int8_t get_INT8_MAX(uint32_t data_size);
+int16_t get_INT16_MAX(uint32_t data_size);
+int32_t get_INT32_MAX(uint32_t data_size);
+int64_t get_INT64_MAX(uint32_t data_size);
 
 /*
 	below functions allow you to read and write floats and doubles independent of alignement issues
