@@ -18,4 +18,8 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 
 user_value get_value_from_numeral_element(const void* e, const element_def* ele_d);
 
+user_value get_MIN_value_for_numeral_element(const element_def* ele_d);
+
+user_value get_MAX_value_for_numeral_element(const element_def* ele_d);
+
 #endif

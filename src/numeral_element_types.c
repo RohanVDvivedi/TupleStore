@@ -431,3 +431,77 @@ user_value get_value_from_numeral_element(const void* e, const element_def* ele_
 	}
 	return uval;
 }
+
+user_value get_MIN_value_for_numeral_element(const element_def* ele_d)
+{
+	user_value uval = {};
+	switch(ele_d->type)
+	{
+		case UINT :
+		{
+			uval.uint_value = get_UINT64_MIN(ele_d->size);
+			break;
+		}
+		case INT :
+		{
+			uval.int_value = get_INT64_MIN(ele_d->size);
+			break;
+		}
+		case FLOAT :
+		{
+			switch(ele_d->size)
+			{
+				case 4 :
+				{
+					uval.float_value = get_FLOAT_MIN();
+					break;
+				}
+				case 8 :
+				{
+					uval.double_value = get_DOUBLE_MIN();
+					break;
+				}
+			}
+		}
+		default :
+			break;
+	}
+	return uval;
+}
+
+user_value get_MAX_value_for_numeral_element(const element_def* ele_d)
+{
+	user_value uval = {};
+	switch(ele_d->type)
+	{
+		case UINT :
+		{
+			uval.uint_value = get_UINT64_MAX(ele_d->size);
+			break;
+		}
+		case INT :
+		{
+			uval.int_value = get_INT64_MAX(ele_d->size);
+			break;
+		}
+		case FLOAT :
+		{
+			switch(ele_d->size)
+			{
+				case 4 :
+				{
+					uval.float_value = get_FLOAT_MAX();
+					break;
+				}
+				case 8 :
+				{
+					uval.double_value = get_DOUBLE_MAX();
+					break;
+				}
+			}
+		}
+		default :
+			break;
+	}
+	return uval;
+}
