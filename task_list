@@ -1,7 +1,6 @@
 
 1 MIN MAX UTILITY FUNCTIONS
- * int_accesses.h -> get_INTX_MIN(size), get_UINTX_MIN(), get_INTX_MAX(size) and get_UINTX_MAX(), get_DOUBLE_MIN(), get_DOUBLE_MAX, get_FLOAT_MIN() and get_FLOAT_MAX() values. X can be anywhere from 1 to 8 both inclusive. each returns a uintX_t or intX_t or float or double.
- * use the above mentioned functions to build get_user_value_MAX(element_def* ) and get_user_value_MIN(element_def* ).
+ * build get_user_value_MAX(element_def* ) and get_user_value_MIN(element_def* ).
  * set a element to NULL if it is NULLable and the user is asking for a min. we have yet to figure out a max of string or blob type of variable length.
 
 2 PAGE LAYOUT PRE-ALLOCATION AND TUPLE SIZE PRE-CALCULATION TASKS
