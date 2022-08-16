@@ -36,6 +36,10 @@ int is_user_value_NULL(const user_value* uval);
 
 user_value clone_user_value_with_data(const user_value* uval);
 
+user_value get_MAX_user_value(const element_def* ele_d);
+
+user_value get_MIN_user_value(const element_def* ele_d);
+
 // forward declaration for element_def struct
 typedef struct element_def element_def;
 struct element_def;

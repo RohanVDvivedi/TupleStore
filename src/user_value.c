@@ -24,6 +24,21 @@ user_value clone_user_value_with_data(const user_value* uval)
 	return res;
 }
 
+user_value get_MAX_user_value(const element_def* ele_d)
+{
+	if(is_NULLable_element_def(ele_d))
+		return (*NULL_USER_VALUE);
+
+	// TODO
+	// make calls for specific types
+}
+
+user_value get_MIN_user_value(const element_def* ele_d)
+{
+	// TODO
+	// make calls for specific types
+}
+
 void print_user_value(const user_value* uval, const element_def* ele_d)
 {
 	if(is_user_value_NULL(uval))
