@@ -8,7 +8,11 @@ int is_string_type_element_def(const element_def* ele_d);
 
 int is_blob_type_element_def(const element_def* ele_d);
 
-int is_variable_sized_non_numeral_element_def(const element_def* ele_d);
+int is_string_OR_blob_type_element_def(const element_def* ele_d);
+
+int is_fixed_sized_string_OR_blob_element_def(const element_def* ele_d);
+
+int is_variable_sized_string_OR_blob_element_def(const element_def* ele_d);
 
 // for variable sized blob or string i.e. VAR_BLOB or VAR_STRING,
 // the first element_def.size_specifier_prefix_size number of bytes are used to store the size of the actual data
@@ -17,14 +21,14 @@ int is_variable_sized_non_numeral_element_def(const element_def* ele_d);
 
 // this only includes the actual size of the data
 // does not include the bytes required to store the size of this data (i.e. does not include element_def.size_specifier_prefix_size)
-uint32_t get_data_size_for_variable_sized_non_numeral_element(const void* e, const element_def* ele_d);
+uint32_t get_data_size_for_string_OR_blob_element(const void* e, const element_def* ele_d);
 
 // returns pointer in e, such that the returned pointer directly points to data of this
 // non-numeral variable sized element
-const void* get_data_for_variable_sized_non_numeral_element(const void* e, const element_def* ele_d);
+const void* get_data_for_string_OR_blob_element(const void* e, const element_def* ele_d);
 
 // this includes the complete size of the data
-uint32_t get_element_size_for_variable_sized_non_numeral_element(const void* e, const element_def* ele_d);
+uint32_t get_element_size_for_string_OR_blob_element(const void* e, const element_def* ele_d);
 
 uint32_t get_string_length_for_string_type_element(const void* e, const element_def* ele_d);
 
@@ -41,9 +45,9 @@ int set_string_OR_blob_element_from_element(void* e, const element_def* ele_d, c
 
 // returns user value that will point to blob or string of this element
 // it does not allocate memory
-user_value get_value_from_non_numeral_element(const void* e, const element_def* ele_d);
+user_value get_value_from_string_OR_blob_element(const void* e, const element_def* ele_d);
 
 // gives out a length of 0 bytes long STRING, BLOB, VAR_STRING or VAR_BLOB
-user_value get_MIN_value_for_non_numeral_element_def(const element_def* ele_d);
+user_value get_MIN_value_for_string_OR_blob(const element_def* ele_d);
 
 #endif
