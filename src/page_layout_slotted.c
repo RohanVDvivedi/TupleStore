@@ -127,6 +127,11 @@ uint32_t get_tomb_stone_count_slotted_page(const void* page, uint32_t page_size)
 	return read_value_from_page(tomb_stone_count, page_size);
 }
 
+void* preallocate_for_insert_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t external_tuple_size)
+{
+	// TODO
+}
+
 int insert_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
 	// if can not insert new tuple, then fail with 0
@@ -176,6 +181,11 @@ int can_insert_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 	uint32_t size_required_for_new_tuple = get_tuple_size(tpl_d, external_tuple) + get_additional_space_overhead_per_tuple_slotted_page(page_size);
 
 	return size_required_for_new_tuple <= get_free_space_slotted_page(page, page_size);
+}
+
+void* preallocate_for_update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, uint32_t external_tuple_size)
+{
+	// TODO
 }
 
 int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
