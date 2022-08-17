@@ -15,7 +15,7 @@ enum page_layout
 page_layout get_page_layout_type(const tuple_def* tpl_d);
 
 
-// PAHE_HEADER public functions they are defined in the page_header.c
+// PAGE_HEADER public functions they are defined in the page_header.c
 
 // returns size of page header as stored on the page
 uint32_t get_page_header_size(const void* page, uint32_t page_size);
