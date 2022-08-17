@@ -65,6 +65,18 @@ uint32_t get_tomb_stone_count(const void* page, uint32_t page_size, const tuple_
 	return 0;
 }
 
+void* preallocate_for_insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t external_tuple_size)
+{
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+			return preallocate_for_insert_tuple_slotted_page(page, page_size, tpl_d, external_tuple);
+		case FIXED_ARRAY_PAGE_LAYOUT :
+			return preallocate_for_insert_tuple_fixed_array_page(page, page_size, tpl_d, external_tuple);
+	}
+	return 0;
+}
+
 int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
 	switch(get_page_layout_type(tpl_d))
@@ -115,6 +127,18 @@ uint32_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def
 	}
 
 	return tuples_copied;
+}
+
+void* preallocate_for_update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, uint32_t external_tuple_size)
+{
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+			return preallocate_for_update_tuple_slotted_page(page, page_size, tpl_d, index, external_tuple);
+		case FIXED_ARRAY_PAGE_LAYOUT :
+			return preallocate_for_update_tuple_fixed_array_page(page, page_size, tpl_d, index, external_tuple);
+	}
+	return 0;
 }
 
 int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
