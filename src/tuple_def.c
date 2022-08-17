@@ -133,10 +133,19 @@ int has_bit_in_is_NULL_bitmap(const element_def* element_d)
 
 uint32_t get_element_size(const void* e, const element_def* ele_d)
 {
-	if(is_fixed_sized_element_def(ele_d))
+	if(is_numeral_type_element_def(ele_d))
 		return ele_d->size;
 	else if(is_variable_sized_string_OR_blob_element_def(ele_d))
 		return get_element_size_for_string_OR_blob_element(e, ele_d);
+	return 0;
+}
+
+uint32_t get_element_size_from_user_value(const user_value* uval, const element_def* ele_d)
+{
+	if(is_numeral_type_element_def(ele_d))
+		return ele_d->size;
+	else if(is_variable_sized_string_OR_blob_element_def(ele_d))
+		return get_element_size_from_user_value_for_string_OR_blob_element(uval, ele_d);
 	return 0;
 }
 

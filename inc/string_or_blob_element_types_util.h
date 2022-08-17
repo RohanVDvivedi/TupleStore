@@ -22,6 +22,8 @@ int is_variable_sized_string_OR_blob_element_def(const element_def* ele_d);
 // this includes the complete size of the data
 uint32_t get_element_size_for_string_OR_blob_element(const void* e, const element_def* ele_d);
 
+uint32_t get_element_size_from_user_value_for_string_OR_blob_element(const user_value* uval, const element_def* ele_d);
+
 uint32_t get_string_length_for_string_type_element(const void* e, const element_def* ele_d);
 
 int compare_string_type_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2);

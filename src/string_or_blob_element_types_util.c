@@ -53,6 +53,18 @@ uint32_t get_element_size_for_string_OR_blob_element(const void* e, const elemen
 		return ele_d->size;
 }
 
+uint32_t get_element_size_from_user_value_for_string_OR_blob_element(const user_value* uval, const element_def* ele_d)
+{
+	if(is_fixed_sized_string_OR_blob_element_def(ele_d)) // STRING and BLOB
+		return ele_d->size;
+	else // VAR_STRING and VAR_BLOB
+	{
+		if(is_user_value_NULL(uval))
+			return 0;
+		return ele_d->size_specifier_prefix_size + uval->data_size;
+	}
+}
+
 uint32_t get_string_length_for_string_type_element(const void* e, const element_def* ele_d)
 {
 	if(ele_d->type == STRING)

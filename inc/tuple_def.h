@@ -78,8 +78,10 @@ int is_NULLable_element_def(const element_def* element_d);
 // returns 1, if this element_def will need/(or has) a bit in the is_NULL bitmap
 int has_bit_in_is_NULL_bitmap(const element_def* element_d);
 
-// returns size of element
+// returns size of element i.e. this is the number of bytes that will be occupied by the element on the tuple
 uint32_t get_element_size(const void* e, const element_def* ele_d);
+
+uint32_t get_element_size_from_user_value(const user_value* uval, const element_def* ele_d);
 
 // returns true if the two different element defs can be compared against one another
 int can_compare_element_defs(const element_def* ele_d_1, const element_def* ele_d_2);
