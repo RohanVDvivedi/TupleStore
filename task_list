@@ -1,6 +1,6 @@
 
 2 PAGE LAYOUT PRE-ALLOCATION TASKS
- * add pre_allocate_for_insert_tuple(tuple_size) and pre_allocate_for_tuple_update(index, tuple_size) to pre_allocate_for a given operation for a given tuple size. it will return a pointer to the tuple in the page that has atleast tuple_size number of bytes. This will reduce malloc calls for the user. these functions return NULL if the allocation is not possible. add a comment to this new pre_allocate_* functions that they must be used avoided and if used, then you may not write a tuple larger than the tuple, they requested is pre allocation for.
+ * add pre_allocate_for_insert_tuple(tuple_size) and pre_allocate_for_tuple_update(index, tuple_size) to pre_allocate slot for a given operation for a given tuple size. it will return a pointer to the tuple in the page that can hold atleast tuple_size number of bytes. This will reduce malloc calls for the user. These functions return NULL if the allocation is not possible. add a comment to this new pre_allocate_* functions that their use must be used avoided and if used, then you may not write a tuple larger than the tuple_size, they requested the slot for.
 
 4 OPTIMIZATION FOR COMPRESSION TASKS
  * make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction, deleting a tuple, or updating a tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined OR use a global variable for this.
