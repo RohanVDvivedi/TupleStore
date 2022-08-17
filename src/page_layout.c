@@ -72,7 +72,7 @@ void* preallocate_for_insert_tuple(void* page, uint32_t page_size, const tuple_d
 		case SLOTTED_PAGE_LAYOUT :
 			return preallocate_for_insert_tuple_slotted_page(page, page_size, tpl_d, external_tuple_size);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return preallocate_for_insert_tuple_fixed_array_page(page, page_size, tpl_d, external_tuple_size);
+			return preallocate_for_insert_tuple_fixed_array_page(page, page_size, tpl_d);
 	}
 	return 0;
 }
@@ -136,7 +136,7 @@ void* preallocate_for_update_tuple(void* page, uint32_t page_size, const tuple_d
 		case SLOTTED_PAGE_LAYOUT :
 			return preallocate_for_update_tuple_slotted_page(page, page_size, tpl_d, index, external_tuple_size);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return preallocate_for_update_tuple_fixed_array_page(page, page_size, tpl_d, index, external_tuple_size);
+			return preallocate_for_update_tuple_fixed_array_page(page, page_size, tpl_d, index);
 	}
 	return 0;
 }

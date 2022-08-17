@@ -123,7 +123,7 @@ uint32_t get_tomb_stone_count_fixed_array_page(const void* page, uint32_t page_s
 	return read_value_from_page(tomb_stone_count, page_size);
 }
 
-void* preallocate_for_insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t external_tuple_size)
+void* preallocate_for_insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	// TODO
 }
@@ -161,7 +161,7 @@ int can_insert_tuple_fixed_array_page(const void* page, uint32_t page_size, cons
 	return get_tuple_count_fixed_array_page(page, page_size) < get_tuple_capacity(page, page_size, tpl_d);
 }
 
-void* preallocate_for_update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, uint32_t external_tuple_size)
+void* preallocate_for_update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	// TODO
 }
