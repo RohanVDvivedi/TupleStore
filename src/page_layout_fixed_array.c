@@ -180,7 +180,7 @@ int update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 	set_bit(is_valid, index);
 
 	// copy external_tuple to the slot on the page (at index)
-	memmove(new_tuple_p, external_tuple, tpl_d->size);
+	memmove(slot, external_tuple, tpl_d->size);
 
 	return 1;
 }
