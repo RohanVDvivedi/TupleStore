@@ -217,21 +217,18 @@ int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 	if(index >= get_tuple_count_fixed_array_page(page, page_size))
 		return 0;
 
-	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
-
 	// indexed tuple does not exist, so can not delete it
+	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
 	if(get_bit(is_valid, index) == 0)
 		return 0;
 
-	// mark deleted
+	// else mark it deleted
 	reset_bit(is_valid, index);
 
 	// increment tomb_stone_count
-	{
-		void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
-		uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
-		write_value_to_page(tomb_stone_count, page_size, ++tomb_stone_count_val);
-	}
+	void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+	uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
+	write_value_to_page(tomb_stone_count, page_size, ++tomb_stone_count_val);
 
 	// retract tuple_count if possible
 	retract_tuple_count(page, page_size);
