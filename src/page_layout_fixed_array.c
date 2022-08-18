@@ -133,20 +133,20 @@ int insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 
 	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
 
-	// the index where this tuple will be inserted
+	// the index to the slot, where this external_tuple will be inserted
 	uint16_t index = tuple_count_val;
 
 	// increment the tuple counter on the page
 	write_value_to_page(tuple_count, page_size, ++tuple_count_val);
 
-	// pointer to the new tuple in the page
-	void* new_tuple_p = page + get_offset_to_ith_tuple(page, page_size, tpl_d, index);
+	// get pointer to the new slot on the page
+	void* slot = page + get_offset_to_ith_tuple(page, page_size, tpl_d, index);
 
-	// move data from external tuple to the tuple in the page
-	memmove(new_tuple_p, external_tuple, tpl_d->size);
-
-	// set valid bit for the newly inserted tuple
+	// set valid bit for the newly created slot, for the new external_tuple
 	set_bit(is_valid, index);
+
+	// move data from external_tuple to the slot on the page
+	memmove(slot, external_tuple, tpl_d->size);
 
 	return 1;
 }
@@ -174,9 +174,11 @@ int update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 		write_value_to_page(tomb_stone_count, page_size, tomb_stone_count_val);
 	}
 
+	// set is_valid bit for the concerned slot
+	set_bit(is_valid, index);
+
 	// copy external_tuple to the new_tuple (in the page)
 	memmove(new_tuple_p, external_tuple, tpl_d->size);
-	set_bit(is_valid, index);
 
 	return 1;
 }
