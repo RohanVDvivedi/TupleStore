@@ -433,9 +433,8 @@ int swap_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tp
 		return 0;
 
 	// swap tuple offsets
-	uint32_t temp = i1th_tuple_offset_val;
 	write_value_to_page(i1th_tuple_offset, page_size, i2th_tuple_offset_val);
-	write_value_to_page(i2th_tuple_offset, page_size, temp);
+	write_value_to_page(i2th_tuple_offset, page_size, i1th_tuple_offset_val);
 
 	// retract tuple count if possible
 	retract_tuple_count(page, page_size);
