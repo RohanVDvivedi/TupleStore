@@ -128,22 +128,20 @@ int insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 	if(!can_insert_tuple_fixed_array_page(page, page_size, tpl_d))
 		return 0;
 
+	// increment the tuple counter on the page
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
-	char* is_valid  = page + get_offset_to_is_valid_bitmap(page, page_size);
-
 	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
+	write_value_to_page(tuple_count, page_size, ++tuple_count_val);
 
 	// the index to the slot, where this external_tuple will be inserted
-	uint16_t index = tuple_count_val;
+	uint16_t index = tuple_count_val - 1;
 
-	// increment the tuple counter on the page
-	write_value_to_page(tuple_count, page_size, ++tuple_count_val);
+	// set valid bit for the newly created slot, for the new external_tuple
+	char* is_valid  = page + get_offset_to_is_valid_bitmap(page, page_size);
+	set_bit(is_valid, index);
 
 	// get pointer to the new slot on the page
 	void* slot = page + get_offset_to_ith_tuple(page, page_size, tpl_d, index);
-
-	// set valid bit for the newly created slot, for the new external_tuple
-	set_bit(is_valid, index);
 
 	// move data from external_tuple to the slot on the page
 	memmove(slot, external_tuple, tpl_d->size);
