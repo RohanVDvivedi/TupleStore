@@ -342,7 +342,7 @@ int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 	if(ith_tuple_offset_old_val == 0)
 		return 0;
 
-	// get the ith_tuple and also get its size
+	// get the size of the tuple at the ith slot on the page
 	void* ith_tuple = page + ith_tuple_offset_old_val;
 	uint32_t ith_tuple_old_size = get_tuple_size(tpl_d, ith_tuple);
 
@@ -371,19 +371,15 @@ int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 
 	// decrement space_occupied_by_tuples by the size of the tuple that was deleted
 	// its tomb_stone (i.e. its offset) still remains on the page
-	{
-		void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
-		uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
-		space_occupied_by_tuples_val -= ith_tuple_old_size;
-		write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
-	}
+	void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
+	uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
+	space_occupied_by_tuples_val -= ith_tuple_old_size;
+	write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
 
 	// increment tomb_stone count
-	{
-		void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
-		uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size) + 1;
-		write_value_to_page(tomb_stone_count, page_size, tomb_stone_count_val);
-	}
+	void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+	uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
+	write_value_to_page(tomb_stone_count, page_size, ++tomb_stone_count_val);
 
 	// retract tuple count if possible
 	retract_tuple_count(page, page_size);
