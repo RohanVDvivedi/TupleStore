@@ -310,7 +310,7 @@ static inline void retract_tuple_count(void* page, uint32_t page_size)
 	// pre-calculate the additional space that each of these tomb_stones are hoarding
 	uint32_t additional_space_for_tomb_stones = get_additional_space_overhead_per_tuple_slotted_page(page_size);
 
-	// get a valif tuple count
+	// get a valid tuple count
 	while(tuple_count_val > 0)
 	{
 		if(get_offset_to_ith_tuple(page, page_size, tuple_count_val - 1) == 0)
