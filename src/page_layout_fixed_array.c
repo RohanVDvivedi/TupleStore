@@ -162,9 +162,6 @@ int update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 
 	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
 
-	// get pointer to the concerned slot
-	void* slot = page + get_offset_to_ith_tuple(page, page_size, tpl_d, index);
-
 	// if the tuple at given index did not exist (was a tomb_stone) prior to this update
 	// then decrement the tomb_stone_count
 	if(get_bit(is_valid, index) == 0)
@@ -176,6 +173,9 @@ int update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 
 	// set is_valid bit for the concerned slot
 	set_bit(is_valid, index);
+
+	// get pointer to the concerned slot
+	void* slot = page + get_offset_to_ith_tuple(page, page_size, tpl_d, index);
 
 	// copy external_tuple to the slot on the page (at index)
 	memmove(slot, external_tuple, tpl_d->size);
