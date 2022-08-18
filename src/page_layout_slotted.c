@@ -213,18 +213,16 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 				existing_tuple_offset_val = end_of_free_space_offset_val;
 				write_value_to_page(existing_tuple_offset, page_size, existing_tuple_offset_val);
 
+				// modify the space_occupied_by_tuples
+				void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
+				uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
+				space_occupied_by_tuples_val = (space_occupied_by_tuples_val - existing_tuple_size) + external_tuple_size;
+				write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
+
 				existing_tuple = page + existing_tuple_offset_val;
 
 				// move data from external tuple to the tuple in the page
 				memmove(existing_tuple, external_tuple, external_tuple_size);
-
-				// modify the space_occupied_by_tuples
-				{
-					void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
-					uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
-					space_occupied_by_tuples_val = (space_occupied_by_tuples_val - existing_tuple_size) + external_tuple_size;
-					write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
-				}
 
 				return 1;
 			}
@@ -234,15 +232,14 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 		// if exiting_tuple is larger than or equal to the external_tuple, then we can use the same slot
 		else if(existing_tuple_size >= external_tuple_size)
 		{
-			memmove(existing_tuple, external_tuple, external_tuple_size);
-
 			// modify the space_occupied_by_tuples
-			{
-				void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
-				uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
-				space_occupied_by_tuples_val = (space_occupied_by_tuples_val - existing_tuple_size) + external_tuple_size;
-				write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
-			}
+			void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
+			uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
+			space_occupied_by_tuples_val = (space_occupied_by_tuples_val - existing_tuple_size) + external_tuple_size;
+			write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
+
+			// move data from external tuple to the tuple in the page
+			memmove(existing_tuple, external_tuple, external_tuple_size);
 
 			return 1;
 		}
@@ -269,26 +266,24 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 		void* new_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, index);
 		write_value_to_page(new_tuple_offset, page_size, end_of_free_space_offset_val);
 
+		// modify the space_occupied_by_tuples
+		void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
+		uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
+		if(existing_tuple_offset_val == 0)
+			space_occupied_by_tuples_val = space_occupied_by_tuples_val + external_tuple_size;
+		else
+		{
+			void* existing_tuple = page + existing_tuple_offset_val;
+			uint32_t existing_tuple_size = get_tuple_size(tpl_d, existing_tuple);
+			space_occupied_by_tuples_val = (space_occupied_by_tuples_val - existing_tuple_size) + external_tuple_size;
+		}
+		write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
+
 		// find the new tuple on the page
 		void* new_tuple = page + end_of_free_space_offset_val;
 
 		// move data from external tuple to the tuple in the page
 		memmove(new_tuple, external_tuple, external_tuple_size);
-
-		// modify the space_occupied_by_tuples
-		{
-			void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
-			uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
-			if(existing_tuple_offset_val == 0)
-				space_occupied_by_tuples_val = space_occupied_by_tuples_val + external_tuple_size;
-			else
-			{
-				void* existing_tuple = page + existing_tuple_offset_val;
-				uint32_t existing_tuple_size = get_tuple_size(tpl_d, existing_tuple);
-				space_occupied_by_tuples_val = (space_occupied_by_tuples_val - existing_tuple_size) + external_tuple_size;
-			}
-			write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
-		}
 
 		return 1;
 	}
