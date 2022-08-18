@@ -136,35 +136,31 @@ int insert_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 	// calculate the size of tuple to be inserted
 	uint32_t external_tuple_size = get_tuple_size(tpl_d, external_tuple);
 
-	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
-	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
-
 	// increment tuple count on the page
+	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
 	write_value_to_page(tuple_count, page_size, ++tuple_count_val);
 
 	// update end of free space offset
+	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
 	uint32_t end_of_free_space_offset_val = get_offset_to_end_of_free_space(page, page_size);
 	end_of_free_space_offset_val -= external_tuple_size;
 	write_value_to_page(end_of_free_space_offset, page_size, end_of_free_space_offset_val);
 
-	// increment the space_occupied_by_tuples value on the page
-	// by the space that is/will be occupied by this external tuple 
-	{
-		void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
-		uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
-		space_occupied_by_tuples_val += external_tuple_size + get_additional_space_overhead_per_tuple_slotted_page(page_size);
-		write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
-	}
+	// increment the space_occupied_by_tuples value on the page, by the space that is/will be occupied by this external tuple 
+	void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
+	uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
+	space_occupied_by_tuples_val += external_tuple_size + get_additional_space_overhead_per_tuple_slotted_page(page_size);
+	write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
 
 	// update offset where you want to place this tuple
 	void* new_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, tuple_count_val - 1);
 	write_value_to_page(new_tuple_offset, page_size, end_of_free_space_offset_val);
 
-	// find the new tuple on the page
+	// get pointer to the new slot (new_tuple) on the page
 	void* new_tuple = page + end_of_free_space_offset_val;
 
-	// move data from external tuple to the tuple in the page
+	// move data from external tuple to the slot (new_tuple) in the page
 	memmove(new_tuple, external_tuple, external_tuple_size);
 
 	return 1;
