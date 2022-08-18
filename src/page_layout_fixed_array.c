@@ -298,9 +298,8 @@ const void* get_nth_tuple_fixed_array_page(const void* page, uint32_t page_size,
 	if(index >= get_tuple_count_fixed_array_page(page, page_size))
 		return NULL;
 
-	const char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
-
 	// indexed tuple does not exist
+	const char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
 	if(get_bit(is_valid, index) == 0)
 		return NULL;
 
