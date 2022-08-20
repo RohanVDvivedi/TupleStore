@@ -31,6 +31,8 @@ It only provides primitive utility functions/structures to systematically organi
    * `#include<tuple_def.h>`
    * `#include<tuple.h>`
    * `#include<page_layout.h>`
+   * `int_accesses.h`
+   * `user_value.h`
 
 ## Instructions for uninstalling library
 
