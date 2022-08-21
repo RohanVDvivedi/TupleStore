@@ -1,11 +1,11 @@
 #include<page_layout_slotted.h>
 
-#include<stdint.h>
 #include<stdlib.h>
 #include<string.h>
 
 #include<tuple.h>
 
+#include<int_accesses.h>
 #include<page_header.h>
 #include<page_layout_util.h>
 
@@ -356,10 +356,7 @@ int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 		{
 			uint32_t jth_tuple_offset_val = get_offset_to_ith_tuple(page, page_size, j);
 			if(jth_tuple_offset_val != 0)
-			{
-				#define min(a,b) (((a)<(b))?(a):(b))
 				new_end_of_free_space_offset = min(jth_tuple_offset_val, new_end_of_free_space_offset);
-			}
 		}
 		write_value_to_page(end_of_free_space_offset, page_size, new_end_of_free_space_offset);
 	}
