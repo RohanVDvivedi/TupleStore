@@ -4,3 +4,5 @@
 
 2 FAR FAR FUTURE FEATURES
  * additional data types: variable length real numbers with variable base and nested_tuple datatype
+ * varint like that of leveldb, boolean type to store 1 bit of information, multiple booleans can be packed on a single byte and also possess bit_offset along with byte_offset (like how other types have only byte_offset).
+ * introduce enum types with bits lesser than or equal to 16, and these can be packed with booleans
