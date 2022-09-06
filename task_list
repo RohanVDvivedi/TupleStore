@@ -3,6 +3,7 @@
  * make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction, deleting a tuple, or updating a tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined OR use a global variable for this.
 
 2 FAR FAR FUTURE FEATURES
+ * add long double
  * additional data types: variable length real numbers with variable base and nested_tuple datatype
  * varint like that of leveldb, boolean type to store 1 bit of information, multiple booleans can be packed on a single byte and also possess bit_offset along with byte_offset (like how other types have only byte_offset).
  * introduce enum types with bits lesser than or equal to 16, and these can be packed with booleans
