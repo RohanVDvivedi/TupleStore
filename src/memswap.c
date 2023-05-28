@@ -4,7 +4,7 @@
 
 int memswap(void* data1, void* data2, uint32_t size)
 {
-	if(size <= UINT_MAX)
+	if(size <= CY_UINT_MAX)
 		return memory_swap(data1, data2, size);
 	else
 	{
