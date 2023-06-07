@@ -7,3 +7,14 @@
  * additional data types: variable length real numbers with variable base and nested_tuple datatype
  * varint like that of leveldb, boolean type to store 1 bit of information, multiple booleans can be packed on a single byte and also possess bit_offset along with byte_offset (like how other types have only byte_offset).
  * introduce enum types with bits lesser than or equal to 16, and these can be packed with booleans
+
+3 TASKS FOR PROVIDING ATOMICITY AND DURABILITY
+ * add logging
+ * parser for log records, with log sequence numbers
+ * undo functions to undo all (modifying) operations of page_layout in undo_page_layout.h
+
+4 IN THIS REPO OR OTHER REPO
+ * implement logger and an interface to log and update, all operations of page_layout.h
+ * implement strict 2-pl lock manager, managing transaction structs and page_lock structs, transactions store transaction_id, a condition variable (to wait for acquiring lock on a page) and a list of pages that it already has lock on, and page_lock stores, transaction_id, that locked it, list of transactions waiting to read,write and upgrade (read to write) the lock.
+ * lock manager also defines a struct that stores page_log_sequence_number and transaction_id that made the last change.
+ * lock manager requests page from bufferpool.
