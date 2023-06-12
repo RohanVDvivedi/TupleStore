@@ -71,6 +71,6 @@ void print_slotted_page(const void* page, uint32_t page_size, const tuple_def* t
 **			uintN_t 	tuple_offsets [ tuple_count ];
 **		}
 **
-**		here N can be 8, 16 or 32
+**		here N can be 8, 16, 24 or 32
 **
 ****************************************************************************************/

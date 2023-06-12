@@ -68,5 +68,6 @@ void print_fixed_array_page(const void* page, uint32_t page_size, const tuple_de
 **			< tuples [ tuple_count ]; >
 **		}
 **
+**		here N can be 8, 16, 24 or 32
 **
 *****************************************************************************************/
