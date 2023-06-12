@@ -1,6 +1,7 @@
 
 1 OPTIMIZATION FOR COMPRESSION TASKS
  * make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction, deleting a tuple, or updating a tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined OR use a global variable for this.
+ * compact serializable form of tuple_def, and ways to convert to and from it to its object form. This will be flushed to log records or sent to the user on the network if and when required.
 
 2 FAR FAR FUTURE FEATURES
  * add long double
