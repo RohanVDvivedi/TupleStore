@@ -1,9 +1,12 @@
 
 1 OPTIMIZATION FOR COMPRESSION TASKS
  * make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction, deleting a tuple, or updating a tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined OR use a global variable for this.
+ 
+1.1 NEW EASY TASKS
  * compact serializable form of tuple_def, and ways to convert to and from it to its object form. This will be flushed to log records or sent to the user on the network if and when required.
  * Additionally implement a struct tuple_def_summ a tuple definition summary for any tuple def. It will store a bit field stating whether it is a variable sized or fixed sized tuple_def and a union{ uint8_t size_of_byte_offsets (for varibale sized tuple) ; uint32_t tuple_size (for fixed sized tuples);}. Now we can refactor the page_layout* code to only work with tuple_def_summ, since tuple_def_summ is everything that page_layout* will need to work with. It does not need whole tuple_def. This will allows us to log (in WAL) the tuple_def_summ instead of a big tuple_def. We will also need serialization method for tuple_def_summ.
  * make sure to avoid all overflows, sizes are 32 bits, use 64 bit ints while multiplying them.
+ * limit size_specifier_prefix_size to at most get_value_size_on_page(page_size), fail insertion of the element_def if this condition is violated.
 
 2 FAR FAR FUTURE FEATURES
  * add long double
