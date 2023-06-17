@@ -7,6 +7,7 @@
  * Additionally implement a struct tuple_def_summ a tuple definition summary for any tuple def. It will store a bit field stating whether it is a variable sized or fixed sized tuple_def and a union{ uint8_t size_of_byte_offsets (for varibale sized tuple) ; uint32_t tuple_size (for fixed sized tuples);}. Now we can refactor the page_layout* code to only work with tuple_def_summ, since tuple_def_summ is everything that page_layout* will need to work with. It does not need whole tuple_def. This will allows us to log (in WAL) the tuple_def_summ instead of a big tuple_def. We will also need serialization method for tuple_def_summ.
  * make sure to avoid all overflows, sizes are 32 bits, use 64 bit ints while multiplying them.
  * limit size_specifier_prefix_size to at most get_value_size_on_page(page_size), fail insertion of the element_def if this condition is violated.
+ * implement a function in page_layout to update an element in place in the page, given its tuple def
 
 2 FAR FAR FUTURE FEATURES
  * add long double
