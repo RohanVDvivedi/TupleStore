@@ -8,6 +8,9 @@
  * make sure to avoid all overflows, sizes are 32 bits, use 64 bit ints while multiplying them.
  * limit size_specifier_prefix_size to at most get_value_size_on_page(page_size), fail insertion of the element_def if this condition is violated.
  * implement a function in page_layout to update an element in place in the page, given its tuple def
+ * refactor insert_tuple method to append_tuple method in page_layout
+ * add a separate function to discard trailing tombstones, and do not discard trailing tombstones in swap and delete functions
+ * think about some way to allow appending of a tombstone
 
 2 FAR FAR FUTURE FEATURES
  * add long double
