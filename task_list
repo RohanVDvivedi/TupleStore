@@ -7,24 +7,13 @@
  * Additionally implement a struct tuple_def_summ a tuple definition summary for any tuple def. It will store a bit field stating whether it is a variable sized or fixed sized tuple_def and a union{ uint8_t size_of_byte_offsets (for varibale sized tuple) ; uint32_t tuple_size (for fixed sized tuples);}. Now we can refactor the page_layout* code to only work with tuple_def_summ, since tuple_def_summ is everything that page_layout* will need to work with. It does not need whole tuple_def. This will allows us to log (in WAL) the tuple_def_summ instead of a big tuple_def. We will also need serialization method for tuple_def_summ.
  * make sure to avoid all overflows, sizes are 32 bits, use 64 bit ints while multiplying them.
  * limit size_specifier_prefix_size to at most get_value_size_on_page(page_size), fail insertion of the element_def if this condition is violated.
- * implement a function in page_layout to update an element in place in the page, given its tuple def
- * refactor insert_tuple method to append_tuple method in page_layout
+ * implement a function in page_layout to update an element in place in the page, given its tuple def, update_element only if the element is fixed sized or the new element being inserted is NULL or (if variable) is lesser in size than the one inside the tuple on the page
+ * refactor insert_tuple method to append_tuple method in page_layout, this seems more appropriate naming
  * add a separate function to discard trailing tombstones, and do not discard trailing tombstones in swap and delete functions
- * think about some way to allow appending of a tombstone
+ * think about some way to allow appending of a tombstone, and implement it
 
 2 FAR FAR FUTURE FEATURES
- * add long double
+ * add long double, data type, it is notwidely supported, by programming langauges, hence there can be a problem while sending them to user on a different node, but make things work, some how (if required we will send then a different serialized format)
  * additional data types: variable length real numbers with variable base and nested_tuple datatype
- * varint like that of leveldb, boolean type to store 1 bit of information, multiple booleans can be packed on a single byte and also possess bit_offset along with byte_offset (like how other types have only byte_offset).
- * introduce enum types with bits lesser than or equal to 16, and these can be packed with booleans
-
-3 TASKS FOR PROVIDING ATOMICITY AND DURABILITY
- * add logging
- * parser for log records, with log sequence numbers
- * undo functions to undo all (modifying) operations of page_layout in undo_page_layout.h
-
-4 IN THIS REPO OR OTHER REPO
- * implement logger and an interface to log and update, all operations of page_layout.h
- * implement strict 2-pl lock manager, managing transaction structs and page_lock structs, transactions store transaction_id, a condition variable (to wait for acquiring lock on a page) and a list of pages that it already has lock on, and page_lock stores, transaction_id, that locked it, list of transactions waiting to read,write and upgrade (read to write) the lock.
- * lock manager also defines a struct that stores page_log_sequence_number and transaction_id that made the last change.
- * lock manager requests page from bufferpool.
+ * varint like that of leveldb
+ * bit fields, having bits of variable size, pack multiple bits them together
