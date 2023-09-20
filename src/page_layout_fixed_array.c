@@ -176,23 +176,38 @@ int update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 
 	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
 
-	// if the tuple at given index did not exist (was a tomb_stone) prior to this update
-	// then decrement the tomb_stone_count
-	if(get_bit(is_valid, index) == 0)
+	void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+
+	// if the tuple at given index exists (was not a tomb_stone) prior to this update
+	// then convert it into a tombstone, first
+	if(get_bit(is_valid, index) == 1)
 	{
-		void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+		// reset is_valid bit for the concerned slot
+		reset_bit(is_valid, index);
+
+		// increment tombstone count
 		uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
-		write_value_to_page(tomb_stone_count, page_size, --tomb_stone_count_val);
+		write_value_to_page(tomb_stone_count, page_size, ++tomb_stone_count_val);
 	}
 
-	// set is_valid bit for the concerned slot
-	set_bit(is_valid, index);
+	// now the tuple at the concerned index is a tombstone
 
-	// get pointer to the concerned slot
-	void* slot = page + get_offset_to_ith_tuple(page, page_size, tpl_d, index);
+	// if external tuple is not NULL, then update the slot with this new tuple
+	if(external_tuple != NULL)
+	{
+		// set is_valid bit for the concerned slot
+		set_bit(is_valid, index);
 
-	// copy external_tuple to the slot on the page (at index)
-	memmove(slot, external_tuple, tpl_d->size);
+		// decrement tombstone count
+		uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
+		write_value_to_page(tomb_stone_count, page_size, --tomb_stone_count_val);
+
+		// get pointer to the concerned slot
+		void* slot = page + get_offset_to_ith_tuple(page, page_size, tpl_d, index);
+
+		// copy external_tuple to the slot on the page (at index)
+		memmove(slot, external_tuple, tpl_d->size);
+	}
 
 	return 1;
 }
