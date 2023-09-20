@@ -4,7 +4,6 @@
 
 2 PAGE_LAYOUT TASKS
  *0* add discarding trailing tombstone as a separate functionality, make this function return the discarded tombstones count
- *0* remove `discard tombstones functionality` from the run_page_compaction
  *0* discard tuple functionality, to discard a tuple or tombstones
 
  *1* make the run_page_compaction function return bytes suggesting the new free space
