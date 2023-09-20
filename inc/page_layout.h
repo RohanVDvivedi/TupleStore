@@ -151,20 +151,25 @@ void print_page_in_hex(const void* page, uint32_t page_size);
 **
 **			char 		page_header[ page_header_size ];
 **
+**			uintN_t		space_occupied_by_tuples;
+**
 **			uintN_t 	tuple_count;
+**
+**			uintN_t 	tomb_stone_count;
 **
 **			uintN_t		end_of_free_space_offset;
 **
 **			uintN_t 	tuple_offsets [ tuple_count ];
 **		}
 **
-**		here N can be 8, 16 or 32
+**		here N can be 8, 16, 24 or 32
 **
 ****************************************************************************************
 **
+**
 **					FIXED_ARRAY PAGE
 **
-**		tuple_capacity = ((page_size - page_header_size - N) * 8) / (tuple_def->size * 8 + 1)
+**		tuple_capacity = (page_size - page_header_size - N) / (tuple_def->size * 8 + 1)
 **
 **		struct page_of_FIXED_ARRAY_PAGE
 **		{
@@ -174,11 +179,14 @@ void print_page_in_hex(const void* page, uint32_t page_size);
 **
 **			uintN_t 	tuple_count;
 **
+**			uintN_t 	tomb_stone_count;
+**
 **			char	 	is_valid_bitmap [ ceil_function( tuple_capacity / 8 ) ] ;
 **
 **			< tuples [ tuple_count ]; >
 **		}
 **
+**		here N can be 8, 16, 24 or 32
 **
 *****************************************************************************************
 **
