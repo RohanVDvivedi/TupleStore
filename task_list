@@ -3,7 +3,6 @@
  *** make sure to avoid all 32 bit overflows, using cutlery will_unsigned_sum_overflow and will_unsigned_mul_overflow functions.
 
 2 PAGE_LAYOUT TASKS
- *0* remove `discarding trailing tombstones` feature from delete and swap functions
  *0* add discarding trailing tombstone as a separate functionality, make this function return the discarded tombstones count
  *0* remove `discard tombstones functionality` from the run_page_compaction
  *0* discard tuple functionality, to discard a tuple or tombstones
