@@ -17,9 +17,13 @@ int can_append_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 
 int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple);
 
-int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
+int can_update_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple);
 
-int delete_all_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d);
+int discard_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
+
+int discard_all_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d);
+
+int discard_trailing_tombstones_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 int exists_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
 
