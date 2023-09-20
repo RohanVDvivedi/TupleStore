@@ -41,7 +41,7 @@ int init_page(void* page, uint32_t page_size, uint32_t page_header_size, const t
 	return 0;
 }
 
-uint32_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+uint32_t get_tuple_count_on_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -53,7 +53,7 @@ uint32_t get_tuple_count(const void* page, uint32_t page_size, const tuple_def* 
 	return 0;
 }
 
-uint32_t get_tomb_stone_count(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+uint32_t get_tomb_stone_count_on_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -65,7 +65,7 @@ uint32_t get_tomb_stone_count(const void* page, uint32_t page_size, const tuple_
 	return 0;
 }
 
-int append_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
+int append_tuple_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -77,7 +77,7 @@ int append_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 	return 0;
 }
 
-int can_append_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
+int can_append_tuple_on_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -89,9 +89,9 @@ int can_append_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_
 	return 0;
 }
 
-uint32_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* page_src, uint32_t start_index, uint32_t last_index)
+uint32_t append_tuples_from_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* page_src, uint32_t start_index, uint32_t last_index)
 {
-	uint16_t tuple_count = get_tuple_count(page_src, page_size, tpl_d);
+	uint16_t tuple_count = get_tuple_count_on_page(page_src, page_size, tpl_d);
 
 	// copy is not possible if
 	// start_index is greater than last_index or the last_index in the tuple
@@ -105,10 +105,10 @@ uint32_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def
 
 	for(uint16_t index = start_index; index <= last_index; index++, tuples_copied++)
 	{
-		if(exists_tuple(page_src, page_size, tpl_d, index))
+		if(exists_tuple_on_page(page_src, page_size, tpl_d, index))
 		{
-			const void* tuple = get_nth_tuple(page_src, page_size, tpl_d, index);
-			int inserted = append_tuple(page, page_size, tpl_d, tuple);
+			const void* tuple = get_nth_tuple_on_page(page_src, page_size, tpl_d, index);
+			int inserted = append_tuple_on_page(page, page_size, tpl_d, tuple);
 			if(!inserted)
 				break;
 		}
@@ -117,7 +117,7 @@ uint32_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def
 	return tuples_copied;
 }
 
-int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
+int update_tuple_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -129,7 +129,7 @@ int update_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_
 	return 0;
 }
 
-int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
+int delete_tuple_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -141,7 +141,7 @@ int delete_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_
 	return 0;
 }
 
-int delete_all_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d)
+int delete_all_tuples_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -153,7 +153,7 @@ int delete_all_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d)
 	return 0;
 }
 
-int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
+int exists_tuple_on_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -165,7 +165,7 @@ int exists_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, u
 	return 0;
 }
 
-int swap_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t i1, uint32_t i2)
+int swap_tuples_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t i1, uint32_t i2)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -177,7 +177,7 @@ int swap_tuples(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t
 	return 0;
 }
 
-const void* get_nth_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
+const void* get_nth_tuple_on_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -201,11 +201,11 @@ void clone_page(void* page, uint32_t page_size, const tuple_def* tpl_d, int disc
 		// copy header of the page
 		memmove(get_page_header(page, page_size), (const void*)get_page_header((void*)page_src, page_size), page_header_size);
 
-		uint32_t tuple_count = get_tuple_count(page_src, page_size, tpl_d);
+		uint32_t tuple_count = get_tuple_count_on_page(page_src, page_size, tpl_d);
 
 		// insert all tuples from page_src to page
 		if(tuple_count > 0)
-			insert_tuples_from_page(page, page_size, tpl_d, page_src, 0, tuple_count - 1);
+			append_tuples_from_page(page, page_size, tpl_d, page_src, 0, tuple_count - 1);
 	}
 	else
 	{
@@ -225,7 +225,7 @@ void run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d,
 	}
 }
 
-uint32_t get_free_space(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+uint32_t get_free_space_on_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -237,9 +237,9 @@ uint32_t get_free_space(const void* page, uint32_t page_size, const tuple_def* t
 	return 0;
 }
 
-uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t start_index, uint32_t last_index)
+uint32_t get_space_occupied_by_tuples_on_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t start_index, uint32_t last_index)
 {
-	uint16_t tuple_count = get_tuple_count(page, page_size, tpl_d);
+	uint16_t tuple_count = get_tuple_count_on_page(page, page_size, tpl_d);
 	if((start_index > last_index) || (last_index >= tuple_count))
 		return 0;
 
@@ -253,7 +253,7 @@ uint32_t get_space_occupied_by_tuples(const void* page, uint32_t page_size, cons
 	return 0;
 }
 
-uint32_t get_space_occupied_by_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+uint32_t get_space_occupied_by_all_tuples_on_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -265,7 +265,7 @@ uint32_t get_space_occupied_by_all_tuples(const void* page, uint32_t page_size, 
 	return 0;
 }
 
-uint32_t get_space_occupied_by_all_tomb_stones(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+uint32_t get_space_occupied_by_all_tomb_stones_on_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -277,7 +277,7 @@ uint32_t get_space_occupied_by_all_tomb_stones(const void* page, uint32_t page_s
 	return 0;
 }
 
-uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+uint32_t get_space_allotted_to_all_tuples_on_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -289,7 +289,7 @@ uint32_t get_space_allotted_to_all_tuples(const void* page, uint32_t page_size, 
 	return 0;
 }
 
-uint32_t get_space_to_be_allotted_to_all_tuples(uint32_t page_header_size, uint32_t page_size, const tuple_def* tpl_d)
+uint32_t get_space_to_be_allotted_to_all_tuples_on_page(uint32_t page_header_size, uint32_t page_size, const tuple_def* tpl_d)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -301,14 +301,14 @@ uint32_t get_space_to_be_allotted_to_all_tuples(uint32_t page_header_size, uint3
 	return 0;
 }
 
-uint32_t get_fragmentation_space(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+uint32_t get_fragmentation_space_on_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
-	return 	get_space_allotted_to_all_tuples(page, page_size, tpl_d)
-		- (	  get_space_occupied_by_all_tuples(page, page_size, tpl_d)
-			+ get_free_space(page, page_size, tpl_d)	);
+	return 	get_space_allotted_to_all_tuples_on_page(page, page_size, tpl_d)
+		- (	  get_space_occupied_by_all_tuples_on_page(page, page_size, tpl_d)
+			+ get_free_space_on_page(page, page_size, tpl_d)	);
 }
 
-uint32_t get_additional_space_overhead_per_tuple(uint32_t page_size, const tuple_def* tpl_d)
+uint32_t get_additional_space_overhead_per_tuple_on_page(uint32_t page_size, const tuple_def* tpl_d)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
@@ -323,13 +323,13 @@ uint32_t get_additional_space_overhead_per_tuple(uint32_t page_size, const tuple
 void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	printf("PAGE : \n");
-	printf("space allotted   = %"PRIu32"\n", get_space_allotted_to_all_tuples(page, page_size, tpl_d));
-	printf("space occupied   = %"PRIu32" (tomb_stones occupy %"PRIu32")\n", get_space_occupied_by_all_tuples(page, page_size, tpl_d), get_space_occupied_by_all_tomb_stones(page, page_size, tpl_d));
-	printf("free space       = %"PRIu32"\n", get_free_space(page, page_size, tpl_d));
-	printf("fragmented space = %"PRIu32"\n", get_fragmentation_space(page, page_size, tpl_d));
+	printf("space allotted   = %"PRIu32"\n", get_space_allotted_to_all_tuples_on_page(page, page_size, tpl_d));
+	printf("space occupied   = %"PRIu32" (tomb_stones occupy %"PRIu32")\n", get_space_occupied_by_all_tuples_on_page(page, page_size, tpl_d), get_space_occupied_by_all_tomb_stones_on_page(page, page_size, tpl_d));
+	printf("free space       = %"PRIu32"\n", get_free_space_on_page(page, page_size, tpl_d));
+	printf("fragmented space = %"PRIu32"\n", get_fragmentation_space_on_page(page, page_size, tpl_d));
 	printf("\n");
-	printf("tuple_count      = %"PRIu32"\n", get_tuple_count(page, page_size, tpl_d));
-	printf("tomb_stone_count = %"PRIu32"\n", get_tomb_stone_count(page, page_size, tpl_d));
+	printf("tuple_count      = %"PRIu32"\n", get_tuple_count_on_page(page, page_size, tpl_d));
+	printf("tomb_stone_count = %"PRIu32"\n", get_tomb_stone_count_on_page(page, page_size, tpl_d));
 	printf("\n");
 	switch(get_page_layout_type(tpl_d))
 	{
