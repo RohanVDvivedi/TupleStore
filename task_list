@@ -6,7 +6,6 @@
  *0* add discarding trailing tombstone as a separate functionality, make this function return the discarded tombstones count
  *0* discard tuple functionality, to discard a tuple or tombstones
 
- *1* make the run_page_compaction function return bytes suggesting the new free space
  *1* append_tuple when passed with a NULL tuple appends a tombstone
  *1* update_tuple when passed with a NULL tuple deletes a tuple, remove delete function altogether
  *1* implement can_update_tuple function, to make a prior check for update call
