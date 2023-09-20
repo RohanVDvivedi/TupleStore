@@ -134,17 +134,31 @@ int append_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 	write_value_to_page(tuple_count, page_size, ++tuple_count_val);
 
 	// the index to the slot, where this external_tuple will be inserted
-	uint16_t index = tuple_count_val - 1;
+	uint32_t index = tuple_count_val - 1;
 
-	// set valid bit for the newly created slot, for the new external_tuple
-	char* is_valid  = page + get_offset_to_is_valid_bitmap(page, page_size);
-	set_bit(is_valid, index);
+	if(external_tuple != NULL) // append tuple to the new slot
+	{
+		// set valid bit for the newly created slot, for the new external_tuple
+		char* is_valid  = page + get_offset_to_is_valid_bitmap(page, page_size);
+		set_bit(is_valid, index);
 
-	// get pointer to the new slot on the page
-	void* slot = page + get_offset_to_ith_tuple(page, page_size, tpl_d, index);
+		// get pointer to the new slot on the page
+		void* slot = page + get_offset_to_ith_tuple(page, page_size, tpl_d, index);
 
-	// move data from external_tuple to the slot on the page
-	memmove(slot, external_tuple, tpl_d->size);
+		// move data from external_tuple to the slot on the page
+		memmove(slot, external_tuple, tpl_d->size);
+	}
+	else
+	{
+		// reset valid bit for the newly created slot, for the new external_tuple
+		char* is_valid  = page + get_offset_to_is_valid_bitmap(page, page_size);
+		reset_bit(is_valid, index);
+
+		// increment the tombstone counter on the page
+		void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+		uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
+		write_value_to_page(tomb_stone_count, page_size, ++tomb_stone_count_val);
+	}
 
 	return 1;
 }
