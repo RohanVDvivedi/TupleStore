@@ -217,6 +217,7 @@ int can_update_tuple_fixed_array_page(const void* page, uint32_t page_size, cons
 	return index < get_tuple_count_fixed_array_page(page, page_size);
 }
 
+// TODO :: implement discard_tuple_fixed_array_page
 int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	// index out of bounds
