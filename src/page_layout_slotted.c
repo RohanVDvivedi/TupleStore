@@ -547,7 +547,7 @@ uint32_t get_space_allotted_to_all_tuples_slotted_page(const void* page, uint32_
 
 uint32_t get_space_to_be_allotted_to_all_tuples_slotted_page(uint32_t page_header_size, uint32_t page_size)
 {
-	return page_size - (get_value_size_on_page(page_header_size) + page_header_size + (4 * get_value_size_on_page(page_header_size)));
+	return page_size - (get_value_size_on_page(page_size) + page_header_size + (4 * get_value_size_on_page(page_size)));
 }
 
 uint32_t get_additional_space_overhead_per_tuple_slotted_page(uint32_t page_size)
