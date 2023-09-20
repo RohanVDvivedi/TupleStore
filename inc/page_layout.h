@@ -43,11 +43,11 @@ uint32_t get_tomb_stone_count(const void* page, uint32_t page_size, const tuple_
 
 // INSERT DELETE and GET functions for tuples in the page
 
-// to insert a tuple at the end in the given page, fails if the page is out of space
+// to append a tuple at the end in the given page, fails if the page is out of space
 int append_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
-// returns 1, if the insert_tuple would succeed
-int can_insert_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
+// returns 1, if the append_tuple would succeed
+int can_append_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
 // inserts tuples from page_src starting with start_index and until end_index (or its tuple_count - 1), 
 uint32_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* page_src, uint32_t start_index, uint32_t last_index);

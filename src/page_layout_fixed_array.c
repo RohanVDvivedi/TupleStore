@@ -125,7 +125,7 @@ uint32_t get_tomb_stone_count_fixed_array_page(const void* page, uint32_t page_s
 
 int append_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
-	if(!can_insert_tuple_fixed_array_page(page, page_size, tpl_d))
+	if(!can_append_tuple_fixed_array_page(page, page_size, tpl_d))
 		return 0;
 
 	// increment the tuple counter on the page
@@ -149,7 +149,7 @@ int append_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 	return 1;
 }
 
-int can_insert_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
+int can_append_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	return get_tuple_count_fixed_array_page(page, page_size) < get_tuple_capacity(page, page_size, tpl_d);
 }

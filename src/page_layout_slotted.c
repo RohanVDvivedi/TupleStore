@@ -129,8 +129,8 @@ uint32_t get_tomb_stone_count_slotted_page(const void* page, uint32_t page_size)
 
 int append_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
-	// if can not insert new tuple, then fail with 0
-	if(!can_insert_tuple_slotted_page(page, page_size, tpl_d, external_tuple))
+	// if can not append new tuple, then fail with 0
+	if(!can_append_tuple_slotted_page(page, page_size, tpl_d, external_tuple))
 		return 0;
 
 	// calculate the size of tuple to be inserted
@@ -166,7 +166,7 @@ int append_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 	return 1;
 }
 
-int can_insert_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
+int can_append_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
 	// tuple needs space for itself and its offset
 	uint32_t size_required_for_new_tuple = get_tuple_size(tpl_d, external_tuple) + get_additional_space_overhead_per_tuple_slotted_page(page_size);

@@ -77,14 +77,14 @@ int append_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const v
 	return 0;
 }
 
-int can_insert_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
+int can_append_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			return can_insert_tuple_slotted_page(page, page_size, tpl_d, external_tuple);
+			return can_append_tuple_slotted_page(page, page_size, tpl_d, external_tuple);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return can_insert_tuple_fixed_array_page(page, page_size, tpl_d);
+			return can_append_tuple_fixed_array_page(page, page_size, tpl_d);
 	}
 	return 0;
 }
