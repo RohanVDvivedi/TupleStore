@@ -108,7 +108,7 @@ int can_update_tuple_on_page(const void* page, uint32_t page_size, const tuple_d
 		case SLOTTED_PAGE_LAYOUT :
 			return can_update_tuple_slotted_page(page, page_size, tpl_d, index, external_tuple);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return can_update_tuple_fixed_array_page(page, page_size, tpl_d, index, external_tuple);
+			return can_update_tuple_fixed_array_page(page, page_size, tpl_d, index);
 	}
 	return 0;
 }

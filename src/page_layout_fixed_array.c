@@ -171,7 +171,7 @@ int can_append_tuple_fixed_array_page(const void* page, uint32_t page_size, cons
 int update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
 {
 	// check for: index out of bounds
-	if(index >= get_tuple_count_fixed_array_page(page, page_size))
+	if(!can_update_tuple_fixed_array_page(page, page_size, tpl_d, index))
 		return 0;
 
 	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
@@ -195,6 +195,11 @@ int update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 	memmove(slot, external_tuple, tpl_d->size);
 
 	return 1;
+}
+
+int can_update_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
+{
+	return index < get_tuple_count_fixed_array_page(page, page_size);
 }
 
 static inline void retract_tuple_count(void* page, uint32_t page_size)
