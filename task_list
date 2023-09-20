@@ -3,7 +3,6 @@
  *1* make sure to avoid all 32 bit overflows, using cutlery will_unsigned_sum_overflow and will_unsigned_mul_overflow functions.
 
 4 PAGE_LAYOUT TASKS
- *2* rename all page_layout functions to have _on_page as suffix, this will avoid collision with any other future library
  *2* remove `discarding trailing tombstones` feature from delete and swap functions
  *2* add discarding trailing tombstone as a separate functionality, make this function return the discarded tombstones count
  *2* remove `discard tombstones functionality` from the run_page_compaction
