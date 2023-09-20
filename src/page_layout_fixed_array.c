@@ -267,7 +267,7 @@ int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 	return 1;
 }
 
-int delete_all_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
+int discard_all_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	// make tuple count as 0
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
