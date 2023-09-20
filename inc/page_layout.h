@@ -82,9 +82,9 @@ void clone_page(void* page, uint32_t page_size, const tuple_def* tpl_d, int disc
 
 
 
-// PAGE COMPACTION and TOMB STONES removal functions
+// PAGE COMPACTION removal functions
 
-void run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d, int discard_tomb_stones, int defragment);
+void run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 
 

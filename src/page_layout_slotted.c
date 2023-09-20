@@ -461,74 +461,55 @@ static int compare_by_offset(const void* a, const void* b)
 	return 0;
 }
 
-void run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, int discard_tomb_stones, int defragment)
+void run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
-	if(discard_tomb_stones)
+	uint16_t tuple_count = get_tuple_count_slotted_page(page, page_size);
+
+	uint32_t tuples_to_relocate_count = 0;
+	tuple_offset_indexed* tuples_to_relocate = malloc(sizeof(tuple_offset_indexed) * tuple_count);
+
+	// construct the array tuples_to_relocate
+	// consisting only of existing tuples
+	for(uint16_t index = 0; index <= tuple_count; index++)
 	{
-		uint32_t new_tuple_count = 0;
-		for(uint32_t i = 0; i < get_tuple_count_slotted_page(page, page_size); i++)
+		if(exists_tuple_slotted_page(page, page_size, tpl_d, index))
 		{
-			if(exists_tuple_slotted_page(page, page_size, tpl_d, i))
-			{
-				if(i != new_tuple_count)
-					swap_tuples_slotted_page(page, page_size, tpl_d, i, new_tuple_count);
-				new_tuple_count++;
-			}
+			tuples_to_relocate[tuples_to_relocate_count].offset = get_offset_to_ith_tuple(page, page_size, index);
+			tuples_to_relocate[tuples_to_relocate_count++].index = index;
 		}
 	}
 
-	// now defragmenting the page
+	// sort tuples_to_relocate by their offset in decreasing order
+	qsort(tuples_to_relocate, tuples_to_relocate_count, sizeof(tuple_offset_indexed), compare_by_offset);
 
-	if(defragment)
+	// start allocating as if it is a new page
+	uint32_t end_of_free_space_offset_val = page_size;
+
+	// laydown the tuples on the page as if a new page
+	for(uint32_t i = 0; i < tuples_to_relocate_count; i++)
 	{
-		uint16_t tuple_count = get_tuple_count_slotted_page(page, page_size);
+		// here we consider the ith tuple as per the index in the tuples_to_relocate array
+		void* ith_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, tuples_to_relocate[i].index);
+		void* tuple = page + get_offset_to_ith_tuple(page, page_size, tuples_to_relocate[i].index);
 
-		uint32_t tuples_to_relocate_count = 0;
-		tuple_offset_indexed* tuples_to_relocate = malloc(sizeof(tuple_offset_indexed) * tuple_count);
+		// get tuple size
+		uint32_t tuple_size = get_tuple_size(tpl_d, tuple);
 
-		// construct the array tuples_to_relocate
-		// consisting only of existing tuples
-		for(uint16_t index = 0; index <= tuple_count; index++)
-		{
-			if(exists_tuple_slotted_page(page, page_size, tpl_d, index))
-			{
-				tuples_to_relocate[tuples_to_relocate_count].offset = get_offset_to_ith_tuple(page, page_size, index);
-				tuples_to_relocate[tuples_to_relocate_count++].index = index;
-			}
-		}
+		// allocate space for the tuple that is to be moved
+		end_of_free_space_offset_val -= tuple_size;
 
-		// sort tuples_to_relocate by their offset in decreasing order
-		qsort(tuples_to_relocate, tuples_to_relocate_count, sizeof(tuple_offset_indexed), compare_by_offset);
+		// move the tuple to the allocated space
+		memmove(page + end_of_free_space_offset_val, tuple, tuple_size);
 
-		// start allocating as if it is a new page
-		uint32_t end_of_free_space_offset_val = page_size;
-
-		// laydown the tuples on the page as if a new page
-		for(uint32_t i = 0; i < tuples_to_relocate_count; i++)
-		{
-			// here we consider the ith tuple as per the index in the tuples_to_relocate array
-			void* ith_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, tuples_to_relocate[i].index);
-			void* tuple = page + get_offset_to_ith_tuple(page, page_size, tuples_to_relocate[i].index);
-
-			// get tuple size
-			uint32_t tuple_size = get_tuple_size(tpl_d, tuple);
-
-			// allocate space for the tuple that is to be moved
-			end_of_free_space_offset_val -= tuple_size;
-
-			// move the tuple to the allocated space
-			memmove(page + end_of_free_space_offset_val, tuple, tuple_size);
-
-			// update the offset to ith tuple
-			write_value_to_page(ith_tuple_offset, page_size, end_of_free_space_offset_val);
-		}
-
-		free(tuples_to_relocate);
-
-		// reset the end of free space offset for the page
-		void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
-		write_value_to_page(end_of_free_space_offset, page_size, end_of_free_space_offset_val);
+		// update the offset to ith tuple
+		write_value_to_page(ith_tuple_offset, page_size, end_of_free_space_offset_val);
 	}
+
+	free(tuples_to_relocate);
+
+	// reset the end of free space offset for the page
+	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
+	write_value_to_page(end_of_free_space_offset, page_size, end_of_free_space_offset_val);
 }
 
 uint32_t get_free_space_slotted_page(const void* page, uint32_t page_size)
