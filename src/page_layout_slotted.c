@@ -575,7 +575,7 @@ void print_slotted_page(const void* page, uint32_t page_size, const tuple_def* t
 			printf("\n\n");
 		}
 		else
-			printf("\t\t\t%s\n\n", "DELETED");
+			printf("\t\t\t%s\n\n", "TOMBSTONE");
 	}
 	printf("\n\n\n");
 }

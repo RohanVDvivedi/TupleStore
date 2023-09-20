@@ -362,7 +362,7 @@ void print_fixed_array_page(const void* page, uint32_t page_size, const tuple_de
 			printf("\n\n");
 		}
 		else
-			printf("\t\t\t%s\n\n", "DELETED");
+			printf("\t\t\t%s\n\n", "TOMBSTONE");
 	}
 	printf("\n\n\n");
 }
