@@ -230,9 +230,6 @@ int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 	uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
 	write_value_to_page(tomb_stone_count, page_size, ++tomb_stone_count_val);
 
-	// retract tuple_count if possible
-	retract_tuple_count(page, page_size);
-
 	return 1;
 }
 
@@ -285,9 +282,6 @@ int swap_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_def
 	void* tuple_i2 = page + get_offset_to_ith_tuple(page, page_size, tpl_d, i2);
 
 	memswap(tuple_i1, tuple_i2, tpl_d->size);
-
-	// retract tuple count if possible
-	retract_tuple_count(page, page_size);
 
 	return 1;
 }

@@ -373,9 +373,6 @@ int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 	uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
 	write_value_to_page(tomb_stone_count, page_size, ++tomb_stone_count_val);
 
-	// retract tuple count if possible
-	retract_tuple_count(page, page_size);
-
 	return 1;
 }
 
@@ -427,9 +424,6 @@ int swap_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tp
 	// swap tuple offsets
 	write_value_to_page(i1th_tuple_offset, page_size, i2th_tuple_offset_val);
 	write_value_to_page(i2th_tuple_offset, page_size, i1th_tuple_offset_val);
-
-	// retract tuple count if possible
-	retract_tuple_count(page, page_size);
 
 	return 1;
 }
