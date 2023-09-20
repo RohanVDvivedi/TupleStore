@@ -11,7 +11,7 @@ uint32_t get_tuple_count_slotted_page(const void* page, uint32_t page_size);
 
 uint32_t get_tomb_stone_count_slotted_page(const void* page, uint32_t page_size);
 
-int insert_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
+int append_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
 int can_insert_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 

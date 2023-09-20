@@ -65,14 +65,14 @@ uint32_t get_tomb_stone_count(const void* page, uint32_t page_size, const tuple_
 	return 0;
 }
 
-int insert_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
+int append_tuple(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			return insert_tuple_slotted_page(page, page_size, tpl_d, external_tuple);
+			return append_tuple_slotted_page(page, page_size, tpl_d, external_tuple);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return insert_tuple_fixed_array_page(page, page_size, tpl_d, external_tuple);
+			return append_tuple_fixed_array_page(page, page_size, tpl_d, external_tuple);
 	}
 	return 0;
 }
@@ -108,7 +108,7 @@ uint32_t insert_tuples_from_page(void* page, uint32_t page_size, const tuple_def
 		if(exists_tuple(page_src, page_size, tpl_d, index))
 		{
 			const void* tuple = get_nth_tuple(page_src, page_size, tpl_d, index);
-			int inserted = insert_tuple(page, page_size, tpl_d, tuple);
+			int inserted = append_tuple(page, page_size, tpl_d, tuple);
 			if(!inserted)
 				break;
 		}

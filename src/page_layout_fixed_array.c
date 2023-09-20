@@ -123,7 +123,7 @@ uint32_t get_tomb_stone_count_fixed_array_page(const void* page, uint32_t page_s
 	return read_value_from_page(tomb_stone_count, page_size);
 }
 
-int insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
+int append_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
 	if(!can_insert_tuple_fixed_array_page(page, page_size, tpl_d))
 		return 0;

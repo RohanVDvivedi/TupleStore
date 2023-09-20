@@ -127,7 +127,7 @@ uint32_t get_tomb_stone_count_slotted_page(const void* page, uint32_t page_size)
 	return read_value_from_page(tomb_stone_count, page_size);
 }
 
-int insert_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
+int append_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
 	// if can not insert new tuple, then fail with 0
 	if(!can_insert_tuple_slotted_page(page, page_size, tpl_d, external_tuple))
