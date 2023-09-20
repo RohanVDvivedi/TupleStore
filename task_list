@@ -12,10 +12,11 @@
 3 TUPLE_DEF TASKS
  *3* Additionally implement a struct tuple_def_summary defined as struct {int is_variable_sized, uint32_t size}, easier to pass around in page_layout functions.
  *3* use value arraylist for list of element defs in the tuple_def
+
  *4* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
  *4* limit size_specifier_prefix_size to at most get_value_size_on_page(page_size), fail insertion of the element_def if this condition is violated.
 
-5 NEW TYPE TASKS
+4 NEW TYPE TASKS
  *5* add long double (*think about it again, as long double does not have a ieee standardized format)
  *6* bit fields, having fixed number of bits (upto 64)
  *6* bitmap field
@@ -25,5 +26,5 @@
  *8* nested_tuple datatype
  *8* arrays of types
 
-2 OPTIMIZATION FOR COMPRESSION TASKS
+5 OPTIMIZATION FOR COMPRESSION TASKS
  *9* make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction, deleting a tuple, or updating a tuple. The reseting of bits should happen always on init_page, run_page_compaction. and should happen if a macro is defined OR use a global variable for this.
