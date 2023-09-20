@@ -83,8 +83,8 @@ const void* get_nth_tuple_on_page(const void* page, uint32_t page_size, const tu
 
 // CLONE FUNCTION
 
-// creates a logical copy of page_src (with same logical copy of tuples and page_header) in to page
-void clone_page(void* page, uint32_t page_size, const tuple_def* tpl_d, int discard_tomb_stones, const void* page_src);
+// creates a physical copy of page_src into page
+void clone_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* page_src);
 
 
 

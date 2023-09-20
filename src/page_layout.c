@@ -89,34 +89,6 @@ int can_append_tuple_on_page(const void* page, uint32_t page_size, const tuple_d
 	return 0;
 }
 
-uint32_t append_tuples_from_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* page_src, uint32_t start_index, uint32_t last_index)
-{
-	uint16_t tuple_count = get_tuple_count_on_page(page_src, page_size, tpl_d);
-
-	// copy is not possible if
-	// start_index is greater than last_index or the last_index in the tuple
-	if((start_index > last_index) || (start_index >= tuple_count))
-		return 0;
-
-	if(last_index >= tuple_count)
-		last_index = tuple_count - 1;
-
-	uint16_t tuples_copied = 0;
-
-	for(uint16_t index = start_index; index <= last_index; index++, tuples_copied++)
-	{
-		if(exists_tuple_on_page(page_src, page_size, tpl_d, index))
-		{
-			const void* tuple = get_nth_tuple_on_page(page_src, page_size, tpl_d, index);
-			int inserted = append_tuple_on_page(page, page_size, tpl_d, tuple);
-			if(!inserted)
-				break;
-		}
-	}
-
-	return tuples_copied;
-}
-
 int update_tuple_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
 {
 	switch(get_page_layout_type(tpl_d))
@@ -129,26 +101,50 @@ int update_tuple_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d,
 	return 0;
 }
 
-int delete_tuple_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
+int can_update_tuple_on_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			return delete_tuple_slotted_page(page, page_size, tpl_d, index);
+			return can_update_tuple_slotted_page(page, page_size, tpl_d, index, external_tuple);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return delete_tuple_fixed_array_page(page, page_size, tpl_d, index);
+			return can_update_tuple_fixed_array_page(page, page_size, tpl_d, index, external_tuple);
 	}
 	return 0;
 }
 
-int delete_all_tuples_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
+int discard_tuple_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	switch(get_page_layout_type(tpl_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			return delete_all_tuples_slotted_page(page, page_size, tpl_d);
+			return discard_tuple_slotted_page(page, page_size, tpl_d, index);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return delete_all_tuples_fixed_array_page(page, page_size, tpl_d);
+			return discard_tuple_fixed_array_page(page, page_size, tpl_d, index);
+	}
+	return 0;
+}
+
+int discard_all_tuples_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+			return discard_all_tuples_slotted_page(page, page_size, tpl_d);
+		case FIXED_ARRAY_PAGE_LAYOUT :
+			return discard_all_tuples_fixed_array_page(page, page_size, tpl_d);
+	}
+	return 0;
+}
+
+uint32_t discard_trailing_tombstones_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	switch(get_page_layout_type(tpl_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+			return discard_trailing_tombstones_slotted_page(page, page_size, tpl_d);
+		case FIXED_ARRAY_PAGE_LAYOUT :
+			return discard_trailing_tombstones_fixed_array_page(page, page_size, tpl_d);
 	}
 	return 0;
 }
@@ -189,29 +185,10 @@ const void* get_nth_tuple_on_page(const void* page, uint32_t page_size, const tu
 	return 0;
 }
 
-void clone_page(void* page, uint32_t page_size, const tuple_def* tpl_d, int discard_tomb_stones, const void* page_src)
+void clone_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* page_src)
 {
-	if(discard_tomb_stones)
-	{
-		uint32_t page_header_size = get_page_header_size(page_src, page_size);
-
-		// intialize page
-		init_page(page, page_size, page_header_size, tpl_d);
-
-		// copy header of the page
-		memmove(get_page_header(page, page_size), (const void*)get_page_header((void*)page_src, page_size), page_header_size);
-
-		uint32_t tuple_count = get_tuple_count_on_page(page_src, page_size, tpl_d);
-
-		// insert all tuples from page_src to page
-		if(tuple_count > 0)
-			append_tuples_from_page(page, page_size, tpl_d, page_src, 0, tuple_count - 1);
-	}
-	else
-	{
-		// perform a plain copy that is easier and better
-		memmove(page, page_src, page_size);
-	}
+	// perform a plain copy that is easier and better
+	memmove(page, page_src, page_size);
 }
 
 void run_page_compaction(void* page, uint32_t page_size, const tuple_def* tpl_d)
