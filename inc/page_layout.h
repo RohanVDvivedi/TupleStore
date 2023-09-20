@@ -44,6 +44,7 @@ uint32_t get_tomb_stone_count_on_page(const void* page, uint32_t page_size, cons
 // INSERT DELETE and GET functions for tuples in the page
 
 // to append a tuple at the end in the given page, fails if the page is out of space
+// if external_tuple is NULL, then a tombstine is appended
 int append_tuple_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
 // returns 1, if the append_tuple would succeed
@@ -53,14 +54,19 @@ int can_append_tuple_on_page(const void* page, uint32_t page_size, const tuple_d
 uint32_t append_tuples_from_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* page_src, uint32_t start_index, uint32_t last_index);
 
 // update tuple at the specified index, fails if the page is out of space, or if the index is out of bounds i.e. when index >= get_tuple_count()
+// if external_tuple is NULL, then a tombstine is placed at the given index
 int update_tuple_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple);
 
-// to delete a tuple at the given index in the page, fails if index >= get_tuple_count()
-int delete_tuple_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
+// to discard a tuple (or a tombstane) at the given index in the page, fails if index >= get_tuple_count()
+int discard_tuple_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
 
-// deletes all the tuple in the page
+// discards all the tuple on the page
 // for a slotted page it will also reset the end_of_free_space_offset
-int delete_all_tuples_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d);
+int discard_all_tuples_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d);
+
+// discards trailing tombstones on the page
+// it will return the number of trailing tombstones, that were discarded
+uint32_t discard_trailing_tombstones_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d);
 
 // to check if a tuple at the given index in the page exists
 // returns 0, if the tuple was deleted OR if the index is out of bounds i.e. when index >= get_tuple_count())
