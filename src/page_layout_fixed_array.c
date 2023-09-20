@@ -217,34 +217,6 @@ int can_update_tuple_fixed_array_page(const void* page, uint32_t page_size, cons
 	return index < get_tuple_count_fixed_array_page(page, page_size);
 }
 
-static inline void retract_tuple_count(void* page, uint32_t page_size)
-{
-	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
-	void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
-
-	// cache tuple count and tomb_stone_count
-	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
-	uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
-
-	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
-
-	// get a valif tuple count
-	while(tuple_count_val > 0)
-	{
-		if(get_bit(is_valid, tuple_count_val - 1) == 0)
-		{
-			tuple_count_val--;
-			tomb_stone_count_val--;
-		}
-		else
-			break;
-	}
-
-	// write the calculated valid tuple count and tomb_stone count
-	write_value_to_page(tuple_count, page_size, tuple_count_val);
-	write_value_to_page(tomb_stone_count, page_size, tomb_stone_count_val);
-}
-
 int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	// index out of bounds
@@ -265,6 +237,36 @@ int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 	write_value_to_page(tomb_stone_count, page_size, ++tomb_stone_count_val);
 
 	return 1;
+}
+
+uint32_t discard_trailing_tombstones_fixed_array_page(void* page, uint32_t page_size)
+{
+	uint32_t tomb_stones_discarded = 0;
+
+	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+
+	// cache tuple count and tomb_stone_count
+	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
+	uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
+
+	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
+
+	// while tuple_count is greater than 0, and that tuple is a tombstone
+	while(tuple_count_val > 0 && get_bit(is_valid, tuple_count_val - 1) == 0)
+	{
+		// we decrement the tuple_count and the tomb_stone_count
+		tuple_count_val--;
+		tomb_stone_count_val--;
+		tomb_stones_discarded++;
+	}
+
+	// write the calculated valid tuple count and tomb_stone count
+	write_value_to_page(tuple_count, page_size, tuple_count_val);
+	write_value_to_page(tomb_stone_count, page_size, tomb_stone_count_val);
+
+	// return the number of tombstoned discarded
+	return tomb_stones_discarded;
 }
 
 int discard_all_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d)

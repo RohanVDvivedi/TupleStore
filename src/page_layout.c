@@ -144,7 +144,7 @@ uint32_t discard_trailing_tombstones_on_page(void* page, uint32_t page_size, con
 		case SLOTTED_PAGE_LAYOUT :
 			return discard_trailing_tombstones_slotted_page(page, page_size, tpl_d);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return discard_trailing_tombstones_fixed_array_page(page, page_size, tpl_d);
+			return discard_trailing_tombstones_fixed_array_page(page, page_size);
 	}
 	return 0;
 }
