@@ -127,6 +127,7 @@ uint32_t get_tomb_stone_count_slotted_page(const void* page, uint32_t page_size)
 	return read_value_from_page(tomb_stone_count, page_size);
 }
 
+// TODO : reimplement
 int append_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
 	// if can not append new tuple, then fail with 0
@@ -174,6 +175,7 @@ int can_append_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 	return size_required_for_new_tuple <= get_free_space_slotted_page(page, page_size);
 }
 
+// TODO : reimplement
 int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
 {
 	// index out of bounds
@@ -291,39 +293,18 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 		return 0;
 }
 
-static inline void retract_tuple_count(void* page, uint32_t page_size)
+int can_update_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
 {
-	void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
-	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
-	void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
-
-	// cache space_occupied_by_tuples, tuple count and tomb_stone count
-	uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
-	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
-	uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
-
-	// pre-calculate the additional space that each of these tomb_stones are hoarding
-	uint32_t additional_space_for_tomb_stones = get_additional_space_overhead_per_tuple_slotted_page(page_size);
-
-	// get a valid tuple count
-	while(tuple_count_val > 0)
-	{
-		if(get_offset_to_ith_tuple(page, page_size, tuple_count_val - 1) == 0)
-		{
-			space_occupied_by_tuples_val -= additional_space_for_tomb_stones;
-			tuple_count_val--;
-			tomb_stone_count_val--;
-		}
-		else
-			break;
-	}
-
-	// write the calculated valid space_occupied_by_tuples, tuple count and tomb_stone count back to the page
-	write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
-	write_value_to_page(tuple_count, page_size, tuple_count_val);
-	write_value_to_page(tomb_stone_count, page_size, tomb_stone_count_val);
+	// TODO : implement
+	return 0;
 }
 
+// TODO : reimplement as discard_tuple_slotted_page
+int discard_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
+{
+	// TODO : implement
+	return 0;
+}
 int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	// index out of bounds
@@ -376,6 +357,51 @@ int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 	return 1;
 }
 
+// TODO : reimplement as discard_tuple_slotted_page
+uint32_t discard_trailing_tombstones_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	// TODO : implement
+	return 0;
+}
+static inline void retract_tuple_count(void* page, uint32_t page_size)
+{
+	void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
+	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+
+	// cache space_occupied_by_tuples, tuple count and tomb_stone count
+	uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
+	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
+	uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
+
+	// pre-calculate the additional space that each of these tomb_stones are hoarding
+	uint32_t additional_space_for_tomb_stones = get_additional_space_overhead_per_tuple_slotted_page(page_size);
+
+	// get a valid tuple count
+	while(tuple_count_val > 0)
+	{
+		if(get_offset_to_ith_tuple(page, page_size, tuple_count_val - 1) == 0)
+		{
+			space_occupied_by_tuples_val -= additional_space_for_tomb_stones;
+			tuple_count_val--;
+			tomb_stone_count_val--;
+		}
+		else
+			break;
+	}
+
+	// write the calculated valid space_occupied_by_tuples, tuple count and tomb_stone count back to the page
+	write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
+	write_value_to_page(tuple_count, page_size, tuple_count_val);
+	write_value_to_page(tomb_stone_count, page_size, tomb_stone_count_val);
+}
+
+// TODO : reimplement as discard_all_tuples_slotted_page
+int discard_all_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
+{
+	// TODO : implement
+	return 0;
+}
 int delete_all_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	// write 0 to space_occupied_by_tuples
@@ -409,8 +435,11 @@ int exists_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_
 int swap_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t i1, uint32_t i2)
 {
 	// index out of bounds
-	if(i1 == i2 || i1 >= get_tuple_count_slotted_page(page, page_size) || i2 >= get_tuple_count_slotted_page(page, page_size))
+	if(i1 >= get_tuple_count_slotted_page(page, page_size) || i2 >= get_tuple_count_slotted_page(page, page_size))
 		return 0;
+
+	if(i1 == i2)
+		return 1;
 
 	void* i1th_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, i1);
 	void* i2th_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, i2);
@@ -450,6 +479,7 @@ struct tuple_offset_indexed
 	uint32_t index;
 };
 
+// TODO : use compare_numbers (cutlery macro)
 static int compare_by_offset(const void* a, const void* b)
 {
 	const tuple_offset_indexed* a_t = a;
@@ -461,6 +491,7 @@ static int compare_by_offset(const void* a, const void* b)
 	return 0;
 }
 
+// TODO : reimplement with value_arraylist
 void run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
 	uint16_t tuple_count = get_tuple_count_slotted_page(page, page_size);
