@@ -564,18 +564,19 @@ int main()
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
 
-	update_tuple_on_page(temp_page, PAGE_SIZE, def, 0, NULL);
+	res = update_tuple_on_page(temp_page, PAGE_SIZE, def, 0, NULL);
+	printf("Update(0) : %d\n\n\n", res);
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
 
 	// ---------------- DISCARDING TRAILING TOMB STONES
 
-	discard_trailing_tomb_stones_on_page(page, PAGE_SIZE, def);
+	discard_trailing_tomb_stones_on_page(temp_page, PAGE_SIZE, def);
 	printf("Discarding trailing tomb stones : \n\n\n");
 
 	// ---------------	PRINT PAGE
 	
-	print_page(page, PAGE_SIZE, def);
+	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
 
 
@@ -653,7 +654,7 @@ int main()
 	r = &(row){3, 76, "Rohan Dvivedi's, project.", 3.57};
 	build_tuple_from_row_struct(def, tuple_cache, r);
 	res = append_tuple_on_page(page, PAGE_SIZE, def, tuple_cache);
-	printf("insert : %d\n\n\n", res);
+	printf("Append : %d\n\n\n", res);
 	print_page(page, PAGE_SIZE, def);
 
 	r = &(row){5, 94, "Rohan's, project : Simple Tuple Storage Model.", 35.7};
