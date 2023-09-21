@@ -358,7 +358,7 @@ int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 }
 
 // TODO : reimplement as discard_tuple_slotted_page
-uint32_t discard_trailing_tombstones_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
+uint32_t discard_trailing_tombstones_slotted_page(void* page, uint32_t page_size)
 {
 	// TODO : implement
 	return 0;
@@ -397,12 +397,12 @@ static inline void retract_tuple_count(void* page, uint32_t page_size)
 }
 
 // TODO : reimplement as discard_all_tuples_slotted_page
-int discard_all_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
+int discard_all_tuples_slotted_page(void* page, uint32_t page_size)
 {
 	// TODO : implement
 	return 0;
 }
-int delete_all_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
+int delete_all_tuples_slotted_page(void* page, uint32_t page_size)
 {
 	// write 0 to space_occupied_by_tuples
 	void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);

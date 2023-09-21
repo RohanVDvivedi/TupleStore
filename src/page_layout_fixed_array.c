@@ -289,7 +289,7 @@ uint32_t discard_trailing_tombstones_fixed_array_page(void* page, uint32_t page_
 	return tomb_stones_discarded;
 }
 
-int discard_all_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d)
+int discard_all_tuples_fixed_array_page(void* page, uint32_t page_size)
 {
 	// make tuple count as 0
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
