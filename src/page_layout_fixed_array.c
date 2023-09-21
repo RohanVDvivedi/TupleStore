@@ -217,25 +217,44 @@ int can_update_tuple_fixed_array_page(const void* page, uint32_t page_size, cons
 	return index < get_tuple_count_fixed_array_page(page, page_size);
 }
 
-// TODO :: implement discard_tuple_fixed_array_page
-int delete_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
+int discard_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
-	// index out of bounds
+	// index must not be out of bounds
 	if(index >= get_tuple_count_fixed_array_page(page, page_size))
 		return 0;
 
-	// indexed tuple does not exist, so can not delete it
+	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
+
 	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
-	if(get_bit(is_valid, index) == 0)
-		return 0;
 
-	// else mark it deleted
-	reset_bit(is_valid, index);
+	// check if the tuple at concerned index was valid
+	int was_valid_at_index = get_bit(is_valid, index);
 
-	// increment tomb_stone_count
-	void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
-	uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
-	write_value_to_page(tomb_stone_count, page_size, ++tomb_stone_count_val);
+	for(uint32_t i = index + 1; i < tuple_count_val; i++)
+	{
+		if(get_bit(is_valid, i) == 1)
+		{
+			// set the i-1 th bit
+			set_bit(is_valid, i-1);
+
+			// copy the tuple contents from (i)th tuple to (i-1)th position
+			memory_move(page + get_offset_to_ith_tuple(page, page_size, tpl_d, i-1), page + get_offset_to_ith_tuple(page, page_size, tpl_d, i), tpl_d->size);
+		}
+		else // we only need to reset the is valid bit
+			reset_bit(is_valid, i-1);
+	}
+
+	// decrement the tuple count
+	write_value_to_page(tuple_count, page_size, --tuple_count_val);
+
+	// if the tuple at the concerned index was a tombstone, then decrement tomb_stone_count, since we discarded a tomb_stone
+	if(was_valid_at_index == 0)
+	{
+		void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+		uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
+		write_value_to_page(tomb_stone_count, page_size, --tomb_stone_count_val);
+	}
 
 	return 1;
 }
