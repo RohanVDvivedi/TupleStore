@@ -468,7 +468,16 @@ int main()
 	// ---------------  INSERT TUPLES IN TEMP PAGE BY INDEX RANGE
 
 	init_page(temp_page, PAGE_SIZE, sizeof(hdr), def);
-	uint16_t tuples_copied = insert_tuples_from_page(temp_page, PAGE_SIZE, def, page, 1, 4);
+	uint16_t tuples_copied = 0;
+	for(uint32_t i = 1; i <= 4; i++)
+	{
+		if(exists_tuple_on_page(page, PAGE_SIZE, def, i))
+		{
+			const void* tuple = get_nth_tuple_on_page(page, PAGE_SIZE, def, i);
+			if(append_tuple_on_page(temp_page, PAGE_SIZE, def, tuple))
+				tuples_copied++;
+		}
+	}
 	printf("\nTuples copied : %u\n", tuples_copied);
 	printf("\nCOPY PAGE :: \n");
 	print_page(temp_page, PAGE_SIZE, def);
