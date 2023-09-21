@@ -169,10 +169,14 @@ int append_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 
 int can_append_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple)
 {
-	// tuple needs space for itself and its offset
-	uint32_t size_required_for_new_tuple = get_tuple_size(tpl_d, external_tuple) + get_additional_space_overhead_per_tuple_slotted_page(page_size);
+	uint32_t space_required_for_tuple = (external_tuple == NULL) ? 0 : get_tuple_size(tpl_d, external_tuple);
 
-	return size_required_for_new_tuple <= get_free_space_slotted_page(page, page_size);
+	uint32_t space_required_for_tuple_offest = get_additional_space_overhead_per_tuple_slotted_page(page_size);
+
+	// tuple needs space for itself and its offset
+	uint32_t total_space_required_for_new_tuple = space_required_for_tuple + space_required_for_tuple_offest;
+
+	return total_space_required_for_new_tuple <= get_free_space_slotted_page(page, page_size);
 }
 
 // TODO : reimplement
