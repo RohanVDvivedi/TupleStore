@@ -23,7 +23,7 @@ int discard_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_d
 
 int discard_all_tuples_fixed_array_page(void* page, uint32_t page_size);
 
-uint32_t discard_trailing_tombstones_fixed_array_page(void* page, uint32_t page_size);
+uint32_t discard_trailing_tomb_stones_fixed_array_page(void* page, uint32_t page_size);
 
 int exists_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
 

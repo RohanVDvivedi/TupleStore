@@ -259,7 +259,7 @@ int discard_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_d
 	return 1;
 }
 
-uint32_t discard_trailing_tombstones_fixed_array_page(void* page, uint32_t page_size)
+uint32_t discard_trailing_tomb_stones_fixed_array_page(void* page, uint32_t page_size)
 {
 	uint32_t tomb_stones_discarded = 0;
 

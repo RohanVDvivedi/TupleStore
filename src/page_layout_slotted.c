@@ -358,7 +358,7 @@ int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 }
 
 // TODO : reimplement as discard_tuple_slotted_page
-uint32_t discard_trailing_tombstones_slotted_page(void* page, uint32_t page_size)
+uint32_t discard_trailing_tomb_stones_slotted_page(void* page, uint32_t page_size)
 {
 	// TODO : implement
 	return 0;
