@@ -303,6 +303,16 @@ int main()
 	print_page(page, PAGE_SIZE, def);
 	printf("\n\n");
 
+	// ---------------- DISCARDING TRAILING TOMB STONES
+
+	discard_trailing_tomb_stones_on_page(page, PAGE_SIZE, def);
+	printf("Discarding trailing tomb stones : \n\n\n");
+
+	// ---------------	PRINT PAGE
+	
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
 	// ---------------	PRINT PAGE IN HEX
 	
 	print_page_in_hex(page, PAGE_SIZE);
@@ -311,6 +321,16 @@ int main()
 
 	res = update_tuple_on_page(page, PAGE_SIZE, def, 3, NULL);
 	printf("Delete(3) : %d\n\n\n", res);
+
+	// ---------------	PRINT PAGE
+	
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	// ---------------- DISCARDING TRAILING TOMB STONES
+
+	discard_trailing_tomb_stones_on_page(page, PAGE_SIZE, def);
+	printf("Discarding trailing tomb stones : \n\n\n");
 
 	// ---------------	PRINT PAGE
 	
@@ -488,6 +508,11 @@ int main()
 	memmove(temp_page, page, PAGE_SIZE);
 	update_tuple_on_page(temp_page, PAGE_SIZE, def, 0, NULL);
 	update_tuple_on_page(temp_page, PAGE_SIZE, def, 2, NULL);
+	discard_trailing_tomb_stones_on_page(temp_page, PAGE_SIZE, def);
+	// ---------------	PRINT PAGE
+	
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
 
 	printf("\nBefore compaction available_size(%u)\n", get_free_space_on_page(temp_page, PAGE_SIZE, def));
 	printf("\nTEMP PAGE :: \n");
@@ -523,6 +548,18 @@ int main()
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
 
+	// ---------------- DISCARDING TRAILING TOMB STONES
+
+	discard_trailing_tomb_stones_on_page(page, PAGE_SIZE, def);
+	printf("Discarding trailing tomb stones : \n\n\n");
+
+	// ---------------	PRINT PAGE
+	
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+
+
 	printf("\nSwap(%u, %u) = %d\n", 0, 5, swap_tuples_on_page(temp_page, PAGE_SIZE, def, 0, 5));
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
@@ -554,6 +591,9 @@ int main()
 		{
 			int is_deleted = update_tuple_on_page(page, PAGE_SIZE, def, index, NULL);
 			printf("Delete called for index %u, giving : %d\n", index, is_deleted);
+			discard_trailing_tomb_stones_on_page(page, PAGE_SIZE, def);
+			printf("Discarding trailing tomb stones : \n\n\n");
+
 			print_page(page, PAGE_SIZE, def);
 			printf("\n\n");
 		}
@@ -567,6 +607,8 @@ int main()
 		{
 			int is_deleted = update_tuple_on_page(page, PAGE_SIZE, def, index, NULL);
 			printf("Delete called for index %u, giving : %d\n", index, is_deleted);
+			discard_trailing_tomb_stones_on_page(page, PAGE_SIZE, def);
+			printf("Discarding trailing tomb stones : \n\n\n");
 			print_page(page, PAGE_SIZE, def);
 			printf("\n\n");
 		}
