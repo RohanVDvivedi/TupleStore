@@ -3,7 +3,6 @@
  *** make sure to avoid all 32 bit overflows, using cutlery will_unsigned_sum_overflow and will_unsigned_mul_overflow functions.
 
 2 PAGE_LAYOUT TASKS
- *1* implement all functions again in fixed array page according to the api in the header
  *1* implement all functions again in slotted page according to the api in the header
 
  *2* update_element_in_place to update element in place, if the element is fixed sized or has smaller than or equal value size to existing element
