@@ -8,8 +8,8 @@
 #include<page_layout.h>
 
 // comment the below macro to test the SLOTTED_PAGE_LAYOUT
-//#define TEST_FIXED_ARRAY_PAGE_LAYOUT
-#define VAR_STRING_SIZE_SPECIFICER_SIZE 2
+#define TEST_FIXED_ARRAY_PAGE_LAYOUT
+//#define VAR_STRING_SIZE_SPECIFICER_SIZE 2
 
 // uncomment the page size that you want to test with
 //#define PAGE_SIZE     256
@@ -353,6 +353,26 @@ int main()
 	print_page(page, PAGE_SIZE, def);
 	printf("\n\n");
 
+	// --------------- APPEND NULL
+
+	res = append_tuple_on_page(page, PAGE_SIZE, def, NULL);
+	printf("Append null : %d\n\n\n", res);
+
+	// ---------------	PRINT PAGE
+	
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	// ---------------- DISCARDING TRAILING TOMB STONES
+
+	discard_trailing_tomb_stones_on_page(page, PAGE_SIZE, def);
+	printf("Discarding trailing tomb stones : \n\n\n");
+
+	// ---------------	PRINT PAGE
+	
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
 	// ---------------	PRINT PAGE IN HEX
 	
 	print_page_in_hex(page, PAGE_SIZE);
@@ -361,7 +381,7 @@ int main()
 
 	hdr* hdr_p = get_page_header(page, PAGE_SIZE);
 	hdr_p->data[0] = 0x01234567;
-	hdr_p->data[0] = 0x89abcdef;
+	hdr_p->data[1] = 0x89abcdef;
 	strcpy(hdr_p->name, "Rohn-pg");
 
 	// ---------------- PRINT PAGE
