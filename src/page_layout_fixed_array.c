@@ -318,16 +318,19 @@ int swap_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_def
 	uint32_t tuple_count_val = get_tuple_count_fixed_array_page(page, page_size);
 
 	// index out of bounds
-	if(i1 == i2 || i1 >= tuple_count_val || i2 >= tuple_count_val)
+	if(i1 >= tuple_count_val || i2 >= tuple_count_val)
 		return 0;
+
+	if(i1 == i2) // nothing to be done
+		return 1;
 
 	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
 
 	int bit_i1 = get_bit(is_valid, i1);
 	int bit_i2 = get_bit(is_valid, i2);
 
-	if(bit_i1 == 0 && bit_i2 == 0)
-		return 0;
+	if(bit_i1 == 0 && bit_i2 == 0) // both the tuples are tomb stones, nothing to be done
+		return 1;
 
 	// swap bits of the is_valid bitmap
 	bit_i1 ? set_bit(is_valid, i2) : reset_bit(is_valid, i2);
@@ -418,7 +421,7 @@ void print_fixed_array_page(const void* page, uint32_t page_size, const tuple_de
 			printf("\n\n");
 		}
 		else
-			printf("\t\t\t%s\n\n", "TOMBSTONE");
+			printf("\t\t\t%s\n\n", "TOMB STONE");
 	}
 	printf("\n\n\n");
 }

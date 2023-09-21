@@ -438,7 +438,7 @@ int swap_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tp
 	if(i1 >= get_tuple_count_slotted_page(page, page_size) || i2 >= get_tuple_count_slotted_page(page, page_size))
 		return 0;
 
-	if(i1 == i2)
+	if(i1 == i2) // nothing to be done
 		return 1;
 
 	void* i1th_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, i1);
@@ -447,8 +447,8 @@ int swap_tuples_slotted_page(void* page, uint32_t page_size, const tuple_def* tp
 	uint32_t i1th_tuple_offset_val = get_offset_to_ith_tuple(page, page_size, i1);
 	uint32_t i2th_tuple_offset_val = get_offset_to_ith_tuple(page, page_size, i2);
 
-	if(i1th_tuple_offset_val == 0 && i2th_tuple_offset_val == 0)
-		return 0;
+	if(i1th_tuple_offset_val == 0 && i2th_tuple_offset_val == 0)  // both the tuples are tomb stones, nothing to be done
+		return 1;
 
 	// swap tuple offsets
 	write_value_to_page(i1th_tuple_offset, page_size, i2th_tuple_offset_val);
@@ -606,7 +606,7 @@ void print_slotted_page(const void* page, uint32_t page_size, const tuple_def* t
 			printf("\n\n");
 		}
 		else
-			printf("\t\t\t%s\n\n", "TOMBSTONE");
+			printf("\t\t\t%s\n\n", "TOMB STONE");
 	}
 	printf("\n\n\n");
 }
