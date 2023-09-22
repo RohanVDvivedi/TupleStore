@@ -495,11 +495,14 @@ const void* get_nth_tuple_slotted_page(const void* page, uint32_t page_size, con
 	if(index >= get_tuple_count_slotted_page(page, page_size))
 		return NULL;
 
+	// get offset of this ith tuple
+	uint32_t ith_tuple_offset_val = get_offset_to_ith_tuple(page, page_size, index);
+
 	// tuple offset at ith index is 0, indicating it does not exists
-	if(get_offset_to_ith_tuple(page, page_size, index) == 0)
+	if(ith_tuple_offset_val == 0)
 		return NULL;
 
-	return page + get_offset_to_ith_tuple(page, page_size, index);
+	return page + ith_tuple_offset_val;
 }
 
 // a small struct used for defragmentation
