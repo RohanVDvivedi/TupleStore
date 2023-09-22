@@ -309,7 +309,44 @@ int can_update_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 // TODO : reimplement as discard_tuple_slotted_page
 int discard_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
-	// TODO : implement
+	// index out of bounds
+	if(index >= get_tuple_count_slotted_page(page, page_size))
+		return 0;
+
+	// pre-compute the offset and the size of the ith tuple that we need to discard
+	void* ith_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, index);
+	uint32_t ith_tuple_offset_old_val = read_value_from_page(ith_tuple_offset, page_size);
+	uint32_t ith_tuple_size_old = (ith_tuple_offset_old_val == 0) ? 0 : get_tuple_size(tpl_d, page + ith_tuple_offset_old_val);
+
+	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
+
+	// move all tuple offsets after i ([i+1, tuple_count_val-1]), to ith index
+	memory_move(page + get_offset_to_ith_tuple_offset(page, page_size, index),
+				page + get_offset_to_ith_tuple_offset(page, page_size, index + 1),
+				(tuple_count_val - (index + 1)) * get_additional_space_overhead_per_tuple_slotted_page(page_size));
+
+	// decrement tuple_count
+	write_value_to_page(tuple_count, page_size, --tuple_count_val);
+
+	// decrement tomb_stone_count, if the discarded tuple was a tomb_stone
+	if(ith_tuple_offset_old_val == 0)
+	{
+		void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+		uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
+		write_value_to_page(tomb_stone_count, page_size, --tomb_stone_count_val);
+	}
+
+	// decrement the space_occupied_by_tuples, by the tuple_size and the space occupied by its offset
+	void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
+	uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
+	space_occupied_by_tuples_val -= (ith_tuple_size_old + get_additional_space_overhead_per_tuple_slotted_page(page_size));
+	write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
+
+	// if the discarded tuple_offset was excatly at the end_of_free_space_offset then we need to recompute the end_of_free_space_offset
+	if(ith_tuple_offset_old_val == get_offset_to_end_of_free_space(page, page_size))
+		recompute_end_of_free_space_offset(page, page_size);
+
 	return 0;
 }
 int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
