@@ -535,7 +535,7 @@ void run_page_compaction_slotted_page(void* page, uint32_t page_size, const tupl
 	initialize_tuple_offset_indexed_list(&tuple_offset_list, tuple_count);
 
 	// tuple_offset_list must consists only of existing tuples
-	for(uint32_t index = 0; index <= tuple_count; index++)
+	for(uint32_t index = 0; index < tuple_count; index++)
 	{
 		if(exists_tuple_slotted_page(page, page_size, tpl_d, index))
 		{
