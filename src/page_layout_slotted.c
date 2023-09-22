@@ -323,6 +323,10 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 
 int can_update_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
 {
+	// index out of bounds, can't update
+	if(index >= get_tuple_count_slotted_page(page, page_size))
+		return 0;
+
 	// TODO : implement
 	return 0;
 }
