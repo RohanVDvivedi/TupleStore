@@ -471,16 +471,9 @@ struct tuple_offset_indexed
 	uint32_t index;
 };
 
-// TODO : use compare_numbers (cutlery macro)
-static int compare_by_offset(const void* a, const void* b)
+static int compare_by_offset_descending(const void* a, const void* b)
 {
-	const tuple_offset_indexed* a_t = a;
-	const tuple_offset_indexed* b_t = b;
-	if(a_t->offset < b_t->offset)
-		return 1;
-	else if(a_t->offset > b_t->offset)
-		return -1;
-	return 0;
+	return -compare_numbers(((const tuple_offset_indexed*)a)->offset, ((const tuple_offset_indexed*)b)->offset);
 }
 
 // TODO : reimplement with value_arraylist
@@ -503,7 +496,7 @@ void run_page_compaction_slotted_page(void* page, uint32_t page_size, const tupl
 	}
 
 	// sort tuples_to_relocate by their offset in decreasing order
-	qsort(tuples_to_relocate, tuples_to_relocate_count, sizeof(tuple_offset_indexed), compare_by_offset);
+	qsort(tuples_to_relocate, tuples_to_relocate_count, sizeof(tuple_offset_indexed), compare_by_offset_descending);
 
 	// start allocating as if it is a new page
 	uint32_t end_of_free_space_offset_val = page_size;
