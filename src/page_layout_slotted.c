@@ -335,8 +335,7 @@ int discard_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* 
 		return 0;
 
 	// pre-compute the offset and the size of the ith tuple that we need to discard
-	void* ith_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, index);
-	uint32_t ith_tuple_offset_old_val = read_value_from_page(ith_tuple_offset, page_size);
+	uint32_t ith_tuple_offset_old_val = get_offset_to_ith_tuple(page, page_size, index);
 	uint32_t ith_tuple_size_old = (ith_tuple_offset_old_val == 0) ? 0 : get_tuple_size(tpl_d, page + ith_tuple_offset_old_val);
 
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
