@@ -361,14 +361,10 @@ int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 	return 1;
 }
 
-// TODO : reimplement as discard_tuple_slotted_page
 uint32_t discard_trailing_tomb_stones_slotted_page(void* page, uint32_t page_size)
 {
-	// TODO : implement
-	return 0;
-}
-static inline void retract_tuple_count(void* page, uint32_t page_size)
-{
+	uint32_t tomb_stones_discarded = 0;
+
 	void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
 	void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
@@ -381,23 +377,21 @@ static inline void retract_tuple_count(void* page, uint32_t page_size)
 	// pre-calculate the additional space that each of these tomb_stones are hoarding
 	uint32_t additional_space_for_tomb_stones = get_additional_space_overhead_per_tuple_slotted_page(page_size);
 
-	// get a valid tuple count
-	while(tuple_count_val > 0)
+	// while tuple_count is greater than 0, and the last tuple is a tombstone
+	while(tuple_count_val > 0 && get_offset_to_ith_tuple(page, page_size, tuple_count_val - 1) == 0)
 	{
-		if(get_offset_to_ith_tuple(page, page_size, tuple_count_val - 1) == 0)
-		{
-			space_occupied_by_tuples_val -= additional_space_for_tomb_stones;
-			tuple_count_val--;
-			tomb_stone_count_val--;
-		}
-		else
-			break;
+		space_occupied_by_tuples_val -= additional_space_for_tomb_stones;
+		tuple_count_val--;
+		tomb_stone_count_val--;
+		tomb_stones_discarded++;
 	}
 
 	// write the calculated valid space_occupied_by_tuples, tuple count and tomb_stone count back to the page
 	write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
 	write_value_to_page(tuple_count, page_size, tuple_count_val);
 	write_value_to_page(tomb_stone_count, page_size, tomb_stone_count_val);
+
+	return tomb_stones_discarded;
 }
 
 // TODO : reimplement as discard_all_tuples_slotted_page

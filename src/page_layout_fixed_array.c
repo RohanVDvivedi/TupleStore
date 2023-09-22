@@ -272,7 +272,7 @@ uint32_t discard_trailing_tomb_stones_fixed_array_page(void* page, uint32_t page
 
 	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
 
-	// while tuple_count is greater than 0, and that tuple is a tombstone
+	// while tuple_count is greater than 0, and the last tuple is a tombstone
 	while(tuple_count_val > 0 && get_bit(is_valid, tuple_count_val - 1) == 0)
 	{
 		// we decrement the tuple_count and the tomb_stone_count
