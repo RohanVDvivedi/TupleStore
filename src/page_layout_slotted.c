@@ -394,13 +394,7 @@ uint32_t discard_trailing_tomb_stones_slotted_page(void* page, uint32_t page_siz
 	return tomb_stones_discarded;
 }
 
-// TODO : reimplement as discard_all_tuples_slotted_page
 int discard_all_tuples_slotted_page(void* page, uint32_t page_size)
-{
-	// TODO : implement
-	return 0;
-}
-int delete_all_tuples_slotted_page(void* page, uint32_t page_size)
 {
 	// write 0 to space_occupied_by_tuples
 	void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
