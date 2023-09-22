@@ -85,7 +85,7 @@ static inline void recompute_end_of_free_space_offset(void* page, uint32_t page_
 			end_of_free_space_offset_val = min(end_of_free_space_offset_val, ith_tuple_offset);
 	}
 
-	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space(page, page_size);
+	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
 	write_value_to_page(end_of_free_space_offset, page_size, end_of_free_space_offset_val);
 }
 
@@ -99,13 +99,13 @@ static inline uint32_t allocate_space_for_tuple_from_free_space(void* page, uint
 		return 0;
 
 	// read end_of_free_space_offset from page
-	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space(page, page_size);
-	uint32_t end_of_free_space_offset_val = read_value_from_page(end_of_free_space_offset, page_size);
+	uint32_t end_of_free_space_offset_val = get_offset_to_end_of_free_space(page, page_size);
 
 	// allocate space for the new tuple
 	end_of_free_space_offset_val -= tuple_size;
 
 	// write the end_of_free_space_offset back to the page
+	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
 	write_value_to_page(end_of_free_space_offset, page_size, end_of_free_space_offset_val);
 
 	// this is the offset there you should copy your tuple
