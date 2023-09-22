@@ -350,6 +350,11 @@ int can_update_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 	if(index >= get_tuple_count_slotted_page(page, page_size))
 		return 0;
 
+	// a tomb stone can be inserted without much thought,
+	// 0since in this case we only need to set the ith tuple_offset to 0
+	if(external_tuple == NULL)
+		return 1;
+
 	// TODO : implement
 	return 0;
 }
