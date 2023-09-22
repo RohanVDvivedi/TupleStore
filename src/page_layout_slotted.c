@@ -327,7 +327,6 @@ int can_update_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 	return 0;
 }
 
-// TODO : reimplement as discard_tuple_slotted_page
 int discard_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
 {
 	// index out of bounds
@@ -368,57 +367,6 @@ int discard_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* 
 		recompute_end_of_free_space_offset(page, page_size);
 
 	return 0;
-}
-int delete_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index)
-{
-	// index out of bounds
-	if(index >= get_tuple_count_slotted_page(page, page_size))
-		return 0;
-
-	void* ith_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, index);
-	uint32_t ith_tuple_offset_old_val = read_value_from_page(ith_tuple_offset, page_size);
-
-	// tuple offset at ith index is 0, indicating it does not exists
-	if(ith_tuple_offset_old_val == 0)
-		return 0;
-
-	// get the size of the tuple at the ith slot on the page
-	void* ith_tuple = page + ith_tuple_offset_old_val;
-	uint32_t ith_tuple_old_size = get_tuple_size(tpl_d, ith_tuple);
-
-	// set the tuple offset of the tuple to be deleted to 0, i.e. mark deleted
-	write_value_to_page(ith_tuple_offset, page_size, 0);
-
-	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
-	uint32_t end_of_free_space_offset_val = get_offset_to_end_of_free_space(page, page_size);
-
-	// if the tuple to be removed is at the end of free space
-	// we need to find the min of the existing tuple offsets, and make this minimum tuple_offset as the end_of_free_space_offset
-	if(end_of_free_space_offset_val == ith_tuple_offset_old_val)
-	{
-		uint32_t new_end_of_free_space_offset = page_size;
-		for(uint32_t j = 0; j < get_tuple_count_slotted_page(page, page_size); j++)
-		{
-			uint32_t jth_tuple_offset_val = get_offset_to_ith_tuple(page, page_size, j);
-			if(jth_tuple_offset_val != 0)
-				new_end_of_free_space_offset = min(jth_tuple_offset_val, new_end_of_free_space_offset);
-		}
-		write_value_to_page(end_of_free_space_offset, page_size, new_end_of_free_space_offset);
-	}
-
-	// decrement space_occupied_by_tuples by the size of the tuple that was deleted
-	// its tomb_stone (i.e. its offset) still remains on the page
-	void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
-	uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
-	space_occupied_by_tuples_val -= ith_tuple_old_size;
-	write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
-
-	// increment tomb_stone count
-	void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
-	uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
-	write_value_to_page(tomb_stone_count, page_size, ++tomb_stone_count_val);
-
-	return 1;
 }
 
 uint32_t discard_trailing_tomb_stones_slotted_page(void* page, uint32_t page_size)
