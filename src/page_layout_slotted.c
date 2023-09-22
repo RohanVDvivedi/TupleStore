@@ -89,6 +89,29 @@ static inline void recompute_end_of_free_space_offset(void* page, uint32_t page_
 	write_value_to_page(end_of_free_space_offset, page_size, end_of_free_space_offset_val);
 }
 
+// allocates space (from free space) for the tuple (only the tuple not its offset) of a given size on the page, and returns the allocation offset
+// a 0 return from this function implies out of memory, else a valid offset on the page is returned
+// it manages the end_of_free_space_offset and decrements it by tuple_size, it basically acts as a stack allocator
+static inline uint32_t allocate_space_for_tuple_from_free_space(void* page, uint32_t page_size, uint32_t tuple_size)
+{
+	// fail if tuple_size is greater than the free_space_on_page
+	if(tuple_size > get_free_space_slotted_page(page, page_size))
+		return 0;
+
+	// read end_of_free_space_offset from page
+	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space(page, page_size);
+	uint32_t end_of_free_space_offset_val = read_value_from_page(end_of_free_space_offset, page_size);
+
+	// allocate space for the new tuple
+	end_of_free_space_offset_val -= tuple_size;
+
+	// write the end_of_free_space_offset back to the page
+	write_value_to_page(end_of_free_space_offset, page_size, end_of_free_space_offset_val);
+
+	// this is the offset there you should copy your tuple
+	return end_of_free_space_offset_val;
+}
+
 /*
 ***********************************************************************************************/
 
