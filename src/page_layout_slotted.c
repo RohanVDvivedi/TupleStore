@@ -68,6 +68,27 @@ static inline uint32_t get_offset_to_ith_tuple(const void* page, uint32_t page_s
 	return read_value_from_page(ith_tuple_offset, page_size);
 }
 
+// call this function to loop over all the tuple offsets and recompute the end_of_free_space_offset on page
+// this is O(n) operation, hence use it only when utmost necessary
+static inline void recompute_end_of_free_space_offset(void* page, uint32_t page_size)
+{
+	// initialize end_of_free_space_offset_val to page_size
+	uint32_t end_of_free_space_offset_val = page_size;
+
+	const void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
+	const uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
+
+	for(uint32_t i = 0; i < tuple_count_val; i++)
+	{
+		uint32_t ith_tuple_offset = get_offset_to_ith_tuple(page, page_size, i);
+		if(ith_tuple_offset != 0) // if the tuple exists, then we may have to bump up the end_of_free_space_offset_val
+			end_of_free_space_offset_val = min(end_of_free_space_offset_val, ith_tuple_offset);
+	}
+
+	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space(page, page_size);
+	write_value_to_page(end_of_free_space_offset, page_size, end_of_free_space_offset_val);
+}
+
 /*
 ***********************************************************************************************/
 
