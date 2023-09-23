@@ -434,7 +434,7 @@ int discard_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* 
 	if(ith_tuple_offset_old_val == get_offset_to_end_of_free_space(page, page_size))
 		recompute_end_of_free_space_offset(page, page_size);
 
-	return 0;
+	return 1;
 }
 
 uint32_t discard_trailing_tomb_stones_slotted_page(void* page, uint32_t page_size)
