@@ -544,7 +544,7 @@ void run_page_compaction_slotted_page(void* page, uint32_t page_size, const tupl
 	// space_occupied_by_tuples value remains the same even after compaction
 	// the logical contents of the page are unaltered, including the tuple_indices and the tomb stone indices
 
-	uint16_t tuple_count = get_tuple_count_slotted_page(page, page_size);
+	uint32_t tuple_count = get_tuple_count_slotted_page(page, page_size);
 
 	tuple_offset_indexed_list tuple_offset_list;
 	initialize_tuple_offset_indexed_list(&tuple_offset_list, tuple_count);
@@ -650,7 +650,7 @@ void print_slotted_page(const void* page, uint32_t page_size, const tuple_def* t
 	uint32_t tup_count = get_tuple_count_slotted_page(page, page_size);
 	printf("\tTuples :: (%"PRIu32")\n", tup_count);
 
-	for(uint16_t i = 0; i < tup_count; i++)
+	for(uint32_t i = 0; i < tup_count; i++)
 	{
 		printf("\t\ttuple %"PRIu32"\n", i);
 		if(exists_tuple_slotted_page(page, page_size, tpl_d, i))
