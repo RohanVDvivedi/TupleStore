@@ -262,7 +262,7 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 	if(ith_tuple_offset_val == 0 && external_tuple != NULL) // ith tuple is a tomb_stone, so we need to append it in free space
 	{
 		append_in_free_space = 1;
-		decrement_tomb_stone_count = 0;
+		decrement_tomb_stone_count = 1;
 	}
 	else if(ith_tuple_offset != 0 && external_tuple == NULL) // no space required for external_tuple, we only need to discard the ith tuple
 	{
