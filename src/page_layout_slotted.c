@@ -246,131 +246,107 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 	if(!can_update_tuple_slotted_page(page, page_size, tpl_d, index, external_tuple))
 		return 0;
 
-	void* ith_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size);
+	void* ith_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, index);
 	uint32_t ith_tuple_offset_val = read_value_from_page(ith_tuple_offset, page_size);
 
-	// no need to replace a tomb_stone with another one, nothing to be done
-	if(external_tuple == NULL && ith_tuple_offset_val == 0)
-		return 1;
+	int discard_ith_tuple = 0;
 
-	// TODO : implement
-	return 1;
-}
-int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
-{
-	// index out of bounds
-	uint32_t tuple_count_val = get_tuple_count_slotted_page(page, page_size);
-	if(index >= tuple_count_val)
-		return 0;
+	// atmost only one of below options must be selected
+	int append_in_free_space = 0;
+	int update_in_place = 0;
 
-	// calculate the size of tuple to be inserted in place of an old one
-	uint32_t external_tuple_size = get_tuple_size(tpl_d, external_tuple);
+	// atmost only one of below options must be selected
+	int increment_tomb_stone_count = 0;
+	int decrement_tomb_stone_count = 0;
 
-	// get free space on page
-	uint32_t free_space = get_free_space_slotted_page(page, page_size);
-
-	// we might have to update this
-	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
-	uint32_t end_of_free_space_offset_val = get_offset_to_end_of_free_space(page, page_size);
-
-	void* existing_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, index);
-	uint32_t existing_tuple_offset_val = get_offset_to_ith_tuple(page, page_size, index);
-
-	// if a tuple already exists at the given index
-	if(existing_tuple_offset_val != 0)
+	if(ith_tuple_offset_val == 0 && external_tuple != NULL) // ith tuple is a tomb_stone, so we need to append it in free space
 	{
-		void* existing_tuple = page + existing_tuple_offset_val;
-		uint32_t existing_tuple_size = get_tuple_size(tpl_d, existing_tuple);
-
-		// if the exiting tuple is physically the last tuple
-		if(existing_tuple_offset_val == end_of_free_space_offset_val)
-		{
-			if(free_space + existing_tuple_size >= external_tuple_size)
-			{
-				// move existing_tuple_offset and end_of_free_space_offset to accomodate the new tuple
-
-				end_of_free_space_offset_val = end_of_free_space_offset_val + existing_tuple_size - external_tuple_size;
-				write_value_to_page(end_of_free_space_offset, page_size, end_of_free_space_offset_val);
-
-				existing_tuple_offset_val = end_of_free_space_offset_val;
-				write_value_to_page(existing_tuple_offset, page_size, existing_tuple_offset_val);
-
-				// modify the space_occupied_by_tuples
-				void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
-				uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
-				space_occupied_by_tuples_val = (space_occupied_by_tuples_val - existing_tuple_size) + external_tuple_size;
-				write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
-
-				existing_tuple = page + existing_tuple_offset_val;
-
-				// move data from external tuple to the tuple in the page
-				memmove(existing_tuple, external_tuple, external_tuple_size);
-
-				return 1;
-			}
-			else
-				return 0;
-		}
-		// if exiting_tuple is larger than or equal to the external_tuple, then we can use the same slot
-		else if(existing_tuple_size >= external_tuple_size)
-		{
-			// modify the space_occupied_by_tuples
-			void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
-			uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
-			space_occupied_by_tuples_val = (space_occupied_by_tuples_val - existing_tuple_size) + external_tuple_size;
-			write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
-
-			// move data from external tuple to the tuple in the page
-			memmove(existing_tuple, external_tuple, external_tuple_size);
-
-			return 1;
-		}
+		append_in_free_space = 1;
+		decrement_tomb_stone_count = 0;
 	}
-	
-	// either the existing_tuple is NULL (i.e. deleted or is tomb_stone) OR there isn't enough space to fit in the external tuple
-	// so we need a take space from the free space on the page
-	if(free_space >= external_tuple_size)
+	else if(ith_tuple_offset != 0 && external_tuple == NULL) // no space required for external_tuple, we only need to discard the ith tuple
 	{
-		// now here if we are updating to a slot that was holding a tomb_stone
-		// then we need to decrement the tomb_stone count
-		if(existing_tuple_offset_val == 0)
-		{
-			void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
-			uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size) - 1;
-			write_value_to_page(tomb_stone_count, page_size, tomb_stone_count_val);
-		}
+		discard_ith_tuple = 1;
+		increment_tomb_stone_count = 1;
+	}
+	else if(ith_tuple_offset_val != 0 && external_tuple != NULL) // noone is tomb_stone
+	{
+		discard_ith_tuple = 1;
+		uint32_t ith_tuple_size = get_tuple_size(tpl_d, page + ith_tuple_offset_val);
+		uint32_t external_tuple_size = get_tuple_size(tpl_d, external_tuple);
+		if(ith_tuple_offset_val == get_offset_to_end_of_free_space(page, page_size) || ith_tuple_size < external_tuple_size)
+			append_in_free_space = 1;
+		else if(ith_tuple_size >= external_tuple_size)
+			update_in_place = 1;
+	}
+	else {} // no need to replace a tomb_stone with another one, nothing to be done
 
-		// update end of free space offset
-		end_of_free_space_offset_val -= external_tuple_size;
-		write_value_to_page(end_of_free_space_offset, page_size, end_of_free_space_offset_val);
 
-		// update offset where you want to place this tuple
-		void* new_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, index);
-		write_value_to_page(new_tuple_offset, page_size, end_of_free_space_offset_val);
+	// cache the old slot offset
+	const uint32_t ith_tuple_offset_val_old = ith_tuple_offset_val;
 
-		// modify the space_occupied_by_tuples
+	if(discard_ith_tuple)
+	{
+		// write a tomb_stone at the ith tuple offset
+		ith_tuple_offset_val = 0;
+		write_value_to_page(ith_tuple_offset, page_size, ith_tuple_offset_val);
+
+		// compute ith tuple_size
+		uint32_t ith_tuple_size = get_tuple_size(tpl_d, page + ith_tuple_offset_val_old);
+
+		// decrement the space_occupied_by_tuples value on the page, by the space of the ith old tuple, that is freed
 		void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
 		uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
-		if(existing_tuple_offset_val == 0)
-			space_occupied_by_tuples_val = space_occupied_by_tuples_val + external_tuple_size;
-		else
-		{
-			void* existing_tuple = page + existing_tuple_offset_val;
-			uint32_t existing_tuple_size = get_tuple_size(tpl_d, existing_tuple);
-			space_occupied_by_tuples_val = (space_occupied_by_tuples_val - existing_tuple_size) + external_tuple_size;
-		}
+		space_occupied_by_tuples_val -= ith_tuple_size;
 		write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
 
-		// find the new tuple on the page
-		void* new_tuple = page + end_of_free_space_offset_val;
-
-		// move data from external tuple to the tuple in the page
-		memmove(new_tuple, external_tuple, external_tuple_size);
-
-		return 1;
+		if(ith_tuple_offset_val_old == get_offset_to_end_of_free_space(page, page_size))
+			recompute_end_of_free_space_offset(page, page_size);
 	}
-	else
-		return 0;
+
+	if(append_in_free_space || update_in_place)
+	{
+		uint32_t external_tuple_size = get_tuple_size(tpl_d, external_tuple);
+
+		if(append_in_free_space)
+		{
+			// allocate and update the ith_tuple_offset
+			ith_tuple_offset_val = allocate_space_for_tuple_from_free_space(page, page_size, external_tuple_size);
+			write_value_to_page(ith_tuple_offset, page_size, ith_tuple_offset_val);
+		}
+		else
+		{
+			// update the ith tuple at the old offset in place
+			ith_tuple_offset_val = ith_tuple_offset_val_old;
+			write_value_to_page(ith_tuple_offset, page_size, ith_tuple_offset_val);
+		}
+
+		// copy the ith tuple at the offset
+		memory_move(page + ith_tuple_offset_val, external_tuple, external_tuple_size);
+
+		// increment the space_occupied_by_tuples value on the page, by the space of the external_tuple
+		void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
+		uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
+		space_occupied_by_tuples_val += external_tuple_size;
+		write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
+	}
+
+	if(increment_tomb_stone_count)
+	{
+		// increment tomb_stone_count on the page
+		void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+		uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
+		write_value_to_page(tomb_stone_count, page_size, ++tomb_stone_count_val);
+	}
+	else if(decrement_tomb_stone_count)
+	{
+		// decrement tomb_stone_count on the page
+		void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
+		uint32_t tomb_stone_count_val = read_value_from_page(tomb_stone_count, page_size);
+		write_value_to_page(tomb_stone_count, page_size, --tomb_stone_count_val);
+	}
+
+	return 1;
 }
 
 int can_update_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
