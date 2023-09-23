@@ -366,11 +366,44 @@ int can_update_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 		return 0;
 
 	// a tomb stone can be inserted without much thought,
-	// 0since in this case we only need to set the ith tuple_offset to 0
+	// since in this case we only need to set the ith tuple_offset to 0
 	if(external_tuple == NULL)
 		return 1;
 
-	// TODO : implement
+	// calculate size of external_tuple
+	uint32_t external_tuple_size = get_tuple_size(tpl_d, external_tuple);
+
+	// get offset of the tuple existing at ith index
+	uint32_t ith_tuple_offset_val = get_offset_to_ith_tuple(page, page_size, index);
+
+	// get actual free space on page
+	uint32_t free_space_on_page = get_free_space_slotted_page(page, page_size);
+
+	// if the tuple exists at the ith index, then
+	if(ith_tuple_offset_val != 0)
+	{
+		uint32_t ith_tuple_size = get_tuple_size(tpl_d, page + ith_tuple_offset_val);
+
+		// if it is at the end of free space, then it will add to the free space on being tomb_stoned
+		if(ith_tuple_offset_val == get_offset_to_end_of_free_space(page, page_size))
+		{
+			if(free_space_on_page + ith_tuple_size >= external_tuple_size)
+				return 1;
+			else
+				return 0;
+		}
+		// else try to fit external_tuple in the space of the old tuple
+		else if(ith_tuple_size >= external_tuple_size)
+			return 1;
+	}
+	
+	// if nothing succeeds, we would have to allocate from the free space
+	if(free_space_on_page >= external_tuple_size)
+		return 1;
+
+	// return of 0, here indicates that it MAY not fit on the page
+	// you should try compacting (defragmenting) the page, or try update never the less and see if it passes
+	// this function tries to quickly approximate if the external_tuple can be updated on the ith place it is O(1)
 	return 0;
 }
 
