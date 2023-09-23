@@ -216,7 +216,7 @@ uint32_t get_free_space_on_page(const void* page, uint32_t page_size, const tupl
 
 uint32_t get_space_occupied_by_tuples_on_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t start_index, uint32_t last_index)
 {
-	uint16_t tuple_count = get_tuple_count_on_page(page, page_size, tpl_d);
+	uint32_t tuple_count = get_tuple_count_on_page(page, page_size, tpl_d);
 	if((start_index > last_index) || (last_index >= tuple_count))
 		return 0;
 
@@ -319,7 +319,7 @@ void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 
 void print_page_in_hex(const void* page, uint32_t page_size)
 {
-	for(int i = 0; i < page_size; i++)
+	for(uint32_t i = 0; i < page_size; i++)
 	{
 		if(i % 8 == 0)
 			printf("\n");
