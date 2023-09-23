@@ -244,6 +244,11 @@ int can_append_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 // TODO : reimplement
 int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
 {
+	if(!can_update_tuple_slotted_page(page, page_size, tpl_d, index, external_tuple))
+		return 0;
+}
+int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple)
+{
 	// index out of bounds
 	uint32_t tuple_count_val = get_tuple_count_slotted_page(page, page_size);
 	if(index >= tuple_count_val)
@@ -402,8 +407,6 @@ int can_update_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 		return 1;
 
 	// return of 0, here indicates that it MAY not fit on the page
-	// you should try compacting (defragmenting) the page, or try update never the less and see if it passes
-	// this function tries to quickly approximate if the external_tuple can be updated on the ith place it is O(1)
 	return 0;
 }
 
