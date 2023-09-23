@@ -48,6 +48,7 @@ uint32_t get_tomb_stone_count_on_page(const void* page, uint32_t page_size, cons
 int append_tuple_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
 // returns 1, if the append_tuple would succeed
+// this function (unlike can_update_tuple_on_page) does not return an estimate, it is sure, if the append will succeed or not
 int can_append_tuple_on_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, const void* external_tuple);
 
 // update tuple at the specified index, fails if the page is out of space, or if the index is out of bounds i.e. when index >= get_tuple_count()
@@ -55,7 +56,15 @@ int can_append_tuple_on_page(const void* page, uint32_t page_size, const tuple_d
 int update_tuple_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple);
 
 // returns 1, if the update_tuple would succeed
+// if the index is within bounds, then this function gives an estimate, a 1 implies the external_tuple can be adjusted on the page, but a 0 implies that the tuple MAY not fit on the page
 int can_update_tuple_on_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index, const void* external_tuple);
+
+/*
+** To be sure that a update must pass, if possible, try the following sequence instead
+** can_update_tuple_on_page(page, index, NULL);
+** run_page_compaction(page);
+** can_update_tuple_on_page(page, index, external_tuple);
+*/
 
 // to discard a tuple (or a tombstane) at the given index in the page, fails if index >= get_tuple_count()
 int discard_tuple_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t index);
