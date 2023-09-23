@@ -264,7 +264,7 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 		append_in_free_space = 1;
 		decrement_tomb_stone_count = 1;
 	}
-	else if(ith_tuple_offset != 0 && external_tuple == NULL) // no space required for external_tuple, we only need to discard the ith tuple
+	else if(ith_tuple_offset_val != 0 && external_tuple == NULL) // no space required for external_tuple, we only need to discard the ith tuple
 	{
 		discard_ith_tuple = 1;
 		increment_tomb_stone_count = 1;
@@ -280,7 +280,6 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_def* t
 			update_in_place = 1;
 	}
 	else {} // no need to replace a tomb_stone with another one, nothing to be done
-
 
 	// cache the old slot offset
 	const uint32_t ith_tuple_offset_val_old = ith_tuple_offset_val;
