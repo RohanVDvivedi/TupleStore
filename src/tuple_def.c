@@ -331,7 +331,8 @@ int finalize_tuple_def(tuple_def* tuple_d, uint32_t max_size)
 	// allocate space for storing tuple_size for variable sized tuple_def
 	if(tuple_d->is_variable_sized)
 	{
-		tuple_d->min_size += tuple_d->size_of_byte_offsets;
+		if(check_overflow_and_add(&(tuple_d->min_size), tuple_d->size_of_byte_offsets, tuple_d->max_size))
+			return MIN_SIZE_GREATER_THAN_MAX_SIZE;
 		tuple_d->byte_offset_to_is_null_bitmap = tuple_d->min_size;
 	}
 
@@ -345,12 +346,14 @@ int finalize_tuple_def(tuple_def* tuple_d, uint32_t max_size)
 		if(is_variable_sized_element_def(def))
 		{
 			def->byte_offset_to_byte_offset = tuple_d->min_size;
-			tuple_d->min_size += tuple_d->size_of_byte_offsets;
+			if(check_overflow_and_add(&(tuple_d->min_size), tuple_d->size_of_byte_offsets, tuple_d->max_size))
+				return MIN_SIZE_GREATER_THAN_MAX_SIZE;
 		}
 		else
 		{
-			def->byte_offset = tuple_d->min_size;
-			tuple_d->size += def->size;
+			def->byte_offset = tuple_d->size;
+			if(check_overflow_and_add(&(tuple_d->size), def->size, tuple_d->max_size))
+				return MIN_SIZE_GREATER_THAN_MAX_SIZE;
 		}
 	}
 
