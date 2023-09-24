@@ -16,7 +16,7 @@ enum element_type
 	FLOAT	   = 2,
 	STRING     = 3,
 	BLOB       = 4,
-	// above data types are fixed type
+	// above data types are fixed size
 
 	VAR_STRING = 5,
 	VAR_BLOB   = 6
