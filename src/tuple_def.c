@@ -201,30 +201,32 @@ declarations_value_arraylist(element_defs_list, element_def)
 #define EXPANSION_FACTOR 1.5
 function_definitions_value_arraylist(element_defs_list, element_def)
 
-static int init_tuple_def(tuple_def* tuple_d, const char* name)
+static int init_tuple_def(tuple_def* tuple_d, const char* name, uint32_t max_tuple_size)
 {
 	// name larger than 63 bytes
 	if(strnlen(name, 64) == 64)
 		return 0;
 
-	tuple_d->is_variable_sized = 0;
-	tuple_d->size = 0;
-	tuple_d->byte_offset_to_is_null_bitmap = 0;
-	tuple_d->is_NULL_bitmap_size_in_bits = 0;
-
 	// copy name
 	strncpy(tuple_d->name, name, 63);
 	tuple_d->name[63] = '\0';
 
+	tuple_d->is_variable_sized = 0;
+	tuple_d->max_size = max_tuple_size;
+	tuple_d->size = 0;
+	tuple_d->byte_offset_to_is_null_bitmap = 0;
+	tuple_d->size_of_byte_offsets = get_value_size_on_page(tuple_d->max_size);
+	tuple_d->is_NULL_bitmap_size_in_bits = 0;
+
 	return 1;
 }
 
-tuple_def* get_new_tuple_def(const char* name, uint32_t element_capacity)
+tuple_def* get_new_tuple_def(const char* name, uint32_t element_capacity, uint32_t max_tuple_size)
 {
 	tuple_def* tuple_d = malloc(sizeof(tuple_def));
 	if(!initialize_element_defs_list(&(tuple_d->element_defs), element_capacity))
 		return NULL;
-	if(!init_tuple_def(tuple_d, name))
+	if(!init_tuple_def(tuple_d, name, max_tuple_size))
 	{
 		deinitialize_element_defs_list(&(tuple_d->element_defs));
 		free(tuple_d);
@@ -235,7 +237,7 @@ tuple_def* get_new_tuple_def(const char* name, uint32_t element_capacity)
 
 tuple_def* clone_tuple_def(const tuple_def* tuple_d)
 {
-	tuple_def* clone_tuple_d = get_new_tuple_def(tuple_d->name, get_element_def_count_tuple_def(tuple_d));
+	tuple_def* clone_tuple_d = get_new_tuple_def(tuple_d->name, get_element_def_count_tuple_def(tuple_d), tuple_d->max_size);
 	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tuple_d); i++)
 		insert_copy_of_element_def(clone_tuple_d, NULL, tuple_d, i);
 	return clone_tuple_d;
@@ -247,6 +249,11 @@ int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_ty
 	if(get_element_def_id_by_name(tuple_d, name) != ELEMENT_DEF_NOT_FOUND)
 		return 0;
 
+	// for a varibale sized element type, it has a prefix that suggests the bytes it will occupy
+	// the size of this prefix must not be greater than size_of_byte_offsets in the tuple, since this would waste space on the tuple
+	if(is_variable_sized_element_type(ele_type) && tuple_d->size_of_byte_offsets < element_size_OR_prefix_size)
+		return 0;
+
 	// attempt initializing the element def
 	element_def new_element_def;
 	if(!init_element_def(&new_element_def, name, ele_type, element_size_OR_prefix_size, is_non_NULLable, default_value))
@@ -254,7 +261,10 @@ int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_ty
 
 	// now push it to back the element_defs
 	if(!push_back_to_element_defs_list(&(tuple_d->element_defs), &new_element_def))
+	{
+		deinit_element_def(&new_element_def);
 		return 0;
+	}
 
 	return 1;
 }
@@ -294,13 +304,8 @@ static inline int check_overflow_and_add(uint32_t* a, uint32_t b, uint32_t max_l
 	return 0;
 }
 
-int finalize_tuple_def(tuple_def* tuple_d, uint32_t max_size)
+int finalize_tuple_def(tuple_def* tuple_d)
 {
-	tuple_d->max_size = max_size;
-
-	// calcuate size required to store offsets on a page that is of size max_tuple_size
-	tuple_d->size_of_byte_offsets = get_value_size_on_page(tuple_d->max_size);
-
 	tuple_d->is_variable_sized = 0;
 	tuple_d->is_NULL_bitmap_size_in_bits = 0;
 
@@ -311,14 +316,9 @@ int finalize_tuple_def(tuple_def* tuple_d, uint32_t max_size)
 	{
 		element_def* def = (element_def*) get_element_def_by_id(tuple_d, i);
 
+		// if the element_def is variable_sized, then mark the tuple as variable sized
 		if(is_variable_sized_element_def(def))
-		{
-			// mark the tuple as variable sized
 			tuple_d->is_variable_sized = 1;
-
-			if(def->size_specifier_prefix_size > tuple_d->size_of_byte_offsets)
-				return SIZE_SPECIFIER_PREFIX_SIZE_GREATER_THAN_SIZE_OF_BYTE_OFFSETS;
-		}
 
 		// give this element a bit in is_NULL_bitmap only if it needs it
 		if(needs_bit_in_is_NULL_bitmap(def))

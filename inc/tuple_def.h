@@ -143,10 +143,10 @@ struct tuple_def
 	element_defs_list element_defs;
 };
 
-// returns a new tuple_def that can accomodate atleast element_capacity number of element defs, but contains 0 element_defs
-// element_capacity can not be modified for a tuple_def once it has been created by this function
+// returns a new tuple_def that can accomodate atleast element_capacity number of element defs, and it can be used to access a tuple of atmost max_tuple_size sized tuple, but contains 0 element_defs
+// element_capacity and max_tuple_size can not be modified for a tuple_def once it has been created by this function
 // this functions fails with NULL, if the name is longer than 63 bytes
-tuple_def* get_new_tuple_def(const char* name, uint32_t element_capacity);
+tuple_def* get_new_tuple_def(const char* name, uint32_t element_capacity, uint32_t max_tuple_size);
 
 // create a new tuple def that is identical to the given tuple def
 // you may only use the tuple_def returned by this function after you have called finalize on it
@@ -169,8 +169,7 @@ int insert_copy_of_element_def(tuple_def* tuple_d, const char* name, const tuple
 // it fails with an error codes as below
 #define FINALIZE_TUPLE_DEF_SUCCESS 0
 #define MIN_SIZE_GREATER_THAN_MAX_SIZE -1
-#define SIZE_SPECIFIER_PREFIX_SIZE_GREATER_THAN_SIZE_OF_BYTE_OFFSETS -2
-int finalize_tuple_def(tuple_def* tuple_d, uint32_t max_size);
+int finalize_tuple_def(tuple_def* tuple_d);
 
 // returns 1, if the tuple_d does not contain any elements
 int is_empty_tuple_def(const tuple_def* tuple_d);
