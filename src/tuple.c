@@ -23,7 +23,7 @@ void init_tuple(const tuple_def* tpl_d, void* tupl)
 		write_uint32(tupl, tpl_d->size_of_byte_offsets, tpl_d->min_size);
 
 	// set all offsets to variable sized elements to 0
-	for(uint32_t i = 0; i < tpl_d->element_count; i++)
+	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tpl_d); i++)
 	{
 		const element_def* ele_d = get_element_def_by_id(tpl_d, i);
 		if(is_variable_sized_element_def(ele_d))
@@ -180,7 +180,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 			memmove(tupl + old_element_offset, tupl + old_element_offset + old_element_size, old_tuple_size - (old_element_offset + old_element_size));
 
 			// decrease all tuple offsets for variable sized non null elements that were after the element by old_element_size
-			for(uint32_t i = 0; i < tpl_d->element_count; i++)
+			for(uint32_t i = 0; i < get_element_def_count_tuple_def(tpl_d); i++)
 			{
 				if(!is_NULL_in_tuple(tpl_d, index, tupl) && is_variable_sized_element_def(get_element_def_by_id(tpl_d, i)))
 				{
@@ -349,7 +349,7 @@ uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_fun
 
 void print_tuple(const void* tup, const tuple_def* tpl_d)
 {
-	for(uint32_t i = 0; i < tpl_d->element_count; i++)
+	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tpl_d); i++)
 	{
 		if(i)
 			printf(", ");
