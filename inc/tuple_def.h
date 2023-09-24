@@ -4,6 +4,8 @@
 #include<stdio.h>
 #include<stdint.h>
 
+#include<value_arraylist.h>
+
 #include<user_value.h>
 
 typedef enum element_type element_type;
@@ -97,6 +99,8 @@ int compare_elements(const void* e1, const element_def* ele_d_1, const void* e2,
 // hash element, given their element definition
 uint32_t hash_element(const void* e, const element_def* ele_d, uint32_t (*hash_func)(const void* data, uint32_t size));
 
+data_definitions_value_arraylist(element_defs_list, element_def)
+
 typedef struct tuple_def tuple_def;
 struct tuple_def
 {
@@ -132,14 +136,8 @@ struct tuple_def
 	// to reiterate only NULLable fixed_sized_elements need a bit in is_NULL bitmap
 	uint32_t is_NULL_bitmap_size_in_bits;
 
-	// total elements in the tuple
-	uint32_t element_count;
-
-	// definition of all of the elements
-	element_def* element_defs;
-
-	// total elements that can be accomodated in element_defs array
-	uint32_t element_capacity;
+	// definition of all of the elements in the tuple_def
+	element_def_list element_defs;
 };
 
 // returns a new tuple_def that can accomodate atleast element_capacity number of element defs, but contains 0 element_defs
