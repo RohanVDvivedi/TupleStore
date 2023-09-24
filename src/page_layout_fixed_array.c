@@ -415,7 +415,7 @@ void print_fixed_array_page(const void* page, uint32_t page_size, const tuple_de
 		if(exists_tuple_fixed_array_page(page, page_size, tpl_d, i))
 		{
 			const void* tuple = get_nth_tuple_fixed_array_page(page, page_size, tpl_d, i);
-			uint32_t tuple_size = get_tuple_size(tpl_d, tuple);
+			uint32_t tuple_size = tpl_d->size;
 			printf("\t\t\toffset[%"PRIu32"] size(%"PRIu32") :: ", (uint32_t)((uintptr_t)(tuple - page)), tuple_size);
 			print_tuple(tuple, tpl_d);
 			printf("\n\n");
