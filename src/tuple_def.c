@@ -332,7 +332,7 @@ int finalize_tuple_def(tuple_def* tuple_d)
 	if(tuple_d->is_variable_sized)
 	{
 		if(check_overflow_and_add(&(tuple_d->min_size), tuple_d->size_of_byte_offsets, tuple_d->max_size))
-			return MIN_SIZE_GREATER_THAN_MAX_SIZE;
+			return 0;
 		tuple_d->byte_offset_to_is_null_bitmap = tuple_d->min_size;
 	}
 
@@ -347,20 +347,20 @@ int finalize_tuple_def(tuple_def* tuple_d)
 		{
 			def->byte_offset_to_byte_offset = tuple_d->min_size;
 			if(check_overflow_and_add(&(tuple_d->min_size), tuple_d->size_of_byte_offsets, tuple_d->max_size))
-				return MIN_SIZE_GREATER_THAN_MAX_SIZE;
+				return 0;
 		}
 		else
 		{
 			def->byte_offset = tuple_d->size;
 			if(check_overflow_and_add(&(tuple_d->size), def->size, tuple_d->max_size))
-				return MIN_SIZE_GREATER_THAN_MAX_SIZE;
+				return 0;
 		}
 	}
 
 	if(tuple_d->min_size > tuple_d->max_size)
-		return MIN_SIZE_GREATER_THAN_MAX_SIZE;
+		return 0;
 
-	return FINALIZE_TUPLE_DEF_SUCCESS;
+	return 1;
 }
 
 int is_empty_tuple_def(const tuple_def* tuple_d)
