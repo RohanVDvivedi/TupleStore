@@ -259,6 +259,10 @@ int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_ty
 	if(!init_element_def(&new_element_def, name, ele_type, element_size_OR_prefix_size, is_non_NULLable, default_value))
 		return 0;
 
+	// if the elment_defs is full, then expand it
+	if(is_full_element_defs_list(&(tuple_d->element_defs)))
+		expand_element_defs_list(&(tuple_d->element_defs));
+
 	// now push it to back the element_defs
 	if(!push_back_to_element_defs_list(&(tuple_d->element_defs), &new_element_def))
 	{
