@@ -212,7 +212,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 			// this will also make this element a non NULL
 			write_uint32(tupl + get_element_def_by_id(tpl_d, index)->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, tuple_size);
 
-			// since the offset is set appropriately and the is_null bit is reset to 0
+			// since the offset is set appropriately
 			// we can access element directly and safely
 			void* ele = get_element_from_tuple(tpl_d, index, tupl);
 
