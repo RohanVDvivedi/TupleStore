@@ -1,6 +1,5 @@
 2 TUPLE_DEF TASKS
  *1* Additionally implement a struct tuple_def_summary defined as struct {int is_variable_sized, uint32_t size}, easier to pass around in page_layout functions.
- *1* use value arraylist for list of element defs in the tuple_def
 
  *2* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
  *3* limit size_specifier_prefix_size to at most get_value_size_on_page(page_size), fail insertion of the element_def if this condition is violated.
