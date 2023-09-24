@@ -58,7 +58,7 @@ static inline uint32_t get_offset_to_end_of_free_space(const void* page, uint32_
 	const void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
 	uint32_t end_of_free_space_offset_val = read_value_from_page(end_of_free_space_offset, page_size);
 
-	// if the tuple_count == 0, the free space end with the end of page
+	// end_of_free_space_offset is never 0, hence if it is 0, it is implied is equal to page_size
 	return (end_of_free_space_offset_val == 0) ? page_size : end_of_free_space_offset_val;
 }
 

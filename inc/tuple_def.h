@@ -111,6 +111,9 @@ struct tuple_def
 	// The tuple is VARIABLE_SIZED, if atleast one of the element_defs is VARIABLE_SIZED
 	int is_variable_sized;
 
+	// max_size of the tuple
+	uint32_t max_size;
+
 	// min total size of tuple in bytes
 	// i.e. size of tuple when all variable sized elements are NULL
 	// this will be same as tuple's size for a fixed sized tuple
@@ -163,7 +166,7 @@ int insert_copy_of_element_def(tuple_def* tuple_d, const char* name, const tuple
 // after inserting all the elements call this function
 // here the parameter max_tuple_size is not required for fixed length tuples
 // it is used to calculate the size (in bytes) required for storing tuple_size and offsets to varable sized elements
-void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_tuple_size);
+void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_size);
 
 // returns 1, if the tuple_d does not contain any elements
 int is_empty_tuple_def(const tuple_def* tuple_d);

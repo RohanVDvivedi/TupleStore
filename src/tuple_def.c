@@ -276,10 +276,12 @@ int insert_copy_of_element_def(tuple_def* tuple_d, const char* name, const tuple
 		return insert_element_def(tuple_d, name, def->type, def->size_specifier_prefix_size, def->is_non_NULLable, &(def->default_value));
 }
 
-void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_tuple_size)
+void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_size)
 {
+	tuple_d->max_size = max_size;
+
 	// calcuate size required to store offsets on a page that is of size max_tuple_size
-	tuple_d->size_of_byte_offsets = get_value_size_on_page(max_tuple_size);
+	tuple_d->size_of_byte_offsets = get_value_size_on_page(tuple_d->max_size);
 
 	tuple_d->is_variable_sized = 0;
 	tuple_d->is_NULL_bitmap_size_in_bits = 0;
