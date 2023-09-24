@@ -129,7 +129,7 @@ struct tuple_def
 	// for variale length tuple this offset is equal to the bytes required to store the tuple size
 	uint32_t byte_offset_to_is_null_bitmap;
 
-	// size of offsets stored for the variable length elements
+	// size of offsets (to variable sized elements) and tuple_size (stored as the prefix of the tuple for variable sized tuples) stored for the variable length elements
 	uint32_t size_of_byte_offsets;
 
 	// number of bits in is_NULL_bitmap
