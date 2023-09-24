@@ -197,6 +197,10 @@ static void deinit_element_def(element_def* ele_d)
 	memset(ele_d, 0, sizeof(element_def));
 }
 
+declarations_value_arraylist(element_defs_list, element_def)
+#define EXPANSION_FACTOR 1.5
+function_definitions_value_arraylist(element_defs_list, element_def)
+
 static int init_tuple_def(tuple_def* tuple_d, const char* name)
 {
 	// name larger than 63 bytes
@@ -207,7 +211,6 @@ static int init_tuple_def(tuple_def* tuple_d, const char* name)
 	tuple_d->size = 0;
 	tuple_d->byte_offset_to_is_null_bitmap = 0;
 	tuple_d->is_NULL_bitmap_size_in_bits = 0;
-	tuple_d->element_count = 0;
 
 	// copy name
 	strncpy(tuple_d->name, name, 63);
@@ -219,8 +222,8 @@ static int init_tuple_def(tuple_def* tuple_d, const char* name)
 tuple_def* get_new_tuple_def(const char* name, uint32_t element_capacity)
 {
 	tuple_def* tuple_d = malloc(sizeof(tuple_def));
-	tuple_d->element_capacity = element_capacity;
-	tuple_d->element_defs = malloc(sizeof(element_def) * tuple_d->element_capacity);
+	if(!initialize_element_defs_list(&(tuple_d->element_defs), tuple_d->element_capacity))
+		return NULL;
 	if(init_tuple_def(tuple_d, name))
 		return tuple_d;
 	free(tuple_d);

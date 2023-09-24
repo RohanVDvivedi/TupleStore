@@ -137,7 +137,7 @@ struct tuple_def
 	uint32_t is_NULL_bitmap_size_in_bits;
 
 	// definition of all of the elements in the tuple_def
-	element_def_list element_defs;
+	element_defs_list element_defs;
 };
 
 // returns a new tuple_def that can accomodate atleast element_capacity number of element defs, but contains 0 element_defs
