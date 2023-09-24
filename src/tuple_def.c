@@ -287,14 +287,16 @@ void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_tuple_size)
 	// figure out 2 things in this loop
 	// whether the tuple_def is_variable_sized
 	// and the number of the bits required in is_NULL_bitmap
-	for(uint32_t i = 0; i < tuple_d->element_count; i++)
+	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tuple_d); i++)
 	{
-		if(is_variable_sized_element_def(tuple_d->element_defs + i))
+		element_def* def = (element_def*) get_element_def_by_id(tuple_d, i);
+
+		if(is_variable_sized_element_def(def))
 			tuple_d->is_variable_sized = 1;
 
 		// give this element a bit in is_NULL_bitmap only if it needs it
-		if(needs_bit_in_is_NULL_bitmap(tuple_d->element_defs + i))
-			tuple_d->element_defs[i].is_NULL_bitmap_bit_offset = tuple_d->is_NULL_bitmap_size_in_bits++;
+		if(needs_bit_in_is_NULL_bitmap(def))
+			def->is_NULL_bitmap_bit_offset = tuple_d->is_NULL_bitmap_size_in_bits++;
 	}
 
 	tuple_d->size = 0;
@@ -310,17 +312,19 @@ void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_tuple_size)
 	tuple_d->size += bitmap_size_in_bytes(tuple_d->is_NULL_bitmap_size_in_bits);
 
 	// now we compute the offsets (and the offsets to their byte_offsets) for all the element_defs
-	for(uint32_t i = 0; i < tuple_d->element_count; i++)
+	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tuple_d); i++)
 	{
-		if(is_variable_sized_element_def(tuple_d->element_defs + i))
+		element_def* def = (element_def*) get_element_def_by_id(tuple_d, i);
+
+		if(is_variable_sized_element_def(def))
 		{
-			tuple_d->element_defs[i].byte_offset_to_byte_offset = tuple_d->min_size;
+			def->byte_offset_to_byte_offset = tuple_d->min_size;
 			tuple_d->min_size += tuple_d->size_of_byte_offsets;
 		}
 		else
 		{
-			tuple_d->element_defs[i].byte_offset = tuple_d->min_size;
-			tuple_d->size += tuple_d->element_defs[i].size;
+			def->byte_offset = tuple_d->min_size;
+			tuple_d->size += def->size;
 		}
 	}
 }
