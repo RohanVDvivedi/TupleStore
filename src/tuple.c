@@ -277,7 +277,7 @@ user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, uint32_t in
 	const void* e = get_element_from_tuple(tpl_d, index, tupl);
 
 	if(e == NULL)
-		return (user_value){.is_NULL = 1};
+		return (*NULL_USER_VALUE);
 
 	if(is_numeral_type_element_def(ele_d))
 		return get_value_from_numeral_element(e, ele_d);
