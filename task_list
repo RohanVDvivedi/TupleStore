@@ -1,4 +1,7 @@
 1 PICKED TASKS
+ *0* for variable sized tuple, a tuple_size of 0 implies a max_size of tuple, to be returned
+ *0* finalize tuple function is allowed to fail
+ *0* max_size is specified to init_tuple and get_new_tuple function, and is used only for variable sized tuple
  *1* limit size_specifier_prefix_size to at most get_value_size_on_page(page_size), fail insertion of the element_def if this condition is violated.
  *2* store max_size of tuple with the tuple_def and fail updates if the tuple size is may cross the max_size limit
 
