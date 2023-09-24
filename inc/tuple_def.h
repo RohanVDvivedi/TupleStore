@@ -168,6 +168,9 @@ void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_tuple_size);
 // returns 1, if the tuple_d does not contain any elements
 int is_empty_tuple_def(const tuple_def* tuple_d);
 
+// returns the number of element_defs in the tuple_def
+uint32_t get_element_def_count_tuple_def(const tuple_def* tuple_d);
+
 // returns true if the tuple definition is of a fixed sized
 // this includes a tuple definition with 0 element_count
 int is_fixed_sized_tuple_def(const tuple_def* tuple_d);

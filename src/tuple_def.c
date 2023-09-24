@@ -222,18 +222,21 @@ static int init_tuple_def(tuple_def* tuple_d, const char* name)
 tuple_def* get_new_tuple_def(const char* name, uint32_t element_capacity)
 {
 	tuple_def* tuple_d = malloc(sizeof(tuple_def));
-	if(!initialize_element_defs_list(&(tuple_d->element_defs), tuple_d->element_capacity))
+	if(!initialize_element_defs_list(&(tuple_d->element_defs), element_capacity))
 		return NULL;
-	if(init_tuple_def(tuple_d, name))
-		return tuple_d;
-	free(tuple_d);
-	return NULL;
+	if(!init_tuple_def(tuple_d, name))
+	{
+		deinitialize_element_defs_list(&(tuple_d->element_defs));
+		free(tuple_d);
+		return NULL;
+	}
+	return tuple_d;
 }
 
 tuple_def* clone_tuple_def(const tuple_def* tuple_d)
 {
-	tuple_def* clone_tuple_d = get_new_tuple_def(tuple_d->name, tuple_d->element_count);
-	for(uint32_t i = 0; i < tuple_d->element_count; i++)
+	tuple_def* clone_tuple_d = get_new_tuple_def(tuple_d->name, get_element_def_count_tuple_def(tuple_d));
+	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tuple_d); i++)
 		insert_copy_of_element_def(clone_tuple_d, NULL, tuple_d, i);
 	return clone_tuple_d;
 }
@@ -244,28 +247,33 @@ int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_ty
 	if(get_element_def_id_by_name(tuple_d, name) != ELEMENT_DEF_NOT_FOUND)
 		return 0;
 
-	// attempt initializing the ith element def
-	element_def* new_element_def = tuple_d->element_defs + tuple_d->element_count;
-	if(!init_element_def(new_element_def, name, ele_type, element_size_OR_prefix_size, is_non_NULLable, default_value))
+	// attempt initializing the element def
+	element_def new_element_def;
+	if(!init_element_def(&new_element_def, name, ele_type, element_size_OR_prefix_size, is_non_NULLable, default_value))
 		return 0;
 
-	tuple_d->element_count++;
+	// now push it to back the element_defs
+	if(!push_back_to_element_defs_list(&(tuple_d->element_defs), &new_element_def))
+		return 0;
+
 	return 1;
 }
 
 int insert_copy_of_element_def(tuple_def* tuple_d, const char* name, const tuple_def* tuple_d_copy_from, uint32_t element_def_id)
 {
 	// element_def_id is out of bounds
-	if(element_def_id >= tuple_d_copy_from->element_count)
+	if(element_def_id >= get_element_count_element_defs_list(&(tuple_d_copy_from->element_defs)))
 		return 0;
 
-	if(name == NULL)
-		name = tuple_d_copy_from->element_defs[element_def_id].name;
+	const element_def* def = get_element_def_by_id(tuple_d_copy_from, element_def_id);
 
-	if(is_fixed_sized_element_def(tuple_d_copy_from->element_defs + element_def_id))
-		return insert_element_def(tuple_d, name, tuple_d_copy_from->element_defs[element_def_id].type, tuple_d_copy_from->element_defs[element_def_id].size, tuple_d_copy_from->element_defs[element_def_id].is_non_NULLable, &(tuple_d_copy_from->element_defs[element_def_id].default_value));
+	if(name == NULL)
+		name = def->name;
+
+	if(is_fixed_sized_element_def(def))
+		return insert_element_def(tuple_d, name, def->type, def->size, def->is_non_NULLable, &(def->default_value));
 	else
-		return insert_element_def(tuple_d, name, tuple_d_copy_from->element_defs[element_def_id].type, tuple_d_copy_from->element_defs[element_def_id].size_specifier_prefix_size, tuple_d_copy_from->element_defs[element_def_id].is_non_NULLable, &(tuple_d_copy_from->element_defs[element_def_id].default_value));
+		return insert_element_def(tuple_d, name, def->type, def->size_specifier_prefix_size, def->is_non_NULLable, &(def->default_value));
 }
 
 void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_tuple_size)
@@ -319,7 +327,12 @@ void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_tuple_size)
 
 int is_empty_tuple_def(const tuple_def* tuple_d)
 {
-	return tuple_d->element_count == 0;
+	return is_empty_element_defs_list(&(tuple_d->element_defs));
+}
+
+uint32_t get_element_def_count_tuple_def(const tuple_def* tuple_d)
+{
+	return get_element_count_element_defs_list(&(tuple_d->element_defs));
 }
 
 int is_fixed_sized_tuple_def(const tuple_def* tuple_d)
@@ -350,9 +363,10 @@ uint32_t get_element_def_id_by_name(const tuple_def* tuple_d, const char* name)
 	// we do a linear search here, it is not optimal
 	// it should have an associative map, but I dont want to clutter the implementation of tuple def any more 
 	// with any more complex data structures
-	for(uint32_t i = 0; i < tuple_d->element_count; i++)
+	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tuple_d); i++)
 	{
-		if(0 == strcmp(tuple_d->element_defs[i].name, name))
+		const element_def* def = get_element_def_by_id(tuple_d, i);
+		if(0 == strcmp(def->name, name))
 			return i;
 	}
 
@@ -361,14 +375,18 @@ uint32_t get_element_def_id_by_name(const tuple_def* tuple_d, const char* name)
 
 const element_def* get_element_def_by_id(const tuple_def* tuple_d, uint32_t index)
 {
-	return tuple_d->element_defs + index;
+	return get_from_front_of_element_defs_list(&(tuple_d->element_defs), index);
 }
 
 void delete_tuple_def(tuple_def* tuple_d)
 {
-	for(uint32_t i = 0; i < tuple_d->element_count; i++)
-		deinit_element_def(tuple_d->element_defs + i);
-	free(tuple_d->element_defs);
+	while(!is_empty_element_defs_list(&(tuple_d->element_defs)))
+	{
+		element_def* def = (element_def*) get_front_of_element_defs_list(&(tuple_d->element_defs));
+		deinit_element_def(def);
+		pop_front_from_element_defs_list(&(tuple_d->element_defs));
+	}
+	deinitialize_element_defs_list(&(tuple_d->element_defs));
 	free(tuple_d);
 }
 
@@ -405,10 +423,11 @@ void print_tuple_def(const tuple_def* tuple_d)
 	if(is_variable_sized_tuple_def(tuple_d))
 		printf("\t size_of_byte_offsets : %"PRIu32"\n", tuple_d->size_of_byte_offsets);
 	printf("\t is_NULL_bitmap_size_in_bits : %"PRIu32"\n", tuple_d->is_NULL_bitmap_size_in_bits);
-	printf("\t element_count : %"PRIu32"\n", tuple_d->element_count);
-	for(uint32_t i = 0; i < tuple_d->element_count; i++)
+	printf("\t element_count : %"PRIu32"\n", get_element_def_count_tuple_def(tuple_d));
+	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tuple_d); i++)
 	{
 		printf("\t\t Column : %"PRIu32"\n", i);
-		print_element_def((tuple_d->element_defs) + i);
+		const element_def* def = get_element_def_by_id(tuple_d, i);
+		print_element_def(def);
 	}
 }
