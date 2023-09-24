@@ -1,7 +1,4 @@
 1 PICKED TASKS
- *0* max_size is specified to init_tuple and get_new_tuple function
- *0* fail inserting an element_def in a tuple_def, if the min_size exceeds the max_size
- *1* limit size_specifier_prefix_size to at most get_value_size_on_page(page_size), fail insertion of the element_def if this condition is violated.
  *2* store max_size of tuple with the tuple_def and fail updates if the tuple size is may cross the max_size limit
 
  *3* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
