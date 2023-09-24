@@ -194,7 +194,7 @@ int main()
 								get_nth_tuple_on_page(page, PAGE_SIZE, def, 1), 
 								def,
 								NULL,
-								def->element_count)
+								get_element_def_count_tuple_def(def))
 			);
 
 	printf("compare(tuple_0 , tuple_1) = %d\n\n", 
@@ -216,7 +216,7 @@ int main()
 								get_nth_tuple_on_page(page, PAGE_SIZE, def, 2), 
 								def,
 								NULL,
-								def->element_count)
+								get_element_def_count_tuple_def(def))
 			);
 
 	printf("compare(tuple_1 , tuple_2) = %d\n\n", 
