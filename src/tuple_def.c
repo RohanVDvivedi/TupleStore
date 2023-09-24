@@ -276,6 +276,24 @@ int insert_copy_of_element_def(tuple_def* tuple_d, const char* name, const tuple
 		return insert_element_def(tuple_d, name, def->type, def->size_specifier_prefix_size, def->is_non_NULLable, &(def->default_value));
 }
 
+// returns true if the operation would overflow OR the result would cross max_limit
+// else it will perform addition
+static inline int check_overflow_and_add(uint32_t* a, uint32_t b, uint32_t max_limit)
+{
+	// check overflow
+	if(will_unsigned_sum_overflow(uint32_t, (*a), b))
+		return 1;
+
+	// check max_limit check
+	uint32_t result = (*a) + b;
+	if(result > max_limit)
+		return 1;
+
+	// successful addition
+	(*a) = result;
+	return 0;
+}
+
 int finalize_tuple_def(tuple_def* tuple_d, uint32_t max_size)
 {
 	tuple_d->max_size = max_size;
