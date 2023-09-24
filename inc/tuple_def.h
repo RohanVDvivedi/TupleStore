@@ -166,7 +166,11 @@ int insert_copy_of_element_def(tuple_def* tuple_d, const char* name, const tuple
 // after inserting all the elements call this function
 // here the parameter max_tuple_size is not required for fixed length tuples
 // it is used to calculate the size (in bytes) required for storing tuple_size and offsets to varable sized elements
-void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_size);
+// it fails with an error codes as below
+#define FINALIZE_TUPLE_DEF_SUCCESS 0
+#define MIN_SIZE_GREATER_THAN_MAX_SIZE -1
+#define SIZE_SPECIFIER_PREFIX_SIZE_GREATER_THAN_SIZE_OF_BYTE_OFFSETS -2
+int finalize_tuple_def(tuple_def* tuple_d, uint32_t max_size);
 
 // returns 1, if the tuple_d does not contain any elements
 int is_empty_tuple_def(const tuple_def* tuple_d);

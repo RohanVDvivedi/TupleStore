@@ -276,7 +276,7 @@ int insert_copy_of_element_def(tuple_def* tuple_d, const char* name, const tuple
 		return insert_element_def(tuple_d, name, def->type, def->size_specifier_prefix_size, def->is_non_NULLable, &(def->default_value));
 }
 
-void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_size)
+int finalize_tuple_def(tuple_def* tuple_d, uint32_t max_size)
 {
 	tuple_d->max_size = max_size;
 
@@ -294,7 +294,13 @@ void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_size)
 		element_def* def = (element_def*) get_element_def_by_id(tuple_d, i);
 
 		if(is_variable_sized_element_def(def))
+		{
+			// mark the tuple as variable sized
 			tuple_d->is_variable_sized = 1;
+
+			if(def->size_specifier_prefix_size > tuple_d->size_of_byte_offsets)
+				return SIZE_SPECIFIER_PREFIX_SIZE_GREATER_THAN_SIZE_OF_BYTE_OFFSETS;
+		}
 
 		// give this element a bit in is_NULL_bitmap only if it needs it
 		if(needs_bit_in_is_NULL_bitmap(def))
@@ -329,6 +335,11 @@ void finalize_tuple_def(tuple_def* tuple_d, uint32_t max_size)
 			tuple_d->size += def->size;
 		}
 	}
+
+	if(tuple_d->min_size > tuple_d->max_size)
+		return MIN_SIZE_GREATER_THAN_MAX_SIZE;
+
+	return FINALIZE_TUPLE_DEF_SUCCESS;
 }
 
 int is_empty_tuple_def(const tuple_def* tuple_d)
