@@ -26,30 +26,75 @@ char temp_page[PAGE_SIZE] = {};
 tuple_def* get_tuple_definition()
 {
 	// initialize tuple definition and insert element definitions
-	tuple_def* def = get_new_tuple_def("my_table", 16);
+	tuple_def* def = get_new_tuple_def("my_table", 16, PAGE_SIZE);
 
 	int res = insert_element_def(def, "col_0", INT, 5, 0, NULL);
+	if(res == 0)
+	{
+		printf("failed adding column 0\n");
+		exit(-1);
+	}
 
 	res = insert_element_def(def, "col_1", UINT, 1, 0, NULL);
+	if(res == 0)
+	{
+		printf("failed adding column 1\n");
+		exit(-1);
+	}
 
 	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
 		res = insert_element_def(def, "col_2", STRING, 15, 0, NULL);
 	#else
 		res = insert_element_def(def, "var_col_2", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE, 0, NULL);
 	#endif
+	if(res == 0)
+	{
+		printf("failed adding column 2\n");
+		exit(-1);
+	}
 
 	res = insert_element_def(def, "col_3", FLOAT, 8, 0, NULL);
+	if(res == 0)
+	{
+		printf("failed adding column 3\n");
+		exit(-1);
+	}
 
 	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
 		res = insert_element_def(def, "col_4", STRING, 8, 0, NULL);
 	#else
 		res = insert_element_def(def, "var_col_4", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE, 0, NULL);
 	#endif
+	if(res == 0)
+	{
+		printf("failed adding column 4\n");
+		exit(-1);
+	}
 
 	res = insert_element_def(def, "col_5", INT, 1, 0, NULL);
+	if(res == 0)
+	{
+		printf("failed adding column 5\n");
+		exit(-1);
+	}
 	res = insert_element_def(def, "col_6", INT, 1, 0, NULL);
+	if(res == 0)
+	{
+		printf("failed adding column 6\n");
+		exit(-1);
+	}
 	res = insert_element_def(def, "col_7", INT, 1, 0, NULL);
+	if(res == 0)
+	{
+		printf("failed adding column 7\n");
+		exit(-1);
+	}
 	res = insert_element_def(def, "col_8", INT, 1, 0, NULL);
+	if(res == 0)
+	{
+		printf("failed adding column 8\n");
+		exit(-1);
+	}
 
 	res = insert_element_def(def, "col_3", FLOAT, 4, 0, NULL);
 	printf("attempting to insert an element def with the 'col_2' name => %d\n", res);
@@ -60,7 +105,12 @@ tuple_def* get_tuple_definition()
 	res = insert_element_def(def, "col_0", FLOAT, 4, 0, NULL);
 	printf("attempting to insert an element def with the 'col_4' name => %d\n", res);
 
-	finalize_tuple_def(def, PAGE_SIZE);
+	res = finalize_tuple_def(def);
+	if(res == 0)
+	{
+		printf("failed finalizing tuple definition\n");
+		exit(-1);
+	}
 
 	if(is_empty_tuple_def(def))
 	{
