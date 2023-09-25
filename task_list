@@ -1,19 +1,19 @@
 1 PICKED TASKS
- *3* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
+ *1* Additionally implement a struct tuple_def_summary defined as struct {int is_variable_sized, uint32_t size_of_byte_offsets, union{uint32_t size, uint32_t min_size}}, easier to pass around in page_layout functions.
 
- *4* Additionally implement a struct tuple_def_summary defined as struct {int is_variable_sized, uint32_t size_of_byte_offsets, union{uint32_t size, uint32_t min_size}}, easier to pass around in page_layout functions.
+ *2* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
 
- *5* update_element_in_place to update element in place, if the element is fixed sized or has smaller than or equal value size to existing element
+ *3* update_element_in_place to update element in place, if the element is fixed sized or has smaller than or equal value size to existing element
 
 2 NEW TYPE TASKS
- *6* add long double (*think about it again, as long double does not have a ieee standardized format)
- *7* bit fields, having fixed number of bits (upto 64)
- *7* bitmap field
+ *4* add long double (*think about it again, as long double does not have a ieee standardized format)
+ *5* bit fields, having fixed number of bits (upto 64)
+ *5* bitmap field
      * pack multiple adjacent bit fields and multiple bitmap fields together, or some way to do it, minimizing space usage
- *8* variable length signed and unsigned integer (like that of leveldb and sqlite) (see you GMP (GNU MP) can be used here)
- *8* variable length real numbers (see how GMP (GNU MP) can be used here)
- *9* nested_tuple datatype
- *9* arrays of types
+ *6* variable length signed and unsigned integer (like that of leveldb and sqlite) (see you GMP (GNU MP) can be used here)
+ *6* variable length real numbers (see how GMP (GNU MP) can be used here)
+ *7* nested_tuple datatype
+ *7* arrays of types
 
 3 OPTIMIZATION FOR COMPRESSION TASKS
- *10* make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
+ *8* make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
