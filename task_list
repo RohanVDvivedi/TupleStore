@@ -1,6 +1,4 @@
 1 PICKED TASKS
- *2* store max_size of tuple with the tuple_def and fail updates if the tuple size is may cross the max_size limit
-
  *3* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
 
  *4* Additionally implement a struct tuple_def_summary defined as struct {int is_variable_sized, uint32_t size_of_byte_offsets, union{uint32_t size, uint32_t min_size}}, easier to pass around in page_layout functions.
