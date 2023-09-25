@@ -183,7 +183,7 @@ int set_string_OR_blob_element_from_element(void* e, const element_def* ele_d, c
 	uint32_t data_size;
 	if(is_string_type_element_def(ele_d_from))
 		data_size = get_string_length_for_string_type_element(e_from, ele_d_from);
-	else // BLOB / VAR_BLOB is fixed width element
+	else // BLOB / VAR_BLOB
 		data_size = get_data_size_for_string_OR_blob_element(e_from, ele_d_from);
 
 	set_string_OR_blob_element_INTERNAL(e, ele_d, data, data_size);
