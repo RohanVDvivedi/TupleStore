@@ -810,5 +810,24 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 		print_tuple(tuple, def);
 		printf("\n\n");
 	}
+
+  // set data to make tuple exceed max_size, and it should fail
+	{
+		int res = set_element_in_tuple(def, 2, tuple, &((user_value){.data = NULL, .data_size = PAGE_SIZE - get_tuple_size(def, tuple) + 5}));
+
+		printf("%d = failed to make tuple size cross max_size\n", res);
+		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
+		print_tuple(tuple, def);
+		printf("\n\n");
+	}
+
+	{
+		int res = set_element_in_tuple(def, 2, tuple, &((user_value){.data = "Mr. Rohan Vipulkumar Dvivedi", .data_size = strlen("Mr. Rohan Vipulkumar Dvivedi")}));
+
+		printf("%d = success to update a value to column 2\n", res);
+		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
+		print_tuple(tuple, def);
+		printf("\n\n");
+	}
 #endif
 }
