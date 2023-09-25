@@ -176,6 +176,25 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 	}
 	else
 	{
+		// when a variable sized element it updated, it changes the tuple_size
+		// we must ensure that it does not cross the max_size stated in the tpl_d->max_size
+		{
+			uint32_t new_tuple_size = get_tuple_size(tpl_d, tupl) - get_element_size_within_tuple(tpl_d, index, tupl);
+
+			uint32_t new_element_size = 0;
+			if(!is_user_value_NULL(value))
+			{
+				if(will_unsigned_sum_overflow(uint32_t, ele_d->size_specifier_prefix_size, value->data_size))
+					return 0;
+				new_element_size = ele_d->size_specifier_prefix_size + value->data_size;
+			}
+
+			if(will_unsigned_sum_overflow(uint32_t, new_tuple_size, new_element_size) || (new_tuple_size + new_element_size) > tpl_d->max_size)
+				return 0;
+
+			new_tuple_size += new_element_size;
+		}
+
 		// if data existed at index (is not NULL), then remove it (its allocated space), set its offset to 0 and set it's is_null_bitmap bit to 1
 		if(!is_NULL_in_tuple(tpl_d, index, tupl))
 		{
@@ -218,7 +237,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 			// its new offset will be tuple_size
 			// update its offset on the tuple
 			// this will also make this element a non NULL
-			write_uint32(tupl + get_element_def_by_id(tpl_d, index)->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, tuple_size);
+			write_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, tuple_size);
 
 			// since the offset is set appropriately
 			// we can access element directly and safely
