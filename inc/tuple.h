@@ -21,20 +21,20 @@ uint32_t get_tuple_size_using_tuple_size_def(const tuple_size_def* tpl_sz_d, con
 // check if the ith element in the tuple is NULL
 int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 
-// set element (given at void* value) to tuple at a given index
-// value size if disregarded (not required) for fixed length numeric types
-// this function may fail if you attempt to set NULL to a non NULLable element
-int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value);
-
-// check if a element can be set (given at index_in in tuple_in) in tuple at a given index
+// check if an element can be set (given at index) in tuple at a given index
 // returns 1 if the set operation was will succeed,
-// else returns 0 (this happens when the types are incompatible OR the tuple will exceed its max_size)
-// On success the new_tupl_size will be set to the new tuple_size that the tuple will achieve
-int can_set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const tuple_def* tpl_d_in, uint32_t index_in, const void* tupl_in, uint32_t* new_tuple_size);
+// else returns 0 (this happens when the types are incompatible OR setting NULL to a non-NULLable element OR the tuple will exceed its max_size)
+// On success, (if new_tuple_size != NULL) then new_tupl_size will be set to the new tuple_size that the tuple will achieve
+int can_set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value, uint32_t* new_tuple_size);
+
+// sets an element (given at index) in tuple at a given index
+// returns 1 if the set operation was will succeed,
+// else returns 0 (this happens when the types are incompatible OR setting NULL to a non-NULLable element OR the tuple will exceed its max_size)
+int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value);
 
 // set element (given at index_in in tuple_in) to tuple at a given index
 // returns 1 if the set operation was successfull,
-// else returns 0 (this happens when the types are incompatible OR the tuple will exceed its max_size)
+// else returns 0 (this happens when the types are incompatible OR setting NULL to a non-NULLable element OR the tuple will exceed its max_size)
 int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const tuple_def* tpl_d_in, uint32_t index_in, const void* tupl_in);
 
 // does not allocate any memeory
