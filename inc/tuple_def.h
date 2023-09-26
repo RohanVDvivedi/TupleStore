@@ -122,6 +122,9 @@ struct tuple_size_def
 		// defined for fixed sized tuple
 		uint32_t size;
 	};
+
+	// max_size of the tuple
+	uint32_t max_size;
 };
 
 typedef struct tuple_def tuple_def;
@@ -129,9 +132,6 @@ struct tuple_def
 {
 	// name of the tuple type i.e. table/index name
 	char name[64];
-
-	// max_size of the tuple
-	uint32_t max_size;
 
 	// characteristics of the tuple, (i.e. the parts of tuple_def)
 	// that allow you to know the size of the tuple

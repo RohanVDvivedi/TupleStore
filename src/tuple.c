@@ -182,7 +182,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 	else
 	{
 		// when a variable sized element it updated, it changes the tuple_size
-		// we must ensure that it does not cross the max_size stated in the tpl_d->max_size
+		// we must ensure that it does not cross the max_size stated in the tpl_d->size_def.max_size
 		{
 			uint32_t new_tuple_size = get_tuple_size(tpl_d, tupl) - get_element_size_within_tuple(tpl_d, index, tupl);
 
@@ -194,7 +194,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 				new_element_size = ele_d->size_specifier_prefix_size + value->data_size;
 			}
 
-			if(will_unsigned_sum_overflow(uint32_t, new_tuple_size, new_element_size) || (new_tuple_size + new_element_size) > tpl_d->max_size)
+			if(will_unsigned_sum_overflow(uint32_t, new_tuple_size, new_element_size) || (new_tuple_size + new_element_size) > tpl_d->size_def.max_size)
 				return 0;
 
 			new_tuple_size += new_element_size;

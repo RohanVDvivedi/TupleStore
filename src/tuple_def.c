@@ -211,10 +211,10 @@ static int init_tuple_def(tuple_def* tuple_d, const char* name, uint32_t max_tup
 	strncpy(tuple_d->name, name, 63);
 	tuple_d->name[63] = '\0';
 
-	tuple_d->max_size = max_tuple_size;
 	tuple_d->size_def.is_variable_sized = 0;
-	tuple_d->size_def.size_of_byte_offsets = get_value_size_on_page(tuple_d->max_size);
+	tuple_d->size_def.size_of_byte_offsets = get_value_size_on_page(max_tuple_size);
 	tuple_d->size_def.size = 0; // this also sets min_size to 0
+	tuple_d->size_def.max_size = max_tuple_size;
 	tuple_d->byte_offset_to_is_null_bitmap = 0;
 	tuple_d->is_NULL_bitmap_size_in_bits = 0;
 
@@ -237,7 +237,7 @@ tuple_def* get_new_tuple_def(const char* name, uint32_t element_capacity, uint32
 
 tuple_def* clone_tuple_def(const tuple_def* tuple_d)
 {
-	tuple_def* clone_tuple_d = get_new_tuple_def(tuple_d->name, get_element_def_count_tuple_def(tuple_d), tuple_d->max_size);
+	tuple_def* clone_tuple_d = get_new_tuple_def(tuple_d->name, get_element_def_count_tuple_def(tuple_d), tuple_d->size_def.max_size);
 	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tuple_d); i++)
 		insert_copy_of_element_def(clone_tuple_d, NULL, tuple_d, i);
 	return clone_tuple_d;
@@ -335,7 +335,7 @@ int finalize_tuple_def(tuple_def* tuple_d)
 	// allocate space for storing tuple_size for variable sized tuple_def
 	if(tuple_d->size_def.is_variable_sized)
 	{
-		if(check_overflow_and_add(&(tuple_d->size_def.min_size), tuple_d->size_def.size_of_byte_offsets, tuple_d->max_size))
+		if(check_overflow_and_add(&(tuple_d->size_def.min_size), tuple_d->size_def.size_of_byte_offsets, tuple_d->size_def.max_size))
 			return 0;
 		tuple_d->byte_offset_to_is_null_bitmap = tuple_d->size_def.min_size;
 	}
@@ -350,18 +350,18 @@ int finalize_tuple_def(tuple_def* tuple_d)
 		if(is_variable_sized_element_def(def))
 		{
 			def->byte_offset_to_byte_offset = tuple_d->size_def.min_size;
-			if(check_overflow_and_add(&(tuple_d->size_def.min_size), tuple_d->size_def.size_of_byte_offsets, tuple_d->max_size))
+			if(check_overflow_and_add(&(tuple_d->size_def.min_size), tuple_d->size_def.size_of_byte_offsets, tuple_d->size_def.max_size))
 				return 0;
 		}
 		else
 		{
 			def->byte_offset = tuple_d->size_def.size;
-			if(check_overflow_and_add(&(tuple_d->size_def.size), def->size, tuple_d->max_size))
+			if(check_overflow_and_add(&(tuple_d->size_def.size), def->size, tuple_d->size_def.max_size))
 				return 0;
 		}
 	}
 
-	if(tuple_d->size_def.min_size > tuple_d->max_size)
+	if(tuple_d->size_def.min_size > tuple_d->size_def.max_size)
 		return 0;
 
 	return 1;
