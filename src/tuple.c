@@ -133,7 +133,7 @@ static int reset_NULL_bit_in_tuple(const tuple_def* tpl_d, uint32_t index, void*
 	return 0;
 }
 
-int can_set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value, uint32_t* new_tuple_size)
+int can_set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value, uint32_t* new_tuple_size)
 {
 	// element definition we are concerned with
 	const element_def* ele_d = get_element_def_by_id(tpl_d, index);

@@ -25,7 +25,7 @@ int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 // returns 1 if the set operation was will succeed,
 // else returns 0 (this happens when the types are incompatible OR setting NULL to a non-NULLable element OR the tuple will exceed its max_size)
 // On success, (if new_tuple_size != NULL) then new_tupl_size will be set to the new tuple_size that the tuple will achieve
-int can_set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value, uint32_t* new_tuple_size);
+int can_set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value, uint32_t* new_tuple_size);
 
 // sets an element (given at index) in tuple at a given index
 // returns 1 if the set operation was will succeed,
