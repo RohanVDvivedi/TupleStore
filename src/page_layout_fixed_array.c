@@ -19,7 +19,7 @@ static inline uint32_t get_offset_to_is_valid_bitmap(const void* page, uint32_t 
 
 static inline uint32_t get_tuple_capacity(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
-	return ((page_size - get_offset_to_is_valid_bitmap(page, page_size)) * 8) / ((tpl_d->size * 8) + 1);
+	return ((page_size - get_offset_to_is_valid_bitmap(page, page_size)) * 8) / ((tpl_d->size_def.size * 8) + 1);
 }
 
 /*
@@ -48,7 +48,7 @@ static inline uint32_t get_offset_to_tuples(const void* page, uint32_t page_size
 
 static inline uint32_t get_offset_to_ith_tuple(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t ith)
 {
-	return get_offset_to_tuples(page, page_size, tpl_d) + (ith * tpl_d->size);
+	return get_offset_to_tuples(page, page_size, tpl_d) + (ith * tpl_d->size_def.size);
 }
 
 static inline uint32_t get_offset_to_start_of_free_space(const void* page, uint32_t page_size, const tuple_def* tpl_d)
@@ -69,19 +69,19 @@ static inline uint32_t get_offset_to_end_of_free_space(uint32_t page_size)
 
 uint32_t get_minimum_page_size_for_fixed_array_page(uint32_t page_header_size, const tuple_def* tpl_d, uint32_t tuple_count)
 {
-	uint32_t min_size_8 = 1 + page_header_size + (1 * 2) + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size);
+	uint32_t min_size_8 = 1 + page_header_size + (1 * 2) + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size_def.size);
 	if(min_size_8 <= (1<<8))
 		return min_size_8;
 
-	uint32_t min_size_16 = 2 + page_header_size + (2 * 2) + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size);
+	uint32_t min_size_16 = 2 + page_header_size + (2 * 2) + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size_def.size);
 	if(min_size_16 <= (1<<16))
 		return min_size_16;
 
-	uint32_t min_size_24 = 3 + page_header_size + (3 * 2) + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size);
+	uint32_t min_size_24 = 3 + page_header_size + (3 * 2) + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size_def.size);
 	if(min_size_24 <= (1<<24))
 		return min_size_24;
 
-	uint32_t min_size_32 = 4 + page_header_size + (4 * 2) + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size);
+	uint32_t min_size_32 = 4 + page_header_size + (4 * 2) + bitmap_size_in_bytes(tuple_count) + (tuple_count * tpl_d->size_def.size);
 	return min_size_32;
 }
 
@@ -146,7 +146,7 @@ int append_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 		void* slot = page + get_offset_to_ith_tuple(page, page_size, tpl_d, index);
 
 		// move data from external_tuple to the slot on the page
-		memmove(slot, external_tuple, tpl_d->size);
+		memmove(slot, external_tuple, tpl_d->size_def.size);
 	}
 	else
 	{
@@ -206,7 +206,7 @@ int update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_de
 		void* slot = page + get_offset_to_ith_tuple(page, page_size, tpl_d, index);
 
 		// copy external_tuple to the slot on the page (at index)
-		memmove(slot, external_tuple, tpl_d->size);
+		memmove(slot, external_tuple, tpl_d->size_def.size);
 	}
 
 	return 1;
@@ -239,7 +239,7 @@ int discard_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_d
 			set_bit(is_valid, i-1);
 
 			// copy the tuple contents from (i)th tuple to (i-1)th position
-			memory_move(page + get_offset_to_ith_tuple(page, page_size, tpl_d, i-1), page + get_offset_to_ith_tuple(page, page_size, tpl_d, i), tpl_d->size);
+			memory_move(page + get_offset_to_ith_tuple(page, page_size, tpl_d, i-1), page + get_offset_to_ith_tuple(page, page_size, tpl_d, i), tpl_d->size_def.size);
 		}
 		else // we only need to reset the is valid bit
 			reset_bit(is_valid, i-1);
@@ -340,7 +340,7 @@ int swap_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_def
 	void* tuple_i1 = page + get_offset_to_ith_tuple(page, page_size, tpl_d, i1);
 	void* tuple_i2 = page + get_offset_to_ith_tuple(page, page_size, tpl_d, i2);
 
-	memswap(tuple_i1, tuple_i2, tpl_d->size);
+	memswap(tuple_i1, tuple_i2, tpl_d->size_def.size);
 
 	return 1;
 }
@@ -371,17 +371,17 @@ uint32_t get_free_space_fixed_array_page(const void* page, uint32_t page_size, c
 
 uint32_t get_space_occupied_by_tuples_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t start_index, uint32_t last_index)
 {
-	return (last_index - start_index + 1) * tpl_d->size;
+	return (last_index - start_index + 1) * tpl_d->size_def.size;
 }
 
 uint32_t get_space_occupied_by_all_tuples_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
-	return get_tuple_count_fixed_array_page(page, page_size) * tpl_d->size;
+	return get_tuple_count_fixed_array_page(page, page_size) * tpl_d->size_def.size;
 }
 
 uint32_t get_space_occupied_by_all_tomb_stones_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
 {
-	return get_tomb_stone_count_fixed_array_page(page, page_size) * tpl_d->size;
+	return get_tomb_stone_count_fixed_array_page(page, page_size) * tpl_d->size_def.size;
 }
 
 uint32_t get_space_allotted_to_all_tuples_fixed_array_page(const void* page, uint32_t page_size, const tuple_def* tpl_d)
@@ -392,7 +392,7 @@ uint32_t get_space_allotted_to_all_tuples_fixed_array_page(const void* page, uin
 uint32_t get_space_to_be_allotted_to_all_tuples_fixed_array_page(uint32_t page_header_size, uint32_t page_size, const tuple_def* tpl_d)
 {
 	uint32_t space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes = page_size - (get_value_size_on_page(page_size) + page_header_size + (get_value_size_on_page(page_size) * 2));
-	uint32_t tuple_capacity = (space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes * 8) / ((tpl_d->size * 8) + 1);
+	uint32_t tuple_capacity = (space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes * 8) / ((tpl_d->size_def.size * 8) + 1);
 	uint32_t is_valid_bitmap_size_in_bytes = bitmap_size_in_bytes(tuple_capacity);
 	return space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes - is_valid_bitmap_size_in_bytes;
 }
@@ -415,7 +415,7 @@ void print_fixed_array_page(const void* page, uint32_t page_size, const tuple_de
 		if(exists_tuple_fixed_array_page(page, page_size, tpl_d, i))
 		{
 			const void* tuple = get_nth_tuple_fixed_array_page(page, page_size, tpl_d, i);
-			uint32_t tuple_size = tpl_d->size;
+			uint32_t tuple_size = tpl_d->size_def.size;
 			printf("\t\t\toffset[%"PRIu32"] size(%"PRIu32") :: ", (uint32_t)((uintptr_t)(tuple - page)), tuple_size);
 			print_tuple(tuple, tpl_d);
 			printf("\n\n");
