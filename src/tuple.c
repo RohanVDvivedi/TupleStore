@@ -20,14 +20,14 @@ void init_tuple(const tuple_def* tpl_d, void* tupl)
 
 	// set its size to min_size
 	if(is_variable_sized_tuple_def(tpl_d))
-		write_uint32(tupl, tpl_d->size_of_byte_offsets, tpl_d->min_size);
+		write_uint32(tupl, tpl_d->size_def.size_of_byte_offsets, tpl_d->size_def.min_size);
 
 	// set all offsets to variable sized elements to 0
 	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tpl_d); i++)
 	{
 		const element_def* ele_d = get_element_def_by_id(tpl_d, i);
 		if(is_variable_sized_element_def(ele_d))
-			write_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, 0);
+			write_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_def.size_of_byte_offsets, 0);
 	}
 }
 
@@ -38,7 +38,7 @@ static uint32_t get_element_offset_within_tuple(const tuple_def* tpl_d, uint32_t
 	if(is_fixed_sized_element_def(ele_d)) // i.e. fixed sized
 		return ele_d->byte_offset;
 	else
-		return read_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets);
+		return read_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_def.size_of_byte_offsets);
 }
 
 #define get_element_from_tuple(tpl_d, index, tupl) (is_NULL_in_tuple(tpl_d, index, tupl) ? NULL : ((tupl) + get_element_offset_within_tuple(tpl_d, index, tupl)))
@@ -60,10 +60,10 @@ uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, c
 uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
 {
 	if(is_fixed_sized_tuple_def(tpl_d)) // i.e. fixed sized tuple
-		return tpl_d->size;
+		return tpl_d->size_def.size;
 	else // for a variable sized tuple the first few bytes are used to store its size
 	{
-		uint32_t tuple_size = read_uint32(tupl, tpl_d->size_of_byte_offsets);
+		uint32_t tuple_size = read_uint32(tupl, tpl_d->size_def.size_of_byte_offsets);
 
 		// a tuple_size of 0 implies a tuple_size of max_size, A tuple_size of 0 is invalid
 		if(tuple_size == 0)
@@ -82,7 +82,7 @@ int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 	if(has_bit_in_is_NULL_bitmap(ele_d))
 		return get_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, ele_d->is_NULL_bitmap_bit_offset);
 	else if(is_variable_sized_element_def(ele_d))// else for a variable sized element, check its offset, if the offset is 0, then the element is NULL
-		return (0 == read_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets));
+		return (0 == read_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_def.size_of_byte_offsets));
 	else // else it is NOT null or just can not be NULL
 		return 0;
 }
@@ -106,7 +106,7 @@ static int set_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl)
 	// for a variable sized element set its offset to 0
 	if(is_variable_sized_element_def(ele_d))
 	{
-		write_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, 0);
+		write_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_def.size_of_byte_offsets, 0);
 		done = 1;
 	}
 
@@ -213,12 +213,12 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 				{
 					uint32_t offset = get_element_offset_within_tuple(tpl_d, i, tupl);
 					if(offset > old_element_offset)
-						write_uint32(tupl + get_element_def_by_id(tpl_d, i)->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, offset - old_element_size);
+						write_uint32(tupl + get_element_def_by_id(tpl_d, i)->byte_offset_to_byte_offset, tpl_d->size_def.size_of_byte_offsets, offset - old_element_size);
 				}
 			}
 
 			// update tuple size to old_tuple_size - old_element_size
-			write_uint32(tupl, tpl_d->size_of_byte_offsets, old_tuple_size - old_element_size);
+			write_uint32(tupl, tpl_d->size_def.size_of_byte_offsets, old_tuple_size - old_element_size);
 			
 			// set the offset of that element to 0, making it NULL
 			set_NULL_in_tuple(tpl_d, index, tupl);
@@ -237,7 +237,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 			// its new offset will be tuple_size
 			// update its offset on the tuple
 			// this will also make this element a non NULL
-			write_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets, tuple_size);
+			write_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_def.size_of_byte_offsets, tuple_size);
 
 			// since the offset is set appropriately
 			// we can access element directly and safely
@@ -248,7 +248,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 
 			// update tuple size to tuple_size
 			tuple_size += get_element_size(ele, ele_d);
-			write_uint32(tupl, tpl_d->size_of_byte_offsets, tuple_size);
+			write_uint32(tupl, tpl_d->size_def.size_of_byte_offsets, tuple_size);
 		}
 	}
 
@@ -392,7 +392,7 @@ void print_tuple(const void* tup, const tuple_def* tpl_d)
 		const element_def* ele_d = get_element_def_by_id(tpl_d, i);
 
 		if(is_variable_sized_element_def(ele_d))
-			printf("[%"PRIu32"]->", read_uint32(tup + ele_d->byte_offset_to_byte_offset, tpl_d->size_of_byte_offsets));
+			printf("[%"PRIu32"]->", read_uint32(tup + ele_d->byte_offset_to_byte_offset, tpl_d->size_def.size_of_byte_offsets));
 
 		print_user_value(&ele_val, ele_d);
 	}
