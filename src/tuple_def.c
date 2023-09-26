@@ -211,11 +211,11 @@ static int init_tuple_def(tuple_def* tuple_d, const char* name, uint32_t max_tup
 	strncpy(tuple_d->name, name, 63);
 	tuple_d->name[63] = '\0';
 
-	tuple_d->is_variable_sized = 0;
 	tuple_d->max_size = max_tuple_size;
-	tuple_d->size = 0;
+	tuple_d->size_def.is_variable_sized = 0;
+	tuple_d->size_def.size_of_byte_offsets = get_value_size_on_page(tuple_d->max_size);
+	tuple_d->size_def.size = 0; // this also sets min_size to 0
 	tuple_d->byte_offset_to_is_null_bitmap = 0;
-	tuple_d->size_of_byte_offsets = get_value_size_on_page(tuple_d->max_size);
 	tuple_d->is_NULL_bitmap_size_in_bits = 0;
 
 	return 1;
@@ -251,7 +251,7 @@ int insert_element_def(tuple_def* tuple_d, const char* name, element_type ele_ty
 
 	// for a varibale sized element type, it has a prefix that suggests the bytes it will occupy
 	// the size of this prefix must not be greater than size_of_byte_offsets in the tuple, since this would waste space on the tuple
-	if(is_variable_sized_element_type(ele_type) && tuple_d->size_of_byte_offsets < element_size_OR_prefix_size)
+	if(is_variable_sized_element_type(ele_type) && tuple_d->size_def.size_of_byte_offsets < element_size_OR_prefix_size)
 		return 0;
 
 	// attempt initializing the element def
@@ -310,7 +310,7 @@ static inline int check_overflow_and_add(uint32_t* a, uint32_t b, uint32_t max_l
 
 int finalize_tuple_def(tuple_def* tuple_d)
 {
-	tuple_d->is_variable_sized = 0;
+	tuple_d->size_def.is_variable_sized = 0;
 	tuple_d->is_NULL_bitmap_size_in_bits = 0;
 
 	// figure out 2 things in this loop
@@ -322,25 +322,25 @@ int finalize_tuple_def(tuple_def* tuple_d)
 
 		// if the element_def is variable_sized, then mark the tuple as variable sized
 		if(is_variable_sized_element_def(def))
-			tuple_d->is_variable_sized = 1;
+			tuple_d->size_def.is_variable_sized = 1;
 
 		// give this element a bit in is_NULL_bitmap only if it needs it
 		if(needs_bit_in_is_NULL_bitmap(def))
 			def->is_NULL_bitmap_bit_offset = tuple_d->is_NULL_bitmap_size_in_bits++;
 	}
 
-	tuple_d->size = 0;
+	tuple_d->size_def.size = 0;
 	tuple_d->byte_offset_to_is_null_bitmap = 0;
 
 	// allocate space for storing tuple_size for variable sized tuple_def
-	if(tuple_d->is_variable_sized)
+	if(tuple_d->size_def.is_variable_sized)
 	{
-		if(check_overflow_and_add(&(tuple_d->min_size), tuple_d->size_of_byte_offsets, tuple_d->max_size))
+		if(check_overflow_and_add(&(tuple_d->size_def.min_size), tuple_d->size_def.size_of_byte_offsets, tuple_d->max_size))
 			return 0;
-		tuple_d->byte_offset_to_is_null_bitmap = tuple_d->min_size;
+		tuple_d->byte_offset_to_is_null_bitmap = tuple_d->size_def.min_size;
 	}
 
-	tuple_d->size += bitmap_size_in_bytes(tuple_d->is_NULL_bitmap_size_in_bits);
+	tuple_d->size_def.size += bitmap_size_in_bytes(tuple_d->is_NULL_bitmap_size_in_bits);
 
 	// now we compute the offsets (and the offsets to their byte_offsets) for all the element_defs
 	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tuple_d); i++)
@@ -349,19 +349,19 @@ int finalize_tuple_def(tuple_def* tuple_d)
 
 		if(is_variable_sized_element_def(def))
 		{
-			def->byte_offset_to_byte_offset = tuple_d->min_size;
-			if(check_overflow_and_add(&(tuple_d->min_size), tuple_d->size_of_byte_offsets, tuple_d->max_size))
+			def->byte_offset_to_byte_offset = tuple_d->size_def.min_size;
+			if(check_overflow_and_add(&(tuple_d->size_def.min_size), tuple_d->size_def.size_of_byte_offsets, tuple_d->max_size))
 				return 0;
 		}
 		else
 		{
-			def->byte_offset = tuple_d->size;
-			if(check_overflow_and_add(&(tuple_d->size), def->size, tuple_d->max_size))
+			def->byte_offset = tuple_d->size_def.size;
+			if(check_overflow_and_add(&(tuple_d->size_def.size), def->size, tuple_d->max_size))
 				return 0;
 		}
 	}
 
-	if(tuple_d->min_size > tuple_d->max_size)
+	if(tuple_d->size_def.min_size > tuple_d->max_size)
 		return 0;
 
 	return 1;
@@ -379,7 +379,7 @@ uint32_t get_element_def_count_tuple_def(const tuple_def* tuple_d)
 
 int is_fixed_sized_tuple_def(const tuple_def* tuple_d)
 {
-	return tuple_d->is_variable_sized == 0;
+	return tuple_d->size_def.is_variable_sized == 0;
 }
 
 int is_variable_sized_tuple_def(const tuple_def* tuple_d)
@@ -390,9 +390,9 @@ int is_variable_sized_tuple_def(const tuple_def* tuple_d)
 uint32_t get_minimum_tuple_size(const tuple_def* tuple_d)
 {
 	if(is_fixed_sized_tuple_def(tuple_d))
-		return tuple_d->size;
+		return tuple_d->size_def.size;
 	else
-		return tuple_d->min_size;
+		return tuple_d->size_def.min_size;
 }
 
 uint32_t get_element_def_id_by_name(const tuple_def* tuple_d, const char* name)
@@ -456,14 +456,14 @@ static void print_element_def(const element_def* element_d)
 void print_tuple_def(const tuple_def* tuple_d)
 {
 	printf("Tuple definition for \"%s\" : \n", tuple_d->name);
-	printf("is_variable_sized : %d\n", tuple_d->is_variable_sized);
+	printf("is_variable_sized : %d\n", tuple_d->size_def.is_variable_sized);
 	if(is_variable_sized_tuple_def(tuple_d))
-		printf("\t min_size : %"PRIu32"\n", tuple_d->min_size);
+		printf("\t min_size : %"PRIu32"\n", tuple_d->size_def.min_size);
 	else
-		printf("\t size : %"PRIu32"\n", tuple_d->size);
+		printf("\t size : %"PRIu32"\n", tuple_d->size_def.size);
 	printf("\t byte_offset_to_is_null_bitmap : %"PRIu32"\n", tuple_d->byte_offset_to_is_null_bitmap);
 	if(is_variable_sized_tuple_def(tuple_d))
-		printf("\t size_of_byte_offsets : %"PRIu32"\n", tuple_d->size_of_byte_offsets);
+		printf("\t size_of_byte_offsets : %"PRIu32"\n", tuple_d->size_def.size_of_byte_offsets);
 	printf("\t is_NULL_bitmap_size_in_bits : %"PRIu32"\n", tuple_d->is_NULL_bitmap_size_in_bits);
 	printf("\t element_count : %"PRIu32"\n", get_element_def_count_tuple_def(tuple_d));
 	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tuple_d); i++)
