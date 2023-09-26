@@ -101,18 +101,15 @@ uint32_t hash_element(const void* e, const element_def* ele_d, uint32_t (*hash_f
 
 data_definitions_value_arraylist(element_defs_list, element_def)
 
-typedef struct tuple_def tuple_def;
-struct tuple_def
+typedef struct tuple_size_def tuple_size_def;
+struct tuple_size_def
 {
-	// name of the tuple type i.e. table/index name
-	char name[64];
-
 	// set to 1 for a variable sized tuple_def
-	// The tuple is VARIABLE_SIZED, if atleast one of the element_defs is VARIABLE_SIZED
+	// The tuple is variable sized, if atleast one of the element_defs is variable sized
 	int is_variable_sized;
 
-	// max_size of the tuple
-	uint32_t max_size;
+	// size of offsets (to variable sized elements) and tuple_size (stored as the prefix of the tuple for variable sized tuples) stored int the variable length tuples
+	uint32_t size_of_byte_offsets;
 
 	// min total size of tuple in bytes
 	// i.e. size of tuple when all variable sized elements are NULL
@@ -125,15 +122,26 @@ struct tuple_def
 		// defined for fixed sized tuple
 		uint32_t size;
 	};
+};
+
+typedef struct tuple_def tuple_def;
+struct tuple_def
+{
+	// name of the tuple type i.e. table/index name
+	char name[64];
+
+	// max_size of the tuple
+	uint32_t max_size;
+
+	// characteristics of the tuple, (i.e. the parts of tuple_def)
+	// that allow you to know the size of the tuple
+	tuple_size_def size_def;
 
 	// at this offset there is a bitmap of element_count number of bits
 	// if the corresponding bit is set then the value at that location is NULL
 	// for fixed length tuple this offset is 0
 	// for variale length tuple this offset is equal to the bytes required to store the tuple size
 	uint32_t byte_offset_to_is_null_bitmap;
-
-	// size of offsets (to variable sized elements) and tuple_size (stored as the prefix of the tuple for variable sized tuples) stored for the variable length elements
-	uint32_t size_of_byte_offsets;
 
 	// number of bits in is_NULL_bitmap
 	// to reiterate only NULLable fixed_sized_elements need a bit in is_NULL bitmap
