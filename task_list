@@ -1,8 +1,9 @@
 1 PICKED TASKS
- *2* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
+ *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
 
 2 NEW TYPE TASKS
- *3* add long double (*think about it again, as long double does not have a ieee standardized format)
+ *2* add long double (*think about it again, as long double does not have a ieee standardized format)
+ *3* add decimal fixed precission data type (* like libdecnumber)
  *4* bit fields, having fixed number of bits (upto 64)
  *4* bitmap field
      * pack multiple adjacent bit fields and multiple bitmap fields together, or some way to do it, minimizing space usage
