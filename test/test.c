@@ -311,6 +311,28 @@ int main()
 	
 	print_page_in_hex(page, PAGE_SIZE);
 
+	// --------------- UPDATE INPLACE
+
+	printf("updating inplace at tuple_index 1 and element_index 2\n");
+	res = set_element_in_tuple_in_place_on_page(page, PAGE_SIZE, def, 1, 2, &((user_value){.data = "Rohan is bad boy", .data_size = strlen("Rohan is bad boy")}));
+	printf("This update must fail on variable_sized tuple_def : %d\n", res);
+
+	// ---------------	PRINT PAGE
+	
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	// --------------- UPDATE INPLACE
+
+	printf("updating inplace at tuple_index 1 and element_index 2\n");
+	res = set_element_in_tuple_in_place_on_page(page, PAGE_SIZE, def, 1, 2, &((user_value){.data = "Rohan is dad", .data_size = strlen("Rohan is dad")}));
+	printf("This update must not fail : %d\n", res);
+
+	// ---------------	PRINT PAGE
+	
+	print_page(page, PAGE_SIZE, def);
+	printf("\n\n");
+
 	// ---------------	UPDATE
 
 	r = &(row){-456, 18, "project by Rohan", 65536};
