@@ -377,14 +377,24 @@ uint32_t get_element_def_count_tuple_def(const tuple_def* tuple_d)
 	return get_element_count_element_defs_list(&(tuple_d->element_defs));
 }
 
+int is_fixed_sized_tuple_size_def(const tuple_size_def* tuple_size_d)
+{
+	return tuple_size_d->is_variable_sized == 0;
+}
+
 int is_fixed_sized_tuple_def(const tuple_def* tuple_d)
 {
-	return tuple_d->size_def.is_variable_sized == 0;
+	return is_fixed_sized_tuple_size_def(&(tuple_d->size_def));
+}
+
+int is_variable_sized_tuple_size_def(const tuple_size_def* tuple_size_d)
+{
+	return !is_fixed_sized_tuple_size_def(tuple_size_d);
 }
 
 int is_variable_sized_tuple_def(const tuple_def* tuple_d)
 {
-	return !is_fixed_sized_tuple_def(tuple_d);
+	return is_variable_sized_tuple_size_def(&(tuple_d->size_def));
 }
 
 uint32_t get_minimum_tuple_size(const tuple_def* tuple_d)

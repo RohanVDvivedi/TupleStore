@@ -186,9 +186,11 @@ uint32_t get_element_def_count_tuple_def(const tuple_def* tuple_d);
 // returns true if the tuple definition is of a fixed sized
 // this includes a tuple definition with 0 element_count
 int is_fixed_sized_tuple_def(const tuple_def* tuple_d);
+int is_fixed_sized_tuple_size_def(const tuple_size_def* tuple_size_d);
 
 // returns true if the tuple definition is of a variable sized
 int is_variable_sized_tuple_def(const tuple_def* tuple_d);
+int is_variable_sized_tuple_size_def(const tuple_size_def* tuple_size_d);
 
 // this is the minimum size of any tuple that can be defined by the given tuple definition
 // the minimum sized tuple is the one where all variable size elements (as per the tuple definition) are 0 sized
