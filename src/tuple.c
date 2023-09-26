@@ -138,6 +138,10 @@ int can_set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, 
 	// element definition we are concerned with
 	const element_def* ele_d = get_element_def_by_id(tpl_d, index);
 
+	// can not set NULL to a non-NULLable element def
+	if(is_user_value_NULL(value) && !is_NULLable_element_def(ele_d))
+		return 0;
+
 	uint32_t original_tuple_size = get_tuple_size(tpl_d, tupl);
 
 	if(is_fixed_sized_element_def(ele_d)) // if the updated element is a fixed_sized element, then the tuple already has space for the new element, no extra space required
@@ -146,6 +150,8 @@ int can_set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, 
 			(*new_tuple_size) = original_tuple_size;
 		return 1;
 	}
+	// when a variable sized element is updated, it changes the tuple_size
+	// we must ensure that it does not cross the max_size stated in the tpl_d->size_def.max_size
 	else
 	{
 		// old element needs to be removed
@@ -174,6 +180,10 @@ int can_set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, 
 
 int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value)
 {
+	// check if an element can be set in tuple
+	if(!can_set_element_in_tuple_from_tuple(tpl_d, index, tupl, value, NULL))
+		return 0;
+
 	// element definition we are concerned with
 	const element_def* ele_d = get_element_def_by_id(tpl_d, index);
 
@@ -181,9 +191,6 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 	// then set the value to the specific default value provided by the user in the element def
 	if(value == DEFAULT_USER_VALUE)
 		value = &(ele_d->default_value);
-
-	if(is_user_value_NULL(value) && !is_NULLable_element_def(ele_d))
-		return 0;
 
 	// if the element inside tuple is NULL, and we are asked to set it to NULL, then return
 	if(is_NULL_in_tuple(tpl_d, index, tupl) && is_user_value_NULL(value))
@@ -220,25 +227,6 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 	}
 	else
 	{
-		// when a variable sized element it updated, it changes the tuple_size
-		// we must ensure that it does not cross the max_size stated in the tpl_d->size_def.max_size
-		{
-			uint32_t new_tuple_size = get_tuple_size(tpl_d, tupl) - get_element_size_within_tuple(tpl_d, index, tupl);
-
-			uint32_t new_element_size = 0;
-			if(!is_user_value_NULL(value))
-			{
-				if(will_unsigned_sum_overflow(uint32_t, ele_d->size_specifier_prefix_size, value->data_size))
-					return 0;
-				new_element_size = ele_d->size_specifier_prefix_size + value->data_size;
-			}
-
-			if(will_unsigned_sum_overflow(uint32_t, new_tuple_size, new_element_size) || (new_tuple_size + new_element_size) > get_maximum_tuple_size(tpl_d))
-				return 0;
-
-			new_tuple_size += new_element_size;
-		}
-
 		// if data existed at index (is not NULL), then remove it (its allocated space), set its offset to 0 and set it's is_null_bitmap bit to 1
 		if(!is_NULL_in_tuple(tpl_d, index, tupl))
 		{
