@@ -185,6 +185,28 @@ const void* get_nth_tuple_on_page(const void* page, uint32_t page_size, const tu
 	return 0;
 }
 
+int set_element_in_tuple_in_place_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, uint32_t element_index, const user_value* value)
+{
+	void* tuple_concerned = (void*) get_nth_tuple_on_page(page, page_size, &(tpl_d->size_def), tuple_index);
+
+	// if the corresponding tuple does not exist, fail
+	if(tuple_concerned == NULL)
+		return 0;
+
+	uint32_t new_tuple_size = 0;
+
+	// fail if we can't set the tuple in the page
+	if(!can_set_element_in_tuple(tpl_d, element_index, tuple_concerned, value, &new_tuple_size))
+		return 0;
+
+	// fail if new_tuple_size exceeds the tuple_size on the page
+	if(new_tuple_size > get_tuple_size(tpl_d, tuple_concerned))
+		return 0;
+
+	// set the element
+	return set_element_in_tuple(tpl_d, element_index, tuple_concerned, value);
+}
+
 void clone_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* page_src)
 {
 	// perform a plain copy that is easier and better
