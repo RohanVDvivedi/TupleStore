@@ -133,6 +133,46 @@ static int reset_NULL_bit_in_tuple(const tuple_def* tpl_d, uint32_t index, void*
 	return 0;
 }
 
+int can_set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const tuple_def* tpl_d_in, uint32_t index_in, const void* tupl_in, uint32_t* new_tuple_size)
+{
+	// element definition we are concerned with
+	const element_def* ele_d = get_element_def_by_id(tpl_d, index);
+
+	uint32_t original_tuple_size = get_tuple_size(tpl_d, tupl);
+
+	if(is_fixed_sized_element_def(ele_d)) // if the updated element is a fixed_sized element, then the tuple already has space for the new element, no extra space required
+	{
+		if(new_tuple_size)
+			(*new_tuple_size) = original_tuple_size;
+		return 1;
+	}
+	else
+	{
+		// old element needs to be removed
+		uint32_t final_tuple_size = original_tuple_size - get_element_size_within_tuple(tpl_d, index, tupl);
+
+		// compute new_element_size, that is to be inserted
+		uint32_t new_element_size = 0;
+		if(!is_user_value_NULL(value))
+		{
+			if(will_unsigned_sum_overflow(uint32_t, ele_d->size_specifier_prefix_size, value->data_size))
+				return 0;
+			new_element_size = ele_d->size_specifier_prefix_size + value->data_size;
+		}
+
+		if(will_unsigned_sum_overflow(uint32_t, final_tuple_size, new_element_size) || (final_tuple_size + new_element_size) > get_maximum_tuple_size(tpl_d))
+			return 0;
+
+		// we can now add the new_element_size to the final_tuple_size
+		final_tuple_size += new_element_size;
+
+		if(new_tuple_size)
+			(*new_tuple_size) = new_tuple_size;
+
+		return 1;
+	}
+}
+
 int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value)
 {
 	// element definition we are concerned with
