@@ -181,7 +181,7 @@ int can_set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl,
 int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value)
 {
 	// check if an element can be set in tuple
-	if(!can_set_element_in_tuple_from_tuple(tpl_d, index, tupl, value, NULL))
+	if(!can_set_element_in_tuple(tpl_d, index, tupl, value, NULL))
 		return 0;
 
 	// element definition we are concerned with
