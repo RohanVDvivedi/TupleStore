@@ -151,7 +151,7 @@ int can_set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, 
 		return 1;
 	}
 	// when a variable sized element is updated, it changes the tuple_size
-	// we must ensure that it does not cross the max_size stated in the tpl_d->size_def.max_size
+	// we must ensure that it does not cross the max_size for the tuple
 	else
 	{
 		// old element needs to be removed
