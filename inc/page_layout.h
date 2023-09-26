@@ -88,6 +88,15 @@ const void* get_nth_tuple_on_page(const void* page, uint32_t page_size, const tu
 
 
 
+// UPDATE ELEMENT OF TUPLE IN PLACE FUNCTION
+
+// updates an element (at index element_index) in tuple on the page (at index element_index) in place
+// this function fails if the given update will increase the tuple_size on the page
+// use this generally -> for a fixed sized element update in the tuple OR when you know that the updated variable sized value is smaller than the element in the tuple on page
+void set_element_in_tuple_in_place_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, uint32_t element_index, const user_value* value);
+
+
+
 // CLONE FUNCTION
 
 // creates a physical copy of page_src into page
