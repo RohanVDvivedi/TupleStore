@@ -193,8 +193,13 @@ int is_variable_sized_tuple_def(const tuple_def* tuple_d);
 int is_variable_sized_tuple_size_def(const tuple_size_def* tuple_size_d);
 
 // this is the minimum size of any tuple that can be defined by the given tuple definition
-// the minimum sized tuple is the one where all variable size elements (as per the tuple definition) are 0 sized
+// the minimum sized tuple is the one where all variable size elements (as per the tuple definition) are 0 sized i.e. NULL
 uint32_t get_minimum_tuple_size(const tuple_def* tuple_d);
+uint32_t get_minimum_tuple_size_using_tuple_size_def(const tuple_size_def* tuple_size_d);
+
+// this is the maximum size of any tuple that can be defined by the given tuple definition
+uint32_t get_maximum_tuple_size(const tuple_def* tuple_d);
+uint32_t get_maximum_tuple_size_using_tuple_size_def(const tuple_size_def* tuple_size_d);
 
 // gets index to an already existing element def in the given tuple def by its name
 // if not found it returns ELEMENT_DEF_NOT_FOUND
