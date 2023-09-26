@@ -237,7 +237,7 @@ tuple_def* get_new_tuple_def(const char* name, uint32_t element_capacity, uint32
 
 tuple_def* clone_tuple_def(const tuple_def* tuple_d)
 {
-	tuple_def* clone_tuple_d = get_new_tuple_def(tuple_d->name, get_element_def_count_tuple_def(tuple_d), tuple_d->size_def.max_size);
+	tuple_def* clone_tuple_d = get_new_tuple_def(tuple_d->name, get_element_def_count_tuple_def(tuple_d), get_maximum_tuple_size(tuple_d));
 	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tuple_d); i++)
 		insert_copy_of_element_def(clone_tuple_d, NULL, tuple_d, i);
 	return clone_tuple_d;

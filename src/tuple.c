@@ -194,7 +194,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 				new_element_size = ele_d->size_specifier_prefix_size + value->data_size;
 			}
 
-			if(will_unsigned_sum_overflow(uint32_t, new_tuple_size, new_element_size) || (new_tuple_size + new_element_size) > tpl_d->size_def.max_size)
+			if(will_unsigned_sum_overflow(uint32_t, new_tuple_size, new_element_size) || (new_tuple_size + new_element_size) > get_maximum_tuple_size(tpl_d))
 				return 0;
 
 			new_tuple_size += new_element_size;
