@@ -57,20 +57,25 @@ uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, c
 	}
 }
 
-uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
+uint32_t get_tuple_size_using_tuple_size_def(const tuple_size_def* tpl_sz_d, const void* tupl)
 {
-	if(is_fixed_sized_tuple_def(tpl_d)) // i.e. fixed sized tuple
-		return tpl_d->size_def.size;
+	if(is_fixed_sized_tuple_size_def(tpl_sz_d)) // i.e. fixed sized tuple
+		return tpl_sz_d->size;
 	else // for a variable sized tuple the first few bytes are used to store its size
 	{
-		uint32_t tuple_size = read_uint32(tupl, tpl_d->size_def.size_of_byte_offsets);
+		uint32_t tuple_size = read_uint32(tupl, tpl_sz_d->size_of_byte_offsets);
 
 		// a tuple_size of 0 implies a tuple_size of max_size, A tuple_size of 0 is invalid
 		if(tuple_size == 0)
-			tuple_size = tpl_d->max_size;
+			tuple_size = tpl_sz_d->max_size;
 
 		return tuple_size;
 	}
+}
+
+uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
+{
+	return get_tuple_size_using_tuple_size_def(&(tpl_d->size_def), tupl);
 }
 
 int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)

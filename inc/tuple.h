@@ -14,8 +14,9 @@ void init_tuple(const tuple_def* tpl_d, void* tupl);
 // actual size of the element in the tuple
 uint32_t get_element_size_within_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 
-// tuple level functions
+// get size of tuple, doesn't matter fixed or variable
 uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl);
+uint32_t get_tuple_size_using_tuple_size_def(const tuple_size_def* tpl_sz_d, const void* tupl);
 
 // check if the ith element in the tuple is NULL
 int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
