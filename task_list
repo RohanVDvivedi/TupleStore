@@ -1,5 +1,6 @@
 1 PICKED TASKS
- *1* Additionally implement a struct tuple_size_def defined as struct {int is_variable_sized, uint32_t size_of_byte_offsets, union{uint32_t size, uint32_t min_size}}, easier to pass around in page_layout functions.
+ *1* use tuple_size_def in page_layout functions
+ *1* implement get_tuple_size_using_tuple_size_def, is_variable_sized_tuple_size_def and is_fixed_sized_tuple_size_def function to work with tuples and tuple_size_def
 
  *2* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
 
