@@ -483,7 +483,7 @@ void print_tuple_def(const tuple_def* tuple_d)
 	printf("Tuple definition for \"%s\" : \n", tuple_d->name);
 	printf("is_variable_sized : %d\n", tuple_d->size_def.is_variable_sized);
 	if(is_variable_sized_tuple_def(tuple_d))
-		printf("\t min_size : %"PRIu32"\n", tuple_d->size_def.min_size);
+		printf("\t min_size : %"PRIu32"\n", get_minimum_tuple_size(tuple_d));
 	else
 		printf("\t size : %"PRIu32"\n", tuple_d->size_def.size);
 	printf("\t byte_offset_to_is_null_bitmap : %"PRIu32"\n", tuple_d->byte_offset_to_is_null_bitmap);

@@ -18,9 +18,9 @@ void init_tuple(const tuple_def* tpl_d, void* tupl)
 	// set all the is_NULL_bitmap bits to 1
 	set_all_bits(tupl + tpl_d->byte_offset_to_is_null_bitmap, tpl_d->is_NULL_bitmap_size_in_bits);
 
-	// set its size to min_size
+	// set its size to minimum size of the tuple
 	if(is_variable_sized_tuple_def(tpl_d))
-		write_uint32(tupl, tpl_d->size_def.size_of_byte_offsets, tpl_d->size_def.min_size);
+		write_uint32(tupl, tpl_d->size_def.size_of_byte_offsets, get_minimum_tuple_size(tpl_d));
 
 	// set all offsets to variable sized elements to 0
 	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tpl_d); i++)
