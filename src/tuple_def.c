@@ -399,7 +399,7 @@ int is_variable_sized_tuple_def(const tuple_def* tuple_d)
 
 uint32_t get_minimum_tuple_size_using_tuple_size_def(const tuple_size_def* tuple_size_d)
 {
-	if(is_fixed_sized_tuple_def(tuple_d))
+	if(is_fixed_sized_tuple_size_def(tuple_size_d))
 		return tuple_size_d->size;
 	else
 		return tuple_size_d->min_size;
