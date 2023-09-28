@@ -1,6 +1,7 @@
 #ifndef PAGE_LAYOUT_READ_ONLY_H
 #define PAGE_LAYOUT_READ_ONLY_H
 
+#include<tuple_def.h>
 #include<page_layout_enum.h>
 
 // get the page layout that will be used by the functions below,
