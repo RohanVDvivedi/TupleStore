@@ -1,7 +1,6 @@
-#ifndef PAGE_LAYOUT_H
-#define PAGE_LAYOUT_H
+#ifndef PAGE_LAYOUT_READ_ONLY_H
+#define PAGE_LAYOUT_READ_ONLY_H
 
-#include<tuple_def.h>
 #include<page_layout_enum.h>
 
 // get the page layout that will be used by the functions below,
@@ -20,13 +19,10 @@ void* get_page_header(void* page, uint32_t page_size);
 
 
 
-// INITIALIZATION and BASIC FUNCTIONS
+// BASIC FUNCTIONS
 
 // this is the smallest sized page that is required to store a tuple_count number of tuples, each having a given tuple definition
 uint32_t get_minimum_page_size(uint32_t page_header_size, const tuple_size_def* tpl_sz_d, uint32_t tuple_count);
-
-// initialize page to start using it
-int init_page(void* page, uint32_t page_size, uint32_t page_header_size, const tuple_size_def* tpl_sz_d);
 
 // returns the number of tuples in the page (including the deleted ones, i.e. including tomb stones)
 uint32_t get_tuple_count_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
@@ -36,72 +32,20 @@ uint32_t get_tomb_stone_count_on_page(const void* page, uint32_t page_size, cons
 
 
 
-// INSERT UPDATE and GET functions for tuples in the page
-
-// to append a tuple at the end in the given page, fails if the page is out of space
-// if external_tuple is NULL, then a tombstone is appended
-int append_tuple_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* external_tuple);
+// check for INSERT, check for UPDATE and GET functions for tuples in the page
 
 // returns 1, if the append_tuple would succeed
 int can_append_tuple_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* external_tuple);
 
-// update tuple at the specified index, fails if the page is out of space, or if the index is out of bounds i.e. when index >= get_tuple_count()
-// if external_tuple is NULL, then a tombstone is placed at the given index
-int update_tuple_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple);
-
 // returns 1, if the update_tuple would succeed
 int can_update_tuple_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple);
-
-/*
-** To be sure that a update must pass, if possible, try the following sequence instead
-** can_update_tuple_on_page(page, index, NULL);
-** run_page_compaction(page);
-** can_update_tuple_on_page(page, index, external_tuple);
-*/
-
-// to discard a tuple (or a tombstane) at the given index in the page, fails if index >= get_tuple_count()
-int discard_tuple_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index);
-
-// discards all the tuple on the page
-// for a slotted page it will also reset the end_of_free_space_offset
-int discard_all_tuples_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
-
-// discards trailing tombstones on the page
-// it will return the number of trailing tombstones, that were discarded
-uint32_t discard_trailing_tomb_stones_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
 // to check if a tuple at the given index in the page exists
 // returns 0, if the tuple was a tombstone OR if the index is out of bounds i.e. when index >= get_tuple_count())
 int exists_tuple_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index);
 
-// swap tuples (or tombstones) at given indices i1 and i2
-// return 0, if the swap fails
-int swap_tuples_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t i1, uint32_t i2);
-
 // returns pointer to nth tuple in the page, else returns NULL if exist_tuple fails
 const void* get_nth_tuple_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index);
-
-
-
-// UPDATE ELEMENT OF TUPLE IN PLACE FUNCTION
-
-// updates an element (at index element_index) in tuple on the page (at index element_index) in place
-// this function fails if the given update will increase the tuple_size on the page
-// use this generally -> for a fixed sized element update in the tuple OR when you know that the updated variable sized value is smaller than the element in the tuple on page
-int set_element_in_tuple_in_place_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, uint32_t element_index, const user_value* value);
-
-
-
-// CLONE FUNCTION
-
-// creates a physical copy of page_src into page
-void clone_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* page_src);
-
-
-
-// PAGE COMPACTION removal functions
-
-void run_page_compaction(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
 
 
@@ -144,61 +88,3 @@ void print_page(const void* page, uint32_t page_size, const tuple_def* tpl_d);
 void print_page_in_hex(const void* page, uint32_t page_size);
 
 #endif
-
-/*
-**
-*****************************************************************************************
-********			PAGE FORMATS
-*****************************************************************************************
-**
-**					SLOTTED PAGE
-**
-**		* CASE ::: is_variable_sized_tuple_def(tuple_definition) = 1
-**
-**		
-**		struct page_of_SLOTTED_PAGE
-**		{
-**			uintN_t 	page_header_size;
-**
-**			char 		page_header[ page_header_size ];
-**
-**			uintN_t		space_occupied_by_tuples;
-**
-**			uintN_t 	tuple_count;
-**
-**			uintN_t 	tomb_stone_count;
-**
-**			uintN_t		end_of_free_space_offset;
-**
-**			uintN_t 	tuple_offsets [ tuple_count ];
-**		}
-**
-**		here N can be 8, 16, 24 or 32
-**
-****************************************************************************************
-**
-**
-**					FIXED_ARRAY PAGE
-**
-**		tuple_capacity = (page_size - page_header_size - N) / (tuple_def->size * 8 + 1)
-**
-**		struct page_of_FIXED_ARRAY_PAGE
-**		{
-**			uintN_t 	page_header_size;
-**
-**			char		page_header[ page_header_size ];
-**
-**			uintN_t 	tuple_count;
-**
-**			uintN_t 	tomb_stone_count;
-**
-**			char	 	is_valid_bitmap [ ceil_function( tuple_capacity / 8 ) ] ;
-**
-**			< tuples [ tuple_count ]; >
-**		}
-**
-**		here N can be 8, 16, 24 or 32
-**
-*****************************************************************************************
-**
-*/
