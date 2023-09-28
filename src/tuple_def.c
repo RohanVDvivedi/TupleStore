@@ -173,7 +173,7 @@ int compare_elements(const void* e1, const element_def* ele_d_1, const void* e2,
 	else if(is_string_type_element_def(ele_d_1) && is_string_type_element_def(ele_d_2))
 		return compare_string_type_elements(e1, ele_d_1, e2, ele_d_2);
 	else if(is_blob_type_element_def(ele_d_1) && is_blob_type_element_def(ele_d_2))
-		return compare_blob_type_elements(e1, ele_d_1, e2, ele_d_2);;
+		return compare_blob_type_elements(e1, ele_d_1, e2, ele_d_2);
 
 	// a return value of -2 implies in comparable types
 	return -2;
