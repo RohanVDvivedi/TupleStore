@@ -1,5 +1,4 @@
 1 PICKED TASKS
- *1* implement a page_layout_read_only.h header
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
 
 2 NEW TYPE TASKS
