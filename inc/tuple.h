@@ -37,6 +37,11 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 // else returns 0 (this happens when the types are incompatible OR setting NULL to a non-NULLable element OR the tuple will exceed its max_size)
 int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const tuple_def* tpl_d_in, uint32_t index_in, const void* tupl_in);
 
+// This functions attempts to check if an element (value) can be set in a tuple (of size prior_tuple_size) with tuple_definition (tpl_d) at the given index
+// On success it will return the new_tuple_size of the tuple, that can be used in a subsequent iteration
+// This function can be used to calculate the total memeory size required while performing a projection
+int can_set_uninitialized_element_in_tuple(const tuple_def* tpl_d, uint32_t index, uint32_t prior_tuple_size, const user_value* value, uint32_t* new_tuple_size);
+
 // does not allocate any memeory
 // returns user_value as int_value, uint_value, float_value or double_value for numeral types
 // for non numeral types it returns data and data_size, no memory is allocated for non numeral types
