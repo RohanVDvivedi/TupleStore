@@ -99,7 +99,7 @@ void clone_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, 
 
 
 
-// PAGE COMPACTION removal functions
+// PAGE COMPACTION functions (this function will not change the logical contents of the page, it will just defragment the page, to make fragmented space as the free space)
 
 void run_page_compaction(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 

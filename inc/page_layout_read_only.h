@@ -1,8 +1,14 @@
 #ifndef PAGE_LAYOUT_READ_ONLY_H
 #define PAGE_LAYOUT_READ_ONLY_H
 
+/*
+  The below declarations of the functions are one ones for which a physiological log entry is not required
+  They are either read only operations OR they modify the page in a way that the logical contents of the page are unaltered (like the run_page_compaction function)
+*/
+
 #include<tuple_def.h>
 #include<page_layout_enum.h>
+
 
 // get the page layout that will be used by the functions below,
 // for storing the tuple definition given in the parameter
@@ -47,6 +53,12 @@ int exists_tuple_on_page(const void* page, uint32_t page_size, const tuple_size_
 
 // returns pointer to nth tuple in the page, else returns NULL if exist_tuple fails
 const void* get_nth_tuple_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index);
+
+
+
+// PAGE COMPACTION functions (this function will not change the logical contents of the page, it will just defragment the page, to make fragmented space as the free space)
+// Although this function "run_page_compaction" modifies the page, it does not change logical contents on the page, hence a physiological log in the write ahead log, does not need an entry for this operation
+void run_page_compaction(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
 
 
