@@ -178,6 +178,47 @@ int can_set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl,
 	}
 }
 
+int can_set_uninitialized_element_in_tuple(const tuple_def* tpl_d, uint32_t index, uint32_t prior_tuple_size, const user_value* value, uint32_t* new_tuple_size)
+{
+	// element definition we are concerned with
+	const element_def* ele_d = get_element_def_by_id(tpl_d, index);
+
+	// can not set NULL to a non-NULLable element def
+	if(is_user_value_NULL(value) && !is_NULLable_element_def(ele_d))
+		return 0;
+
+	if(is_fixed_sized_element_def(ele_d)) // if the updated element is a fixed_sized element, then the tuple already has space for the new element, no extra space required
+	{
+		if(new_tuple_size)
+			(*new_tuple_size) = prior_tuple_size;
+		return 1;
+	}
+	else
+	{
+		// old element is assumed to be NULL, it can be NULL since it is uninitialized variable sized element
+		uint32_t final_tuple_size = prior_tuple_size;
+
+		// compute new_element_size, that is to be inserted
+		uint32_t new_element_size = 0;
+		if(!is_user_value_NULL(value))
+		{
+			if(will_unsigned_sum_overflow(uint32_t, ele_d->size_specifier_prefix_size, value->data_size))
+				return 0;
+			new_element_size = ele_d->size_specifier_prefix_size + value->data_size;
+		}
+
+		if(will_unsigned_sum_overflow(uint32_t, final_tuple_size, new_element_size) || (final_tuple_size + new_element_size) > get_maximum_tuple_size(tpl_d))
+			return 0;
+
+		// we can now add the new_element_size to the final_tuple_size
+		final_tuple_size += new_element_size;
+
+		if(new_tuple_size)
+			(*new_tuple_size) = final_tuple_size;
+		return 1;
+	}
+}
+
 int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, const user_value* value)
 {
 	// check if an element can be set in tuple
