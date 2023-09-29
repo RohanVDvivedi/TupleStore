@@ -1,5 +1,5 @@
-#ifndef PAGE_LAYOUT_READ_ONLY_H
-#define PAGE_LAYOUT_READ_ONLY_H
+#ifndef PAGE_LAYOUT_UNALTERED_H
+#define PAGE_LAYOUT_UNALTERED_H
 
 /*
   The below declarations of the functions are one ones for which a physiological log entry is not required
