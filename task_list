@@ -1,5 +1,4 @@
 1 PICKED TASKS
- *0* implement int can_set_uninitialized_element_in_tuple(uint32_t prior_tuple_size, const tuple_def* tpl_d, uint32_t index, const user_value* value, uint32_t* new_size)
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
 
 2 NEW TYPE TASKS
