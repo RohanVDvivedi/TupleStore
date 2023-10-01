@@ -21,9 +21,6 @@ page_layout get_page_layout_type(const tuple_size_def* tpl_sz_d);
 // returns size of page header as stored on the page
 uint32_t get_page_header_size(const void* page, uint32_t page_size);
 
-// returns pointer to the page header on the page
-void* get_page_header(void* page, uint32_t page_size);
-
 
 
 // BASIC FUNCTIONS
