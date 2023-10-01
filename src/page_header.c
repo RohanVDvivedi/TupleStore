@@ -15,6 +15,12 @@ void* get_page_header(void* page, uint32_t page_size)
 	return page + get_value_size_on_page(page_size);
 }
 
+const void* get_page_header_ua(const void* page, uint32_t page_size)
+{
+	// page header starts after its size on the page
+	return page + get_value_size_on_page(page_size);
+}
+
 int init_page_header(void* page, uint32_t page_size, uint32_t page_header_size)
 {
 	if(page_size < get_value_size_on_page(page_size) + page_header_size)

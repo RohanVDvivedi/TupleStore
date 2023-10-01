@@ -18,6 +18,9 @@ uint32_t get_page_header_size(const void* page, uint32_t page_size);
 // returns pointer to the page header on the page
 void* get_page_header(void* page, uint32_t page_size);
 
+// same as above function, but it returns a readonly pointer to the page_header
+const void* get_page_header_ua(const void* page, uint32_t page_size);
+
 
 
 // INITIALIZATION and BASIC FUNCTIONS

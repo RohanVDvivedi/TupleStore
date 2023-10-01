@@ -14,6 +14,9 @@
 // for storing the tuple definition given in the parameter
 page_layout get_page_layout_type(const tuple_size_def* tpl_sz_d);
 
+// readonly version of get_page_header
+const void* get_page_header_ua(const void* page, uint32_t page_size);
+
 
 
 // PAGE_HEADER public functions they are defined in the page_header.c
