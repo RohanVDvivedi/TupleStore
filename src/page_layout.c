@@ -125,16 +125,21 @@ int discard_tuple_on_page(void* page, uint32_t page_size, const tuple_size_def* 
 	return 0;
 }
 
-int discard_all_tuples_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)
+void discard_all_tuples_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)
 {
 	switch(get_page_layout_type(tpl_sz_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			return discard_all_tuples_slotted_page(page, page_size);
+		{
+			discard_all_tuples_slotted_page(page, page_size);
+			return;
+		}
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return discard_all_tuples_fixed_array_page(page, page_size);
+		{
+			discard_all_tuples_fixed_array_page(page, page_size);
+			return;
+		}
 	}
-	return 0;
 }
 
 uint32_t discard_trailing_tomb_stones_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)

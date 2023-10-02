@@ -289,7 +289,7 @@ uint32_t discard_trailing_tomb_stones_fixed_array_page(void* page, uint32_t page
 	return tomb_stones_discarded;
 }
 
-int discard_all_tuples_fixed_array_page(void* page, uint32_t page_size)
+void discard_all_tuples_fixed_array_page(void* page, uint32_t page_size)
 {
 	// make tuple count as 0
 	void* tuple_count = page + get_offset_to_tuple_count(page, page_size);
@@ -298,8 +298,6 @@ int discard_all_tuples_fixed_array_page(void* page, uint32_t page_size)
 	// make tomb stone count as 0
 	void* tomb_stone_count = page + get_offset_to_tomb_stone_count(page, page_size);
 	write_value_to_page(tomb_stone_count, page_size, 0);
-
-	return 1;
 }
 
 int exists_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index)

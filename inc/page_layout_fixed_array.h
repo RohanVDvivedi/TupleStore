@@ -21,7 +21,7 @@ int can_update_tuple_fixed_array_page(const void* page, uint32_t page_size, uint
 
 int discard_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index);
 
-int discard_all_tuples_fixed_array_page(void* page, uint32_t page_size);
+void discard_all_tuples_fixed_array_page(void* page, uint32_t page_size);
 
 uint32_t discard_trailing_tomb_stones_fixed_array_page(void* page, uint32_t page_size);
 

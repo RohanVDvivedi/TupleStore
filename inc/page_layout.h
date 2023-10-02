@@ -67,7 +67,7 @@ int discard_tuple_on_page(void* page, uint32_t page_size, const tuple_size_def* 
 
 // discards all the tuple on the page
 // for a slotted page it will also reset the end_of_free_space_offset
-int discard_all_tuples_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
+void discard_all_tuples_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
 // discards trailing tombstones on the page
 // it will return the number of trailing tombstones, that were discarded

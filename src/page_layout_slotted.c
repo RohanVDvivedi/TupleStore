@@ -469,7 +469,7 @@ uint32_t discard_trailing_tomb_stones_slotted_page(void* page, uint32_t page_siz
 	return tomb_stones_discarded;
 }
 
-int discard_all_tuples_slotted_page(void* page, uint32_t page_size)
+void discard_all_tuples_slotted_page(void* page, uint32_t page_size)
 {
 	// write 0 to space_occupied_by_tuples
 	void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
@@ -486,8 +486,6 @@ int discard_all_tuples_slotted_page(void* page, uint32_t page_size)
 	// write page_size to end_of_free_space_offset
 	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
 	write_value_to_page(end_of_free_space_offset, page_size, page_size);
-
-	return 1;
 }
 
 int exists_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index)
