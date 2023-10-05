@@ -31,7 +31,7 @@ int swap_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_siz
 
 const void* get_nth_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index);
 
-void run_page_compaction_fixed_array_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
+int run_page_compaction_fixed_array_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
 uint32_t get_free_space_fixed_array_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 

@@ -357,9 +357,10 @@ const void* get_nth_tuple_fixed_array_page(const void* page, uint32_t page_size,
 	return page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index);
 }
 
-void run_page_compaction_fixed_array_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)
+int run_page_compaction_fixed_array_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)
 {
 	// Nothing to be done
+	return 0;
 }
 
 uint32_t get_free_space_fixed_array_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)

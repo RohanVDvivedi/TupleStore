@@ -218,15 +218,16 @@ void clone_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, 
 	memmove(page, page_src, page_size);
 }
 
-void run_page_compaction(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)
+int run_page_compaction(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)
 {
 	switch(get_page_layout_type(tpl_sz_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			{run_page_compaction_slotted_page(page, page_size, tpl_sz_d); return;}
+			return run_page_compaction_slotted_page(page, page_size, tpl_sz_d);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			{run_page_compaction_fixed_array_page(page, page_size, tpl_sz_d); return;}
+			return run_page_compaction_fixed_array_page(page, page_size, tpl_sz_d);
 	}
+	return 0;
 }
 
 uint32_t get_free_space_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)

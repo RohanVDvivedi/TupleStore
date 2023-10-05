@@ -557,8 +557,11 @@ declarations_value_arraylist(tuple_offset_indexed_list, tuple_offset_indexed)
 #define EXPANSION_FACTOR 1.5
 function_definitions_value_arraylist(tuple_offset_indexed_list, tuple_offset_indexed)
 
-void run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)
+int run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)
 {
+	// return value of the function
+	int was_page_compacted = 0;
+
 	// space_occupied_by_tuples value remains the same even after compaction
 	// the logical contents of the page are unaltered, including the tuple_indices and the tomb stone indices
 
@@ -603,6 +606,11 @@ void run_page_compaction_slotted_page(void* page, uint32_t page_size, const tupl
 		// allocate space for the tuple that is to be moved
 		end_of_free_space_offset_val -= tuple_size;
 
+		// end_of_free_space_offset_val is the new offset of the tuple
+		// if it does not equal the curent_offset fo the tuple, then the page was compacted by moving atleast a tuple
+		if(end_of_free_space_offset_val != tuple_offset_and_index.offset)
+			was_page_compacted = 1;
+
 		// move the tuple to the allocated space
 		memmove(page + end_of_free_space_offset_val, tuple, tuple_size);
 
@@ -615,6 +623,8 @@ void run_page_compaction_slotted_page(void* page, uint32_t page_size, const tupl
 	// reset the end of free space offset for the page
 	void* end_of_free_space_offset = page + get_offset_to_end_of_free_space_offset(page, page_size);
 	write_value_to_page(end_of_free_space_offset, page_size, end_of_free_space_offset_val);
+
+	return was_page_compacted;
 }
 
 uint32_t get_free_space_slotted_page(const void* page, uint32_t page_size)
