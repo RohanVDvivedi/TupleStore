@@ -1,5 +1,4 @@
 1 PICKED TASKS
- *1* in compare_tuples function take an enum compare_direction array parameter cmp_dir, each one being ASCENDING = 1 or DESCENDING = -1, if this int array is NULL, then take it as ascending for all key elements
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
 
 2 NEW TYPE TASKS
