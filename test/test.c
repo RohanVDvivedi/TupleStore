@@ -222,7 +222,7 @@ int main()
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 3), 
 								def,
 								((uint32_t[]){2}),
-								NULL,
+								((compare_direction[]){DECREASING}),
 								1)
 			);
 
@@ -234,7 +234,7 @@ int main()
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 2), 
 								def,
 								((uint32_t[]){2}),
-								NULL,
+								((compare_direction[]){DECREASING}),
 								1)
 			);
 
@@ -246,7 +246,7 @@ int main()
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 1), 
 								def,
 								NULL,
-								NULL,
+								((compare_direction[]){DECREASING, DECREASING, DECREASING, DECREASING, DECREASING}),
 								get_element_def_count_tuple_def(def))
 			);
 
@@ -258,7 +258,7 @@ int main()
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 1), 
 								def,
 								((uint32_t[]){2}),
-								NULL,
+								((compare_direction[]){DECREASING}),
 								1)
 			);
 
@@ -270,7 +270,7 @@ int main()
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 2), 
 								def,
 								NULL,
-								NULL,
+								((compare_direction[]){DECREASING, DECREASING, DECREASING, DECREASING, DECREASING}),
 								get_element_def_count_tuple_def(def))
 			);
 
@@ -282,7 +282,7 @@ int main()
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 2), 
 								def,
 								((uint32_t[]){2, 3}),
-								NULL,
+								((compare_direction[]){DECREASING, DECREASING}),
 								2)
 			);
 
@@ -294,7 +294,7 @@ int main()
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 2), 
 								def,
 								((uint32_t[]){1, 0}),
-								NULL,
+								((compare_direction[]){DECREASING, DECREASING}),
 								2)
 			);
 
@@ -306,7 +306,7 @@ int main()
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 2), 
 								def,
 								((uint32_t[]){3, 2}),
-								NULL,
+								((compare_direction[]){DECREASING, DECREASING}),
 								2)
 			);
 
