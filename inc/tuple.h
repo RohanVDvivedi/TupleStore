@@ -49,13 +49,23 @@ int can_set_uninitialized_element_in_tuple(const tuple_def* tpl_d, uint32_t inde
 // the return of this function must not be used after the tuple has had any calls to set_element_in_tuple* functions
 user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl);
 
-
 // compare functions for tuple and for an element inside the tuple
 int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, uint32_t index1, const void* tup2, const tuple_def* tpl_d2, uint32_t index2);
 
+typedef enum compare_direction compare_direction;
+enum compare_direction
+{
+	INCREASING = 1,
+	DECREASING = -1,
+};
+
+#define ASC  INCREASING
+#define DESC DECREASING
+
 // if element_ids* == NULL, then this functions compares the first element_count number of elements from both the tuples
+// if cmp_dir == NULL, then all the elements are compared in INCREASING order, else cmp_dir decides the direction of the comparison
 // else it compares the elements in the same order as provided in element_ids* (here element_count denotes size of element_ids* arrays)
-int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const uint32_t* element_ids1, const void* tup2, const tuple_def* tpl_d2, const uint32_t* element_ids2, uint32_t element_count);
+int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const uint32_t* element_ids1, const void* tup2, const tuple_def* tpl_d2, const uint32_t* element_ids2, const compare_direction* cmp_dir, uint32_t element_count);
 
 
 // hash function for tuple and for an element inside the tuple at the specified index

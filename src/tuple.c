@@ -411,11 +411,17 @@ int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, uint32_
 		return compare_elements(e1, get_element_def_by_id(tpl_d1, index1), e2, get_element_def_by_id(tpl_d2, index2));
 }
 
-int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const uint32_t* element_ids1, const void* tup2, const tuple_def* tpl_d2, const uint32_t* element_ids2, uint32_t element_count)
+int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const uint32_t* element_ids1, const void* tup2, const tuple_def* tpl_d2, const uint32_t* element_ids2, const compare_direction* cmp_dir, uint32_t element_count)
 {
 	int compare = 0;
 	for(uint32_t i = 0; ((i < element_count) && (compare == 0)); i++)
+	{
 		compare = compare_elements_of_tuple(tup1, tpl_d1, ((element_ids1 == NULL) ? i : element_ids1[i]), tup2, tpl_d2, ((element_ids2 == NULL) ? i : element_ids2[i]));
+		
+		// if cmp_dir is not NULL, then compare in default direction of the element
+		if(cmp_dir != NULL)
+			compare = compare * cmp_dir[i];
+	}
 	return compare;
 }
 
