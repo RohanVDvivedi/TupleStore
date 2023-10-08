@@ -4,10 +4,7 @@
 #include<stdint.h>
 #include<inttypes.h>
 
-// utility macros to be used only for numeric types
-#define compare(a,b)	( ((a)>(b)) ? 1 : (((a)<(b)) ? (-1) : 0 ) )
-#define min(a,b)        (((a)<(b))?(a):(b))
-#define max(a,b)        (((a)>(b))?(a):(b))
+#include<cutlery_math.h>
 
 /*
 	all the functions assume that data is stored at data in little endian format

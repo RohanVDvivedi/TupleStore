@@ -27,12 +27,12 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 				case UINT :
 				{
 					uint64_t e2_val = read_uint64(e2, ele_d_2->size);
-					return compare(e1_val, e2_val);
+					return compare_numbers(e1_val, e2_val);
 				}
 				case INT :
 				{
 					int64_t e2_val = read_int64(e2, ele_d_2->size);
-					return compare(e1_val, e2_val);
+					return compare_numbers(e1_val, e2_val);
 				}
 				case FLOAT :
 				{
@@ -41,12 +41,12 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 						case 4 :
 						{
 							float e2_val = read_float(e2);
-							return compare(e1_val, e2_val);
+							return compare_numbers(e1_val, e2_val);
 						}
 						case 8 :
 						{
 							double e2_val = read_double(e2);
-							return compare(e1_val, e2_val);
+							return compare_numbers(e1_val, e2_val);
 						}
 					}
 				}
@@ -62,12 +62,12 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 				case UINT :
 				{
 					uint64_t e2_val = read_uint64(e2, ele_d_2->size);
-					return compare(e1_val, e2_val);
+					return compare_numbers(e1_val, e2_val);
 				}
 				case INT :
 				{
 					int64_t e2_val = read_int64(e2, ele_d_2->size);
-					return compare(e1_val, e2_val);
+					return compare_numbers(e1_val, e2_val);
 				}
 				case FLOAT :
 				{
@@ -76,12 +76,12 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 						case 4 :
 						{
 							float e2_val = read_float(e2);
-							return compare(e1_val, e2_val);
+							return compare_numbers(e1_val, e2_val);
 						}
 						case 8 :
 						{
 							double e2_val = read_double(e2);
-							return compare(e1_val, e2_val);
+							return compare_numbers(e1_val, e2_val);
 						}
 					}
 				}
@@ -101,12 +101,12 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 						case UINT :
 						{
 							uint64_t e2_val = read_uint64(e2, ele_d_2->size);
-							return compare(e1_val, e2_val);
+							return compare_numbers(e1_val, e2_val);
 						}
 						case INT :
 						{
 							int64_t e2_val = read_int64(e2, ele_d_2->size);
-							return compare(e1_val, e2_val);
+							return compare_numbers(e1_val, e2_val);
 						}
 						case FLOAT :
 						{
@@ -115,12 +115,12 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 								case 4 :
 								{
 									float e2_val = read_float(e2);
-									return compare(e1_val, e2_val);
+									return compare_numbers(e1_val, e2_val);
 								}
 								case 8 :
 								{
 									double e2_val = read_double(e2);
-									return compare(e1_val, e2_val);
+									return compare_numbers(e1_val, e2_val);
 								}
 							}
 						}
@@ -136,12 +136,12 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 						case UINT :
 						{
 							uint64_t e2_val = read_uint64(e2, ele_d_2->size);
-							return compare(e1_val, e2_val);
+							return compare_numbers(e1_val, e2_val);
 						}
 						case INT :
 						{
 							int64_t e2_val = read_int64(e2, ele_d_2->size);
-							return compare(e1_val, e2_val);
+							return compare_numbers(e1_val, e2_val);
 						}
 						case FLOAT :
 						{
@@ -150,12 +150,12 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 								case 4 :
 								{
 									float e2_val = read_float(e2);
-									return compare(e1_val, e2_val);
+									return compare_numbers(e1_val, e2_val);
 								}
 								case 8 :
 								{
 									double e2_val = read_double(e2);
-									return compare(e1_val, e2_val);
+									return compare_numbers(e1_val, e2_val);
 								}
 							}
 						}
