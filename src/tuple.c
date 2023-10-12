@@ -437,7 +437,7 @@ uint32_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, uint
 	return hash_element(e, ele_d, hash_func);
 }
 
-uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, uint32_t (*hash_func)(const void* data, uint32_t size), uint32_t element_count, const uint32_t* element_ids)
+uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, const uint32_t* element_ids, uint32_t (*hash_func)(const void* data, uint32_t size), uint32_t element_count)
 {
 	uint32_t hash_value = 0;
 	if(element_ids == NULL)
