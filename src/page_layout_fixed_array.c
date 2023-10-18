@@ -9,7 +9,6 @@
 
 #include<page_header.h>
 #include<page_layout_util.h>
-#include<memswap.h>
 
 #include<cutlery_stds.h>
 
@@ -339,7 +338,7 @@ int swap_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_siz
 	void* tuple_i1 = page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, i1);
 	void* tuple_i2 = page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, i2);
 
-	memswap(tuple_i1, tuple_i2, tpl_sz_d->size);
+	memory_swap(tuple_i1, tuple_i2, tpl_sz_d->size);
 
 	return 1;
 }
