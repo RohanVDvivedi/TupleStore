@@ -7,7 +7,8 @@
 
 #include<inttypes.h>
 #include<stdlib.h>
-#include<string.h>
+
+#include<cutlery_stds.h>
 
 user_value const * const DEFAULT_USER_VALUE = &((const user_value){});
 
@@ -28,7 +29,7 @@ user_value clone_user_value_with_data(const user_value* uval)
 	// and is expected to not fail, if it fails you are on your own
 	// no NULL handling done here, too bad, just let the OS kill you
 
-	memmove(new_data, uval->data, uval->data_size);
+	memory_move(new_data, uval->data, uval->data_size);
 	user_value res = {.data = new_data, .data_size = uval->data_size};
 	return res;
 }

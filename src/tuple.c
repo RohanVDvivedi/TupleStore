@@ -3,7 +3,6 @@
 #include<stdio.h>
 #include<inttypes.h>
 #include<alloca.h>
-#include<string.h>
 
 #include<bitmap.h>
 
@@ -12,6 +11,8 @@
 #include<numeral_element_types.h>
 #include<string_or_blob_element_types_util.h>
 #include<page_layout_util.h>
+
+#include<cutlery_stds.h>
 
 void init_tuple(const tuple_def* tpl_d, void* tupl)
 {
@@ -247,7 +248,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 			// reset the corresponding bytes (of the fixed length element)
 			void* ele = get_element_from_tuple(tpl_d, index, tupl);
 			uint32_t ele_size = get_element_size_within_tuple(tpl_d, index, tupl);
-			memset(ele, 0, ele_size);
+			memory_set(ele, 0, ele_size);
 
 			// then just set the corresponding bit in the is_null bitmap
 			set_NULL_in_tuple(tpl_d, index, tupl);
@@ -277,7 +278,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 			uint32_t old_tuple_size = get_tuple_size(tpl_d, tupl);
 
 			// move all the bytes in the tuple after this element to front
-			memmove(tupl + old_element_offset, tupl + old_element_offset + old_element_size, old_tuple_size - (old_element_offset + old_element_size));
+			memory_move(tupl + old_element_offset, tupl + old_element_offset + old_element_size, old_tuple_size - (old_element_offset + old_element_size));
 
 			// decrease all tuple offsets for variable sized non null elements that were after the element by old_element_size
 			for(uint32_t i = 0; i < get_element_def_count_tuple_def(tpl_d); i++)

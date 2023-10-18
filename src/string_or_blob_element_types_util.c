@@ -2,6 +2,8 @@
 
 #include<int_accesses.h>
 
+#include<cutlery_stds.h>
+
 #include<string.h>
 
 int is_string_type_element_def(const element_def* ele_d)
@@ -147,11 +149,11 @@ static void set_string_OR_blob_element_INTERNAL(void* e, const element_def* ele_
 	{
 		uint32_t bytes_to_write = min(ele_d->size, data_size);
 
-		memmove(e, data, bytes_to_write);
+		memory_move(e, data, bytes_to_write);
 
 		// reset the unused bytes here
 		if(bytes_to_write < ele_d->size)
-			memset(e + bytes_to_write, 0, ele_d->size - bytes_to_write);
+			memory_set(e + bytes_to_write, 0, ele_d->size - bytes_to_write);
 	}
 	else // it is a VAR_BLOB or VAR_STRING
 	{
@@ -159,7 +161,7 @@ static void set_string_OR_blob_element_INTERNAL(void* e, const element_def* ele_
 		write_uint32(e, ele_d->size_specifier_prefix_size, data_size);
 
 		// copy the actual data now
-		memmove(e + ele_d->size_specifier_prefix_size, data, data_size);
+		memory_move(e + ele_d->size_specifier_prefix_size, data, data_size);
 	}
 }
 

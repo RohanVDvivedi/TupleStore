@@ -2,7 +2,6 @@
 
 #include<stdint.h>
 #include<stdlib.h>
-#include<string.h>
 
 #include<bitmap.h>
 
@@ -11,6 +10,8 @@
 #include<page_header.h>
 #include<page_layout_util.h>
 #include<memswap.h>
+
+#include<cutlery_stds.h>
 
 /*
 ** tuple capacity for a fixed array page can be pre-calculated
@@ -146,7 +147,7 @@ int append_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_si
 		void* slot = page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index);
 
 		// move data from external_tuple to the slot on the page
-		memmove(slot, external_tuple, tpl_sz_d->size);
+		memory_move(slot, external_tuple, tpl_sz_d->size);
 	}
 	else
 	{
@@ -206,7 +207,7 @@ int update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_si
 		void* slot = page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index);
 
 		// copy external_tuple to the slot on the page (at index)
-		memmove(slot, external_tuple, tpl_sz_d->size);
+		memory_move(slot, external_tuple, tpl_sz_d->size);
 	}
 
 	return 1;

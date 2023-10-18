@@ -6,7 +6,7 @@
 #include<page_layout_fixed_array.h>
 #include<page_layout_util.h>
 
-#include<string.h>
+#include<cutlery_stds.h>
 
 // get page_layout to use for the given tuple definition
 page_layout get_page_layout_type(const tuple_size_def* tpl_sz_d)
@@ -215,7 +215,7 @@ int set_element_in_tuple_in_place_on_page(void* page, uint32_t page_size, const 
 void clone_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* page_src)
 {
 	// perform a plain copy that is easier and better
-	memmove(page, page_src, page_size);
+	memory_move(page, page_src, page_size);
 }
 
 int run_page_compaction(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)

@@ -4,13 +4,14 @@
 #include<value_arraylist.h> // used for defragmentation
 
 #include<stdlib.h>
-#include<string.h>
 
 #include<tuple.h>
 
 #include<int_accesses.h>
 #include<page_header.h>
 #include<page_layout_util.h>
+
+#include<cutlery_stds.h>
 
 /*
 ** 		offset calculation functions
@@ -615,7 +616,7 @@ int run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple
 			was_page_compacted = 1;
 
 		// move the tuple to the allocated space
-		memmove(page + end_of_free_space_offset_val, tuple, tuple_size);
+		memory_move(page + end_of_free_space_offset_val, tuple, tuple_size);
 
 		// update the tuple_offset on the page
 		write_value_to_page(tuple_offset, page_size, end_of_free_space_offset_val);
