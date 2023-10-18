@@ -1,5 +1,6 @@
 1 PICKED TASKS
  *0* return errors for memory allocation fails (return value of malloc = NULL)
+    * handle all cases when malloc could fail, gracefully and when required throw an error
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
 
 2 NEW TYPE TASKS
