@@ -218,14 +218,14 @@ void clone_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, 
 	memory_move(page, page_src, page_size);
 }
 
-int run_page_compaction(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)
+int run_page_compaction(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, int* memory_allocation_error)
 {
 	switch(get_page_layout_type(tpl_sz_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			return run_page_compaction_slotted_page(page, page_size, tpl_sz_d);
+			return run_page_compaction_slotted_page(page, page_size, tpl_sz_d, memory_allocation_error);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return run_page_compaction_fixed_array_page(page, page_size, tpl_sz_d);
+			return run_page_compaction_fixed_array_page(page, page_size, tpl_sz_d, memory_allocation_error);
 	}
 	return 0;
 }

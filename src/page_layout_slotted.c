@@ -558,7 +558,7 @@ declarations_value_arraylist(tuple_offset_indexed_list, tuple_offset_indexed)
 #define EXPANSION_FACTOR 1.5
 function_definitions_value_arraylist(tuple_offset_indexed_list, tuple_offset_indexed)
 
-int run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)
+int run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, int* memory_allocation_error)
 {
 	// return value of the function
 	int was_page_compacted = 0;
@@ -572,7 +572,10 @@ int run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple
 
 	// fail compaction, if malloc fails
 	if(!initialize_tuple_offset_indexed_list(&tuple_offset_list, tuple_count))
+	{
+		(*memory_allocation_error) = 1;
 		return 0;
+	}
 
 	// tuple_offset_list must consists only of existing tuples
 	for(uint32_t index = 0; index < tuple_count; index++)

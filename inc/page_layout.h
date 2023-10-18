@@ -105,7 +105,9 @@ void clone_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, 
 // PAGE COMPACTION functions (this function will not change the logical contents of the page, it will just defragment the page, to make fragmented space as the free space)
 
 // retuns 1, if the page was compacted, by moving tuples around
-int run_page_compaction(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
+int run_page_compaction(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, int* memory_allocation_error);
+// the above function is prone to memory_allocation_error, i.e. when malloc fails
+// on such an error, return will be 0 implying no page_compaction done and memory_allocation_error set to 1
 
 
 
