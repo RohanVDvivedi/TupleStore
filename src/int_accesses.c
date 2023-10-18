@@ -1,6 +1,6 @@
 #include<int_accesses.h>
 
-#include<string.h>
+#include<cutlery_stds.h>
 #include<limits.h>
 
 #define uint(X) uint ## X ## _t
@@ -149,25 +149,25 @@ int64_t get_INT64_MAX(uint32_t data_size)		GET_INT_MAX(64)
 float read_float(const void* data)
 {
 	float x;
-	memcpy(&x, data, sizeof(float));
+	memory_move(&x, data, sizeof(float));
 	return x;
 }
 
 double read_double(const void* data)
 {
 	double x;
-	memcpy(&x, data, sizeof(double));
+	memory_move(&x, data, sizeof(double));
 	return x;
 }
 
 void write_float(void* data, float x)
 {
-	memcpy(data, &x, sizeof(float));
+	memory_move(data, &x, sizeof(float));
 }
 
 void write_double(void* data, double x)
 {
-	memcpy(data, &x, sizeof(double));
+	memory_move(data, &x, sizeof(double));
 }
 
 float get_FLOAT_MIN()
