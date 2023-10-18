@@ -619,9 +619,20 @@ int main()
 	print_page(temp_page, PAGE_SIZE, def);
 	printf("\n\n");
 
-	res = run_page_compaction(temp_page, PAGE_SIZE, &(def->size_def));
+	int memory_allocation_error = 0;
+	res = run_page_compaction(temp_page, PAGE_SIZE, &(def->size_def), &memory_allocation_error);
+	if(memory_allocation_error)
+	{
+		printf("failed :: to allocate memeory for compacting page\n");
+		exit(-1);
+	}
 	printf("first compaction : %d\n\n", res);
-	res = run_page_compaction(temp_page, PAGE_SIZE, &(def->size_def));
+	res = run_page_compaction(temp_page, PAGE_SIZE, &(def->size_def), &memory_allocation_error);
+	if(memory_allocation_error)
+	{
+		printf("failed :: to allocate memeory for compacting page\n");
+		exit(-1);
+	}
 	printf("subsequent compaction : %d\n\n", res);
 
 	printf("\nAfter compaction available_size(%u)\n", get_free_space_on_page(temp_page, PAGE_SIZE, &(def->size_def)));
