@@ -22,6 +22,12 @@ int is_user_value_NULL(const user_value* uval)
 user_value clone_user_value_with_data(const user_value* uval)
 {
 	void* new_data = malloc(uval->data_size);
+	// generally this call is to be executed, while inserting default value of the element defs,
+	// so it will be called at the beginning of the application
+	// this allocation must be insignificant in quantity (too small)
+	// and is expected to not fail, if it fails you are on your own
+	// no NULL handling done here, too bad, just let the OS kill you
+
 	memmove(new_data, uval->data, uval->data_size);
 	user_value res = {.data = new_data, .data_size = uval->data_size};
 	return res;

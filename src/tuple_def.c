@@ -224,8 +224,13 @@ static int init_tuple_def(tuple_def* tuple_d, const char* name, uint32_t max_tup
 tuple_def* get_new_tuple_def(const char* name, uint32_t element_capacity, uint32_t max_tuple_size)
 {
 	tuple_def* tuple_d = malloc(sizeof(tuple_def));
-	if(!initialize_element_defs_list(&(tuple_d->element_defs), element_capacity))
+	if(tuple_d == NULL)
 		return NULL;
+	if(!initialize_element_defs_list(&(tuple_d->element_defs), element_capacity))
+	{
+		free(tuple_d);
+		return NULL;
+	}
 	if(!init_tuple_def(tuple_d, name, max_tuple_size))
 	{
 		deinitialize_element_defs_list(&(tuple_d->element_defs));
