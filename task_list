@@ -1,4 +1,7 @@
 1 PICKED TASKS
+ *0* add logic to compute
+    * uint32_t get_maximum_possible_tuple_count_for_given_page_header_size(uint32_t page_header_size, uint32_t page_size, const tuple_size_def* tpl_sz_d);
+    * uint32_t get_maximum_possible_tuple_count_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
 
 2 NEW TYPE TASKS
