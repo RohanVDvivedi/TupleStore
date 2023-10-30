@@ -13,6 +13,7 @@ It only provides primitive utility functions/structures to systematically organi
 ## Setup instructions
 **Install dependencies :**
  * [Cutlery](https://github.com/RohanVDvivedi/Cutlery)
+ * [SerializableInteger](https://github.com/RohanVDvivedi/SerializableInteger)
 
 **Download source code :**
  * `git clone https://github.com/RohanVDvivedi/TupleStore.git`
@@ -26,12 +27,11 @@ It only provides primitive utility functions/structures to systematically organi
  * ***Once you have installed from source, you may discard the build by*** `make clean`
 
 ## Using The library
- * add `-ltuplestore` linker flag, while compiling your application
+ * add `-ltuplestore -lserint -lcutlery` linker flag, while compiling your application
  * do not forget to include appropriate public api headers as and when needed. this includes
    * `#include<tuple_def.h>`
    * `#include<tuple.h>`
    * `#include<page_layout.h>`
-   * `#include<int_accesses.h>`
 
 ## Instructions for uninstalling library
 
