@@ -1,5 +1,5 @@
-#ifndef INT_ACCESSES_H
-#define INT_ACCESSES_H
+#ifndef FLOAT_ACCESSES_H
+#define FLOAT_ACCESSES_H
 
 #include<stdint.h>
 
