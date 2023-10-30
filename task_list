@@ -1,7 +1,4 @@
 1 PICKED TASKS
- *0.1* move logic of serializing and deserializing an int unsigned int, into separate project, and then use it in TupleStore, WALe and TupleIndexer
-  * or better buid such utility function using macros in Cutlery and use them
-  * also implement large_fixed_width_uint, and use it as log_seq_nr in WALe
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
 
 2 NEW TYPE TASKS
