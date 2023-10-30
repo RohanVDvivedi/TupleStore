@@ -1,1 +1,1 @@
-gcc -Wall ./test.c -o test.out -ltuplestore -lcutlery
+gcc -Wall ./test.c -o test.out -ltuplestore -lserint -lcutlery
