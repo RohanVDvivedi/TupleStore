@@ -1,6 +1,6 @@
 #include<page_layout_util.h>
 
-#include<int_accesses.h>
+#include<serial_int.h>
 
 uint32_t get_value_size_on_page(uint32_t page_size)
 {
@@ -16,10 +16,10 @@ uint32_t get_value_size_on_page(uint32_t page_size)
 
 uint32_t read_value_from_page(const void* value, uint32_t page_size)
 {
-	return read_uint32(value, get_value_size_on_page(page_size));
+	return deserialize_uint32(value, get_value_size_on_page(page_size));
 }
 
 void write_value_to_page(void* value, uint32_t page_size, uint32_t to_write)
 {
-	write_uint32(value, get_value_size_on_page(page_size), to_write);
+	serialize_uint32(value, get_value_size_on_page(page_size), to_write);
 }
