@@ -1,6 +1,6 @@
 #include<string_or_blob_element_types_util.h>
 
-#include<int_accesses.h>
+#include<serial_int.h>
 
 #include<cutlery_stds.h>
 
@@ -34,7 +34,7 @@ int is_variable_sized_string_OR_blob_element_def(const element_def* ele_d)
 static uint32_t get_data_size_for_string_OR_blob_element(const void* e, const element_def* ele_d)
 {
 	if(is_variable_sized_string_OR_blob_element_def(ele_d))	// for VAR_STRING and VAR_BLOB
-		return read_uint32(e, ele_d->size_specifier_prefix_size);
+		return deserialize_uint32(e, ele_d->size_specifier_prefix_size);
 	else // STRING and BLOB
 		return ele_d->size;
 }
@@ -158,7 +158,7 @@ static void set_string_OR_blob_element_INTERNAL(void* e, const element_def* ele_
 	else // it is a VAR_BLOB or VAR_STRING
 	{
 		// set the data size in the specified location, it will be be followed by data
-		write_uint32(e, ele_d->size_specifier_prefix_size, data_size);
+		serialize_uint32(e, ele_d->size_specifier_prefix_size, data_size);
 
 		// copy the actual data now
 		memory_move(e + ele_d->size_specifier_prefix_size, data, data_size);
