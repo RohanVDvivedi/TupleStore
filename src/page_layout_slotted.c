@@ -7,9 +7,10 @@
 
 #include<tuple.h>
 
-#include<int_accesses.h>
 #include<page_header.h>
 #include<page_layout_util.h>
+
+#include<serial_int.h>
 
 #include<cutlery_stds.h>
 
