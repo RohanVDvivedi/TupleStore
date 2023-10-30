@@ -1,6 +1,7 @@
 #include<numeral_element_types.h>
 
-#include<int_accesses.h>
+#include<serial_int.h>
+#include<float_accesses.h>
 
 int is_numeral_type_element_def(const element_def* ele_d)
 {
@@ -21,17 +22,17 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 	{
 		case UINT :
 		{
-			uint64_t e1_val = read_uint64(e1, ele_d_1->size);
+			uint64_t e1_val = deserialize_uint64(e1, ele_d_1->size);
 			switch(ele_d_2->type)
 			{
 				case UINT :
 				{
-					uint64_t e2_val = read_uint64(e2, ele_d_2->size);
+					uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
 					return compare_numbers(e1_val, e2_val);
 				}
 				case INT :
 				{
-					int64_t e2_val = read_int64(e2, ele_d_2->size);
+					int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
 					return compare_numbers(e1_val, e2_val);
 				}
 				case FLOAT :
@@ -40,12 +41,12 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 					{
 						case 4 :
 						{
-							float e2_val = read_float(e2);
+							float e2_val = deserialize_float(e2);
 							return compare_numbers(e1_val, e2_val);
 						}
 						case 8 :
 						{
-							double e2_val = read_double(e2);
+							double e2_val = deserialize_double(e2);
 							return compare_numbers(e1_val, e2_val);
 						}
 					}
@@ -56,17 +57,17 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 		}
 		case INT :
 		{
-			int64_t e1_val = read_int64(e1, ele_d_1->size);
+			int64_t e1_val = deserialize_int64(e1, ele_d_1->size);
 			switch(ele_d_2->type)
 			{
 				case UINT :
 				{
-					uint64_t e2_val = read_uint64(e2, ele_d_2->size);
+					uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
 					return compare_numbers(e1_val, e2_val);
 				}
 				case INT :
 				{
-					int64_t e2_val = read_int64(e2, ele_d_2->size);
+					int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
 					return compare_numbers(e1_val, e2_val);
 				}
 				case FLOAT :
@@ -75,12 +76,12 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 					{
 						case 4 :
 						{
-							float e2_val = read_float(e2);
+							float e2_val = deserialize_float(e2);
 							return compare_numbers(e1_val, e2_val);
 						}
 						case 8 :
 						{
-							double e2_val = read_double(e2);
+							double e2_val = deserialize_double(e2);
 							return compare_numbers(e1_val, e2_val);
 						}
 					}
@@ -95,17 +96,17 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 			{
 				case 4 :
 				{
-					float e1_val = read_float(e1);
+					float e1_val = deserialize_float(e1);
 					switch(ele_d_2->type)
 					{
 						case UINT :
 						{
-							uint64_t e2_val = read_uint64(e2, ele_d_2->size);
+							uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
 							return compare_numbers(e1_val, e2_val);
 						}
 						case INT :
 						{
-							int64_t e2_val = read_int64(e2, ele_d_2->size);
+							int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
 							return compare_numbers(e1_val, e2_val);
 						}
 						case FLOAT :
@@ -114,12 +115,12 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 							{
 								case 4 :
 								{
-									float e2_val = read_float(e2);
+									float e2_val = deserialize_float(e2);
 									return compare_numbers(e1_val, e2_val);
 								}
 								case 8 :
 								{
-									double e2_val = read_double(e2);
+									double e2_val = deserialize_double(e2);
 									return compare_numbers(e1_val, e2_val);
 								}
 							}
@@ -130,17 +131,17 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 				}
 				case 8 :
 				{
-					double e1_val = read_double(e1);
+					double e1_val = deserialize_double(e1);
 					switch(ele_d_2->type)
 					{
 						case UINT :
 						{
-							uint64_t e2_val = read_uint64(e2, ele_d_2->size);
+							uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
 							return compare_numbers(e1_val, e2_val);
 						}
 						case INT :
 						{
-							int64_t e2_val = read_int64(e2, ele_d_2->size);
+							int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
 							return compare_numbers(e1_val, e2_val);
 						}
 						case FLOAT :
@@ -149,12 +150,12 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 							{
 								case 4 :
 								{
-									float e2_val = read_float(e2);
+									float e2_val = deserialize_float(e2);
 									return compare_numbers(e1_val, e2_val);
 								}
 								case 8 :
 								{
-									double e2_val = read_double(e2);
+									double e2_val = deserialize_double(e2);
 									return compare_numbers(e1_val, e2_val);
 								}
 							}
@@ -186,12 +187,12 @@ void set_numeral_element(void* e, const element_def* ele_d, const user_value* uv
 	{
 		case UINT :
 		{
-			write_uint64(e, ele_d->size, uval->uint_value);
+			serialize_uint64(e, ele_d->size, uval->uint_value);
 			break;
 		}
 		case INT :
 		{
-			write_int64(e, ele_d->size, uval->int_value);
+			serialize_int64(e, ele_d->size, uval->int_value);
 			break;
 		}
 		case FLOAT :
@@ -200,12 +201,12 @@ void set_numeral_element(void* e, const element_def* ele_d, const user_value* uv
 			{
 				case 4 :
 				{
-					write_float(e, uval->float_value);
+					serialize_float(e, uval->float_value);
 					break;
 				}
 				case 8 :
 				{
-					write_double(e, uval->double_value);
+					serialize_double(e, uval->double_value);
 					break;
 				}
 			}
@@ -226,13 +227,13 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 			{
 				case UINT :
 				{
-					uint64_t e_from_val = read_uint64(e_from, ele_d_from->size);
+					uint64_t e_from_val = deserialize_uint64(e_from, ele_d_from->size);
 					e_new_val = e_from_val;
 					break;
 				}
 				case INT :
 				{
-					int64_t e_from_val = read_int64(e_from, ele_d_from->size);
+					int64_t e_from_val = deserialize_int64(e_from, ele_d_from->size);
 					e_new_val = e_from_val;
 					break;
 				}
@@ -242,13 +243,13 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 					{
 						case 4 :
 						{
-							float e_from_val = read_float(e_from);
+							float e_from_val = deserialize_float(e_from);
 							e_new_val = e_from_val;
 							break;
 						}
 						case 8 :
 						{
-							double e_from_val = read_double(e_from);
+							double e_from_val = deserialize_double(e_from);
 							e_new_val = e_from_val;
 							break;
 						}
@@ -258,7 +259,7 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 				default :
 					break;
 			}
-			write_uint64(e, ele_d->size, e_new_val);
+			serialize_uint64(e, ele_d->size, e_new_val);
 			break;
 		}
 		case INT :
@@ -268,13 +269,13 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 			{
 				case UINT :
 				{
-					uint64_t e_from_val = read_uint64(e_from, ele_d_from->size);
+					uint64_t e_from_val = deserialize_uint64(e_from, ele_d_from->size);
 					e_new_val = e_from_val;
 					break;
 				}
 				case INT :
 				{
-					int64_t e_from_val = read_int64(e_from, ele_d_from->size);
+					int64_t e_from_val = deserialize_int64(e_from, ele_d_from->size);
 					e_new_val = e_from_val;
 					break;
 				}
@@ -284,13 +285,13 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 					{
 						case 4 :
 						{
-							float e_from_val = read_float(e_from);
+							float e_from_val = deserialize_float(e_from);
 							e_new_val = e_from_val;
 							break;
 						}
 						case 8 :
 						{
-							double e_from_val = read_double(e_from);
+							double e_from_val = deserialize_double(e_from);
 							e_new_val = e_from_val;
 							break;
 						}
@@ -300,7 +301,7 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 				default :
 					break;
 			}
-			write_int64(e, ele_d->size, e_new_val);
+			serialize_int64(e, ele_d->size, e_new_val);
 			break;
 		}
 		case FLOAT :
@@ -314,13 +315,13 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 					{
 						case UINT :
 						{
-							uint64_t e_from_val = read_uint64(e_from, ele_d_from->size);
+							uint64_t e_from_val = deserialize_uint64(e_from, ele_d_from->size);
 							e_new_val = e_from_val;
 							break;
 						}
 						case INT :
 						{
-							int64_t e_from_val = read_int64(e_from, ele_d_from->size);
+							int64_t e_from_val = deserialize_int64(e_from, ele_d_from->size);
 							e_new_val = e_from_val;
 							break;
 						}
@@ -330,13 +331,13 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 							{
 								case 4 :
 								{
-									float e_from_val = read_float(e_from);
+									float e_from_val = deserialize_float(e_from);
 									e_new_val = e_from_val;
 									break;
 								}
 								case 8 :
 								{
-									double e_from_val = read_double(e_from);
+									double e_from_val = deserialize_double(e_from);
 									e_new_val = e_from_val;
 									break;
 								}
@@ -346,7 +347,7 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 						default :
 							break;
 					}
-					write_float(e, e_new_val);
+					serialize_float(e, e_new_val);
 					break;
 				}
 				case 8 :
@@ -356,13 +357,13 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 					{
 						case UINT :
 						{
-							uint64_t e_from_val = read_uint64(e_from, ele_d_from->size);
+							uint64_t e_from_val = deserialize_uint64(e_from, ele_d_from->size);
 							e_new_val = e_from_val;
 							break;
 						}
 						case INT :
 						{
-							int64_t e_from_val = read_int64(e_from, ele_d_from->size);
+							int64_t e_from_val = deserialize_int64(e_from, ele_d_from->size);
 							e_new_val = e_from_val;
 							break;
 						}
@@ -372,13 +373,13 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 							{
 								case 4 :
 								{
-									float e_from_val = read_float(e_from);
+									float e_from_val = deserialize_float(e_from);
 									e_new_val = e_from_val;
 									break;
 								}
 								case 8 :
 								{
-									double e_from_val = read_double(e_from);
+									double e_from_val = deserialize_double(e_from);
 									e_new_val = e_from_val;
 									break;
 								}
@@ -388,7 +389,7 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 						default :
 							break;
 					}
-					write_double(e, e_new_val);
+					serialize_double(e, e_new_val);
 					break;
 				}
 				break;
@@ -407,12 +408,12 @@ user_value get_value_from_numeral_element(const void* e, const element_def* ele_
 	{
 		case UINT :
 		{
-			uval.uint_value = read_uint64(e, ele_d->size);
+			uval.uint_value = deserialize_uint64(e, ele_d->size);
 			break;
 		}
 		case INT :
 		{
-			uval.int_value = read_int64(e, ele_d->size);
+			uval.int_value = deserialize_int64(e, ele_d->size);
 			break;
 		}
 		case FLOAT :
@@ -421,12 +422,12 @@ user_value get_value_from_numeral_element(const void* e, const element_def* ele_
 			{
 				case 4 :
 				{
-					uval.float_value = read_float(e);
+					uval.float_value = deserialize_float(e);
 					break;
 				}
 				case 8 :
 				{
-					uval.double_value = read_double(e);
+					uval.double_value = deserialize_double(e);
 					break;
 				}
 			}
