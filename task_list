@@ -1,16 +1,17 @@
 1 PICKED TASKS
+ *0* add overflow protection when multiplying uint32_t's in the project (especially while calculating sizes and capacities in fixed_array_page)
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
+ *2* add long double type
+ *3* add large_uint type, the onr from SerializableInteger
+ *4* add bit fields type (with max bits 64), pack multiple adjacent bit files into a single bitmap and access them with cutlery's bitmap, all of them have same offset (pointing to first byte) but different bit_offsets
 
 2 NEW TYPE TASKS
- *2* add long double (*think about it again, as long double does not have a ieee standardized format)
- *3* add decimal fixed precission data type (* like libdecnumber) - very useful for finanacial purposes
- *4* bit fields, having fixed number of bits (upto 64)
- *4* bitmap field
-     * pack multiple adjacent bit fields and multiple bitmap fields together, or some way to do it, minimizing space usage
- *5* variable length signed and unsigned integer (like that of leveldb and sqlite) (see you GMP (GNU MP) can be used here)
- *5* variable length real numbers (see how GMP (GNU MP) can be used here)
- *6* nested_tuple datatype
- *6* arrays of types
+ *5* add decimal fixed precission data type (* like libdecnumber) - very useful for finanacial purposes
+ *6* bit fields, having fixed number of bits (upto 64)
+ *7* variable length signed and unsigned integer (like that of leveldb and sqlite) (see if GMP (GNU MP) can be used here)
+ *7* variable length real numbers (see how GMP (GNU MP) can be used here)
+ *8* nested_tuple datatype
+ *8* arrays of types
 
 3 OPTIMIZATION FOR COMPRESSION TASKS
- *7* make provisions to reset the unused bytes to 0s on the page while performing init_page, run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
+ *9* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
