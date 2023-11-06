@@ -1,5 +1,4 @@
 1 PICKED TASKS
- *0* add overflow protection when multiplying uint32_t's in the project (especially while calculating sizes and capacities in fixed_array_page)
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
  *2* add long double type
  *3* add large_uint type, the one from SerializableInteger
