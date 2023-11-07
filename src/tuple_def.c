@@ -34,7 +34,7 @@ static int is_size_allowed_for_fixed_sized_type(element_type ele_type, uint32_t 
 		case INT :
 			return (1 <= size) && (size <= 8);
 		case FLOAT :
-			return (size == sizeof(float)) || (size == sizeof(double));
+			return (size == sizeof(float)) || (size == sizeof(double)) || (size == sizeof(long double));
 		case STRING :
 		case BLOB :	// STRING and BLOB can be of any size
 			return 1;
