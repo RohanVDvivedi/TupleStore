@@ -75,19 +75,12 @@ void print_user_value(const user_value* uval, const element_def* ele_d)
 		}
 		case FLOAT :
 		{
-			switch(ele_d->size)
-			{
-				case 4 :
-				{
-					printf("%f", uval->float_value);
-					break;
-				}
-				case 8 :
-				{
-					printf("%lf", uval->double_value);
-					break;
-				}
-			}
+			if(ele_d->size == sizeof(float))
+				printf("%f", uval->float_value);
+			else if(ele_d->size == sizeof(double))
+				printf("%lf", uval->double_value);
+			else if(ele_d->size == sizeof(long double))
+				printf("%Lf", uval->long_double_value);
 			break;
 		}
 		case STRING :
