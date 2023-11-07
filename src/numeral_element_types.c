@@ -37,22 +37,26 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 				}
 				case FLOAT :
 				{
-					switch(ele_d_2->size)
+					if(ele_d_2->size == sizeof(float))
 					{
-						case 4 :
-						{
-							float e2_val = deserialize_float(e2);
-							return compare_numbers(e1_val, e2_val);
-						}
-						case 8 :
-						{
-							double e2_val = deserialize_double(e2);
-							return compare_numbers(e1_val, e2_val);
-						}
+						float e2_val = deserialize_float(e2);
+						return compare_numbers(e1_val, e2_val);
 					}
+					else if(ele_d_2->size == sizeof(double))
+					{
+						double e2_val = deserialize_double(e2);
+						return compare_numbers(e1_val, e2_val);
+					}
+					else if(ele_d_2->size == sizeof(long double))
+					{
+						long double e2_val = deserialize_long_double(e2);
+						return compare_numbers(e1_val, e2_val);
+					}
+					else
+						return -2;
 				}
 				default :
-					break;
+					return -2;
 			}
 		}
 		case INT :
@@ -72,104 +76,151 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 				}
 				case FLOAT :
 				{
-					switch(ele_d_2->size)
+					if(ele_d_2->size == sizeof(float))
 					{
-						case 4 :
-						{
-							float e2_val = deserialize_float(e2);
-							return compare_numbers(e1_val, e2_val);
-						}
-						case 8 :
-						{
-							double e2_val = deserialize_double(e2);
-							return compare_numbers(e1_val, e2_val);
-						}
+						float e2_val = deserialize_float(e2);
+						return compare_numbers(e1_val, e2_val);
 					}
+					else if(ele_d_2->size == sizeof(double))
+					{
+						double e2_val = deserialize_double(e2);
+						return compare_numbers(e1_val, e2_val);
+					}
+					else if(ele_d_2->size == sizeof(long double))
+					{
+						long double e2_val = deserialize_long_double(e2);
+						return compare_numbers(e1_val, e2_val);
+					}
+					else
+						return -2;
 				}
 				default :
-					break;
+					return -2;
 			}
 		}
 		case FLOAT :
 		{
-			switch(ele_d_1->size)
+			if(ele_d_1->size == sizeof(float))
 			{
-				case 4 :
+				float e1_val = deserialize_float(e1);
+				switch(ele_d_2->type)
 				{
-					float e1_val = deserialize_float(e1);
-					switch(ele_d_2->type)
+					case UINT :
 					{
-						case UINT :
-						{
-							uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
-							return compare_numbers(e1_val, e2_val);
-						}
-						case INT :
-						{
-							int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
-							return compare_numbers(e1_val, e2_val);
-						}
-						case FLOAT :
-						{
-							switch(ele_d_2->size)
-							{
-								case 4 :
-								{
-									float e2_val = deserialize_float(e2);
-									return compare_numbers(e1_val, e2_val);
-								}
-								case 8 :
-								{
-									double e2_val = deserialize_double(e2);
-									return compare_numbers(e1_val, e2_val);
-								}
-							}
-						}
-						default :
-							break;
+						uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
+						return compare_numbers(e1_val, e2_val);
 					}
+					case INT :
+					{
+						int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
+						return compare_numbers(e1_val, e2_val);
+					}
+					case FLOAT :
+					{
+						if(ele_d_2->size == sizeof(float))
+						{
+							float e2_val = deserialize_float(e2);
+							return compare_numbers(e1_val, e2_val);
+						}
+						else if(ele_d_2->size == sizeof(double))
+						{
+							double e2_val = deserialize_double(e2);
+							return compare_numbers(e1_val, e2_val);
+						}
+						else if(ele_d_2->size == sizeof(long double))
+						{
+							long double e2_val = deserialize_long_double(e2);
+							return compare_numbers(e1_val, e2_val);
+						}
+						else
+							return -2;
+					}
+					default :
+						return -2;
 				}
-				case 8 :
+			}
+			else if(ele_d_1->size == sizeof(double))
+			{
+				double e1_val = deserialize_double(e1);
+				switch(ele_d_2->type)
 				{
-					double e1_val = deserialize_double(e1);
-					switch(ele_d_2->type)
+					case UINT :
 					{
-						case UINT :
-						{
-							uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
-							return compare_numbers(e1_val, e2_val);
-						}
-						case INT :
-						{
-							int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
-							return compare_numbers(e1_val, e2_val);
-						}
-						case FLOAT :
-						{
-							switch(ele_d_2->size)
-							{
-								case 4 :
-								{
-									float e2_val = deserialize_float(e2);
-									return compare_numbers(e1_val, e2_val);
-								}
-								case 8 :
-								{
-									double e2_val = deserialize_double(e2);
-									return compare_numbers(e1_val, e2_val);
-								}
-							}
-						}
-						default :
-							break;
+						uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
+						return compare_numbers(e1_val, e2_val);
 					}
+					case INT :
+					{
+						int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
+						return compare_numbers(e1_val, e2_val);
+					}
+					case FLOAT :
+					{
+						if(ele_d_2->size == sizeof(float))
+						{
+							float e2_val = deserialize_float(e2);
+							return compare_numbers(e1_val, e2_val);
+						}
+						else if(ele_d_2->size == sizeof(double))
+						{
+							double e2_val = deserialize_double(e2);
+							return compare_numbers(e1_val, e2_val);
+						}
+						else if(ele_d_2->size == sizeof(long double))
+						{
+							long double e2_val = deserialize_long_double(e2);
+							return compare_numbers(e1_val, e2_val);
+						}
+						else
+							return -2;
+					}
+					default :
+						return -2;
+				}
+			}
+			else if(ele_d_1->size == sizeof(long double))
+			{
+				long double e1_val = deserialize_long_double(e1);
+				switch(ele_d_2->type)
+				{
+					case UINT :
+					{
+						uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
+						return compare_numbers(e1_val, e2_val);
+					}
+					case INT :
+					{
+						int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
+						return compare_numbers(e1_val, e2_val);
+					}
+					case FLOAT :
+					{
+						if(ele_d_2->size == sizeof(float))
+						{
+							float e2_val = deserialize_float(e2);
+							return compare_numbers(e1_val, e2_val);
+						}
+						else if(ele_d_2->size == sizeof(double))
+						{
+							double e2_val = deserialize_double(e2);
+							return compare_numbers(e1_val, e2_val);
+						}
+						else if(ele_d_2->size == sizeof(long double))
+						{
+							long double e2_val = deserialize_long_double(e2);
+							return compare_numbers(e1_val, e2_val);
+						}
+						else
+							return -2;
+					}
+					default :
+						return -2;
 				}
 			}
 		}
 		default :
-			break;
+			return -2;
 	}
-	return -2;
 }
 
 uint32_t hash_numeral_type_element(const void* e, const element_def* ele_d, uint32_t (*hash_func)(const void* data, uint32_t size))
@@ -197,19 +248,13 @@ void set_numeral_element(void* e, const element_def* ele_d, const user_value* uv
 		}
 		case FLOAT :
 		{
-			switch(ele_d->size)
-			{
-				case 4 :
-				{
-					serialize_float(e, uval->float_value);
-					break;
-				}
-				case 8 :
-				{
-					serialize_double(e, uval->double_value);
-					break;
-				}
-			}
+			if(ele_d->size == sizeof(float))
+				serialize_float(e, uval->float_value);
+			else if(ele_d->size == sizeof(double))
+				serialize_double(e, uval->double_value);
+			else if(ele_d->size == sizeof(long double))
+				serialize_long_double(e, uval->long_double_value);
+			break;
 		}
 		default :
 			break;
@@ -239,20 +284,20 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 				}
 				case FLOAT :
 				{
-					switch(ele_d_from->size)
+					if(ele_d_from->size == sizeof(float))
 					{
-						case 4 :
-						{
-							float e_from_val = deserialize_float(e_from);
-							e_new_val = e_from_val;
-							break;
-						}
-						case 8 :
-						{
-							double e_from_val = deserialize_double(e_from);
-							e_new_val = e_from_val;
-							break;
-						}
+						float e_from_val = deserialize_float(e_from);
+						e_new_val = e_from_val;
+					}
+					else if(ele_d_from->size == sizeof(double))
+					{
+						double e_from_val = deserialize_double(e_from);
+						e_new_val = e_from_val;
+					}
+					else if(ele_d_from->size == sizeof(long double))
+					{
+						long double e_from_val = deserialize_long_double(e_from);
+						e_new_val = e_from_val;
 					}
 					break;
 				}
@@ -281,20 +326,20 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 				}
 				case FLOAT :
 				{
-					switch(ele_d_from->size)
+					if(ele_d_from->size == sizeof(float))
 					{
-						case 4 :
-						{
-							float e_from_val = deserialize_float(e_from);
-							e_new_val = e_from_val;
-							break;
-						}
-						case 8 :
-						{
-							double e_from_val = deserialize_double(e_from);
-							e_new_val = e_from_val;
-							break;
-						}
+						float e_from_val = deserialize_float(e_from);
+						e_new_val = e_from_val;
+					}
+					else if(ele_d_from->size == sizeof(double))
+					{
+						double e_from_val = deserialize_double(e_from);
+						e_new_val = e_from_val;
+					}
+					else if(ele_d_from->size == sizeof(long double))
+					{
+						long double e_from_val = deserialize_long_double(e_from);
+						e_new_val = e_from_val;
 					}
 					break;
 				}
@@ -306,93 +351,128 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 		}
 		case FLOAT :
 		{
-			switch(ele_d->size)
+			if(ele_d->size == sizeof(float))
 			{
-				case 4 :
+				float e_new_val = 0;
+				switch(ele_d_from->type)
 				{
-					float e_new_val = 0;
-					switch(ele_d_from->type)
+					case UINT :
 					{
-						case UINT :
-						{
-							uint64_t e_from_val = deserialize_uint64(e_from, ele_d_from->size);
-							e_new_val = e_from_val;
-							break;
-						}
-						case INT :
-						{
-							int64_t e_from_val = deserialize_int64(e_from, ele_d_from->size);
-							e_new_val = e_from_val;
-							break;
-						}
-						case FLOAT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 4 :
-								{
-									float e_from_val = deserialize_float(e_from);
-									e_new_val = e_from_val;
-									break;
-								}
-								case 8 :
-								{
-									double e_from_val = deserialize_double(e_from);
-									e_new_val = e_from_val;
-									break;
-								}
-							}
-							break;
-						}
-						default :
-							break;
+						uint64_t e_from_val = deserialize_uint64(e_from, ele_d_from->size);
+						e_new_val = e_from_val;
+						break;
 					}
-					serialize_float(e, e_new_val);
-					break;
+					case INT :
+					{
+						int64_t e_from_val = deserialize_int64(e_from, ele_d_from->size);
+						e_new_val = e_from_val;
+						break;
+					}
+					case FLOAT :
+					{
+						if(ele_d_from->size == sizeof(float))
+						{
+							float e_from_val = deserialize_float(e_from);
+							e_new_val = e_from_val;
+						}
+						else if(ele_d_from->size == sizeof(double))
+						{
+							double e_from_val = deserialize_double(e_from);
+							e_new_val = e_from_val;
+						}
+						else if(ele_d_from->size == sizeof(long double))
+						{
+							long double e_from_val = deserialize_long_double(e_from);
+							e_new_val = e_from_val;
+						}
+						break;
+					}
+					default :
+						break;
 				}
-				case 8 :
+				serialize_float(e, e_new_val);
+			}
+			else if(ele_d->size == sizeof(double))
+			{
+				double e_new_val = 0;
+				switch(ele_d_from->type)
 				{
-					double e_new_val = 0;
-					switch(ele_d_from->type)
+					case UINT :
 					{
-						case UINT :
-						{
-							uint64_t e_from_val = deserialize_uint64(e_from, ele_d_from->size);
-							e_new_val = e_from_val;
-							break;
-						}
-						case INT :
-						{
-							int64_t e_from_val = deserialize_int64(e_from, ele_d_from->size);
-							e_new_val = e_from_val;
-							break;
-						}
-						case FLOAT :
-						{
-							switch(ele_d_from->size)
-							{
-								case 4 :
-								{
-									float e_from_val = deserialize_float(e_from);
-									e_new_val = e_from_val;
-									break;
-								}
-								case 8 :
-								{
-									double e_from_val = deserialize_double(e_from);
-									e_new_val = e_from_val;
-									break;
-								}
-							}
-							break;
-						}
-						default :
-							break;
+						uint64_t e_from_val = deserialize_uint64(e_from, ele_d_from->size);
+						e_new_val = e_from_val;
+						break;
 					}
-					serialize_double(e, e_new_val);
-					break;
+					case INT :
+					{
+						int64_t e_from_val = deserialize_int64(e_from, ele_d_from->size);
+						e_new_val = e_from_val;
+						break;
+					}
+					case FLOAT :
+					{
+						if(ele_d_from->size == sizeof(float))
+						{
+							float e_from_val = deserialize_float(e_from);
+							e_new_val = e_from_val;
+						}
+						else if(ele_d_from->size == sizeof(double))
+						{
+							double e_from_val = deserialize_double(e_from);
+							e_new_val = e_from_val;
+						}
+						else if(ele_d_from->size == sizeof(long double))
+						{
+							long double e_from_val = deserialize_long_double(e_from);
+							e_new_val = e_from_val;
+						}
+						break;
+					}
+					default :
+						break;
 				}
-				break;
+				serialize_double(e, e_new_val);
+			}
+			else if(ele_d->size == sizeof(long double))
+			{
+				long double e_new_val = 0;
+				switch(ele_d_from->type)
+				{
+					case UINT :
+					{
+						uint64_t e_from_val = deserialize_uint64(e_from, ele_d_from->size);
+						e_new_val = e_from_val;
+						break;
+					}
+					case INT :
+					{
+						int64_t e_from_val = deserialize_int64(e_from, ele_d_from->size);
+						e_new_val = e_from_val;
+						break;
+					}
+					case FLOAT :
+					{
+						if(ele_d_from->size == sizeof(float))
+						{
+							float e_from_val = deserialize_float(e_from);
+							e_new_val = e_from_val;
+						}
+						else if(ele_d_from->size == sizeof(double))
+						{
+							double e_from_val = deserialize_double(e_from);
+							e_new_val = e_from_val;
+						}
+						else if(ele_d_from->size == sizeof(long double))
+						{
+							long double e_from_val = deserialize_long_double(e_from);
+							e_new_val = e_from_val;
+						}
+						break;
+					}
+					default :
+						break;
+				}
+				serialize_long_double(e, e_new_val);
 			}
 			break;
 		}
@@ -418,19 +498,12 @@ user_value get_value_from_numeral_element(const void* e, const element_def* ele_
 		}
 		case FLOAT :
 		{
-			switch(ele_d->size)
-			{
-				case 4 :
-				{
-					uval.float_value = deserialize_float(e);
-					break;
-				}
-				case 8 :
-				{
-					uval.double_value = deserialize_double(e);
-					break;
-				}
-			}
+			if(ele_d->size == sizeof(float))
+				uval.float_value = deserialize_float(e);
+			else if(ele_d->size == sizeof(double))
+				uval.double_value = deserialize_double(e);
+			else if(ele_d->size == sizeof(long double))
+				uval.long_double_value = deserialize_long_double(e);
 		}
 		default :
 			break;
@@ -455,19 +528,13 @@ user_value get_MIN_value_for_numeral_element_def(const element_def* ele_d)
 		}
 		case FLOAT :
 		{
-			switch(ele_d->size)
-			{
-				case 4 :
-				{
-					uval.float_value = get_FLOAT_MIN();
-					break;
-				}
-				case 8 :
-				{
-					uval.double_value = get_DOUBLE_MIN();
-					break;
-				}
-			}
+			if(ele_d->size == sizeof(float))
+				uval.float_value = get_FLOAT_MIN();
+			else if(ele_d->size == sizeof(double))
+				uval.double_value = get_DOUBLE_MIN();
+			else if(ele_d->size == sizeof(long double))
+				uval.long_double_value = get_LONG_DOUBLE_MIN();
+			break;
 		}
 		default :
 			break;
@@ -492,19 +559,13 @@ user_value get_MAX_value_for_numeral_element_def(const element_def* ele_d)
 		}
 		case FLOAT :
 		{
-			switch(ele_d->size)
-			{
-				case 4 :
-				{
-					uval.float_value = get_FLOAT_MAX();
-					break;
-				}
-				case 8 :
-				{
-					uval.double_value = get_DOUBLE_MAX();
-					break;
-				}
-			}
+			if(ele_d->size == sizeof(float))
+				uval.float_value = get_FLOAT_MAX();
+			else if(ele_d->size == sizeof(double))
+				uval.double_value = get_DOUBLE_MAX();
+			else if(ele_d->size == sizeof(long double))
+				uval.long_double_value = get_LONG_DOUBLE_MAX();
+			break;
 		}
 		default :
 			break;
