@@ -1,15 +1,14 @@
 1 PICKED TASKS
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
- *3* add large_uint type, the one from SerializableInteger
- *4* add bit fields type (with max bits 64), pack multiple adjacent bit files into a single bitmap and access them with cutlery's bitmap, all of them have same offset (pointing to first byte) but different bit_offsets, for reading and writing use get_bits and set_bits functionality fo bitmap, represent all adjacent bit fields as single bitmap on the tuple, if possible merge the first n number of bit fields into is null bitmap
+ *2* add large_uint type, the one from SerializableInteger
+ *3* add bit fields type (with max bits 64), pack multiple adjacent bit files into a single bitmap and access them with cutlery's bitmap, all of them have same offset (pointing to first byte) but different bit_offsets, for reading and writing use get_bits and set_bits functionality fo bitmap, represent all adjacent bit fields as single bitmap on the tuple, if possible merge the first n number of bit fields into is null bitmap
 
 2 NEW TYPE TASKS
- *5* add decimal fixed precission data type (* like libdecnumber) - very useful for finanacial purposes
- *6* bit fields, having fixed number of bits (upto 64)
- *7* variable length signed and unsigned integer (like that of leveldb and sqlite) (see if GMP (GNU MP) can be used here)
- *7* variable length real numbers (see how GMP (GNU MP) can be used here)
- *8* nested_tuple datatype
- *8* arrays of types
+ *4* add decimal fixed precission data type (* like libdecnumber) - very useful for finanacial purposes
+ *5* variable length signed and unsigned integer (like that of leveldb and sqlite) (see if GMP (GNU MP) can be used here)
+ *5* variable length real numbers (see how GMP (GNU MP) can be used here)
+ *6* nested_tuple datatype
+ *6* arrays of types
 
 3 OPTIMIZATION FOR COMPRESSION TASKS
- *9* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
+ *7* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
