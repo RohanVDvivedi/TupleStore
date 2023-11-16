@@ -51,6 +51,13 @@ int append_tuple_on_page(void* page, uint32_t page_size, const tuple_size_def* t
 // returns 1, if the append_tuple would succeed
 int can_append_tuple_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* external_tuple);
 
+// inserts tuple on the page, at the given index, fails if the page is out of space, or if the index is out of bounds i.e. when index > get_tuple_count()
+// index to all the tuples and tombstones at indices >= index, will increment by 1
+int insert_tuple_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple);
+
+// synonym of can_append_tuple_on_page
+int can_insert_tuple_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* external_tuple);
+
 // update tuple at the specified index, fails if the page is out of space, or if the index is out of bounds i.e. when index >= get_tuple_count()
 // if external_tuple is NULL, then a tombstone is placed at the given index
 int update_tuple_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple);

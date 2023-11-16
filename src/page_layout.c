@@ -101,6 +101,19 @@ int can_append_tuple_on_page(const void* page, uint32_t page_size, const tuple_s
 	return 0;
 }
 
+int insert_tuple_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple)
+{
+	if(index > )
+		return 0;
+
+	int appended = append_tuple_on_page(page, page_size, tpl_sz_d, external_tuple);
+}
+
+int can_insert_tuple_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* external_tuple)
+{
+	return can_append_tuple_on_page(page, page_size, tpl_sz_d, external_tuple);
+}
+
 int update_tuple_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple)
 {
 	switch(get_page_layout_type(tpl_sz_d))
