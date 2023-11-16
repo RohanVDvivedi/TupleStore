@@ -65,7 +65,8 @@ int can_update_tuple_on_page(const void* page, uint32_t page_size, const tuple_s
 ** can_update_tuple_on_page(page, index, external_tuple);
 */
 
-// to discard a tuple (or a tombstane) at the given index in the page, fails if index >= get_tuple_count()
+// to discard a tuple (or a tombstone) at the given index in the page, fails if index >= get_tuple_count()
+// index to all the tuples and tombstones greater than index will decrement by 1
 int discard_tuple_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index);
 
 // discards all the tuple on the page
