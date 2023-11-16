@@ -43,6 +43,9 @@ uint32_t get_tomb_stone_count_on_page(const void* page, uint32_t page_size, cons
 // returns 1, if the append_tuple would succeed
 int can_append_tuple_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* external_tuple);
 
+// returns 1, if the insert_tuple would succeed
+int can_insert_tuple_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple);
+
 // returns 1, if the update_tuple would succeed
 int can_update_tuple_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple);
 
