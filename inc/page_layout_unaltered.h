@@ -30,6 +30,9 @@ uint32_t get_page_header_size(const void* page, uint32_t page_size);
 // this is the smallest sized page that is required to store a tuple_count number of tuples, each having a given tuple definition
 uint32_t get_minimum_page_size(uint32_t page_header_size, const tuple_size_def* tpl_sz_d, uint32_t tuple_count);
 
+// returns maximum tuple_count possible on a page
+uint32_t get_maximum_tuple_count_on_page(uint32_t page_header_size, uint32_t page_size, const tuple_size_def* tpl_sz_d);
+
 // returns the number of tuples in the page (including the deleted ones, i.e. including tomb stones)
 uint32_t get_tuple_count_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
