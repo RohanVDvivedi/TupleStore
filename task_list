@@ -1,7 +1,6 @@
 1 PICKED TASKS
  *0* implement get_space_required_for_page_header(uin32_t page_size, uint32_t page_header_size);
  *0* implement can_page_header_fit_on_page(uint32_t page_size, uint32_t page_header_size);
- *0* copy declaration of get_maximum_tuple_count to unaltered page_layout header
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
  *2* add large_uint type, the one from SerializableInteger
  *3* add bit fields type (with max bits 64), pack multiple adjacent bit files into a single bitmap and access them with cutlery's bitmap, all of them have same offset (pointing to first byte) but different bit_offsets, for reading and writing use get_bits and set_bits functionality fo bitmap, represent all adjacent bit fields as single bitmap on the tuple, if possible merge the first n number of bit fields into is null bitmap
