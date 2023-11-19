@@ -4,6 +4,7 @@
 #include<stdint.h>
 
 // this is the total number of bytes that are required on the page (of given page_size) to store the page header (of given page_header_size)
+// this space includes the page_header_size and its prefix that stores the size of the page_header
 uint32_t get_space_required_for_page_header(uint32_t page_header_size, uint32_t page_size);
 
 // it just returns page_size >= get_space_required_for_page_header(page_header_size, page_size)

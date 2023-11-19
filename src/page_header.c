@@ -4,6 +4,16 @@
 
 #include<cutlery_stds.h>
 
+uint32_t get_space_required_for_page_header(uint32_t page_header_size, uint32_t page_size)
+{
+	return get_value_size_on_page(page_size) + page_header_size;
+}
+
+int can_page_header_fit_on_page(uint32_t page_header_size, uint32_t page_size)
+{
+	return page_size >= get_space_required_for_page_header(page_header_size, page_size);
+}
+
 uint32_t get_page_header_size(const void* page, uint32_t page_size)
 {
 	return read_value_from_page(page + 0, page_size);
