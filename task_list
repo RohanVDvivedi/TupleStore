@@ -1,5 +1,6 @@
 1 PICKED TASKS
  *0* implement get_space_required_for_page_header(uin32_t page_size, uint32_t page_header_size);
+ *0* implement can_page_header_fit_on_page(uint32_t page_size, uint32_t page_header_size);
  *0* copy declaration of get_maximum_tuple_count to unaltered page_layout header
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
  *2* add large_uint type, the one from SerializableInteger
