@@ -12,6 +12,13 @@ page_layout get_page_layout_type(const tuple_size_def* tpl_sz_d);
 
 // PAGE_HEADER public functions they are defined in the page_header.c
 
+// this is the total number of bytes that are required on the page (of given page_size) to store the page header (of given page_header_size)
+// this space includes the page_header_size and its prefix that stores the size of the page_header
+uint32_t get_space_required_for_page_header(uint32_t page_header_size, uint32_t page_size);
+
+// it just returns page_size >= get_space_required_for_page_header(page_header_size, page_size)
+int can_page_header_fit_on_page(uint32_t page_header_size, uint32_t page_size);
+
 // returns size of page header as stored on the page
 uint32_t get_page_header_size(const void* page, uint32_t page_size);
 
