@@ -88,7 +88,7 @@ uint32_t get_minimum_page_size_for_fixed_array_page(uint32_t page_header_size, c
 uint32_t get_maximum_tuple_count_for_fixed_array_page(uint32_t page_header_size, uint32_t page_size, const tuple_size_def* tpl_sz_d)
 {
 	// this equals => space_for_tuples_in_bits / (space_for_1_tuple_in_bits + 1-bit)
-	return (((uint64_t)get_space_to_be_allotted_to_all_tuples_fixed_array_page(page_header_size, page_size, tpl_sz_d)) * UINT64_C(8)) / ((((uint64_t)(tpl_sz_d->size)) * UINT64_C(8)) + UINT64_C(1));
+	return get_space_to_be_allotted_to_all_tuples_fixed_array_page(page_header_size, page_size, tpl_sz_d) / tpl_sz_d->size;
 }
 
 int init_fixed_array_page(void* page, uint32_t page_size, uint32_t page_header_size, const tuple_size_def* tpl_sz_d)
@@ -397,7 +397,7 @@ uint32_t get_space_allotted_to_all_tuples_fixed_array_page(const void* page, uin
 uint32_t get_space_to_be_allotted_to_all_tuples_fixed_array_page(uint32_t page_header_size, uint32_t page_size, const tuple_size_def* tpl_sz_d)
 {
 	uint32_t space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes = page_size - (get_value_size_on_page(page_size) + page_header_size + (get_value_size_on_page(page_size) * 2));
-	uint32_t tuple_capacity = (space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes * 8) / ((tpl_sz_d->size * 8) + 1);
+	uint32_t tuple_capacity = (((uint64_t)space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes) * UINT64_C(8)) / ((((uint64_t)(tpl_sz_d->size)) * UINT64_C(8)) + UINT64_C(1));
 	uint32_t is_valid_bitmap_size_in_bytes = bitmap_size_in_bytes(tuple_capacity);
 	return space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes - is_valid_bitmap_size_in_bytes;
 }
