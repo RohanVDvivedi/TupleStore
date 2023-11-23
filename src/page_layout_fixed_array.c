@@ -85,12 +85,6 @@ uint32_t get_minimum_page_size_for_fixed_array_page(uint32_t page_header_size, c
 	return min_size_32;
 }
 
-uint32_t get_maximum_tuple_count_for_fixed_array_page(uint32_t page_header_size, uint32_t page_size, const tuple_size_def* tpl_sz_d)
-{
-	// this equals => space_for_tuples_in_bits / (space_for_1_tuple_in_bits + 1-bit)
-	return get_space_to_be_allotted_to_all_tuples_fixed_array_page(page_header_size, page_size, tpl_sz_d) / tpl_sz_d->size;
-}
-
 int init_fixed_array_page(void* page, uint32_t page_size, uint32_t page_header_size, const tuple_size_def* tpl_sz_d)
 {
 	// the page must be able to accomodate atleast 1 tuple
