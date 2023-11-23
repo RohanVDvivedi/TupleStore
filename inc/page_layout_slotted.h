@@ -5,8 +5,6 @@
 
 uint32_t get_minimum_page_size_for_slotted_page(uint32_t page_header_size, const tuple_size_def* tpl_sz_d, uint32_t tuple_count);
 
-uint32_t get_maximum_tuple_count_for_slotted_page(uint32_t page_header_size, uint32_t page_size, const tuple_size_def* tpl_sz_d);
-
 int init_slotted_page(void* page, uint32_t page_size, uint32_t page_header_size, const tuple_size_def* tpl_sz_d);
 
 uint32_t get_tuple_count_slotted_page(const void* page, uint32_t page_size);
