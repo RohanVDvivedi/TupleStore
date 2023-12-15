@@ -308,6 +308,11 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 						return 1;
 					return compare_large_uint(e1_val, get_large_uint(e2_val));
 				}
+				case LARGE_UINT :
+				{
+					large_uint e2_val = deserialize_large_uint(e2, ele_d_2->size);
+					return compare_large_uint(e1_val, e2_val);
+				}
 				default :
 					return -2;
 			}
@@ -400,6 +405,12 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 					}
 					break;
 				}
+				case LARGE_UINT :
+				{
+					large_uint e_from_val = deserialize_large_uint(e_from, ele_d_from->size);
+					e_new_val = e_from_val.limbs[0];
+					break;
+				}
 				default :
 					break;
 			}
@@ -440,6 +451,12 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 						long double e_from_val = deserialize_long_double(e_from);
 						e_new_val = e_from_val;
 					}
+					break;
+				}
+				case LARGE_UINT :
+				{
+					large_uint e_from_val = deserialize_large_uint(e_from, ele_d_from->size);
+					e_new_val = e_from_val.limbs[0];
 					break;
 				}
 				default :
@@ -575,6 +592,31 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 			}
 			break;
 		}
+		case LARGE_UINT :
+		{
+			large_uint e_new_val = LARGE_UINT_MIN;
+			switch(ele_d_from->type)
+			{
+				case UINT :
+				{
+					uint64_t e_from_val = deserialize_uint64(e_from, ele_d_from->size);
+					e_new_val = get_large_uint(e_from_val);
+					break;
+				}
+				case INT :
+				{
+					int64_t e_from_val = deserialize_int64(e_from, ele_d_from->size);
+					e_new_val = get_large_uint(e_from_val);
+					break;
+				}
+				case LARGE_UINT :
+				{
+					e_new_val = deserialize_large_uint(e_from, ele_d_from->size);
+					break;
+				}
+			}
+			break;
+		}
 		default :
 			break;
 	}
@@ -603,6 +645,11 @@ user_value get_value_from_numeral_element(const void* e, const element_def* ele_
 				uval.double_value = deserialize_double(e);
 			else if(ele_d->size == sizeof(long double))
 				uval.long_double_value = deserialize_long_double(e);
+		}
+		case LARGE_UINT :
+		{
+			uval.large_uint_value = deserialize_large_uint(e, ele_d->size);
+			break;
 		}
 		default :
 			break;
@@ -635,6 +682,11 @@ user_value get_MIN_value_for_numeral_element_def(const element_def* ele_d)
 				uval.long_double_value = get_LONG_DOUBLE_MIN();
 			break;
 		}
+		case LARGE_UINT :
+		{
+			uval.large_uint_value = LARGE_UINT_MIN;
+			break;
+		}
 		default :
 			break;
 	}
@@ -664,6 +716,11 @@ user_value get_MAX_value_for_numeral_element_def(const element_def* ele_d)
 				uval.double_value = get_DOUBLE_MAX();
 			else if(ele_d->size == sizeof(long double))
 				uval.long_double_value = get_LONG_DOUBLE_MAX();
+			break;
+		}
+		case LARGE_UINT :
+		{
+			uval.large_uint_value = LARGE_UINT_MAX;
 			break;
 		}
 		default :

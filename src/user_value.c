@@ -83,6 +83,11 @@ void print_user_value(const user_value* uval, const element_def* ele_d)
 				printf("%Lf", uval->long_double_value);
 			break;
 		}
+		case LARGE_UINT :
+		{
+			print_large_uint(uval->large_uint_val);
+			break;
+		}
 		case STRING :
 		case VAR_STRING :
 		{

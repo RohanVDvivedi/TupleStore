@@ -19,6 +19,7 @@ struct user_value
 		float float_value;
 		double double_value;
 		long double long_double_value;
+		large_uint large_uint_value;
 		struct
 		{
 			const void* data;
