@@ -13,13 +13,16 @@ enum element_type
 {
 	UINT	   = 0,
 	INT 	   = 1,
-	FLOAT	   = 2,
-	STRING     = 3,
-	BLOB       = 4,
+	LARGE_UINT = 2
+	FLOAT	   = 3,
+	// numeric datatypes end
+
+	STRING     = 6,
+	BLOB       = 7,
 	// above data types are fixed size
 
-	VAR_STRING = 5,
-	VAR_BLOB   = 6
+	VAR_STRING = 8,
+	VAR_BLOB   = 9
 	// data of VAR_STRING or VAR_BLOB are of variable size
 };
 
