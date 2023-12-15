@@ -10,10 +10,71 @@ int is_numeral_type_element_def(const element_def* ele_d)
 		case UINT :
 		case INT :
 		case FLOAT :
+		case LARGE_UINT :
 			return 1;
 		default :
 			return 0;
 	}
+}
+
+int can_compare_numeral_type_element_def(const element_def* ele_d_1, const element_def* ele_d_2)
+{
+	switch(ele_d_1->type)
+	{
+		case UINT :
+		{
+			switch(ele_d_2->type)
+			{
+				case UINT :
+				case INT :
+				case FLOAT :
+				case LARGE_UINT :
+					return 1;
+				default :
+					return 0;
+			}
+		}
+		case INT :
+		{
+			switch(ele_d_2->type)
+			{
+				case UINT :
+				case INT :
+				case FLOAT :
+				case LARGE_UINT :
+					return 1;
+				default :
+					return 0;
+			}
+		}
+		case FLOAT :
+		{
+			switch(ele_d_2->type)
+			{
+				case UINT :
+				case INT :
+				case FLOAT :
+					return 1;
+				default :
+					return 0;
+			}
+		}
+		case LARGE_UINT :
+		{
+			switch(ele_d_2->type)
+			{
+				case INT :
+				case UINT :
+				case LARGE_UINT :
+					return 1;
+				default :
+					return 0;
+			}
+		}
+		default :
+			return 0;
+	}
+	return 0;
 }
 
 int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2)
@@ -55,6 +116,11 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 					else
 						return -2;
 				}
+				case LARGE_UINT :
+				{
+					large_uint e2_val = deserialize_large_uint(e2, ele_d_2->size);
+					return compare_large_uint(get_large_uint(e1_val), e2_val);
+				}
 				default :
 					return -2;
 			}
@@ -93,6 +159,13 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 					}
 					else
 						return -2;
+				}
+				case LARGE_UINT :
+				{
+					if(e1_val < 0)
+						return -1;
+					large_uint e2_val = deserialize_large_uint(e2, ele_d_2->size);
+					return compare_large_uint(get_large_uint(e1_val), e2_val);
 				}
 				default :
 					return -2;
@@ -218,6 +291,27 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 				}
 			}
 		}
+		case LARGE_UINT :
+		{
+			large_uint e1_val = deserialize_large_uint(e1, ele_d_1->size);
+			switch(ele_d_2->type)
+			{
+				case UINT :
+				{
+					uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
+					return compare_large_uint(e1_val, get_large_uint(e2_val));
+				}
+				case INT :
+				{
+					int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
+					if(e2_val < 0)
+						return 1;
+					return compare_large_uint(e1_val, get_large_uint(e2_val));
+				}
+				default :
+					return -2;
+			}
+		}
 		default :
 			return -2;
 	}
@@ -254,6 +348,11 @@ void set_numeral_element(void* e, const element_def* ele_d, const user_value* uv
 				serialize_double(e, uval->double_value);
 			else if(ele_d->size == sizeof(long double))
 				serialize_long_double(e, uval->long_double_value);
+			break;
+		}
+		case LARGE_UINT :
+		{
+			serialize_large_uint(e, ele_d->size, uval->large_uint_val);
 			break;
 		}
 		default :

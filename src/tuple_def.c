@@ -10,6 +10,7 @@
 #include<string_or_blob_element_types_util.h>
 
 #include<serial_int.h>
+#include<large_uint.h>
 
 char type_as_string[][16] = {
 								"UINT",
@@ -33,6 +34,8 @@ static int is_size_allowed_for_fixed_sized_type(element_type ele_type, uint32_t 
 		case UINT :
 		case INT :
 			return (1 <= size) && (size <= 8);
+		case LARGE_UINT :
+			return (1 <= size) && (size <= LARGE_UINT_MAX_BYTES);
 		case FLOAT :
 			return (size == sizeof(float)) || (size == sizeof(double)) || (size == sizeof(long double));
 		case STRING :
@@ -153,7 +156,7 @@ uint32_t get_element_size_from_user_value(const user_value* uval, const element_
 int can_compare_element_defs(const element_def* ele_d_1, const element_def* ele_d_2)
 {
 	if(is_numeral_type_element_def(ele_d_1) && is_numeral_type_element_def(ele_d_2))
-		return 1;
+		return can_compare_numeral_type_element_def(ele_d_1, ele_d_2);
 	else if(is_string_type_element_def(ele_d_1) && is_string_type_element_def(ele_d_2))
 		return 1;
 	else if(is_blob_type_element_def(ele_d_1) && is_blob_type_element_def(ele_d_2))
