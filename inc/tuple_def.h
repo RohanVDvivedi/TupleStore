@@ -13,7 +13,7 @@ enum element_type
 {
 	UINT	   = 0,
 	INT 	   = 1,
-	LARGE_UINT = 2
+	LARGE_UINT = 2,
 	FLOAT	   = 3,
 	// numeric datatypes end
 

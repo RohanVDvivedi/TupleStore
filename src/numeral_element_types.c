@@ -357,7 +357,7 @@ void set_numeral_element(void* e, const element_def* ele_d, const user_value* uv
 		}
 		case LARGE_UINT :
 		{
-			serialize_large_uint(e, ele_d->size, uval->large_uint_val);
+			serialize_large_uint(e, ele_d->size, uval->large_uint_value);
 			break;
 		}
 		default :
@@ -614,7 +614,10 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 					e_new_val = deserialize_large_uint(e_from, ele_d_from->size);
 					break;
 				}
+				default :
+					break;
 			}
+			serialize_large_uint(e, ele_d->size, e_new_val);
 			break;
 		}
 		default :
