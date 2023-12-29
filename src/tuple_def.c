@@ -93,7 +93,7 @@ static int init_element_def(element_def* element_d, const char* name, element_ty
 
 		if(ele_type == BIT_FIELD)
 		{
-			// set the bit_offset to 0 for BIT_FIELD
+			// set the bit_offset to 0 for BIT_FIELD in the prefix_bitmap
 			// we don't know it yet
 			element_d->bit_offset = 0;
 		}
