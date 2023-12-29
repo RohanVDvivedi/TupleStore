@@ -16,6 +16,8 @@ enum element_type
 	FLOAT	   = 2,
 	LARGE_UINT = 3,
 	BIT_FIELD  = 4,
+		// BIT_FIELDs are numeric fixed bit-width unsigned data types,
+		// they occupy space with the null bitmap in the prefix of the tuple, if any
 	// numeric datatypes end
 
 	STRING     = 6,
