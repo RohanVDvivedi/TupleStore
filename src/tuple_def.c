@@ -91,9 +91,18 @@ static int init_element_def(element_def* element_d, const char* name, element_ty
 
 		element_d->size = size_OR_prefix_size;
 
-		// set the byte_offset to 0
-		// we don't know it yet
-		element_d->byte_offset = 0;
+		if(ele_type == BIT_FIELD)
+		{
+			// set the bit_offset to 0 for BIT_FIELD
+			// we don't know it yet
+			element_d->bit_offset = 0;
+		}
+		else
+		{
+			// set the byte_offset to 0
+			// we don't know it yet
+			element_d->byte_offset = 0;
+		}
 	}
 
 	// set type to the ele_type as in parameter
