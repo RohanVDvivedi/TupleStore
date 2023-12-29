@@ -42,6 +42,8 @@ struct element_def
 	{
 		// used for type == UINT, INT, FLOAT, LARGE_UINT, STRING and BLOB
 		// size in bytes that may be occupied by the element
+		// also used for type == BIT_FIELD
+		// but then it is size in bits of the bit field
 		uint32_t size;
 
 		// used for type = VAR_STRING and VAR_BLOB
@@ -54,6 +56,10 @@ struct element_def
 		// used for type == UINT, INT, FLOAT, STRING and BLOB
 		// defined as byte offset of the element in the tuple
 		uint32_t byte_offset;
+
+		// used for type == BIT_FIELD
+		// but then it is its bit_offset in the prefix bitmap
+		uint32_t bit_offset;
 
 		// used for type = VAR_STRING and VAR_BLOB
 		// defined as byte offset to the byte offset of this element in the tuple
