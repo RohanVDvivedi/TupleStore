@@ -1,6 +1,16 @@
+TOP PICKED
+ * add fixed length BIT_FIELD type (max bits 64) - a unsigned int bit field that is NULLable aswell
+ * club adjacent bit field into a single bit field, use start bit_offset (== 0 for all elements other than bit_fields) and bit_field_size as bit_field specific attributed in element def.
+ * all adjacent bit fields have same byte_offset and same size.
+ * use cutlery's bitmap field to read and write bit fields from tuple
+ * behave like uint64s
+ * extra care while finalizing the tuple_def to club all the bit fields
+ * print bit fields in binary uint64s
+
+ * test with 6 + 4 + 7 size adjacent bit fields, taking 3 bytes
+
 1 PICKED TASKS
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
- *2* add bit fields type (with max bits 64), pack multiple adjacent bit files into a single bitmap and access them with cutlery's bitmap, all of them have same offset (pointing to first byte) but different bit_offsets, for reading and writing use get_bits and set_bits functionality fo bitmap, represent all adjacent bit fields as single bitmap on the tuple, if possible merge the first n number of bit fields into is null bitmap
 
 2 NEW TYPE TASKS
  *3* add decimal fixed precission data type (* like libdecnumber) - very useful for finanacial purposes
