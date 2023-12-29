@@ -39,7 +39,7 @@ struct element_def
 
 	union
 	{
-		// used for type == UINT, INT, FLOAT, STRING and BLOB
+		// used for type == UINT, INT, FLOAT, LARGE_UINT, STRING and BLOB
 		// size in bytes that may be occupied by the element
 		uint32_t size;
 
