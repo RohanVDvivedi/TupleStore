@@ -73,7 +73,7 @@ struct element_def
 	int is_non_NULLable;
 
 	// valid only for NULLable fixed_sized_element_def
-	uint32_t is_NULL_bitmap_bit_offset;
+	uint32_t is_NULL_prefix_bitmap_bit_offset;
 
 	// if the element_def is non NULLable then this is the default vaue it must be set to
 	// default_value of is_NON_NULLable element can not be (user_value){.is_NULL = 1}

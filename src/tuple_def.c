@@ -233,8 +233,8 @@ static int init_tuple_def(tuple_def* tuple_d, const char* name, uint32_t max_tup
 	tuple_d->size_def.size_of_byte_offsets = get_value_size_on_page(max_tuple_size);
 	tuple_d->size_def.size = 0; // this also sets min_size to 0
 	tuple_d->size_def.max_size = max_tuple_size;
-	tuple_d->byte_offset_to_is_null_bitmap = 0;
-	tuple_d->is_NULL_bitmap_size_in_bits = 0;
+	tuple_d->byte_offset_to_prefix_bitmap = 0;
+	tuple_d->prefix_bitmap_size_in_bits = 0;
 
 	return 1;
 }
@@ -334,11 +334,11 @@ static inline int check_overflow_and_add(uint32_t* a, uint32_t b, uint32_t max_l
 int finalize_tuple_def(tuple_def* tuple_d)
 {
 	tuple_d->size_def.is_variable_sized = 0;
-	tuple_d->is_NULL_bitmap_size_in_bits = 0;
+	tuple_d->prefix_bitmap_size_in_bits = 0;
 
 	// figure out 2 things in this loop
 	// whether the tuple_def is_variable_sized
-	// and the number of the bits required in is_NULL_bitmap
+	// and the number of the bits required in prefix_bitmap, and assign bits to the bit_fields in prefix_bitmap
 	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tuple_d); i++)
 	{
 		element_def* def = (element_def*) get_element_def_by_id(tuple_d, i);
@@ -349,26 +349,40 @@ int finalize_tuple_def(tuple_def* tuple_d)
 
 		// give this element a bit in is_NULL_bitmap only if it needs it
 		if(needs_bit_in_is_NULL_bitmap(def))
-			def->is_NULL_bitmap_bit_offset = tuple_d->is_NULL_bitmap_size_in_bits++;
+		{
+			def->is_NULL_prefix_bitmap_bit_offset = tuple_d->prefix_bitmap_size_in_bits;
+			tuple_d->prefix_bitmap_size_in_bits += 1;
+		}
+
+		// assign bit offsets in prefix_bitmap, to the bit_fields
+		if(def->type == BIT_FIELD)
+		{
+			def->bit_offset = tuple_d->prefix_bitmap_size_in_bits;
+			tuple_d->prefix_bitmap_size_in_bits += def->size;
+		}
 	}
 
 	tuple_d->size_def.size = 0;
-	tuple_d->byte_offset_to_is_null_bitmap = 0;
+	tuple_d->byte_offset_to_prefix_bitmap = 0;
 
 	// allocate space for storing tuple_size for variable sized tuple_def
 	if(tuple_d->size_def.is_variable_sized)
 	{
 		if(check_overflow_and_add(&(tuple_d->size_def.min_size), tuple_d->size_def.size_of_byte_offsets, tuple_d->size_def.max_size))
 			return 0;
-		tuple_d->byte_offset_to_is_null_bitmap = tuple_d->size_def.min_size;
+		tuple_d->byte_offset_to_prefix_bitmap = tuple_d->size_def.min_size;
 	}
 
-	tuple_d->size_def.size += bitmap_size_in_bytes(tuple_d->is_NULL_bitmap_size_in_bits);
+	tuple_d->size_def.size += bitmap_size_in_bytes(tuple_d->prefix_bitmap_size_in_bits);
 
 	// now we compute the offsets (and the offsets to their byte_offsets) for all the element_defs
 	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tuple_d); i++)
 	{
 		element_def* def = (element_def*) get_element_def_by_id(tuple_d, i);
+
+		// all the work needed for BIT_FIELD is already done, hence we can skip it
+		if(def->type == BIT_FIELD)
+			continue;
 
 		if(is_variable_sized_element_def(def))
 		{
@@ -491,11 +505,14 @@ static void print_element_def(const element_def* element_d)
 	else
 	{
 		printf("\t\t\t size : %"PRIu32"\n", element_d->size);
-		printf("\t\t\t byte_offset : %"PRIu32"\n", element_d->byte_offset);
+		if(element_d->type == BIT_FIELD)
+			printf("\t\t\t bit_offset : %"PRIu32"\n", element_d->bit_offset);
+		else
+			printf("\t\t\t byte_offset : %"PRIu32"\n", element_d->byte_offset);
 	}
 	printf("\t\t\t NON_NULL : %d\n", element_d->is_non_NULLable);
 	if(has_bit_in_is_NULL_bitmap(element_d))
-		printf("\t\t\t is_NULL_bitmap_bit_offset : %"PRIu32"\n", element_d->is_NULL_bitmap_bit_offset);
+		printf("\t\t\t is_NULL_bitmap_bit_offset : %"PRIu32"\n", element_d->is_NULL_prefix_bitmap_bit_offset);
 	printf("\t\t\t default : ");
 	print_user_value(&(element_d->default_value), element_d);
 	printf("\n");
@@ -509,10 +526,10 @@ void print_tuple_def(const tuple_def* tuple_d)
 		printf("\t min_size : %"PRIu32"\n", get_minimum_tuple_size(tuple_d));
 	else
 		printf("\t size : %"PRIu32"\n", tuple_d->size_def.size);
-	printf("\t byte_offset_to_is_null_bitmap : %"PRIu32"\n", tuple_d->byte_offset_to_is_null_bitmap);
+	printf("\t byte_offset_to_prefix_bitmap : %"PRIu32"\n", tuple_d->byte_offset_to_prefix_bitmap);
 	if(is_variable_sized_tuple_def(tuple_d))
 		printf("\t size_of_byte_offsets : %"PRIu32"\n", tuple_d->size_def.size_of_byte_offsets);
-	printf("\t is_NULL_bitmap_size_in_bits : %"PRIu32"\n", tuple_d->is_NULL_bitmap_size_in_bits);
+	printf("\t prefix_bitmap_size_in_bits : %"PRIu32"\n", tuple_d->prefix_bitmap_size_in_bits);
 	printf("\t element_count : %"PRIu32"\n", get_element_def_count_tuple_def(tuple_d));
 	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tuple_d); i++)
 	{
