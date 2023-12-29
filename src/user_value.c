@@ -88,6 +88,11 @@ void print_user_value(const user_value* uval, const element_def* ele_d)
 			print_large_uint(uval->large_uint_value);
 			break;
 		}
+		case BIT_FIELD :
+		{
+			printf("%"PRIx64, uval->bit_field_value);
+			break;
+		}
 		case STRING :
 		case VAR_STRING :
 		{
