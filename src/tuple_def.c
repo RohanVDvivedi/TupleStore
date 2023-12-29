@@ -17,7 +17,7 @@ char type_as_string[][16] = {
 								"INT",
 								"FLOAT",
 								"LARGE_UINT",
-								"",
+								"BIT_FIELD",
 								"",
 								"STRING",
 								"BLOB",

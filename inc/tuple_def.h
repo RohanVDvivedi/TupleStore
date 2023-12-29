@@ -15,6 +15,7 @@ enum element_type
 	INT 	   = 1,
 	FLOAT	   = 2,
 	LARGE_UINT = 3,
+	BIT_FIELD  = 4,
 	// numeric datatypes end
 
 	STRING     = 6,
