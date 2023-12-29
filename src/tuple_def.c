@@ -350,15 +350,19 @@ int finalize_tuple_def(tuple_def* tuple_d)
 		// give this element a bit in is_NULL_bitmap only if it needs it
 		if(needs_bit_in_is_NULL_bitmap(def))
 		{
+			// assign is_NULL_prefix_bitmap_bit_offset and increment the prefix_bitmap_size_in_bits
 			def->is_NULL_prefix_bitmap_bit_offset = tuple_d->prefix_bitmap_size_in_bits;
-			tuple_d->prefix_bitmap_size_in_bits += 1;
+			if(check_overflow_and_add(&(tuple_d->prefix_bitmap_size_in_bits), 1, UINT32_MAX))
+				return 0;
 		}
 
 		// assign bit offsets in prefix_bitmap, to the bit_fields
 		if(def->type == BIT_FIELD)
 		{
+			// assign bit_offset to bit_field and increment the prefix_bitmap_size_in_bits
 			def->bit_offset = tuple_d->prefix_bitmap_size_in_bits;
-			tuple_d->prefix_bitmap_size_in_bits += def->size;
+			if(check_overflow_and_add(&(tuple_d->prefix_bitmap_size_in_bits), def->size, UINT32_MAX))
+				return 0;
 		}
 	}
 
@@ -373,7 +377,9 @@ int finalize_tuple_def(tuple_def* tuple_d)
 		tuple_d->byte_offset_to_prefix_bitmap = tuple_d->size_def.min_size;
 	}
 
-	tuple_d->size_def.size += bitmap_size_in_bytes(tuple_d->prefix_bitmap_size_in_bits);
+	// add prefix_bitmap's size in bytes to tuple_sed size 
+	if(check_overflow_and_add(&(tuple_d->size_def.size), bitmap_size_in_bytes(tuple_d->prefix_bitmap_size_in_bits), tuple_d->size_def.max_size))
+		return 0;
 
 	// now we compute the offsets (and the offsets to their byte_offsets) for all the element_defs
 	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tuple_d); i++)
