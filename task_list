@@ -13,11 +13,11 @@ TOP PICKED
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
 
 2 NEW TYPE TASKS
- *3* add decimal fixed precission data type (* like libdecnumber) - very useful for finanacial purposes
- *4* variable length signed and unsigned integer (like that of leveldb and sqlite) (see if GMP (GNU MP) can be used here)
- *4* variable length real numbers (see how GMP (GNU MP) can be used here)
- *5* nested_tuple datatype
- *5* arrays of types
+ *2* add decimal fixed precission data type (* like libdecnumber) - very useful for finanacial purposes
+ *3* variable length signed and unsigned integer (like that of leveldb and sqlite) (see if GMP (GNU MP) can be used here)
+ *3* variable length real numbers (see how GMP (GNU MP) can be used here)
+ *4* nested_tuple datatype
+ *4* arrays of types
 
 3 OPTIMIZATION FOR COMPRESSION TASKS
- *6* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
+ *5* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
