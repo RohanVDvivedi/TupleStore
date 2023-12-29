@@ -151,15 +151,16 @@ struct tuple_def
 	// that allow you to know the size of the tuple
 	tuple_size_def size_def;
 
-	// at this offset there is a bitmap of element_count number of bits
-	// if the corresponding bit is set then the value at that location is NULL
+	// at this offset there is a bitmap of bits
+	// it will correspond to the bit_fields OR the is_NULL bit for the nullable fixed width elements
+	// if the corresponding is_NULL bit is set then the value at that location is NULL
 	// for fixed length tuple this offset is 0
 	// for variale length tuple this offset is equal to the bytes required to store the tuple size
-	uint32_t byte_offset_to_is_null_bitmap;
+	uint32_t byte_offset_to_prefix_bitmap;
 
 	// number of bits in is_NULL_bitmap
 	// to reiterate only NULLable fixed_sized_elements need a bit in is_NULL bitmap
-	uint32_t is_NULL_bitmap_size_in_bits;
+	uint32_t prefix_bitmap_size_in_bits;
 
 	// definition of all of the elements in the tuple_def
 	element_defs_list element_defs;
