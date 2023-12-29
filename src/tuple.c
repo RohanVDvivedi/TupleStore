@@ -20,6 +20,14 @@ void init_tuple(const tuple_def* tpl_d, void* tupl)
 	// set all the is_NULL_bitmap bits to 1
 	set_all_bits(tupl + tpl_d->byte_offset_to_prefix_bitmap, tpl_d->prefix_bitmap_size_in_bits);
 
+	// set all bit_field values to 0
+	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tpl_d); i++)
+	{
+		const element_def* ele_d = get_element_def_by_id(tpl_d, i);
+		if(ele_d->type == BIT_FIELD)
+			set_bits(tupl + tpl_d->byte_offset_to_prefix_bitmap, ele_d->bit_offset, ele_d->bit_offset + ele_d->size - 1, 0);
+	}
+
 	// set its size to minimum size of the tuple
 	if(is_variable_sized_tuple_def(tpl_d))
 		serialize_uint32(tupl, tpl_d->size_def.size_of_byte_offsets, get_minimum_tuple_size(tpl_d));
