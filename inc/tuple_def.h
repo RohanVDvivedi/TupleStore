@@ -104,6 +104,8 @@ int can_compare_element_defs(const element_def* ele_d_1, const element_def* ele_
 // ideally if you can compare them, then you must be allowed to set one from another
 int can_set_from_element_defs(const element_def* ele_d_1, const element_def* ele_d_2);
 
+// for bit_fields e1, e1 and e must be pointing to the bitmap prefix
+
 // compare 2 elements, given their element definitions
 // to use this function appropriately can_compare_element_defs on the corresponding element_defs must return true(1)
 int compare_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2);
