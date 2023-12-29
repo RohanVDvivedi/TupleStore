@@ -18,7 +18,7 @@
 void init_tuple(const tuple_def* tpl_d, void* tupl)
 {
 	// set all the is_NULL_bitmap bits to 1
-	set_all_bits(tupl + tpl_d->byte_offset_to_is_null_bitmap, tpl_d->is_NULL_bitmap_size_in_bits);
+	set_all_bits(tupl + tpl_d->byte_offset_to_prefix_bitmap, tpl_d->prefix_bitmap_size_in_bits);
 
 	// set its size to minimum size of the tuple
 	if(is_variable_sized_tuple_def(tpl_d))
@@ -38,7 +38,12 @@ static uint32_t get_element_offset_within_tuple(const tuple_def* tpl_d, uint32_t
 {
 	const element_def* ele_d = get_element_def_by_id(tpl_d, index);
 	if(is_fixed_sized_element_def(ele_d)) // i.e. fixed sized
-		return ele_d->byte_offset;
+	{
+		if(ele_d->type == BIT_FIELD)
+			return tpl_d->byte_offset_to_prefix_bitmap;
+		else
+			return ele_d->byte_offset;
+	}
 	else
 		return deserialize_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_def.size_of_byte_offsets);
 }
@@ -87,7 +92,7 @@ int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 
 	// check the is_NULL bit for fixed sized element def
 	if(has_bit_in_is_NULL_bitmap(ele_d))
-		return get_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, ele_d->is_NULL_bitmap_bit_offset);
+		return get_bit(tupl + tpl_d->byte_offset_to_prefix_bitmap, ele_d->is_NULL_prefix_bitmap_bit_offset);
 	else if(is_variable_sized_element_def(ele_d))// else for a variable sized element, check its offset, if the offset is 0, then the element is NULL
 		return (0 == deserialize_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_def.size_of_byte_offsets));
 	else // else it is NOT null or just can not be NULL
@@ -106,7 +111,7 @@ static int set_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl)
 	// set its is_NULL bit if it has 1
 	if(has_bit_in_is_NULL_bitmap(ele_d))
 	{
-		set_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, ele_d->is_NULL_bitmap_bit_offset);
+		set_bit(tupl + tpl_d->byte_offset_to_prefix_bitmap, ele_d->is_NULL_prefix_bitmap_bit_offset);
 		done = 1;
 	}
 
@@ -128,7 +133,7 @@ static int reset_NULL_bit_in_tuple(const tuple_def* tpl_d, uint32_t index, void*
 	// reset is_NULL bit if it has one
 	if(has_bit_in_is_NULL_bitmap(ele_d))
 	{
-		reset_bit(tupl + tpl_d->byte_offset_to_is_null_bitmap, ele_d->is_NULL_bitmap_bit_offset);
+		reset_bit(tupl + tpl_d->byte_offset_to_prefix_bitmap, ele_d->is_NULL_prefix_bitmap_bit_offset);
 		return 1;
 	}
 

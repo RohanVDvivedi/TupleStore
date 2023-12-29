@@ -22,7 +22,7 @@ struct user_value
 		double double_value;
 		long double long_double_value;
 		large_uint large_uint_value;
-		uint64_t bit_field_vale;
+		uint64_t bit_field_value;
 		struct
 		{
 			const void* data;
