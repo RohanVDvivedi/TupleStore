@@ -11,7 +11,7 @@ char my_tuple[MAX_TUPLE_SIZE];
 tuple_def* get_tuple_definition()
 {
 	// initialize tuple definition and insert element definitions
-	tuple_def* def = get_new_tuple_def("my_table", 16, PAGE_SIZE);
+	tuple_def* def = get_new_tuple_def("my_table", 16, MAX_TUPLE_SIZE);
 
 	int res = insert_element_def(def, "col_0", BIT_FIELD, 5, 0, NULL);
 	if(res == 0)
