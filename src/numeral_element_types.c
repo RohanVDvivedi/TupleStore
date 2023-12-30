@@ -521,6 +521,12 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 					e_new_val = e_from_val.limbs[0];
 					break;
 				}
+				case BIT_FIELD :
+				{
+					uint64_t e_from_val = get_bits(e_from, ele_d_from->bit_offset, ele_d_from->bit_offset + ele_d_from->size - 1);
+					e_new_val = e_from_val;
+					break;
+				}
 				default :
 					break;
 			}
@@ -569,6 +575,12 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 					e_new_val = e_from_val.limbs[0];
 					break;
 				}
+				case BIT_FIELD :
+				{
+					uint64_t e_from_val = get_bits(e_from, ele_d_from->bit_offset, ele_d_from->bit_offset + ele_d_from->size - 1);
+					e_new_val = e_from_val;
+					break;
+				}
 				default :
 					break;
 			}
@@ -613,6 +625,12 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 						}
 						break;
 					}
+					case BIT_FIELD :
+					{
+						uint64_t e_from_val = get_bits(e_from, ele_d_from->bit_offset, ele_d_from->bit_offset + ele_d_from->size - 1);
+						e_new_val = e_from_val;
+						break;
+					}
 					default :
 						break;
 				}
@@ -652,6 +670,12 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 							long double e_from_val = deserialize_long_double(e_from);
 							e_new_val = e_from_val;
 						}
+						break;
+					}
+					case BIT_FIELD :
+					{
+						uint64_t e_from_val = get_bits(e_from, ele_d_from->bit_offset, ele_d_from->bit_offset + ele_d_from->size - 1);
+						e_new_val = e_from_val;
 						break;
 					}
 					default :
@@ -695,6 +719,12 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 						}
 						break;
 					}
+					case BIT_FIELD :
+					{
+						uint64_t e_from_val = get_bits(e_from, ele_d_from->bit_offset, ele_d_from->bit_offset + ele_d_from->size - 1);
+						e_new_val = e_from_val;
+						break;
+					}
 					default :
 						break;
 				}
@@ -722,6 +752,12 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 				case LARGE_UINT :
 				{
 					e_new_val = deserialize_large_uint(e_from, ele_d_from->size);
+					break;
+				}
+				case BIT_FIELD :
+				{
+					uint64_t e_from_val = get_bits(e_from, ele_d_from->bit_offset, ele_d_from->bit_offset + ele_d_from->size - 1);
+					e_new_val = get_large_uint(e_from_val);
 					break;
 				}
 				default :
