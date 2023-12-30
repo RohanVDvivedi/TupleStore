@@ -62,6 +62,13 @@ tuple_def* get_tuple_definition()
 		exit(-1);
 	}
 
+	res = insert_element_def(def, "col_7", FLOAT, sizeof(long double), 0, NULL);
+	if(res == 0)
+	{
+		printf("failed adding column 7\n");
+		exit(-1);
+	}
+
 	res = finalize_tuple_def(def);
 	if(res == 0)
 	{
@@ -104,6 +111,7 @@ int main()
 	set_element_in_tuple(def, 4, my_tuple, &((user_value){.bit_field_value = 500}));
 	set_element_in_tuple(def, 5, my_tuple, &string_user_value("Dvivedi"));
 	set_element_in_tuple(def, 6, my_tuple, &((user_value){.uint_value = 29}));
+	set_element_in_tuple(def, 7, my_tuple, &((user_value){.long_double_value = 2900}));
 
 	// print the tuple
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
@@ -114,10 +122,11 @@ int main()
 	set_element_in_tuple(def, 0, my_tuple, &((user_value){.bit_field_value = 30}));
 	set_element_in_tuple(def, 1, my_tuple, &((user_value){.large_uint_value = get_large_uint(10)}));
 	set_element_in_tuple(def, 2, my_tuple, &string_user_value("Rohan V"));
-	set_element_in_tuple(def, 3, my_tuple, &((user_value){.int_value = -50}));
+	set_element_in_tuple(def, 3, my_tuple, &((user_value){.int_value = 30}));
 	set_element_in_tuple(def, 4, my_tuple, &((user_value){.bit_field_value = 250}));
 	set_element_in_tuple(def, 5, my_tuple, &string_user_value("V Dvivedi"));
 	set_element_in_tuple(def, 6, my_tuple, &((user_value){.uint_value = 3000}));
+	set_element_in_tuple(def, 7, my_tuple, &((user_value){.long_double_value = 295.2966}));
 
 	// print the tuple
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
@@ -126,6 +135,18 @@ int main()
 	int cmp = compare_tuples(
 							my_tuple, def, ((uint32_t[]){0}),
 							my_tuple, def, ((uint32_t[]){1}),
+							((compare_direction[]){ASC}), 1);
+	printf("cmp = %d\n", cmp);
+
+	cmp = compare_tuples(
+							my_tuple, def, ((uint32_t[]){0}),
+							my_tuple, def, ((uint32_t[]){3}),
+							((compare_direction[]){ASC}), 1);
+	printf("cmp = %d\n", cmp);
+
+	cmp = compare_tuples(
+							my_tuple, def, ((uint32_t[]){0}),
+							my_tuple, def, ((uint32_t[]){7}),
 							((compare_direction[]){ASC}), 1);
 	printf("cmp = %d\n", cmp);
 
@@ -138,6 +159,7 @@ int main()
 	set_element_in_tuple(def, 4, my_tuple, NULL_USER_VALUE);
 	set_element_in_tuple(def, 5, my_tuple, NULL_USER_VALUE);
 	set_element_in_tuple(def, 6, my_tuple, NULL_USER_VALUE);
+	set_element_in_tuple(def, 7, my_tuple, NULL_USER_VALUE);
 
 	// print the tuple
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
