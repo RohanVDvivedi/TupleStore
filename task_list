@@ -1,6 +1,3 @@
-TOP PICKED
- * thorough tuple_def.c and tuple.c code read to find bugs, related to bi fields, large_uint and long double
-
 1 PICKED TASKS
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
 
