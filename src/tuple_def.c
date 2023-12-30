@@ -41,7 +41,7 @@ static int is_size_allowed_for_fixed_sized_type(element_type ele_type, uint32_t 
 			return (size == sizeof(float)) || (size == sizeof(double)) || (size == sizeof(long double));
 		case LARGE_UINT :
 			return (1 <= size) && (size <= LARGE_UINT_MAX_BYTES);
-		case BIT_FIELD :
+		case BIT_FIELD : // for BIT_FIELD the size is in bits
 			return (1 <= size) && (size <= 64);
 		case STRING :
 		case BLOB :	// STRING and BLOB can be of any size
@@ -57,7 +57,7 @@ static int is_prefix_size_allowed_for_variable_sized_type(element_type ele_type,
 	{
 		case VAR_STRING :
 		case VAR_BLOB :
-			return (prefix_size != 0) && (prefix_size <= 4);
+			return (1 <= prefix_size) && (prefix_size <= 4);
 		default :
 			return 0;
 	}
