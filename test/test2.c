@@ -55,7 +55,7 @@ tuple_def* get_tuple_definition()
 		exit(-1);
 	}
 
-	res = insert_element_def(def, "col_6", INT, 1, 0, NULL);
+	res = insert_element_def(def, "col_6", UINT, 5, 0, NULL);
 	if(res == 0)
 	{
 		printf("failed adding column 6\n");
