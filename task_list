@@ -1,13 +1,5 @@
 TOP PICKED
- * add fixed length BIT_FIELD type (max bits 64) - a unsigned int bit field that is NULLable aswell
- * convert is_NULL_bitmap to is_NULL_and_BIT_FIELD_bitmap, all bit_fields get stored after the is_NULL bitmap -> refactor this
- * make union of byte_offset and bit_offset (used for bit field), and for size stores the size in bits of bit field (1-64) for bit field
- * use cutlery's bitmap field to read and write bit fields from tuple
- * behave like uint64s
- * extra care while finalizing the tuple_def to club all the bit fields
- * print bit fields in binary uint64s
-
- * test with 6 + 4 + 2 + 5 size bit fields in test cases
+ * write testcases for test2
 
 1 PICKED TASKS
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
