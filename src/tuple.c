@@ -259,10 +259,18 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 		{
 			// here we are sure that the element in the tuple is not NULL
 
-			// reset the corresponding bytes (of the fixed length element)
+			// we set the corresponding bits in the tuple to 0s
 			void* ele = get_element_from_tuple(tpl_d, index, tupl);
-			uint32_t ele_size = get_element_size_within_tuple(tpl_d, index, tupl);
-			memory_set(ele, 0, ele_size);
+
+			if(ele_d->type == BIT_FIELD) // set corresponsing bit field to 0s
+				set_bits(ele, ele_d->bit_offset, ele_d->bit_offset + ele_d->size - 1, 0);
+			else
+			{
+				// reset the corresponding bytes (of the fixed length element) only if it is not bit_field
+				void* ele = get_element_from_tuple(tpl_d, index, tupl);
+				uint32_t ele_size = get_element_size_within_tuple(tpl_d, index, tupl);
+				memory_set(ele, 0, ele_size);
+			}
 
 			// then just set the corresponding bit in the is_null bitmap
 			set_NULL_in_tuple(tpl_d, index, tupl);
