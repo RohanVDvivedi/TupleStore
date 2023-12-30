@@ -280,7 +280,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl, con
 			// set the is_null bitmap bit to 0
 			reset_NULL_bit_in_tuple(tpl_d, index, tupl);
 
-			// this won't return a NULL element because, we just resetted this element's is_null_bitmap bit
+			// this won't return a NULL element because, we just resetted this element's is_null bit in prefix_bitmap
 			void* ele = get_element_from_tuple(tpl_d, index, tupl);
 
 			if(is_numeral_type_element_def(ele_d))
