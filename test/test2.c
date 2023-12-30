@@ -81,6 +81,8 @@ tuple_def* get_tuple_definition()
 	return def;
 }
 
+#define string_user_value(s) ((user_value){.data = s, .data_size = strlen(s)})
+
 int main()
 {
 	// create tuple_def for the test cases
@@ -88,6 +90,48 @@ int main()
 
 	// init tuple
 	init_tuple(def, my_tuple);
+
+	// print the tuple
+	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
+	print_tuple(my_tuple, def);
+
+	// set them all to non nulls
+	printf("\nsetting all attributes to non NULLs\n");
+	set_element_in_tuple(def, 0, my_tuple, &((user_value){.bit_field_value = 29}));
+	set_element_in_tuple(def, 1, my_tuple, &((user_value){.large_uint_value = get_large_uint(29)}));
+	set_element_in_tuple(def, 2, my_tuple, &string_user_value("Rohan"));
+	set_element_in_tuple(def, 3, my_tuple, &((user_value){.int_value = -29}));
+	set_element_in_tuple(def, 4, my_tuple, &((user_value){.bit_field_value = 500}));
+	set_element_in_tuple(def, 5, my_tuple, &string_user_value("Dvivedi"));
+	set_element_in_tuple(def, 6, my_tuple, &((user_value){.uint_value = 29}));
+
+	// print the tuple
+	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
+	print_tuple(my_tuple, def);
+
+	// set them all to non nulls
+	printf("\nsetting all attributes to different non NULLs\n");
+	set_element_in_tuple(def, 0, my_tuple, &((user_value){.bit_field_value = 300}));
+	set_element_in_tuple(def, 1, my_tuple, &((user_value){.large_uint_value = get_large_uint(300)}));
+	set_element_in_tuple(def, 2, my_tuple, &string_user_value("Rohan V"));
+	set_element_in_tuple(def, 3, my_tuple, &((user_value){.int_value = -50}));
+	set_element_in_tuple(def, 4, my_tuple, &((user_value){.bit_field_value = 250}));
+	set_element_in_tuple(def, 5, my_tuple, &string_user_value("V Dvivedi"));
+	set_element_in_tuple(def, 6, my_tuple, &((user_value){.uint_value = 3000}));
+
+	// print the tuple
+	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
+	print_tuple(my_tuple, def);
+
+	// set them all to non nulls
+	printf("\nsetting all attributes to NULLs\n");
+	set_element_in_tuple(def, 0, my_tuple, NULL_USER_VALUE);
+	set_element_in_tuple(def, 1, my_tuple, NULL_USER_VALUE);
+	set_element_in_tuple(def, 2, my_tuple, NULL_USER_VALUE);
+	set_element_in_tuple(def, 3, my_tuple, NULL_USER_VALUE);
+	set_element_in_tuple(def, 4, my_tuple, NULL_USER_VALUE);
+	set_element_in_tuple(def, 5, my_tuple, NULL_USER_VALUE);
+	set_element_in_tuple(def, 6, my_tuple, NULL_USER_VALUE);
 
 	// print the tuple
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
