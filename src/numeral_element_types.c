@@ -141,6 +141,11 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 					large_uint e2_val = deserialize_large_uint(e2, ele_d_2->size);
 					return compare_large_uint(get_large_uint(e1_val), e2_val);
 				}
+				case BIT_FIELD :
+				{
+					uint64_t e2_val = get_bits(e2, ele_d_2->bit_offset, ele_d_2->bit_offset + ele_d_2->size - 1);
+					return compare_numbers(e1_val, e2_val);
+				}
 				default :
 					return -2;
 			}
@@ -187,6 +192,11 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 					large_uint e2_val = deserialize_large_uint(e2, ele_d_2->size);
 					return compare_large_uint(get_large_uint(e1_val), e2_val);
 				}
+				case BIT_FIELD :
+				{
+					uint64_t e2_val = get_bits(e2, ele_d_2->bit_offset, ele_d_2->bit_offset + ele_d_2->size - 1);
+					return compare_numbers(e1_val, e2_val);
+				}
 				default :
 					return -2;
 			}
@@ -228,6 +238,11 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 						else
 							return -2;
 					}
+					case BIT_FIELD :
+					{
+						uint64_t e2_val = get_bits(e2, ele_d_2->bit_offset, ele_d_2->bit_offset + ele_d_2->size - 1);
+						return compare_numbers(e1_val, e2_val);
+					}
 					default :
 						return -2;
 				}
@@ -266,6 +281,11 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 						}
 						else
 							return -2;
+					}
+					case BIT_FIELD :
+					{
+						uint64_t e2_val = get_bits(e2, ele_d_2->bit_offset, ele_d_2->bit_offset + ele_d_2->size - 1);
+						return compare_numbers(e1_val, e2_val);
 					}
 					default :
 						return -2;
@@ -306,6 +326,11 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 						else
 							return -2;
 					}
+					case BIT_FIELD :
+					{
+						uint64_t e2_val = get_bits(e2, ele_d_2->bit_offset, ele_d_2->bit_offset + ele_d_2->size - 1);
+						return compare_numbers(e1_val, e2_val);
+					}
 					default :
 						return -2;
 				}
@@ -332,6 +357,60 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 				{
 					large_uint e2_val = deserialize_large_uint(e2, ele_d_2->size);
 					return compare_large_uint(e1_val, e2_val);
+				}
+				case BIT_FIELD :
+				{
+					uint64_t e2_val = get_bits(e2, ele_d_2->bit_offset, ele_d_2->bit_offset + ele_d_2->size - 1);
+					return compare_large_uint(e1_val, get_large_uint(e2_val));
+				}
+				default :
+					return -2;
+			}
+		}
+		case BIT_FIELD :
+		{
+			uint64_t e1_val = get_bits(e1, ele_d_1->bit_offset, ele_d_1->bit_offset + ele_d_1->size - 1);
+			switch(ele_d_2->type)
+			{
+				case UINT :
+				{
+					uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
+					return compare_numbers(e1_val, e2_val);
+				}
+				case INT :
+				{
+					int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
+					return compare_numbers(e1_val, e2_val);
+				}
+				case FLOAT :
+				{
+					if(ele_d_2->size == sizeof(float))
+					{
+						float e2_val = deserialize_float(e2);
+						return compare_numbers(e1_val, e2_val);
+					}
+					else if(ele_d_2->size == sizeof(double))
+					{
+						double e2_val = deserialize_double(e2);
+						return compare_numbers(e1_val, e2_val);
+					}
+					else if(ele_d_2->size == sizeof(long double))
+					{
+						long double e2_val = deserialize_long_double(e2);
+						return compare_numbers(e1_val, e2_val);
+					}
+					else
+						return -2;
+				}
+				case LARGE_UINT :
+				{
+					large_uint e2_val = deserialize_large_uint(e2, ele_d_2->size);
+					return compare_large_uint(get_large_uint(e1_val), e2_val);
+				}
+				case BIT_FIELD :
+				{
+					uint64_t e2_val = get_bits(e2, ele_d_2->bit_offset, ele_d_2->bit_offset + ele_d_2->size - 1);
+					return compare_numbers(e1_val, e2_val);
 				}
 				default :
 					return -2;
