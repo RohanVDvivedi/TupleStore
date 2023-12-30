@@ -709,6 +709,11 @@ user_value get_MIN_value_for_numeral_element_def(const element_def* ele_d)
 			uval.large_uint_value = LARGE_UINT_MIN;
 			break;
 		}
+		case BIT_FIELD :
+		{
+			uval.bit_field_value = 0;
+			break;
+		}
 		default :
 			break;
 	}
@@ -743,6 +748,11 @@ user_value get_MAX_value_for_numeral_element_def(const element_def* ele_d)
 		case LARGE_UINT :
 		{
 			uval.large_uint_value = LARGE_UINT_MAX;
+			break;
+		}
+		case BIT_FIELD :
+		{
+			uval.bit_field_value = get_UINT64_MAX(ele_d->size);
 			break;
 		}
 		default :
