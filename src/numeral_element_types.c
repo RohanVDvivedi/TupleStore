@@ -752,7 +752,7 @@ user_value get_MAX_value_for_numeral_element_def(const element_def* ele_d)
 		}
 		case BIT_FIELD :
 		{
-			uval.bit_field_value = get_UINT64_MAX(ele_d->size);
+			uval.bit_field_value = ((ele_d->size == 64) ? UINT64_MAX : ((UINT64_C(1) << ele_d->size) - 1));
 			break;
 		}
 		default :
