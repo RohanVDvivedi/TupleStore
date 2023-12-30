@@ -142,27 +142,31 @@ int is_NULLable_element_def(const element_def* element_d)
 	return !(element_d->is_non_NULLable);
 }
 
-int has_bit_in_is_NULL_bitmap(const element_def* element_d)
+int has_is_NULL_bit_in_prefix_bitmap(const element_def* element_d)
 {
 	return is_fixed_sized_element_def(element_d) && is_NULLable_element_def(element_d);
 }
 
-#define needs_bit_in_is_NULL_bitmap has_bit_in_is_NULL_bitmap
+#define needs_is_NULL_bit_in_prefix_bitmap has_is_NULL_bit_in_prefix_bitmap
 
 uint32_t get_element_size(const void* e, const element_def* ele_d)
 {
-	if(is_numeral_type_element_def(ele_d))
+	if(ele_d->type == BIT_FIELD) // BIT_FIELDs do not occupy any space in the data section of the tuple, they only occupy space in the prefix_bitmap
+		return 0;
+	else if(is_numeral_type_element_def(ele_d))
 		return ele_d->size;
-	else if(is_variable_sized_string_OR_blob_element_def(ele_d))
+	else // for STRING and BLOB types
 		return get_element_size_for_string_OR_blob_element(e, ele_d);
 	return 0;
 }
 
 uint32_t get_element_size_from_user_value(const user_value* uval, const element_def* ele_d)
 {
-	if(is_numeral_type_element_def(ele_d))
+	if(ele_d->type == BIT_FIELD) // BIT_FIELDs do not occupy any space in the data section of the tuple, they only occupy space in the prefix_bitmap
+		return 0;
+	else if(is_numeral_type_element_def(ele_d))
 		return ele_d->size;
-	else if(is_variable_sized_string_OR_blob_element_def(ele_d))
+	else if(is_string_OR_blob_type_element_def(ele_d)) // for STRING and BLOB types
 		return get_element_size_from_user_value_for_string_OR_blob_element(uval, ele_d);
 	return 0;
 }
@@ -347,8 +351,8 @@ int finalize_tuple_def(tuple_def* tuple_d)
 		if(is_variable_sized_element_def(def))
 			tuple_d->size_def.is_variable_sized = 1;
 
-		// give this element a bit in is_NULL_bitmap only if it needs it
-		if(needs_bit_in_is_NULL_bitmap(def))
+		// give this element an is_NULL bit in prefix_bitmap only if it needs it
+		if(needs_is_NULL_bit_in_prefix_bitmap(def))
 		{
 			// assign is_NULL_prefix_bitmap_bit_offset and increment the prefix_bitmap_size_in_bits
 			def->is_NULL_prefix_bitmap_bit_offset = tuple_d->prefix_bitmap_size_in_bits;
