@@ -86,6 +86,13 @@ int main()
 	// create tuple_def for the test cases
 	tuple_def* def = get_tuple_definition();
 
+	// init tuple
+	init_tuple(def, my_tuple);
+
+	// print the tuple
+	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
+	print_tuple(my_tuple, def);
+
 	// delete tuple_def
 	delete_tuple_def(def);
 
