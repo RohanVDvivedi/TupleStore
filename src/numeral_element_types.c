@@ -11,6 +11,7 @@ int is_numeral_type_element_def(const element_def* ele_d)
 		case INT :
 		case FLOAT :
 		case LARGE_UINT :
+		case BIT_FIELD :
 			return 1;
 		default :
 			return 0;
@@ -29,6 +30,7 @@ int can_compare_numeral_type_element_def(const element_def* ele_d_1, const eleme
 				case INT :
 				case FLOAT :
 				case LARGE_UINT :
+				case BIT_FIELD :
 					return 1;
 				default :
 					return 0;
@@ -42,6 +44,7 @@ int can_compare_numeral_type_element_def(const element_def* ele_d_1, const eleme
 				case INT :
 				case FLOAT :
 				case LARGE_UINT :
+				case BIT_FIELD :
 					return 1;
 				default :
 					return 0;
@@ -54,6 +57,7 @@ int can_compare_numeral_type_element_def(const element_def* ele_d_1, const eleme
 				case UINT :
 				case INT :
 				case FLOAT :
+				case BIT_FIELD :
 					return 1;
 				default :
 					return 0;
@@ -66,6 +70,21 @@ int can_compare_numeral_type_element_def(const element_def* ele_d_1, const eleme
 				case INT :
 				case UINT :
 				case LARGE_UINT :
+				case BIT_FIELD :
+					return 1;
+				default :
+					return 0;
+			}
+		}
+		case BIT_FIELD :
+		{
+			switch(ele_d_2->type)
+			{
+				case UINT :
+				case INT :
+				case FLOAT :
+				case LARGE_UINT :
+				case BIT_FIELD :
 					return 1;
 				default :
 					return 0;
