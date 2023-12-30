@@ -123,7 +123,6 @@ int main()
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
 	print_tuple(my_tuple, def);
 
-
 	int cmp = compare_tuples(
 							my_tuple, def, ((uint32_t[]){0}),
 							my_tuple, def, ((uint32_t[]){1}),
