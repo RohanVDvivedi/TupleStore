@@ -766,6 +766,60 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 			serialize_large_uint(e, ele_d->size, e_new_val);
 			break;
 		}
+		case BIT_FIELD :
+		{
+			uint64_t e_new_val = 0;
+			switch(ele_d_from->type)
+			{
+				case UINT :
+				{
+					uint64_t e_from_val = deserialize_uint64(e_from, ele_d_from->size);
+					e_new_val = e_from_val;
+					break;
+				}
+				case INT :
+				{
+					int64_t e_from_val = deserialize_int64(e_from, ele_d_from->size);
+					e_new_val = e_from_val;
+					break;
+				}
+				case FLOAT :
+				{
+					if(ele_d_from->size == sizeof(float))
+					{
+						float e_from_val = deserialize_float(e_from);
+						e_new_val = e_from_val;
+					}
+					else if(ele_d_from->size == sizeof(double))
+					{
+						double e_from_val = deserialize_double(e_from);
+						e_new_val = e_from_val;
+					}
+					else if(ele_d_from->size == sizeof(long double))
+					{
+						long double e_from_val = deserialize_long_double(e_from);
+						e_new_val = e_from_val;
+					}
+					break;
+				}
+				case LARGE_UINT :
+				{
+					large_uint e_from_val = deserialize_large_uint(e_from, ele_d_from->size);
+					e_new_val = e_from_val.limbs[0];
+					break;
+				}
+				case BIT_FIELD :
+				{
+					uint64_t e_from_val = get_bits(e_from, ele_d_from->bit_offset, ele_d_from->bit_offset + ele_d_from->size - 1);
+					e_new_val = e_from_val;
+					break;
+				}
+				default :
+					break;
+			}
+			set_bits(e, ele_d->bit_offset, ele_d->bit_offset + ele_d->size - 1, e_new_val);
+			break;
+		}
 		default :
 			break;
 	}
