@@ -99,7 +99,7 @@ int is_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, const void* tupl)
 	const element_def* ele_d = get_element_def_by_id(tpl_d, index);
 
 	// check the is_NULL bit for fixed sized element def
-	if(has_bit_in_is_NULL_bitmap(ele_d))
+	if(has_is_NULL_bit_in_prefix_bitmap(ele_d))
 		return get_bit(tupl + tpl_d->byte_offset_to_prefix_bitmap, ele_d->is_NULL_prefix_bitmap_bit_offset);
 	else if(is_variable_sized_element_def(ele_d))// else for a variable sized element, check its offset, if the offset is 0, then the element is NULL
 		return (0 == deserialize_uint32(tupl + ele_d->byte_offset_to_byte_offset, tpl_d->size_def.size_of_byte_offsets));
@@ -117,7 +117,7 @@ static int set_NULL_in_tuple(const tuple_def* tpl_d, uint32_t index, void* tupl)
 	int done = 0;
 
 	// set its is_NULL bit if it has 1
-	if(has_bit_in_is_NULL_bitmap(ele_d))
+	if(has_is_NULL_bit_in_prefix_bitmap(ele_d))
 	{
 		set_bit(tupl + tpl_d->byte_offset_to_prefix_bitmap, ele_d->is_NULL_prefix_bitmap_bit_offset);
 		done = 1;
@@ -139,7 +139,7 @@ static int reset_NULL_bit_in_tuple(const tuple_def* tpl_d, uint32_t index, void*
 	const element_def* ele_d = get_element_def_by_id(tpl_d, index);
 
 	// reset is_NULL bit if it has one
-	if(has_bit_in_is_NULL_bitmap(ele_d))
+	if(has_is_NULL_bit_in_prefix_bitmap(ele_d))
 	{
 		reset_bit(tupl + tpl_d->byte_offset_to_prefix_bitmap, ele_d->is_NULL_prefix_bitmap_bit_offset);
 		return 1;

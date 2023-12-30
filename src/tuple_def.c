@@ -521,7 +521,7 @@ static void print_element_def(const element_def* element_d)
 			printf("\t\t\t byte_offset : %"PRIu32"\n", element_d->byte_offset);
 	}
 	printf("\t\t\t NON_NULL : %d\n", element_d->is_non_NULLable);
-	if(has_bit_in_is_NULL_bitmap(element_d))
+	if(has_is_NULL_bit_in_prefix_bitmap(element_d))
 		printf("\t\t\t is_NULL_bitmap_bit_offset : %"PRIu32"\n", element_d->is_NULL_prefix_bitmap_bit_offset);
 	printf("\t\t\t default : ");
 	print_user_value(&(element_d->default_value), element_d);
