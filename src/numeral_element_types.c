@@ -344,7 +344,13 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 
 uint32_t hash_numeral_type_element(const void* e, const element_def* ele_d, uint32_t (*hash_func)(const void* data, uint32_t size))
 {
-	return hash_func(e, ele_d->size);
+	if(ele_d->type == BIT_FIELD)
+	{
+		uint64_t bit_field_value = get_bits(e, ele_d->bit_offset, ele_d->bit_offset + ele_d->size - 1);
+		return hash_func(&bit_field_value, sizeof(uint64_t));
+	}
+	else
+		return hash_func(e, ele_d->size);
 }
 
 void set_numeral_element(void* e, const element_def* ele_d, const user_value* uval)
