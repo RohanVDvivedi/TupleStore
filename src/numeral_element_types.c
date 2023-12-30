@@ -335,6 +335,8 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 						return -2;
 				}
 			}
+			else
+				return -2;
 		}
 		case LARGE_UINT :
 		{
