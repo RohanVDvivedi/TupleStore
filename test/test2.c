@@ -111,8 +111,8 @@ int main()
 
 	// set them all to non nulls
 	printf("\nsetting all attributes to different non NULLs\n");
-	set_element_in_tuple(def, 0, my_tuple, &((user_value){.bit_field_value = 300}));
-	set_element_in_tuple(def, 1, my_tuple, &((user_value){.large_uint_value = get_large_uint(300)}));
+	set_element_in_tuple(def, 0, my_tuple, &((user_value){.bit_field_value = 30}));
+	set_element_in_tuple(def, 1, my_tuple, &((user_value){.large_uint_value = get_large_uint(10)}));
 	set_element_in_tuple(def, 2, my_tuple, &string_user_value("Rohan V"));
 	set_element_in_tuple(def, 3, my_tuple, &((user_value){.int_value = -50}));
 	set_element_in_tuple(def, 4, my_tuple, &((user_value){.bit_field_value = 250}));
@@ -122,6 +122,13 @@ int main()
 	// print the tuple
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
 	print_tuple(my_tuple, def);
+
+
+	int cmp = compare_tuples(
+							my_tuple, def, ((uint32_t[]){0}),
+							my_tuple, def, ((uint32_t[]){1}),
+							((compare_direction[]){ASC}), 1);
+	printf("cmp = %d\n", cmp);
 
 	// set them all to non nulls
 	printf("\nsetting all attributes to NULLs\n");
