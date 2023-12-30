@@ -2,6 +2,7 @@
 
 #include<serial_int.h>
 #include<float_accesses.h>
+#include<bitmap.h>
 
 int is_numeral_type_element_def(const element_def* ele_d)
 {
@@ -379,6 +380,11 @@ void set_numeral_element(void* e, const element_def* ele_d, const user_value* uv
 			serialize_large_uint(e, ele_d->size, uval->large_uint_value);
 			break;
 		}
+		case BIT_FIELD :
+		{
+			set_bits(e, ele_d->bit_offset, ele_d->bit_offset + ele_d->size - 1, uval->bit_field_value);
+			break;
+		}
 		default :
 			break;
 	}
@@ -671,6 +677,11 @@ user_value get_value_from_numeral_element(const void* e, const element_def* ele_
 		case LARGE_UINT :
 		{
 			uval.large_uint_value = deserialize_large_uint(e, ele_d->size);
+			break;
+		}
+		case BIT_FIELD :
+		{
+			uval.bit_field_value = get_bits(e, ele_d->bit_offset, ele_d->bit_offset + ele_d->size - 1);
 			break;
 		}
 		default :
