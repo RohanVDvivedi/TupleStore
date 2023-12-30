@@ -83,5 +83,11 @@ tuple_def* get_tuple_definition()
 
 int main()
 {
+	// create tuple_def for the test cases
+	tuple_def* def = get_tuple_definition();
+
+	// delete tuple_def
+	delete_tuple_def(def);
+
 	return 0;
 }
