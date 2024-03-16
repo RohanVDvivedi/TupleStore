@@ -385,7 +385,7 @@ uint32_t get_space_occupied_by_all_tomb_stones_fixed_array_page(const void* page
 
 uint32_t get_space_to_be_occupied_by_tuple_fixed_array_page(uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* external_tuple)
 {
-	// for fixed array page, even a tomb_stone (tuple == NULL)
+	// for fixed array page, even a tomb_stone (exyernal_tuple == NULL)
 	// occupies tuple_size space on the page
 	return tpl_sz_d->size;
 }
