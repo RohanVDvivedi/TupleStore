@@ -1,9 +1,4 @@
 1 PICKED TASKS
- *0* implement uint32_t get_space_to_be_occupied_by_tuple_on_page(uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* tuple); // this is the space that this tuple(/tomb_stone (if tuple = NULL)) will occupy (OR is occupying) on the page, this includes the space required by tuple data and the additional space required for space management
- // this value is not not equal to get_tuple_size + get_additional_space_overhead_per_tuple
-   * get_additional_space_overhead_per_tuple_on_page() -> additional space required over the space taken by the tuple data, (for a non tombstone tuple)
-   * use this function to compute a check to see if the tuple can be inserted/appended on the page
-   * refactor all instances of get_tuple_size and get_additional_space -> as they would occur with such calls that instead require this call
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
 
 2 NEW TYPE TASKS
