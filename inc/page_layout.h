@@ -156,9 +156,13 @@ uint32_t get_space_to_be_allotted_to_all_tuples_on_page(uint32_t page_header_siz
 // this is equivalent to get_space_allotted_to_all_tuples() - ( get_free_space_in_page() + get_space_occupied_by_all_tuples() )
 uint32_t get_fragmentation_space_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
+// space_allotted_to_all_tuples = space_occupied_by_all_tuples + free_space + fragmented_space
+
 // this the additional space in the "space_allotted_to_all_tuples" that will be used per tuple
 // the total space occupied by a (non tomb_stone) tuple on the page is equal to the tuple_size (when tuple is not a tomb_stone) + get_additional_space_overhead_per_tuple
 uint32_t get_additional_space_overhead_per_tuple_on_page(uint32_t page_size, const tuple_size_def* tpl_sz_d);
+
+// for a tuple (non tomb_stone) => space_occupied_by_tuple = tuple_size + additional_space_overhead
 
 
 

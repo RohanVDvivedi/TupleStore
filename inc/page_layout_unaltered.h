@@ -82,6 +82,10 @@ uint32_t get_space_occupied_by_all_tuples_on_page(const void* page, uint32_t pag
 // returns space_occupied by deleted tuples (i.e. tomb_stones) on the page from start_index to last_index
 uint32_t get_space_occupied_by_all_tomb_stones_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
+// this is the space that this tuple(/tomb_stone (if tuple = NULL)) will occupy (OR is occupying) on the page
+// this includes the space required by tuple data and the additional space required for space management, for this tuple on the page
+uint32_t get_space_to_be_occupied_by_tuple_on_page(uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* tuple);
+
 // this is equivalent to free_space when the tuple_count = 0
 uint32_t get_space_allotted_to_all_tuples_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
@@ -92,9 +96,10 @@ uint32_t get_space_to_be_allotted_to_all_tuples_on_page(uint32_t page_header_siz
 uint32_t get_fragmentation_space_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
 // this the additional space in the "space_allotted_to_all_tuples" that will be used per tuple
-// when you insert a tuple 
-// the total space occupied by this tuple on the page is equal to the tuple_size + get_additional_space_overhead_per_tuple
+// the total space occupied by a (non tomb_stone) tuple on the page is equal to the tuple_size (when tuple is not a tomb_stone) + get_additional_space_overhead_per_tuple
 uint32_t get_additional_space_overhead_per_tuple_on_page(uint32_t page_size, const tuple_size_def* tpl_sz_d);
+
+// for a tuple (non tomb_stone) => space_occupied_by_tuple = tuple_size + additional_space_overhead
 
 
 
