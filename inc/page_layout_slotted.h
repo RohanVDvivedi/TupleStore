@@ -41,7 +41,7 @@ uint32_t get_space_occupied_by_all_tuples_slotted_page(const void* page, uint32_
 
 uint32_t get_space_occupied_by_all_tomb_stones_slotted_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
-uint32_t get_space_to_be_occupied_by_tuple_slotted_page(uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* tuple);
+uint32_t get_space_to_be_occupied_by_tuple_slotted_page(uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* external_tuple);
 
 uint32_t get_space_allotted_to_all_tuples_slotted_page(const void* page, uint32_t page_size);
 

@@ -311,14 +311,14 @@ uint32_t get_space_occupied_by_all_tomb_stones_on_page(const void* page, uint32_
 	return 0;
 }
 
-uint32_t get_space_to_be_occupied_by_tuple_on_page(uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* tuple)
+uint32_t get_space_to_be_occupied_by_tuple_on_page(uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* external_tuple)
 {
 	switch(get_page_layout_type(tpl_sz_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			return get_space_to_be_occupied_by_tuple_slotted_page(page_size, tpl_sz_d, tuple);
+			return get_space_to_be_occupied_by_tuple_slotted_page(page_size, tpl_sz_d, external_tuple);
 		case FIXED_ARRAY_PAGE_LAYOUT :
-			return get_space_to_be_occupied_by_tuple_fixed_array_page(page_size, tpl_sz_d, tuple);
+			return get_space_to_be_occupied_by_tuple_fixed_array_page(page_size, tpl_sz_d, external_tuple);
 	}
 	return 0;
 }
