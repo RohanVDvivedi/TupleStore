@@ -663,6 +663,14 @@ uint32_t get_space_occupied_by_all_tomb_stones_slotted_page(const void* page, ui
 	return get_tomb_stone_count_slotted_page(page, page_size) * get_additional_space_overhead_per_tuple_slotted_page(page_size);
 }
 
+uint32_t get_space_to_be_occupied_by_tuple_slotted_page(uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* tuple)
+{
+	// even a tomb_stone (tuple == NULL) occupies the additional over head
+	// space for tuple is occupied only if the tuple is not a tomb_stone (tuple != NULL)
+	return get_additional_space_overhead_per_tuple_slotted_page(page_size)
+	+ ((tuple == NULL) ? 0 : get_tuple_size_using_tuple_size_def(tpl_sz_d, tuple));
+}
+
 uint32_t get_space_allotted_to_all_tuples_slotted_page(const void* page, uint32_t page_size)
 {
 	return page_size - get_offset_to_tuple_offsets(page, page_size);
