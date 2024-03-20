@@ -17,8 +17,13 @@
 
 void init_tuple(const tuple_def* tpl_d, void* tupl)
 {
-	// set all the is_NULL_bitmap bits to 1
-	set_all_bits(tupl + tpl_d->byte_offset_to_prefix_bitmap, tpl_d->prefix_bitmap_size_in_bits);
+	// set all is_NULL bits of prefix_bitmap (of element_defs that have is_NULL bit) to 1
+	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tpl_d); i++)
+	{
+		const element_def* ele_d = get_element_def_by_id(tpl_d, i);
+		if(has_is_NULL_bit_in_prefix_bitmap(ele_d))
+			set_bit(tupl + tpl_d->byte_offset_to_prefix_bitmap, ele_d->is_NULL_prefix_bitmap_bit_offset);
+	}
 
 	// set all bit_field values to 0
 	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tpl_d); i++)
