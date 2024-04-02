@@ -1,4 +1,5 @@
 1 PICKED TASKS
+ *0* bug fix - max value of a LARGE_UINT depends on the bytes we use in the field
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
 
 2 NEW TYPE TASKS
