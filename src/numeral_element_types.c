@@ -935,7 +935,9 @@ user_value get_MAX_value_for_numeral_element_def(const element_def* ele_d)
 		}
 		case LARGE_UINT :
 		{
-			uval.large_uint_value = LARGE_UINT_MAX;
+			uval.large_uint_value = LARGE_UINT_ZERO;
+			set_bit_in_large_uint(&(uval.large_uint_value), ele_d->size * CHAR_BIT);
+			sub_large_uint(&(uval.large_uint_value), uval.large_uint_value, LARGE_UINT_ONE);
 			break;
 		}
 		case BIT_FIELD :
