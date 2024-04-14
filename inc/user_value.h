@@ -39,6 +39,7 @@ extern user_value const * const ZERO_USER_VALUE;
 
 int is_user_value_NULL(const user_value* uval);
 
+// you need to call free on the return_value.data, on the object created using this function
 user_value clone_user_value_with_data(const user_value* uval);
 
 // forward declaration for element_def struct
