@@ -1,6 +1,4 @@
 1 PICKED TASKS
- *0* build logic to generate a maximum user_value of the string or blob type element of fixed length, if provided length = n then it mjust contain an array of length n, containing all CHAR_MAXs
-   * user_value get_MAX_user_value_for_string_OR_blob_element_def(const element_def* ele_d, uint32_t max_length);
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
 
 2 NEW TYPE TASKS
