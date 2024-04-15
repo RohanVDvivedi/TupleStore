@@ -53,6 +53,27 @@ user_value get_MAX_user_value_for_numeral_element_def(const element_def* ele_d)
 		return (*NULL_USER_VALUE);
 }
 
+user_value get_MAX_user_value_for_string_OR_blob_element_def(const element_def* ele_d, uint32_t max_length, int* memory_allocation_error)
+{
+	// limit the length of max_element that get's generated
+	if(is_fixed_sized_element_def(ele_d))
+		max_length = min(max_length, ele_d->size);
+	else if(ele_d->size_specifier_prefix_size < 4) // 1U << (`4` * CHAR_BIT), overflows hence the check
+		max_length = min(max_length, 1U << (ele_d->size_specifier_prefix_size * CHAR_BIT));
+
+	// allocate new_data and set all it's max_length bytes to CHAR_MAX (max value of char data type)
+	void* new_data = malloc(max_length);
+	if(new_data == NULL)
+	{
+		(*memory_allocation_error) = 1;
+		return (*NULL_USER_VALUE);
+	}
+	memory_set(new_data, SIGNED_MAX_VALUE_OF(char), max_length);
+
+	user_value res = {.data = new_data, .data_size = max_length};
+	return res;
+}
+
 void print_user_value(const user_value* uval, const element_def* ele_d)
 {
 	if(is_user_value_NULL(uval))
