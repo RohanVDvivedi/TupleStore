@@ -31,6 +31,8 @@ int swap_tuples_slotted_page(void* page, uint32_t page_size, const tuple_size_de
 
 const void* get_nth_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index);
 
+int set_element_in_tuple_in_place_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, uint32_t element_index, const user_value* value);
+
 int run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, int* memory_allocation_error);
 
 uint32_t get_free_space_slotted_page(const void* page, uint32_t page_size);

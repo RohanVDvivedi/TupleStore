@@ -533,6 +533,28 @@ const void* get_nth_tuple_slotted_page(const void* page, uint32_t page_size, con
 	return page + ith_tuple_offset_val;
 }
 
+int set_element_in_tuple_in_place_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, uint32_t element_index, const user_value* value)
+{
+	void* tuple_concerned = (void*) get_nth_tuple_slotted_page(page, page_size, &(tpl_d->size_def), tuple_index);
+
+	// if the corresponding tuple does not exist, fail
+	if(tuple_concerned == NULL)
+		return 0;
+
+	uint32_t new_tuple_size = 0;
+
+	// fail if we can't set the tuple in the page
+	if(!can_set_element_in_tuple(tpl_d, element_index, tuple_concerned, value, &new_tuple_size))
+		return 0;
+
+	// fail if new_tuple_size exceeds the tuple_size on the page
+	if(new_tuple_size > get_tuple_size(tpl_d, tuple_concerned))
+		return 0;
+
+	// set the element
+	return set_element_in_tuple(tpl_d, element_index, tuple_concerned, value);
+}
+
 // a small struct used for defragmentation
 // required to store tuple offset and its index on page
 typedef struct tuple_offset_indexed tuple_offset_indexed;
