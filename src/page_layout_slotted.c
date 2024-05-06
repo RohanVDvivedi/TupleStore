@@ -541,6 +541,9 @@ int set_element_in_tuple_in_place_slotted_page(void* page, uint32_t page_size, c
 	if(tuple_concerned == NULL)
 		return 0;
 
+	// cache the old tuple size
+	uint32_t old_tuple_size = get_tuple_size(tpl_d, tuple_concerned);
+
 	uint32_t new_tuple_size = 0;
 
 	// fail if we can't set the tuple in the page
@@ -552,7 +555,20 @@ int set_element_in_tuple_in_place_slotted_page(void* page, uint32_t page_size, c
 		return 0;
 
 	// set the element
-	return set_element_in_tuple(tpl_d, element_index, tuple_concerned, value);
+	int set_in_place_success = set_element_in_tuple(tpl_d, element_index, tuple_concerned, value);
+
+	// if set_element_in_tuple was a success, i.e tuple was updated, then do book-keeping
+	// i.e. we must update the space_occupied_by_tuples on the page
+	if(set_in_place_success)
+	{
+		void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
+		uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
+		// update space_occupied_by_tuples_val += (new_tuple_size - old_tuple_size)
+		space_occupied_by_tuples_val += (new_tuple_size - old_tuple_size);
+		write_value_to_page(space_occupied_by_tuples, page_size, space_occupied_by_tuples_val);
+	}
+
+	return set_in_place_success;
 }
 
 // a small struct used for defragmentation
