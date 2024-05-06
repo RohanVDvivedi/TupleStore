@@ -1,4 +1,5 @@
 1 PICKED TASKS
+ *0* need to update space_occupied when an element inside a variable tuple is updated
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
 
 2 NEW TYPE TASKS
