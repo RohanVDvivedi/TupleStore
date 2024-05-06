@@ -357,6 +357,20 @@ const void* get_nth_tuple_fixed_array_page(const void* page, uint32_t page_size,
 	return page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index);
 }
 
+int set_element_in_tuple_in_place_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, uint32_t element_index, const user_value* value)
+{
+	// fetch the tuple from the page
+	void* tuple_concerned = (void*) get_nth_tuple_fixed_array_page(page, page_size, &(tpl_d->size_def), tuple_index);
+
+	// if the corresponding tuple does not exist, fail
+	if(tuple_concerned == NULL)
+		return 0;
+
+	// since the tuple and the element both are fixed length, we can directly call a set inplace
+	// also no bookkeeping required like in slotted page
+	return set_element_in_tuple(tpl_d, element_index, tuple_concerned, value);
+}
+
 int run_page_compaction_fixed_array_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, int* memory_allocation_error)
 {
 	// Nothing to be done
