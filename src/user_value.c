@@ -14,6 +14,7 @@ user_value const * const DEFAULT_USER_VALUE = &((const user_value){});
 
 user_value const * const NULL_USER_VALUE = &((const user_value){.is_NULL = 1});
 user_value const * const ZERO_USER_VALUE = &((const user_value){.is_NULL = 0});
+user_value const * const EMPTY_USER_VALUE = &((const user_value){.is_NULL = 0, .data = NULL, .data_size = 0});
 
 int is_user_value_NULL(const user_value* uval)
 {

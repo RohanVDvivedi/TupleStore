@@ -36,6 +36,7 @@ extern user_value const * const DEFAULT_USER_VALUE;
 
 extern user_value const * const NULL_USER_VALUE;
 extern user_value const * const ZERO_USER_VALUE;
+extern user_value const * const EMPTY_USER_VALUE; // user_value for empty BLOB, VAR_BLOB, VAR_STRING and STRING types
 
 int is_user_value_NULL(const user_value* uval);
 
