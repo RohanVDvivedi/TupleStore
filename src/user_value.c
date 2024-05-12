@@ -69,7 +69,7 @@ user_value get_MAX_user_value_for_string_OR_blob_element_def(const element_def* 
 		(*memory_allocation_error) = 1;
 		return (*NULL_USER_VALUE);
 	}
-	memory_set(new_data, SIGNED_MAX_VALUE_OF(char), max_length);
+	memory_set(new_data, UNSIGNED_MAX_VALUE_OF(unsigned char), max_length);
 
 	user_value res = {.data = new_data, .data_size = max_length};
 	return res;

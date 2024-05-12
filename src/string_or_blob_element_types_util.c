@@ -81,6 +81,7 @@ int compare_string_type_elements(const void* e1, const element_def* ele_d_1, con
 	const char* s2 = get_data_for_string_OR_blob_element(e2, ele_d_2);
 	uint32_t s2_len = get_string_length_for_string_type_element(e2, ele_d_2);
 
+	// strncmp performs compares unsigned char comparison
 	int compare = strncmp(s1, s2, min(s1_len, s2_len));
 
 	if(compare > 0)
@@ -110,6 +111,7 @@ int compare_blob_type_elements(const void* e1, const element_def* ele_d_1, const
 	uint32_t min_len = min(b1_len, b2_len);
 
 	// compare only their min_len number of bytes
+	// memcmp performs compares unsigned char comparison
 	int compare = memcmp(b1, b2, min_len);
 
 	if(compare > 0)
