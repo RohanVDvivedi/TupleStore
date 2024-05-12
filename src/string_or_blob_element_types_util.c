@@ -69,23 +69,19 @@ uint32_t get_element_size_from_user_value_for_string_OR_blob_element(const user_
 
 uint32_t get_string_length_for_string_type_element(const void* e, const element_def* ele_d)
 {
-	if(ele_d->type == STRING)
-		return strnlen(e, ele_d->size);
-	else // else it must be VAR_STRING
-		return get_data_size_for_string_OR_blob_element(e, ele_d);
+	// you must provide only a STRING or VAR_STRING to this function
+	return strnlen(get_data_for_string_OR_blob_element(e, ele_d), get_data_size_for_string_OR_blob_element(e, ele_d));
 }
 
 int compare_string_type_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2)
 {
 	const char* s1 = get_data_for_string_OR_blob_element(e1, ele_d_1);
-	uint32_t s1_max_len = get_data_size_for_string_OR_blob_element(e1, ele_d_1);
+	uint32_t s1_len = get_string_length_for_string_type_element(e1, ele_d_1);
 
 	const char* s2 = get_data_for_string_OR_blob_element(e2, ele_d_2);
-	uint32_t s2_max_len = get_data_size_for_string_OR_blob_element(e2, ele_d_2);
+	uint32_t s2_len = get_string_length_for_string_type_element(e2, ele_d_2);
 
-	uint32_t min_of_max_lens = min(s1_max_len, s2_max_len);
-
-	int compare = strncmp(s1, s2, min_of_max_lens);
+	int compare = strncmp(s1, s2, min(s1_len, s2_len));
 
 	if(compare > 0)
 		compare = 1;
@@ -93,8 +89,6 @@ int compare_string_type_elements(const void* e1, const element_def* ele_d_1, con
 		compare = -1;
 	else
 	{
-		uint32_t s1_len = get_string_length_for_string_type_element(e1, ele_d_1);
-		uint32_t s2_len = get_string_length_for_string_type_element(e2, ele_d_2);
 		if(s1_len > s2_len)
 			compare = 1;
 		else if(s1_len < s2_len)
