@@ -131,7 +131,7 @@ int compare_blob_type_elements(const void* e1, const element_def* ele_d_1, const
 	return compare;
 }
 
-uint32_t hash_string_OR_blob_type_element(const void* e, const element_def* ele_d, uint32_t (*hash_func)(const void* data, uint32_t size))
+uint64_t hash_string_OR_blob_type_element(const void* e, const element_def* ele_d, uint64_t (*hash_func)(const void* data, uint32_t size))
 {
 	if(is_string_type_element_def(ele_d))
 		return hash_func(get_data_for_string_OR_blob_element(e, ele_d), get_string_length_for_string_type_element(e, ele_d));

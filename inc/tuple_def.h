@@ -111,7 +111,7 @@ int can_set_from_element_defs(const element_def* ele_d_1, const element_def* ele
 int compare_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2);
 
 // hash element, given their element definition
-uint32_t hash_element(const void* e, const element_def* ele_d, uint32_t (*hash_func)(const void* data, uint32_t size));
+uint64_t hash_element(const void* e, const element_def* ele_d, uint64_t (*hash_func)(const void* data, uint32_t size));
 
 data_definitions_value_arraylist(element_defs_list, element_def)
 

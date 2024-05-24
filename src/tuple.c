@@ -453,7 +453,7 @@ int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const uint32_t* el
 	return compare;
 }
 
-uint32_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, uint32_t index, uint32_t (*hash_func)(const void* data, uint32_t size))
+uint64_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, uint32_t index, uint64_t (*hash_func)(const void* data, uint32_t size))
 {
 	const void* e = get_element_from_tuple(tpl_d, index, tup);
 
@@ -465,9 +465,9 @@ uint32_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, uint
 	return hash_element(e, ele_d, hash_func);
 }
 
-uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, const uint32_t* element_ids, uint32_t (*hash_func)(const void* data, uint32_t size), uint32_t element_count)
+uint64_t hash_tuple(const void* tup, const tuple_def* tpl_d, const uint32_t* element_ids, uint64_t (*hash_func)(const void* data, uint32_t size), uint32_t element_count)
 {
-	uint32_t hash_value = 0;
+	uint64_t hash_value = 0;
 	if(element_ids == NULL)
 	{
 		for(uint32_t i = 0; i < element_count; i++)

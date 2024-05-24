@@ -69,11 +69,11 @@ int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const uint32_t* el
 
 
 // hash function for tuple and for an element inside the tuple at the specified index
-uint32_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, uint32_t index, uint32_t (*hash_func)(const void* data, uint32_t size));
+uint64_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, uint32_t index, uint64_t (*hash_func)(const void* data, uint32_t size));
 
 // if element_ids == NULL, then this functions hashes the first element_count number of elements from the tuple
 // else it hashes the elements in the same order as provided in element_ids (here element_count denotes its size)
-uint32_t hash_tuple(const void* tup, const tuple_def* tpl_d, const uint32_t* element_ids, uint32_t (*hash_func)(const void* data, uint32_t size), uint32_t element_count);
+uint64_t hash_tuple(const void* tup, const tuple_def* tpl_d, const uint32_t* element_ids, uint64_t (*hash_func)(const void* data, uint32_t size), uint32_t element_count);
 
 
 // print function for tuple

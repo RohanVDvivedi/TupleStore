@@ -201,7 +201,7 @@ int compare_elements(const void* e1, const element_def* ele_d_1, const void* e2,
 	return -2;
 }
 
-uint32_t hash_element(const void* e, const element_def* ele_d, uint32_t (*hash_func)(const void* data, uint32_t size))
+uint64_t hash_element(const void* e, const element_def* ele_d, uint64_t (*hash_func)(const void* data, uint32_t size))
 {
 	if(is_numeral_type_element_def(ele_d))
 		return hash_numeral_type_element(e, ele_d, hash_func);

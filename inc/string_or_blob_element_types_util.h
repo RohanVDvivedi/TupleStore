@@ -32,7 +32,7 @@ int compare_string_type_elements(const void* e1, const element_def* ele_d_1, con
 // compares as unsigned char-s, depends on memcmp
 int compare_blob_type_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2);
 
-uint32_t hash_string_OR_blob_type_element(const void* e, const element_def* ele_d, uint32_t (*hash_func)(const void* data, uint32_t size));
+uint64_t hash_string_OR_blob_type_element(const void* e, const element_def* ele_d, uint64_t (*hash_func)(const void* data, uint32_t size));
 
 void set_string_OR_blob_element(void* e, const element_def* ele_d, const user_value* uval);
 
