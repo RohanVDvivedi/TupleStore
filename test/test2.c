@@ -69,6 +69,13 @@ tuple_def* get_tuple_definition()
 		exit(-1);
 	}
 
+	res = insert_element_def(def, "col_8", LARGE_UINT, 4, 0, NULL);
+	if(res == 0)
+	{
+		printf("failed adding column 1\n");
+		exit(-1);
+	}
+
 	res = finalize_tuple_def(def);
 	if(res == 0)
 	{
@@ -105,13 +112,14 @@ int main()
 	// set them all to non nulls
 	printf("\nsetting all attributes to non NULLs\n");
 	set_element_in_tuple(def, 0, my_tuple, &((user_value){.bit_field_value = 29}));
-	set_element_in_tuple(def, 1, my_tuple, &((user_value){.large_uint_value = get_uint256(29)}));
+	set_element_in_tuple(def, 1, my_tuple, &((user_value){.large_uint_value = get_uint256(0x29)}));
 	set_element_in_tuple(def, 2, my_tuple, &string_user_value("Rohan"));
 	set_element_in_tuple(def, 3, my_tuple, &((user_value){.int_value = -29}));
 	set_element_in_tuple(def, 4, my_tuple, &((user_value){.bit_field_value = 500}));
 	set_element_in_tuple(def, 5, my_tuple, &string_user_value("Dvivedi"));
 	set_element_in_tuple(def, 6, my_tuple, &((user_value){.uint_value = 29}));
 	set_element_in_tuple(def, 7, my_tuple, &((user_value){.long_double_value = 2900}));
+	set_element_in_tuple(def, 8, my_tuple, &((user_value){.large_uint_value = get_uint256(0x45)}));
 
 	// print the tuple
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
@@ -120,16 +128,23 @@ int main()
 	// set them all to non nulls
 	printf("\nsetting all attributes to different non NULLs\n");
 	set_element_in_tuple(def, 0, my_tuple, &((user_value){.bit_field_value = 30}));
-	set_element_in_tuple(def, 1, my_tuple, &((user_value){.large_uint_value = get_uint256(10)}));
+	set_element_in_tuple(def, 1, my_tuple, &((user_value){.large_uint_value = get_uint256(0x10)}));
 	set_element_in_tuple(def, 2, my_tuple, &string_user_value("Rohan V"));
 	set_element_in_tuple(def, 3, my_tuple, &((user_value){.int_value = 30}));
 	set_element_in_tuple(def, 4, my_tuple, &((user_value){.bit_field_value = 250}));
 	set_element_in_tuple(def, 5, my_tuple, &string_user_value("V Dvivedi"));
 	set_element_in_tuple(def, 6, my_tuple, &((user_value){.uint_value = 3000}));
 	set_element_in_tuple(def, 7, my_tuple, &((user_value){.long_double_value = 295.2966}));
+	set_element_in_tuple(def, 8, my_tuple, &((user_value){.large_uint_value = get_uint256(0x99)}));
 
 	// print the tuple
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
+	print_tuple(my_tuple, def);
+
+	set_element_in_tuple_from_tuple(def, 8, my_tuple, def, 1, my_tuple);
+
+	// print the tuple
+	printf("\nBuilt tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
 	print_tuple(my_tuple, def);
 
 	int cmp = compare_tuples(
@@ -160,6 +175,7 @@ int main()
 	set_element_in_tuple(def, 5, my_tuple, NULL_USER_VALUE);
 	set_element_in_tuple(def, 6, my_tuple, NULL_USER_VALUE);
 	set_element_in_tuple(def, 7, my_tuple, NULL_USER_VALUE);
+	set_element_in_tuple(def, 8, my_tuple, NULL_USER_VALUE);
 
 	// print the tuple
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
