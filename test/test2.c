@@ -105,7 +105,7 @@ int main()
 	// set them all to non nulls
 	printf("\nsetting all attributes to non NULLs\n");
 	set_element_in_tuple(def, 0, my_tuple, &((user_value){.bit_field_value = 29}));
-	set_element_in_tuple(def, 1, my_tuple, &((user_value){.large_uint_value = get_large_uint(29)}));
+	set_element_in_tuple(def, 1, my_tuple, &((user_value){.large_uint_value = get_uint256(29)}));
 	set_element_in_tuple(def, 2, my_tuple, &string_user_value("Rohan"));
 	set_element_in_tuple(def, 3, my_tuple, &((user_value){.int_value = -29}));
 	set_element_in_tuple(def, 4, my_tuple, &((user_value){.bit_field_value = 500}));
@@ -120,7 +120,7 @@ int main()
 	// set them all to non nulls
 	printf("\nsetting all attributes to different non NULLs\n");
 	set_element_in_tuple(def, 0, my_tuple, &((user_value){.bit_field_value = 30}));
-	set_element_in_tuple(def, 1, my_tuple, &((user_value){.large_uint_value = get_large_uint(10)}));
+	set_element_in_tuple(def, 1, my_tuple, &((user_value){.large_uint_value = get_uint256(10)}));
 	set_element_in_tuple(def, 2, my_tuple, &string_user_value("Rohan V"));
 	set_element_in_tuple(def, 3, my_tuple, &((user_value){.int_value = 30}));
 	set_element_in_tuple(def, 4, my_tuple, &((user_value){.bit_field_value = 250}));
