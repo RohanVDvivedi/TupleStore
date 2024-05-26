@@ -138,8 +138,8 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 				}
 				case LARGE_UINT :
 				{
-					large_uint e2_val = deserialize_large_uint(e2, ele_d_2->size);
-					return compare_large_uint(get_large_uint(e1_val), e2_val);
+					uint256 e2_val = deserialize_uint256(e2, ele_d_2->size);
+					return compare_uint256(get_uint256(e1_val), e2_val);
 				}
 				case BIT_FIELD :
 				{
@@ -189,8 +189,8 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 				{
 					if(e1_val < 0)
 						return -1;
-					large_uint e2_val = deserialize_large_uint(e2, ele_d_2->size);
-					return compare_large_uint(get_large_uint(e1_val), e2_val);
+					uint256 e2_val = deserialize_uint256(e2, ele_d_2->size);
+					return compare_uint256(get_uint256(e1_val), e2_val);
 				}
 				case BIT_FIELD :
 				{
@@ -340,30 +340,30 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 		}
 		case LARGE_UINT :
 		{
-			large_uint e1_val = deserialize_large_uint(e1, ele_d_1->size);
+			uint256 e1_val = deserialize_uint256(e1, ele_d_1->size);
 			switch(ele_d_2->type)
 			{
 				case UINT :
 				{
 					uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
-					return compare_large_uint(e1_val, get_large_uint(e2_val));
+					return compare_uint256(e1_val, get_uint256(e2_val));
 				}
 				case INT :
 				{
 					int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
 					if(e2_val < 0)
 						return 1;
-					return compare_large_uint(e1_val, get_large_uint(e2_val));
+					return compare_uint256(e1_val, get_uint256(e2_val));
 				}
 				case LARGE_UINT :
 				{
-					large_uint e2_val = deserialize_large_uint(e2, ele_d_2->size);
-					return compare_large_uint(e1_val, e2_val);
+					uint256 e2_val = deserialize_uint256(e2, ele_d_2->size);
+					return compare_uint256(e1_val, e2_val);
 				}
 				case BIT_FIELD :
 				{
 					uint64_t e2_val = get_bits(e2, ele_d_2->bit_offset, ele_d_2->bit_offset + ele_d_2->size - 1);
-					return compare_large_uint(e1_val, get_large_uint(e2_val));
+					return compare_uint256(e1_val, get_uint256(e2_val));
 				}
 				default :
 					return -2;
@@ -406,8 +406,8 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 				}
 				case LARGE_UINT :
 				{
-					large_uint e2_val = deserialize_large_uint(e2, ele_d_2->size);
-					return compare_large_uint(get_large_uint(e1_val), e2_val);
+					uint256 e2_val = deserialize_uint256(e2, ele_d_2->size);
+					return compare_uint256(get_uint256(e1_val), e2_val);
 				}
 				case BIT_FIELD :
 				{
@@ -465,7 +465,7 @@ void set_numeral_element(void* e, const element_def* ele_d, const user_value* uv
 		}
 		case LARGE_UINT :
 		{
-			serialize_large_uint(e, ele_d->size, uval->large_uint_value);
+			serialize_uint256(e, ele_d->size, uval->large_uint_value);
 			break;
 		}
 		case BIT_FIELD :
@@ -520,7 +520,7 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 				}
 				case LARGE_UINT :
 				{
-					large_uint e_from_val = deserialize_large_uint(e_from, ele_d_from->size);
+					uint256 e_from_val = deserialize_uint256(e_from, ele_d_from->size);
 					e_new_val = e_from_val.limbs[0];
 					break;
 				}
@@ -574,7 +574,7 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 				}
 				case LARGE_UINT :
 				{
-					large_uint e_from_val = deserialize_large_uint(e_from, ele_d_from->size);
+					uint256 e_from_val = deserialize_uint256(e_from, ele_d_from->size);
 					e_new_val = e_from_val.limbs[0];
 					break;
 				}
@@ -737,36 +737,36 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 		}
 		case LARGE_UINT :
 		{
-			large_uint e_new_val = LARGE_UINT_MIN;
+			uint256 e_new_val = get_0_uint256();
 			switch(ele_d_from->type)
 			{
 				case UINT :
 				{
 					uint64_t e_from_val = deserialize_uint64(e_from, ele_d_from->size);
-					e_new_val = get_large_uint(e_from_val);
+					e_new_val = get_uint256(e_from_val);
 					break;
 				}
 				case INT :
 				{
 					int64_t e_from_val = deserialize_int64(e_from, ele_d_from->size);
-					e_new_val = get_large_uint(e_from_val);
+					e_new_val = get_uint256(e_from_val);
 					break;
 				}
 				case LARGE_UINT :
 				{
-					e_new_val = deserialize_large_uint(e_from, ele_d_from->size);
+					e_new_val = deserialize_uint256(e_from, ele_d_from->size);
 					break;
 				}
 				case BIT_FIELD :
 				{
 					uint64_t e_from_val = get_bits(e_from, ele_d_from->bit_offset, ele_d_from->bit_offset + ele_d_from->size - 1);
-					e_new_val = get_large_uint(e_from_val);
+					e_new_val = get_uint256(e_from_val);
 					break;
 				}
 				default :
 					break;
 			}
-			serialize_large_uint(e, ele_d->size, e_new_val);
+			serialize_uint256(e, ele_d->size, e_new_val);
 			break;
 		}
 		case BIT_FIELD :
@@ -807,7 +807,7 @@ void set_numeral_element_from_element(void* e, const element_def* ele_d, const v
 				}
 				case LARGE_UINT :
 				{
-					large_uint e_from_val = deserialize_large_uint(e_from, ele_d_from->size);
+					uint256 e_from_val = deserialize_uint256(e_from, ele_d_from->size);
 					e_new_val = e_from_val.limbs[0];
 					break;
 				}
@@ -854,7 +854,7 @@ user_value get_value_from_numeral_element(const void* e, const element_def* ele_
 		}
 		case LARGE_UINT :
 		{
-			uval.large_uint_value = deserialize_large_uint(e, ele_d->size);
+			uval.large_uint_value = deserialize_uint256(e, ele_d->size);
 			break;
 		}
 		case BIT_FIELD :
@@ -895,7 +895,7 @@ user_value get_MIN_value_for_numeral_element_def(const element_def* ele_d)
 		}
 		case LARGE_UINT :
 		{
-			uval.large_uint_value = LARGE_UINT_MIN;
+			uval.large_uint_value = get_min_uint256();
 			break;
 		}
 		case BIT_FIELD :
@@ -936,8 +936,8 @@ user_value get_MAX_value_for_numeral_element_def(const element_def* ele_d)
 		}
 		case LARGE_UINT :
 		{
-			// returns a large_uint, with least significant (ele_d->size * CHAR_BIT) bits set to 1
-			uval.large_uint_value = get_bitmask_lower_n_bits_set(ele_d->size * CHAR_BIT);
+			// returns a uint256, with least significant (ele_d->size * CHAR_BIT) bits set to 1
+			uval.large_uint_value = get_bitmask_lower_n_bits_set_uint256(ele_d->size * CHAR_BIT);
 			break;
 		}
 		case BIT_FIELD :

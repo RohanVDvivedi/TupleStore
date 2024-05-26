@@ -10,7 +10,7 @@
 #include<string_or_blob_element_types_util.h>
 
 #include<serial_int.h>
-#include<large_uint.h>
+#include<large_uints.h>
 
 char type_as_string[][16] = {
 								"UINT",
@@ -40,7 +40,7 @@ static int is_size_allowed_for_fixed_sized_type(element_type ele_type, uint32_t 
 		case FLOAT :
 			return (size == sizeof(float)) || (size == sizeof(double)) || (size == sizeof(long double));
 		case LARGE_UINT :
-			return (1 <= size) && (size <= LARGE_UINT_MAX_BYTES);
+			return (1 <= size) && (size <= get_max_bytes_uint256());
 		case BIT_FIELD : // for BIT_FIELD the size is in bits
 			return (1 <= size) && (size <= 64);
 		case STRING :

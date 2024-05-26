@@ -3,7 +3,7 @@
 
 #include<stdint.h>
 
-#include<large_uint.h>
+#include<large_uints.h>
 
 // user passes the parameters for assignement using this union
 
@@ -21,7 +21,7 @@ struct user_value
 		float float_value;
 		double double_value;
 		long double long_double_value;
-		large_uint large_uint_value;
+		uint256 large_uint_value;
 		uint64_t bit_field_value;
 		struct
 		{
