@@ -165,6 +165,18 @@ int main()
 							((compare_direction[]){ASC}), 1);
 	printf("cmp = %d\n", cmp);
 
+	cmp = compare_tuples(
+							my_tuple, def, ((uint32_t[]){1}),
+							my_tuple, def, ((uint32_t[]){3}),
+							((compare_direction[]){ASC}), 1);
+	printf("cmp = %d\n", cmp);
+
+	cmp = compare_tuples(
+							my_tuple, def, ((uint32_t[]){3}),
+							my_tuple, def, ((uint32_t[]){1}),
+							((compare_direction[]){ASC}), 1);
+	printf("cmp = %d\n", cmp);
+
 	// set them all to non nulls
 	printf("\nsetting all attributes to NULLs\n");
 	set_element_in_tuple(def, 0, my_tuple, NULL_USER_VALUE);
