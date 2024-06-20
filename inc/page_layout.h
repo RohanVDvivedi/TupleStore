@@ -140,7 +140,7 @@ uint32_t get_space_occupied_by_tuples_on_page(const void* page, uint32_t page_si
 // equivalent to get_space_occupied_by_tuples[0, tuple_count - 1)
 uint32_t get_space_occupied_by_all_tuples_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
-// returns space_occupied by deleted tuples (i.e. tomb_stones) on the page from start_index to last_index
+// returns space_occupied by deleted tuples (i.e. tomb_stones) on the page
 uint32_t get_space_occupied_by_all_tomb_stones_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
 // this is the space that this external_tuple(OR a tomb_stone (if external_tuple = NULL)) will occupy (OR is occupying, if external_tuple is on the page) on the page
