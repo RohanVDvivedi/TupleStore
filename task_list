@@ -1,5 +1,8 @@
+0 BUG FIX
+ *0* bug identified in comparing blob types, in src/string_or_blob_element_types_util.c L125-128
+
 1 PICKED TASKS
- *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it.
+ *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
 
 2 NEW TYPE TASKS
  *2* nested_tuple datatype
