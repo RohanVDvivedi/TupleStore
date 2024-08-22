@@ -123,9 +123,9 @@ int compare_blob_type_elements(const void* e1, const element_def* ele_d_1, const
 		// in dictionary ordering if 1 blob is a prefix of the other
 		// then the larger blob comes latter in the order
 		if(b1_len > b2_len)
-			compare = -1;
-		else if(b1_len > b2_len)
 			compare = 1;
+		else if(b1_len < b2_len)
+			compare = -1;
 	}
 
 	return compare;
