@@ -5,7 +5,7 @@
  *2,3* support tuple_defs to contain array_def and tuple_def along with element_def.
    * nested tuple_def maintains the same structure internally, and can be set based on whether it is_variable_sized or not. (element_count remains fixed)
    * an array_def can be fixed_sized only if, its element_def is fixed_sized, and the count is not variable.
-   * an element_def, can be any of 3 things, singleton_element_def, array_def and tuple_def -> figure out how to structure them, possibly make singleton_element_def as a 1 element_count array_def.
+   * an element_def, can be any of 3 things, singleton_element_def, array_def and tuple_def -> figure out how to structure them, possibly make singleton_element_def as a 1 element_count array_def., you will also need to store count for variable count array defs.
 
 3 OPTIMIZATION FOR COMPRESSION TASKS
  *4* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
