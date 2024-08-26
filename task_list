@@ -30,6 +30,9 @@
     all tuple.h/.c functions will be modified to work with container_def
     container_def's layout will remain the same, except that if it has_variable_element_count(), then ite prefix has element_count after the tuple_size (to be renamed as container size).
     additional function to append an element, resize container and can_append -> , if the container_def has_variable_element_count();
+    for each element store size first, if it is variable sized
+    for each array element store the element_count, if it has_variable_element_count and the any_element_def.is_variable_sized()
+    * minor later realization, not allowing array_def inside the page_layout can create wastage of space
 
   *2* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
 
