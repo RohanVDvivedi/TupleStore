@@ -2,11 +2,10 @@
  *1* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
 
 2 NEW TYPE TASKS
- *2* nested_tuple datatype
-   *2* add decimal fixed precission data type (* like libdecnumber) - implemented using nested_tuple datatype
-   *2* nested_tuple data type takes input comparator
-   *2* always stored like var length datatype regardless of whether it is fixed length or variable length tuple
- *3* arrays of types
+ *2,3* support tuple_defs to contain array_def and tuple_def along with element_def.
+   * nested tuple_def maintains the same structure internally, and can be set based on whether it is_variable_sized or not. (element_count remains fixed)
+   * an array_def can be fixed_sized only if, its element_def is fixed_sized, and the count is not variable.
+   * an element_def, can be any of 3 things, singleton_element_def, array_def and tuple_def -> figure out how to structure them, possibly make singleton_element_def as a 1 element_count array_def.
 
 3 OPTIMIZATION FOR COMPRESSION TASKS
  *4* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.

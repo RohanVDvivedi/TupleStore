@@ -122,7 +122,7 @@ struct tuple_size_def
 	// The tuple is variable sized, if atleast one of the element_defs is variable sized
 	int is_variable_sized;
 
-	// size of offsets (to variable sized elements) and tuple_size (stored as the prefix of the tuple for variable sized tuples) stored int the variable length tuples
+	// size of offsets (to variable sized elements) and tuple_size (stored as the prefix of the tuple for variable sized tuples) stored in the variable length tuples
 	uint32_t size_of_byte_offsets;
 
 	// min total size of tuple in bytes
