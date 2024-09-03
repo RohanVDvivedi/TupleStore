@@ -131,10 +131,10 @@ int run_page_compaction(void* page, uint32_t page_size, const tuple_size_def* tp
 
 // SPACE queries
 
-// returns total free space left inside a given page, that can be used to accomodate tuples
+// returns total free space left inside a given page in its free space area, it may shrink as result of inserts, appends and updates
 uint32_t get_free_space_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
-// returns space_occupied by tuples on the page from start_index to last_index, including the tomb_stones at those places
+// returns space_occupied by tuples on the page from start_index to last_index, including the space occupied by tomb_stones at those places. tomb_stones are just NULL tuples
 uint32_t get_space_occupied_by_tuples_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t start_index, uint32_t last_index);
 
 // equivalent to get_space_occupied_by_tuples[0, tuple_count - 1)
@@ -153,7 +153,7 @@ uint32_t get_space_allotted_to_all_tuples_on_page(const void* page, uint32_t pag
 // this is a version 2 of the above method, it must return the same result
 uint32_t get_space_to_be_allotted_to_all_tuples_on_page(uint32_t page_header_size, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
-// this is equivalent to get_space_allotted_to_all_tuples() - ( get_free_space_in_page() + get_space_occupied_by_all_tuples() )
+// this is equivalent to get_space_allotted_to_all_tuples_on_page() - ( get_free_space_on_page() + get_space_occupied_by_all_tuples_on_page() )
 uint32_t get_fragmentation_space_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
 // space_allotted_to_all_tuples = space_occupied_by_all_tuples + free_space + fragmented_space
