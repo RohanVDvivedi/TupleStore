@@ -33,13 +33,16 @@
     for each element store size first, if it is variable sized
     for each array element store the element_count, if it has_variable_element_count and the any_element_def.is_variable_sized()
     * minor later realization, not allowing array_def inside the page_layout can create wastage of space
+    * variable length tuples/elements and arrays are always nullable by default, overriding the current functionality
 
-  *2* after this each tuple has a non-nullable bit
-  for a fixed length tuple, if a non-nullable bit is set, then make a new page layout, that does not have a bit map stored for the is_valid bits, and has neither tuple_count nor the tomb_stone_count
-  * you will not be allowed to append, insert, or discard
-  * you can still get_nth_tuple and update_tuple, but can never update tuples to NULL
+  *2* after this each tuple has a non-nullable bit, now for a fixed length tuple, if a non-nullable bit is set, then make a new page layout.
+  * that does not have a bit map stored for the is_valid bits, and has neither tuple_count nor the tomb_stone_count
+  * it will only have page_header and array of fixed length non-nullable tuples
+  * you will not be allowed to append, insert, or discard tuples they all fail, their cn_append, can_insert and discard_all/discard trailing tomb_stones counterparts return 0
+  * you can still get_nth_tuple, update_tuple and update_inplace_element, but can never update tuples to NULL
   * get_tuple_count will always return the max tuple count on the page
   * exists tuple on tha page, will return 1, if it is without bounds
+  * implement space query functions accordingly
   * such a page can be used to build bitmap pages/indexes, and interior pages of page_table and array_table, bitmap pages for page allocation bitmaps
 
   *3* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
