@@ -34,7 +34,15 @@
     for each array element store the element_count, if it has_variable_element_count and the any_element_def.is_variable_sized()
     * minor later realization, not allowing array_def inside the page_layout can create wastage of space
 
-  *2* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
+  *2* after this each tuple has a non-nullable bit
+  for a fixed length tuple, if a non-nullable bit is set, then make a new page layout, that does not have a bit map stored for the is_valid bits, and has neither tuple_count nor the tomb_stone_count
+  * you will not be allowed to append, insert, or discard
+  * you can still get_nth_tuple and update_tuple, but can never update tuples to NULL
+  * get_tuple_count will always return the max tuple count on the page
+  * exists tuple on tha page, will return 1, if it is without bounds
+  * such a page can be used to build bitmap pages/indexes, and interior pages of page_table and array_table, bitmap pages for page allocation bitmaps
+
+  *3* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
 
 2 OPTIMIZATION FOR COMPRESSION TASKS
- *3* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
+ *4* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
