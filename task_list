@@ -1,41 +1,8 @@
 1 NEW TYPE TASKS
- *1* support tuple_defs to contain array_def and tuple_def along with element_def.
-   * nested tuple_def maintains the same structure internally, and can be set based on whether it is_variable_sized or not. (element_count remains fixed)
-   * an array_def can be fixed_sized only if, its element_def is fixed_sized, and the count is not variable.
-   * an element_def, can be any of 3 things, singleton_element_def, array_def and tuple_def -> figure out how to structure them, possibly make singleton_element_def as a 1 element_count array_def., you will also need to store count for variable count array defs.
-   * possible LLD
-    interface element_def
-      int is_variable_sized();
-      uint32_t get_size(); // valid call only if is_variable_sized returns 0
-      int is_nullable();
-    class primitive_element_def implements element_def
-      same as current element_def -> only VAR_STRING and VAR_BLOB are variable sized
-      only uses default comparators
-      for bit fields get_size() is an invalid call, as they are stored in the bitmap, next to is null bits
-    interface container_def implements element_def
-      int has_variable_element_count();
-      uint32_t get_element_count(); // valid call only if is_variable_count returns 0
-      element* get_element_def(uint32_t index);
-      int compare(user_value* a, user_value* b); // compare 2 elements of this container types
-    class array_def implements container_def
-      element_def any_element_def;
-      // may have variable / fixed number of element count
-      // is_variable_sized if has_variable_element_count || any_element_def.is_variable_sized();
-      // supports swapping elements in place
-    class tuple_def implements container_def
-      element_def element_defs[];
-      // has fixed number of element count, hence is never has_variable_element_count
-      // is_variable_sized is true if any of its element_defs are variable_sized
-    all the page_layout functions will still work only with tuple_defs
-    all tuple.h/.c functions will be modified to work with container_def
-    container_def's layout will remain the same, except that if it has_variable_element_count(), then ite prefix has element_count after the tuple_size (to be renamed as container size).
-    additional function to append an element, resize container and can_append -> , if the container_def has_variable_element_count();
-    for each element store size first, if it is variable sized
-    for each array element store the element_count, if it has_variable_element_count and the any_element_def.is_variable_sized()
-    * minor later realization, not allowing array_def inside the page_layout can create wastage of space
-    * variable length tuples/elements and arrays are always nullable by default, overriding the current functionality
+ *1* tuple layout to be defined to include the current types and custom types like nested tuple and nested array
+ *2* minor change to use is_valid_bitmap, instead of setting all null bits to 1, set valid bits to 1
 
-  *2* after this each tuple has a non-nullable bit, now for a fixed length tuple, if a non-nullable bit is set, then make a new page layout.
+  *3* after this each tuple has a non-nullable bit, now for a fixed length tuple, if a non-nullable bit is set, then make a new page layout.
   * that does not have a bit map stored for the is_valid bits, and has neither tuple_count nor the tomb_stone_count
   * it will only have page_header and array of fixed length non-nullable tuples
   * you will not be allowed to append, insert, or discard tuples they all fail, their cn_append, can_insert and discard_all/discard trailing tomb_stones counterparts return 0
@@ -45,7 +12,7 @@
   * implement space query functions accordingly
   * such a page can be used to build bitmap pages/indexes, and interior pages of page_table and array_table, bitmap pages for page allocation bitmaps
 
-  *3* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
+  *4* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
 
 2 OPTIMIZATION FOR COMPRESSION TASKS
- *4* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
+ *5* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
