@@ -62,6 +62,8 @@ struct data_position_info
 
 struct data_type_info
 {
+	int is_static : 1; // -> if set this object is not to be freed, set for default types and custom types from extensions
+
 	char type_name[64]; // -> type name of this user defined type
 
 	data_type type;
