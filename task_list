@@ -1,15 +1,14 @@
 1 NEW TYPE TASKS
- *1* tuple layout to be defined to include the current types and custom types like nested tuple and nested array
-   * add structures as discussed like type_info, position_info, position_accessor for the new api
+ *1* implement functions for type_info, and define static types, of all possible default types, and macros to initialize sized fixed length strings, blobs and arrays
    * allow appending and inserting in middle, and discarding elements for variable element count: string, blob and array
-   * string/var string and blob/var blob will be of same type, just with is_variable_sized bit flag set or unset
    * add a hashmap for the system where types can be added, with their function pointers for compare and hash
  *2* minor change to use is_valid_bitmap, instead of setting all null bits to 1, set valid bits to 1
  *3* implement logic to send a variable length element to the end of the tuple, use cutlery's left_rotate functionality
    * to move the variable length element to the end just perform memory_left_rotate(tuple + offset, tuple_size - offset, total size of variable length element_size)
- *4* add logic to add or substract all byte offsets by a specified value, if they are greater than a particular value
+   * we can do the same for making space for the appends and insert
+   * add logic to add or substract all byte offsets by a specified value, if they are greater than a particular value
 
-  *3* after this each tuple has a non-nullable bit, now for a fixed length tuple, if a non-nullable bit is set, then make a new page layout.
+*4* after this each tuple has a non-nullable bit, now for a fixed length tuple, if a non-nullable bit is set, then make a new page layout.
   * that does not have a bit map stored for the is_valid bits, and has neither tuple_count nor the tomb_stone_count
   * it will only have page_header and array of fixed length non-nullable tuples
   * you will not be allowed to append, insert, or discard tuples they all fail, their cn_append, can_insert and discard_all/discard trailing tomb_stones counterparts return 0
@@ -19,7 +18,7 @@
   * implement space query functions accordingly
   * such a page can be used to build bitmap pages/indexes, and interior pages of page_table and array_table, bitmap pages for page allocation bitmaps
 
-  *4* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
+ *5* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
 
 2 OPTIMIZATION FOR COMPRESSION TASKS
- *5* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
+ *6* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
