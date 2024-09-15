@@ -117,13 +117,13 @@ int is_variable_sized_size_info(const data_size_info* dsi);
 int is_variable_sized_type_info(const data_type_info* dti);
 
 // get size
-uint32_t get_element_size(const data_type_info* dti, const void* data);
+uint32_t get_size_for_type_info(const data_type_info* dti, const void* data);
 
 // check if variable element_count, only possible for an array, string and blob
 int has_variable_element_count(const data_type_info* dti);
 
 // get element_count
-uint32_t get_element_count(const data_type_info* dti, const void* data);
+uint32_t get_element_count_for_container_type_info(const data_type_info* dti, const void* data);
 
 // true for variable sized string, blob, tuple and array
 // this size will be total of the complete size of the data, including the size required for storing the size
@@ -138,7 +138,17 @@ int has_element_count_in_its_prefix(const data_type_info* dti);
 // true for string, blob, tuple and array
 int is_container_type(const data_type_info* dti);
 
+// valid if has_size_in_its_prefix, always returns 0
+uint32_t get_offset_to_prefix_size(const data_type_info* dti);
+
+// valid if has_element_count_in_its_prefix
+uint32_t get_offset_to_prefix_element_count(const data_type_info* dti);
+
+// valid if there is atleast 1 element of the container passes needs_bit_in_is_valid_bitmap or a bit field in the container
+uint32_t get_offset_to_prefix_bitmap(const data_type_info* dti);
+
 // valid for string, blob, tuple and array (generated on the fly for an array)
+// valid only if index < get_element_count_for_container_type_info
 data_position_info get_data_position_info_for_container(const data_type_info* dti, const void* data, uint32_t index);
 
 #endif
