@@ -86,6 +86,8 @@ struct data_type_info
 	data_type_info* containee;	// -> to be used for ARRAY only
 
 	data_position_info containees[];	// -> to be used for TUPLE only, total element_count number of them
+
+	// for string and blob types the containee is always a UINT_1_NON_NULL i.e. non-nullable UINT of size 1 byte
 };
 
 // used to access nested data like TUPLE, ARRAY, STRING and BLOB only
