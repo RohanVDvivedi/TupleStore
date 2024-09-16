@@ -150,7 +150,7 @@ int has_element_count_in_its_prefix_for_container_type_info(const data_type_info
 // valid only for a container type info, returns the number of bits required in the prefix for the container type info
 // for a tuple or a fixed element count array of fixed length elements it is equal to dti->prefix_bitmap_size_in_bits
 // for an array of variable length elements it is always 0
-// for a variable element count array of fixed length elements it depends on the element count of data
+// for a variable element count array of fixed length elements, it will be equal to element_count * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + (dti->containee.type == BIT_FIELD) ? dti->containee.size_def.bit_field_size : 0)
 uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_info* dti, const void* data);
 #define get_prefix_bitmap_size_for_container_type_info(dti, data) 					(bitmap_size_in_bytes(get_prefix_bitmap_size_in_bits_for_container_type_info(dti, data)))
 
