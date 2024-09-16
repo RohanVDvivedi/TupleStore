@@ -10,10 +10,10 @@ enum data_type
 	INT 	   = 1,
 	FLOAT	   = 2,
 	LARGE_UINT = 3,
-	BIT_FIELD  = 4, // bit field typemay never exist without a tuple or array containing them
-		// BIT_FIELDs are numeric fixed bit-width unsigned data types,
-		// they occupy space within the null bitmap in the prefix of the tuple, if any
-	// numeric datatypes end
+
+	BIT_FIELD  = 4, // bit field type must never exist without a tuple or array containing them
+		// BIT_FIELDs are numeric fixed bit-width unsigned data types (atmost 64 bits wide),
+		// they occupy space within the null bitmap in the prefix of the tuple or array, if any
 
 	// above attributes are always fixed length elements
 
@@ -22,6 +22,7 @@ enum data_type
 	TUPLE      = 7,
 	ARRAY      = 8,
 	// the above 4 types may be fixed or variable length
+	// they will be identified as container types
 };
 
 typedef struct data_size_info data_size_info;
@@ -38,7 +39,7 @@ struct data_size_info
 		uint32_t bit_field_size; // number of bits in the bit fields, these bits need to be allocated in the prefix bitmap of the container
 	};
 
-	uint32_t max_size; // -> for variable length elements, necessary to calculate bytes to allocate for offsets, sizes and counts
+	uint32_t max_size; // -> for variable length elements, necessary to calculate bytes required to be allocated for offsets, sizes and counts
 	// max_size may never be more than the page_size of the system
 };
 
@@ -60,13 +61,12 @@ struct data_position_info
 
 	uint32_t bit_offset_to_is_valid_bit; // -> for bit fields and fixed length elements only, and only when they have is_nullable bit set in the type_info
 
-	data_type_info* type_info; // type information of this field
+	data_type_info* type_info; // -> type information of this field
 };
 
 struct data_type_info
 {
 	int is_static : 1; // -> if set this object is not to be freed, set for default types and custom types from extensions
-
 	int is_finalized : 1; // -> tuple and array data_types can only be used if this is set, else call finalize on this type and get success
 
 	char type_name[64]; // -> type name of this user defined type
@@ -80,6 +80,8 @@ struct data_type_info
 	int has_variable_element_count : 1; // -> always 0 for a TUPLE, could be 1 for an ARRAY
 
 	uint32_t element_count; // -> to be used for TUPLE or ARRAY types only, and only when has_variable_element_count == 0
+
+	uint32_t prefix_bitmap_size_in_bits; // -> number of bits in the prefix bitmap, valid only for tuples and fixed element count array of fixed length elements
 
 	data_type_info* containee;	// -> to be used for ARRAY only
 
@@ -100,7 +102,7 @@ struct positional_accessor
 
 // utiities for positional accessors
 #define SELF ((positional_accessor){.positions_length = 0, .positions = NULL})													// point to self
-#define IS_SELF(pa) (pa.positions_length == 0);																					// check if points to self
+#define IS_SELF(pa) (pa.positions_length == 0)																					// check if points to self
 #define NEXT_POSITION(pa) ((positional_accessor){.positions_length = pa.positions_length - 1, .positions = pa.positions + 1}) 	// build a positional accessor for the next nested object
 #define STATIC_POSITION(...) ((positional_accessor){ .positions_length = sizeof((uint32_t []){ __VA_ARGS__ })/sizeof(uint32_t), .positions = (uint32_t []){ __VA_ARGS__ } })
 // usage STATIC_POSITION(a, b, c, d)
@@ -110,42 +112,49 @@ struct positional_accessor
 int is_nullable_type_info(const data_type_info* dti);
 
 // true, if is_nullable and not variable sized
-int needs_bit_in_is_valid_bitmap(const data_type_info* dti);
+int needs_is_valid_bit_in_prefix_bitmap(const data_type_info* dti);
 
 // check if variable sized, then it will also need an offset in the container tuple or array
 int is_variable_sized_size_info(const data_size_info* dsi);
 int is_variable_sized_type_info(const data_type_info* dti);
 
 // get size
+// size of BIT_FIELD is returned in bits
 uint32_t get_size_for_type_info(const data_type_info* dti, const void* data);
 
-// check if variable element_count, only possible for an array, string and blob
-int has_variable_element_count(const data_type_info* dti);
+// true only for string, blob, tuple and array
+int is_container_type_info(const data_size_info* dti);
+
+// check if variable element_count
+int has_variable_element_count_for_container_type_info(const data_type_info* dti);
 
 // get element_count
 uint32_t get_element_count_for_container_type_info(const data_type_info* dti, const void* data);
 
 // true for variable sized string, blob, tuple and array
 // this size will be total of the complete size of the data, including the size required for storing the size
-int has_size_in_its_prefix(const data_type_info* dti);
+int has_size_in_its_prefix_for_container_type_info(const data_type_info* dti);
 
 // true for variable element count array containing variable sized elements
-int has_element_count_in_its_prefix(const data_type_info* dti);
-
-#define get_bytes_required_for_prefix_size(dti) 			get_value_size_on_page(dti->max_size)
-#define get_bytes_required_for_prefix_element_count(dti) 	get_value_size_on_page(dti->max_size)
-
-// true for string, blob, tuple and array
-int is_container_type(const data_type_info* dti);
+int has_element_count_in_its_prefix_for_container_type_info(const data_type_info* dti);
 
 // valid if has_size_in_its_prefix, always returns 0
-uint32_t get_offset_to_prefix_size(const data_type_info* dti);
+#define get_bytes_required_for_prefix_size_for_container_type_info(dti) 			get_value_size_on_page(dti->size_info.max_size)
+uint32_t get_offset_to_prefix_size_for_container_type_info(const data_type_info* dti);
 
 // valid if has_element_count_in_its_prefix
-uint32_t get_offset_to_prefix_element_count(const data_type_info* dti);
+#define get_bytes_required_for_prefix_element_count_for_container_type_info(dti) 	get_value_size_on_page(dti->size_info.max_size)
+uint32_t get_offset_to_prefix_element_count_for_container_type_info(const data_type_info* dti);
 
-// valid if there is atleast 1 element of the container passes needs_bit_in_is_valid_bitmap or a bit field in the container
-uint32_t get_offset_to_prefix_bitmap(const data_type_info* dti);
+// valid if there is atleast 1 element of the container passes needs_is_valid_bit_in_prefix_bitmap or a bit field in the container
+uint32_t get_offset_to_prefix_bitmap_for_container_type_info(const data_type_info* dti);
+
+// valid only for a container type info, returns the number of bits required for the container type info
+// for a tuple or a fixed element count array of fixed length elements it is equal to dti->prefix_bitmap_size_in_bits
+// for an array of variable length elements it is always 0
+// for a variable element count array of fixed length elements it depends on the element count of data
+uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_info* dti, const void* data);
+#define get_prefix_bitmap_size_for_container_type_info(dti, data) 					bitmap_size_in_bytes(get_prefix_bitmap_size_in_bits_for_container_type_info(dti, data))
 
 // valid for string, blob, tuple and array (generated on the fly for an array)
 // valid only if index < get_element_count_for_container_type_info
