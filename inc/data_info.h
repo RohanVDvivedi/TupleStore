@@ -138,23 +138,21 @@ int has_size_in_its_prefix_for_container_type_info(const data_type_info* dti);
 // true for variable element count array containing variable sized elements
 int has_element_count_in_its_prefix_for_container_type_info(const data_type_info* dti);
 
-// valid if has_size_in_its_prefix, always returns 0
-#define get_bytes_required_for_prefix_size_for_container_type_info(dti) 			get_value_size_on_page(dti->size_info.max_size)
-uint32_t get_offset_to_prefix_size_for_container_type_info(const data_type_info* dti);
+#define get_offset_to_prefix_size_for_container_type_info(dti)						(0)
+#define get_bytes_required_for_prefix_size_for_container_type_info(dti) 			(get_value_size_on_page((dti)->size_info.max_size) * has_size_in_its_prefix_for_container_type_info(dti))
 
-// valid if has_element_count_in_its_prefix
-#define get_bytes_required_for_prefix_element_count_for_container_type_info(dti) 	get_value_size_on_page(dti->size_info.max_size)
-uint32_t get_offset_to_prefix_element_count_for_container_type_info(const data_type_info* dti);
+#define get_offset_to_prefix_element_count_for_container_type_info(dti)				(get_offset_to_prefix_size_for_container_type_info(dti) + get_bytes_required_for_prefix_size_for_container_type_info(dti))
+#define get_bytes_required_for_prefix_element_count_for_container_type_info(dti) 	(get_value_size_on_page((dti)->size_info.max_size) * has_element_count_in_its_prefix_for_container_type_info(dti))
 
-// valid if there is atleast 1 element of the container passes needs_is_valid_bit_in_prefix_bitmap or a bit field in the container
-uint32_t get_offset_to_prefix_bitmap_for_container_type_info(const data_type_info* dti);
+// logically equivalent to = bytes_required_for_prefix_size + bytes_required_for_prefix_element_count
+#define get_offset_to_prefix_bitmap_for_container_type_info(dti)					(get_offset_to_prefix_element_count_for_container_type_info(dti) + get_bytes_required_for_prefix_element_count_for_container_type_info(dti))
 
-// valid only for a container type info, returns the number of bits required for the container type info
+// valid only for a container type info, returns the number of bits required in the prefix for the container type info
 // for a tuple or a fixed element count array of fixed length elements it is equal to dti->prefix_bitmap_size_in_bits
 // for an array of variable length elements it is always 0
 // for a variable element count array of fixed length elements it depends on the element count of data
 uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_info* dti, const void* data);
-#define get_prefix_bitmap_size_for_container_type_info(dti, data) 					bitmap_size_in_bytes(get_prefix_bitmap_size_in_bits_for_container_type_info(dti, data))
+#define get_prefix_bitmap_size_for_container_type_info(dti, data) 					(bitmap_size_in_bytes(get_prefix_bitmap_size_in_bits_for_container_type_info(dti, data)))
 
 // valid for string, blob, tuple and array (generated on the fly for an array)
 // valid only if index < get_element_count_for_container_type_info
