@@ -37,6 +37,9 @@ struct data_size_info
 
 		uint32_t bit_field_size; // number of bits in the bit fields, these bits need to be allocated in the prefix bitmap of the container
 	};
+
+	uint32_t max_size; // -> for variable length elements, necessary to calculate bytes to allocate for offsets, sizes and counts
+	// max_size may never be more than the page_size of the system
 };
 
 typedef struct data_type_info data_type_info;
@@ -73,9 +76,6 @@ struct data_type_info
 	int is_nullable : 1; // -> only for fixed length elements, variable length elements are always nullable by setting their corresponding offset to 0
 
 	data_size_info size_info; // the only struct required by the functions of page_layout
-
-	uint32_t max_size; // -> for variable length elements, necessary to calculate bytes to allocate for offsets, sizes and counts
-	// max_size may never be more than the page_size of the system
 
 	int has_variable_element_count : 1; // -> always 0 for a TUPLE, could be 1 for an ARRAY
 
