@@ -1,6 +1,8 @@
 #include<data_info.h>
 #include<page_layout_util.h>
 
+#include<bitmap.h>
+
 int is_nullable_type_info(const data_type_info* dti)
 {
 	return is_variable_sized_type_info(dti) || dti->is_nullable;
@@ -31,13 +33,13 @@ uint32_t get_size_for_type_info(const data_type_info* dti, const void* data)
 	// so this must be a container precisely : variable sized string, variable sized blob or array of variable element count but of fixed length type
 	// all in all we know the element_count and that each element is fixed sized element
 	
-	if(dti->containee == BIT_FIELD)
+	if(dti->containee->type == BIT_FIELD)
 		return get_value_size_on_page(dti->max_size)
 		 + bitmap_size_in_bytes(element_count * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size));
 	else
 		return get_value_size_on_page(dti->max_size)
 		 + bitmap_size_in_bytes(element_count * needs_is_valid_bit_in_prefix_bitmap(dti->containee))
-		 + element_count * dti->containee.size;
+		 + (element_count * dti->containee->size);
 }
 
 int is_container_type_info(const data_type_info* dti)
