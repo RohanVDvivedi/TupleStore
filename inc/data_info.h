@@ -25,24 +25,6 @@ enum data_type
 	// they will be identified as container types
 };
 
-typedef struct data_size_info data_size_info;
-struct data_size_info
-{
-	int is_variable_sized : 1; // -> possibly set only for STRING, BLOB, TUPLE or ARRAY
-
-	union
-	{
-		uint32_t size; // -> for fixed length elements
-
-		uint32_t min_size; // -> for variable length elements
-
-		uint32_t bit_field_size; // number of bits in the bit fields, these bits need to be allocated in the prefix bitmap of the container
-	};
-
-	uint32_t max_size; // -> for variable length elements, necessary to calculate bytes required to be allocated for offsets, sizes and counts
-	// max_size may never be more than the page_size of the system
-};
-
 typedef struct data_type_info data_type_info;
 
 typedef struct data_position_info data_position_info;
@@ -75,9 +57,21 @@ struct data_type_info
 
 	int is_nullable : 1; // -> only for fixed length elements, variable length elements are always nullable by setting their corresponding offset to 0
 
-	data_size_info size_info; // the only struct required by the functions of page_layout
+	int is_variable_sized : 1; // -> possibly set only for STRING, BLOB, TUPLE or ARRAY
 
-	int has_variable_element_count : 1; // -> always 0 for a TUPLE, could be 1 for an ARRAY
+	union
+	{
+		uint32_t size; // -> for fixed length elements
+
+		uint32_t min_size; // -> for variable length elements
+
+		uint32_t bit_field_size; // number of bits in the bit fields, these bits need to be allocated in the prefix bitmap of the container
+	};
+
+	uint32_t max_size; // -> for variable length elements, necessary to calculate bytes required to be allocated for offsets, sizes and counts
+	// max_size may never be more than the page_size of the system
+
+	int has_variable_element_count : 1; // -> always 0 for a TUPLE, could be 1 for an ARRAY, and also true for variable sie strings and blobs
 
 	uint32_t element_count; // -> to be used for TUPLE or ARRAY types only, and only when has_variable_element_count == 0
 
@@ -117,7 +111,6 @@ int is_nullable_type_info(const data_type_info* dti);
 int needs_is_valid_bit_in_prefix_bitmap(const data_type_info* dti);
 
 // check if variable sized, then it will also need an offset in the container tuple or array
-int is_variable_sized_size_info(const data_size_info* dsi);
 int is_variable_sized_type_info(const data_type_info* dti);
 
 // get size
@@ -133,11 +126,13 @@ int has_variable_element_count_for_container_type_info(const data_type_info* dti
 // get element_count
 uint32_t get_element_count_for_container_type_info(const data_type_info* dti, const void* data);
 
-// true for variable sized string, blob, tuple and array
+// false for string and blob
+// true for variable sized tuples and arrays of variable sized elements
+// false also for variable element count array of fixed sized elements i.e. includes var sized strings and blobs
 // this size will be total of the complete size of the data, including the size required for storing the size
 int has_size_in_its_prefix_for_container_type_info(const data_type_info* dti);
 
-// true for variable element count array containing variable sized elements
+// must be true for variable element count array
 int has_element_count_in_its_prefix_for_container_type_info(const data_type_info* dti);
 
 #define get_offset_to_prefix_size_for_container_type_info(dti)						(0)
@@ -159,5 +154,28 @@ uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_
 // valid for string, blob, tuple and array (generated on the fly for an array)
 // valid only if index < get_element_count_for_container_type_info
 data_position_info get_data_position_info_for_container(const data_type_info* dti, const void* data, uint32_t index);
+
+
+/*
+**	tuple format
+**
+**	variable size string/blob are just variable element count arrays of non-nullable uint8s
+**
+**	size -> for containers with variable sized elements (this will include variable sized tuples, but will not include variable sized strings and blobs)
+**	element_count -> for containers with variable element count (this will never include tuples, but will include variable sized strings and blobs)
+**	prefix_bitmap -> 1 bit for each of the field of the container that passes needs_is_valid_bit_in_prefix_bitmap(), and required bits for the BIT_FIELD elements
+**	data_section -> fixed length elements stored in place, and offsets to the variable sized elements, which is followed by the actual contents of the variable sized elements
+*/
+
+/*
+**		type 			variable sized element 				variable element count 				variable sized 				size in prefix 				element count in prefix
+**
+**		tuple 			0/1 								0									0/1 						0/1 						0
+**		string/blob 	0 									0/1 								0/1 						0 							0/1
+**		array0			0 									0 									0 	 						0 							0
+**		array1 			0 									1 									1 							0 							1
+**		array2 			1 									0 									1 							1 							0
+**		array3 			1 									1 									1 							1 							1
+*/
 
 #endif
