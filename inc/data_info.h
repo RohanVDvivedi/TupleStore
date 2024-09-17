@@ -72,16 +72,17 @@ struct data_type_info
 	// max_size may never be more than the page_size of the system
 
 	int has_variable_element_count : 1; // -> always 0 for a TUPLE, could be 1 for an ARRAY, and also true for variable sie strings and blobs
+	// must be set for variable sized string and blob
 
 	uint32_t element_count; // -> to be used for TUPLE or ARRAY types only, and only when has_variable_element_count == 0
+	// for fixed length string and blob, this must equal size
 
 	uint32_t prefix_bitmap_size_in_bits; // -> number of bits in the prefix bitmap, valid only for tuples and fixed element count array of fixed length elements
 
 	data_type_info* containee;	// -> to be used for ARRAY only
+	// for string and blob types the containee is always a UINT_1_NON_NULL i.e. non-nullable UINT of size 1 byte
 
 	data_position_info containees[];	// -> to be used for TUPLE only, total element_count number of them
-
-	// for string and blob types the containee is always a UINT_1_NON_NULL i.e. non-nullable UINT of size 1 byte
 };
 
 // used to access nested data like TUPLE, ARRAY, STRING and BLOB only
@@ -118,7 +119,7 @@ int is_variable_sized_type_info(const data_type_info* dti);
 uint32_t get_size_for_type_info(const data_type_info* dti, const void* data);
 
 // true only for string, blob, tuple and array
-int is_container_type_info(const data_size_info* dti);
+int is_container_type_info(const data_type_info* dti);
 
 // check if variable element_count
 int has_variable_element_count_for_container_type_info(const data_type_info* dti);
@@ -136,10 +137,10 @@ int has_size_in_its_prefix_for_container_type_info(const data_type_info* dti);
 int has_element_count_in_its_prefix_for_container_type_info(const data_type_info* dti);
 
 #define get_offset_to_prefix_size_for_container_type_info(dti)						(0)
-#define get_bytes_required_for_prefix_size_for_container_type_info(dti) 			(get_value_size_on_page((dti)->size_info.max_size) * has_size_in_its_prefix_for_container_type_info(dti))
+#define get_bytes_required_for_prefix_size_for_container_type_info(dti) 			(get_value_size_on_page((dti)->max_size) * has_size_in_its_prefix_for_container_type_info(dti))
 
 #define get_offset_to_prefix_element_count_for_container_type_info(dti)				(get_offset_to_prefix_size_for_container_type_info(dti) + get_bytes_required_for_prefix_size_for_container_type_info(dti))
-#define get_bytes_required_for_prefix_element_count_for_container_type_info(dti) 	(get_value_size_on_page((dti)->size_info.max_size) * has_element_count_in_its_prefix_for_container_type_info(dti))
+#define get_bytes_required_for_prefix_element_count_for_container_type_info(dti) 	(get_value_size_on_page((dti)->max_size) * has_element_count_in_its_prefix_for_container_type_info(dti))
 
 // logically equivalent to = bytes_required_for_prefix_size + bytes_required_for_prefix_element_count
 #define get_offset_to_prefix_bitmap_for_container_type_info(dti)					(get_offset_to_prefix_element_count_for_container_type_info(dti) + get_bytes_required_for_prefix_element_count_for_container_type_info(dti))

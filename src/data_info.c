@@ -1,4 +1,5 @@
 #include<data_info.h>
+#include<page_layout_util.h>
 
 int is_nullable_type_info(const data_type_info* dti)
 {
@@ -17,8 +18,8 @@ int is_variable_sized_type_info(const data_type_info* dti)
 
 uint32_t get_size_for_type_info(const data_type_info* dti, const void* data)
 {
-	if(!is_variable_sized_size_info(dti))
-		return dti->.size;
+	if(!is_variable_sized_type_info(dti))
+		return dti->size;
 
 	// variable sized element either has its size in prefix or its element count in the prefix
 	if(has_size_in_its_prefix_for_container_type_info(dti))
@@ -26,12 +27,13 @@ uint32_t get_size_for_type_info(const data_type_info* dti, const void* data)
 
 	uint32_t element_count = read_value_from_page(data + get_offset_to_prefix_element_count_for_container_type_info(dti), get_bytes_required_for_prefix_element_count_for_container_type_info(dti));
 
-	// now we know for sure that this is variable sized container, but without size intis prefix
-	// so this must be a variable element count array of fixed length elements
+	// now we know for sure that this is variable sized container, but without size in its prefix
+	// so this must be a container precisely : variable sized string, variable sized blob or array of variable element count but of fixed length arrays
+	// all in all we know the element_count and that each element is fixed sized element
 	// TODO
 }
 
-int is_container_type_info(const data_size_info* dti)
+int is_container_type_info(const data_type_info* dti)
 {
 	return dti->type == STRING || dti->type == BLOB || dti->type == TUPLE || dti->type == ARRAY;
 }
@@ -59,8 +61,19 @@ int has_variable_element_count_for_container_type_info(const data_type_info* dti
 	return dti->has_variable_element_count;
 }
 
-// get element_count
-uint32_t get_element_count_for_container_type_info(const data_type_info* dti, const void* data);
+uint32_t get_element_count_for_container_type_info(const data_type_info* dti, const void* data)
+{
+	// not possible for a non-container
+	if(!is_container_type_info(dti))
+		return 0;
+
+	// if not variable element_count then read from the type_info
+	if(!has_variable_element_count_for_container_type_info(dti))
+		return dti->element_count;
+
+	// else read from the data
+	return read_value_from_page(data + get_offset_to_prefix_element_count_for_container_type_info(dti), get_bytes_required_for_prefix_element_count_for_container_type_info(dti));
+}
 
 int has_size_in_its_prefix_for_container_type_info(const data_type_info* dti)
 {
@@ -89,15 +102,6 @@ int has_element_count_in_its_prefix_for_container_type_info(const data_type_info
 {
 	return has_variable_element_count_for_container_type_info(dti);
 }
-
-#define get_offset_to_prefix_size_for_container_type_info(dti)						(0)
-#define get_bytes_required_for_prefix_size_for_container_type_info(dti) 			(get_value_size_on_page((dti)->size_info.max_size) * has_size_in_its_prefix_for_container_type_info(dti))
-
-#define get_offset_to_prefix_element_count_for_container_type_info(dti)				(get_offset_to_prefix_size_for_container_type_info(dti) + get_bytes_required_for_prefix_size_for_container_type_info(dti))
-#define get_bytes_required_for_prefix_element_count_for_container_type_info(dti) 	(get_value_size_on_page((dti)->size_info.max_size) * has_element_count_in_its_prefix_for_container_type_info(dti))
-
-// logically equivalent to = bytes_required_for_prefix_size + bytes_required_for_prefix_element_count
-#define get_offset_to_prefix_bitmap_for_container_type_info(dti)					(get_offset_to_prefix_element_count_for_container_type_info(dti) + get_bytes_required_for_prefix_element_count_for_container_type_info(dti))
 
 // valid only for a container type info, returns the number of bits required in the prefix for the container type info
 // for a tuple or a fixed element count array of fixed length elements it is equal to dti->prefix_bitmap_size_in_bits
