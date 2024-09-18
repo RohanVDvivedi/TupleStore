@@ -58,6 +58,7 @@ struct data_type_info
 	int is_nullable : 1; // -> only for fixed length elements, variable length elements are always nullable by setting their corresponding offset to 0
 
 	int is_variable_sized : 1; // -> possibly set only for STRING, BLOB, TUPLE or ARRAY
+	// -> must be set if you are setting has_variable_element_count
 
 	union
 	{
@@ -78,6 +79,7 @@ struct data_type_info
 	// for fixed length string and blob, this must equal size
 
 	uint32_t prefix_bitmap_size_in_bits; // -> number of bits in the prefix bitmap, valid only for tuples and fixed element count array of fixed length elements
+	// must be set to 0s for STRING and BLOB types
 
 	data_type_info* containee;	// -> to be used for ARRAY only
 	// for string and blob types the containee is always a UINT_1_NON_NULL i.e. non-nullable UINT of size 1 byte

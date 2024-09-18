@@ -112,12 +112,27 @@ int has_element_count_in_its_prefix_for_container_type_info(const data_type_info
 	return has_variable_element_count_for_container_type_info(dti);
 }
 
-// valid only for a container type info, returns the number of bits required in the prefix for the container type info
-// for a tuple or a fixed element count array of fixed length elements it is equal to dti->prefix_bitmap_size_in_bits
-// for an array of variable length elements it is always 0
-// for a variable element count array of fixed length elements, it will be equal to element_count * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + (dti->containee.type == BIT_FIELD) ? dti->containee.size_def.bit_field_size : 0)
-uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_info* dti, const void* data);
-#define get_prefix_bitmap_size_for_container_type_info(dti, data) 					(bitmap_size_in_bytes(get_prefix_bitmap_size_in_bits_for_container_type_info(dti, data)))
+uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_info* dti, const void* data)
+{
+	// no prefix bitmap for non container type data_types
+	if(!is_container_type_info(dti))
+		return 0;
+
+	// for tuple used the cached value
+	if(dti->type == TUPLE)
+		return dti->prefix_bitmap_size_in_bits;
+
+	// no prefix bitmap necessary for STRING and BLOB
+	if(dti->type == STRING || dti->type == BLOB)
+		return 0;
+
+	// this must now be an array
+
+	if(dti->containee->type == BIT_FIELD)
+		return get_size_for_type_info(dti, data) * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size);
+	else
+		return get_size_for_type_info(dti, data) * needs_is_valid_bit_in_prefix_bitmap(dti->containee);
+}
 
 // valid for string, blob, tuple and array (generated on the fly for an array)
 // valid only if index < get_element_count_for_container_type_info
