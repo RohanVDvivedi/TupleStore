@@ -23,7 +23,7 @@ uint32_t get_size_for_type_info(const data_type_info* dti, const void* data)
 	if(!is_variable_sized_type_info(dti))
 		return dti->size;
 
-	// variable sized element either has its size in prefix or its element count in the prefix
+	// variable sized element either has its size in prefix or its element count in the prefix or both
 	if(has_size_in_its_prefix_for_container_type_info(dti))
 		return read_value_from_page(data + get_offset_to_prefix_size_for_container_type_info(dti), get_bytes_required_for_prefix_size_for_container_type_info(dti));
 
@@ -34,10 +34,10 @@ uint32_t get_size_for_type_info(const data_type_info* dti, const void* data)
 	// all in all we know the element_count and that each element is fixed sized element
 	
 	if(dti->containee->type == BIT_FIELD)
-		return get_value_size_on_page(dti->max_size)
+		return get_value_size_on_page(dti->max_size) // it has element_count in its prefix but not its size
 		 + bitmap_size_in_bytes(element_count * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size));
 	else
-		return get_value_size_on_page(dti->max_size)
+		return get_value_size_on_page(dti->max_size) // it has element_count in its prefix but not its size
 		 + bitmap_size_in_bytes(element_count * needs_is_valid_bit_in_prefix_bitmap(dti->containee))
 		 + (element_count * dti->containee->size);
 }
@@ -134,6 +134,4 @@ uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_
 		return get_size_for_type_info(dti, data) * needs_is_valid_bit_in_prefix_bitmap(dti->containee);
 }
 
-// valid for string, blob, tuple and array (generated on the fly for an array)
-// valid only if index < get_element_count_for_container_type_info
 data_position_info get_data_position_info_for_container(const data_type_info* dti, const void* data, uint32_t index);

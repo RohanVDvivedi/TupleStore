@@ -154,7 +154,7 @@ int has_element_count_in_its_prefix_for_container_type_info(const data_type_info
 uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_info* dti, const void* data);
 #define get_prefix_bitmap_size_for_container_type_info(dti, data) 					(bitmap_size_in_bytes(get_prefix_bitmap_size_in_bits_for_container_type_info(dti, data)))
 
-// valid for string, blob, tuple and array (generated on the fly for an array)
+// valid for string, blob, tuple and array (generated on the fly for an array, string or blob)
 // valid only if index < get_element_count_for_container_type_info
 data_position_info get_data_position_info_for_container(const data_type_info* dti, const void* data, uint32_t index);
 
