@@ -132,12 +132,32 @@ uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_
 	// this must now be an array
 
 	if(dti->containee->type == BIT_FIELD)
-		return get_size_for_type_info(dti, data) * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size);
+		return get_element_count_for_container_type_info(dti, data) * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size);
 	else
-		return get_size_for_type_info(dti, data) * needs_is_valid_bit_in_prefix_bitmap(dti->containee);
+		return get_element_count_for_container_type_info(dti, data) * needs_is_valid_bit_in_prefix_bitmap(dti->containee);
 }
 
-data_position_info get_data_position_info_for_container(const data_type_info* dti, const void* data, uint32_t index)
+data_type_info* get_data_type_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index)
+{
+	// this is not a valid function call for a non container type
+	if(!is_container_type_info(dti))
+		return NULL;
+
+	// same thing, if the index is out of bounds
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return NULL;
+
+	if(dti->type == TUPLE)
+		return dti->containees[index].type_info;
+
+	if(dti->type == STRING || dti->type == BLOB)
+		return dti->containee; // this is why it must be set for string and blob data types // TODO replace it with a constant UINT_1_NON_NULLABLE
+
+	// else it has to be an array
+	return dti->containee;
+}
+
+data_position_info get_data_position_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index)
 {
 	// this is not a valid function call for a non container type
 	if(!is_container_type_info(dti))
@@ -153,27 +173,43 @@ data_position_info get_data_position_info_for_container(const data_type_info* dt
 
 	// case statement for strings, blobs and arrays
 
-	data_position_info dps = (data_position_info){
-		.type_info = dti->containee, // this is why it must be set for string and blob data types // TODO replace it with a constant UINT_1_NON_NULLABLE
-	};
-
 	uint32_t prefix_bitmap_offset = get_offset_to_prefix_bitmap_for_container_type_info(dti);
 	uint32_t first_element_offset = prefix_bitmap_offset + get_prefix_bitmap_size_for_container_type_info(dti, data);
 
-	if(dti->containee->type == BIT_FIELD)
+	data_type_info* containee_type_info = get_data_type_info_for_containee_of_container(dti, data, index);
+
+	if(containee_type_info->type == BIT_FIELD)
 	{
-		dps.bit_offset_to_is_valid_bit = (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size) * index;
-		dps.bit_offset_in_prefix_bitmap = dps.bit_offset_to_is_valid_bit + 1;
+		if(needs_is_valid_bit_in_prefix_bitmap(containee_type_info))
+		{
+			return (data_position_info){
+				.bit_offset_in_prefix_bitmap = ((1 + containee_type_info->bit_field_size) * index) + 1,
+				.bit_offset_to_is_valid_bit = ((1 + containee_type_info->bit_field_size) * index),
+				.type_info = containee_type_info,
+			};
+		}
+		else
+		{
+			return (data_position_info){
+				.bit_offset_in_prefix_bitmap = containee_type_info->bit_field_size * index,
+				.bit_offset_to_is_valid_bit = 0, // will be unused
+				.type_info = containee_type_info,
+			};
+		}
 	}
-	else if(!is_variable_sized_type_info(dti->containee))
+	else if(!is_variable_sized_type_info(containee_type_info))
 	{
-		dps.byte_offset_to_byte_offset = first_element_offset + get_value_size_on_page(dti->max_size) * index;
+		return (data_position_info){
+			.byte_offset_to_byte_offset = first_element_offset + get_value_size_on_page(dti->max_size) * index,
+			.type_info = containee_type_info,
+		};
 	}
 	else
 	{
-		dps.byte_offset = first_element_offset + dti->containee->size * index;
-		dps.bit_offset_to_is_valid_bit = index * needs_is_valid_bit_in_prefix_bitmap(dti->containee);
+		return (data_position_info){
+			.byte_offset = first_element_offset + containee_type_info->size * index,
+			.bit_offset_to_is_valid_bit = index * needs_is_valid_bit_in_prefix_bitmap(containee_type_info), // gets set to 0, if it won't need a is_valid bit in prefix_bitmap
+			.type_info = containee_type_info,
+		};
 	}
-
-	return dps;
 }
