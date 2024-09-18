@@ -10,9 +10,11 @@
      * add logic to add or substract all byte offsets by a specified value, if they are greater than a particular value
    * set function to set an element in the container, returns updated size, and also takes in max size
    * can_set function to check if we can set the element inside the container, with allowable maximum expansion size
-   * set NULL fucntion to set a containee to NULL -> fails for a non_nullable element -> given by the function
-
-   * allow appending and inserting in middle, and discarding elements for variable element count: string, blob and array
+   * set NULL function to set a containee to NULL -> fails for a non_nullable element -> given by the function
+   * initialize function to set a containee to all numeral types to 0s, STRING, BLOB to all 0s or empty (if variable sized), TUPLE with all elements to 0 values (if non nullable) or NULLS, for fixed length arrays to all 0s (if non nullable) or NULLs, and variable length arrays to 0 elements.
+   * for variable element count string, blob and arrays
+     * expand_element_count(data_type_info* dti, void* data, uint32_t i, uint32_t slots) -> adds slots number of slots after the first i elements i.e. the new empty slots will be from index i
+     * discard_elements(data_type_info* dti, void* data, uint32_t i, uint32_t slots) -> discards slots number of slots after the first i slots i.e. from slot i
    * add a hashmap for the system where types can be added,
    * add their function pointers for compare and hash
 
