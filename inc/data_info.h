@@ -6,14 +6,15 @@
 typedef enum data_type data_type;
 enum data_type
 {
-	UINT	   = 0,
-	INT 	   = 1,
-	FLOAT	   = 2,
-	LARGE_UINT = 3,
-
-	BIT_FIELD  = 4, // bit field type must never exist without a tuple or array containing them
+	BIT_FIELD  = 0, // bit field type must never exist without a tuple or array containing them
 		// BIT_FIELDs are numeric fixed bit-width unsigned data types (atmost 64 bits wide),
-		// they occupy space within the null bitmap in the prefix of the tuple or array, if any
+		// they occupy space within the null bitmap in the prefix of the tuple or array
+		// hence they return size = 0
+
+	UINT	   = 1,
+	INT 	   = 2,
+	FLOAT	   = 3,
+	LARGE_UINT = 4,
 
 	// above attributes are always fixed length elements
 
@@ -117,7 +118,7 @@ int needs_is_valid_bit_in_prefix_bitmap(const data_type_info* dti);
 int is_variable_sized_type_info(const data_type_info* dti);
 
 // get size
-// size of BIT_FIELD is returned in bits
+// size of BIT_FIELD is returned as 0, as they only occupy data in the prefix_bitmap
 uint32_t get_size_for_type_info(const data_type_info* dti, const void* data);
 
 // true only for string, blob, tuple and array
