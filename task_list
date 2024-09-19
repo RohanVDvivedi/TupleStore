@@ -1,6 +1,6 @@
 1 NEW TYPE TASKS
  *1*
-   * test finalize function for various types, by implementing a print function
+   * test finalize function for various types
    * define and declare static types, of all possible default types (especially for UINT_1_NON_NULLABLE as containee of the strings and blobs), and macros to initialize sized fixed length strings, blobs and arrays
    * get function to get an element in the container, return the void* to the element
    * move_variable_sized_containee_to_end_of_container
