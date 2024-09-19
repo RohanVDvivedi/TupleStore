@@ -6,6 +6,18 @@
 
 #include<bitmap.h>
 
+char type_as_string[][16] = {
+								"BIT_FIELD",
+								"UINT",
+								"INT",
+								"FLOAT",
+								"LARGE_UINT",
+								"STRING",
+								"BLOB",
+								"TUPLE",
+								"ARRAY",
+							};
+
 int is_nullable_type_info(const data_type_info* dti)
 {
 	return is_variable_sized_type_info(dti) || dti->is_nullable;
@@ -217,7 +229,7 @@ data_position_info get_data_position_info_for_containee_of_container(const data_
 	}
 }
 
-int finalize_data_info(data_type_info* dti)
+int finalize_type_info(data_type_info* dti)
 {
 	// no need to finalize again
 	if(dti->is_finalized)
@@ -262,7 +274,7 @@ int finalize_data_info(data_type_info* dti)
 		case BLOB :
 		{
 			dti->containee = NULL; // TODO to be set to UINT_1_NON_NULLABLE
-			if(!finalize_data_info(dti->containee))
+			if(!finalize_type_info(dti->containee))
 				return 0;
 			dti->is_variable_sized = dti->has_variable_element_count;
 			if(!dti->has_variable_element_count && dti->element_count == 0) // for a fixed element count container the element_count must never be 0
@@ -296,7 +308,7 @@ int finalize_data_info(data_type_info* dti)
 				data_type_info* containee_type_info = dti->containees[i].type_info;
 				data_position_info* containee_pos_info = dti->containees + i;
 
-				if(!finalize_data_info(containee_type_info))
+				if(!finalize_type_info(containee_type_info))
 					return 0;
 
 				// if the element is variable_sized, then mark the tuple as variable sized
@@ -359,7 +371,7 @@ int finalize_data_info(data_type_info* dti)
 
 		case ARRAY :
 		{
-			if(!finalize_data_info(dti->containee))
+			if(!finalize_type_info(dti->containee))
 				return 0;
 			dti->is_variable_sized = dti->has_variable_element_count || is_variable_sized_type_info(dti->containee);
 			if(!dti->has_variable_element_count && dti->element_count == 0) // for a fixed element count container the element_count must never be 0
@@ -406,4 +418,102 @@ int finalize_data_info(data_type_info* dti)
 	dti->is_finalized = 1;
 
 	return 1;
+}
+
+#include<stdio.h>
+
+static void print_tabs(int tabs)
+{
+	while(tabs)
+	{
+		printf("\t");
+		tabs--;
+	}
+}
+
+static void print_type_info_recursive(data_type_info* dti, int tabs)
+{
+	print_tabs(tabs); printf("type_name : %s\n", dti->type_name);
+	print_tabs(tabs); printf("type : %s\n", type_as_string[dti->type]);
+	print_tabs(tabs); printf("is_nullable : %d\n", is_nullable_type_info(dti));
+	print_tabs(tabs); printf("is_variable_sized : %d\n", is_variable_sized_type_info(dti));
+	print_tabs(tabs); printf("needs_is_valid_bit_in_prefix_bitmap : %d\n", needs_is_valid_bit_in_prefix_bitmap(dti));
+
+	if(dti->type == BIT_FIELD)
+	{
+		print_tabs(tabs); printf("bit_field_size : %"PRIu32"\n", dti->bit_field_size);
+	}
+	else if(!is_variable_sized_type_info(dti))
+	{
+		print_tabs(tabs); printf("size : %"PRIu32"\n", dti->size);
+	}
+	else
+	{
+		print_tabs(tabs); printf("min_size : %"PRIu32"\n", dti->min_size);
+		print_tabs(tabs); printf("max_size : %"PRIu32"\n", dti->max_size);
+	}
+
+	print_tabs(tabs); printf("is_container_type : %d\n", is_container_type_info(dti));
+
+	if(is_container_type_info(dti))
+	{
+		if(dti->has_variable_element_count)
+		{
+			print_tabs(tabs); printf("element_count : variable\n");
+		}
+		else
+		{
+			print_tabs(tabs); printf("element_count : %"PRIu32"\n", dti->element_count);
+		}
+
+		if(!dti->has_variable_element_count)
+		{
+			print_tabs(tabs); printf("prefix_bitmap_size_in_bits : %"PRIu32"\n", dti->prefix_bitmap_size_in_bits);
+		}
+
+
+		if(dti->type == TUPLE)
+		{
+			print_tabs(tabs + 1); printf("(\n");
+			for(uint32_t i = 0; i < dti->element_count; i++)
+			{
+				data_type_info* containee_type_info = dti->containees[i].type_info;
+				data_position_info* containee_pos_info = dti->containees + i;
+
+				print_tabs(tabs + 2); printf("field_name : %s\n", containee_pos_info->field_name);
+
+				if(containee_type_info->type == BIT_FIELD)
+				{
+					print_tabs(tabs + 2); printf("bit_offset : %"PRIu32"\n", containee_pos_info->bit_offset_in_prefix_bitmap);
+				}
+				else if(!is_variable_sized_type_info(containee_type_info))
+				{
+					print_tabs(tabs + 2); printf("byte_offset : %"PRIu32"\n", containee_pos_info->byte_offset);
+				}
+				else
+				{
+					print_tabs(tabs + 2); printf("byte_offset_to_byte_offset : %"PRIu32"\n", containee_pos_info->byte_offset_to_byte_offset);
+				}
+
+				if(needs_is_valid_bit_in_prefix_bitmap(containee_type_info))
+				{
+					print_tabs(tabs + 2); printf("bit_offset_to_is_valid_bit : %"PRIu32"\n", containee_pos_info->bit_offset_to_is_valid_bit);
+				}
+
+				print_type_info_recursive(dti->containee, tabs + 3);
+			}
+			print_tabs(tabs + 1); printf(")\n");
+		}
+		else
+		{
+			print_tabs(tabs + 1); printf("[\n");
+			print_type_info_recursive(dti->containee, tabs + 2);
+			print_tabs(tabs + 1); printf("]\n");
+		}
+	}
+}
+
+void print_type_info(data_type_info* dti)
+{
+	print_type_info_recursive(dti, 0);
 }

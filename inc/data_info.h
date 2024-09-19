@@ -26,6 +26,8 @@ enum data_type
 	// they will be identified as container types
 };
 
+extern char type_as_string[][16];
+
 typedef struct data_type_info data_type_info;
 
 typedef struct data_position_info data_position_info;
@@ -166,7 +168,10 @@ data_type_info* get_data_type_info_for_containee_of_container(const data_type_in
 data_position_info get_data_position_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index);
 
 // must be called and must pass on all the types
-int finalize_data_info(data_type_info* dti);
+int finalize_type_info(data_type_info* dti);
+
+// print type info
+void print_type_info(data_type_info* dti);
 
 
 /*
