@@ -1,6 +1,7 @@
 TASKS PICKED
 
-   * define and declare static types, of all possible default types (especially for UINT_1_NON_NULLABLE as containee of the strings and blobs), and macros/functions to initialize sized fixed length strings, blobs, tuples and arrays * also add a function to get the required size of tuple data_type_info
+   * macros/functions to initialize tuples
+   * also add a function to get the required size of tuple data_type_info
    * test finalize function for various types, and dry run their prints
 
 
