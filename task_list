@@ -1,13 +1,18 @@
+TASKS PICKED
+
+   * define and declare static types, of all possible default types (especially for UINT_1_NON_NULLABLE as containee of the strings and blobs), and macros/functions to initialize sized fixed length strings, blobs, tuples and arrays * also add a function to get the required size of tuple data_type_info
+   * test finalize function for various types, and dry run their prints
+
+
 1 NEW TYPE TASKS
  *1*
-   * test finalize function for various types
-   * define and declare static types, of all possible default types (especially for UINT_1_NON_NULLABLE as containee of the strings and blobs), and macros/functions to initialize sized fixed length strings, blobs, tuples and arrays * also add a function to get the required size of tuple data_type_info
-   * get function to get an element in the container, return the void* to the element
+   * function to get an element in the container, return the void* to the element
    * move_variable_sized_containee_to_end_of_container
      * implement logic to send a variable length element to the end of the tuple, use cutlery's left_rotate functionality
      * to move the variable length element to the end just perform memory_left_rotate(tuple + offset, tuple_size - offset, total size of variable length element_size)
      * we can do the same for making space for the appends and insert
      * add logic to add or substract all byte offsets by a specified value, if they are greater than a particular value
+   * is_variable_sized_containee_at_end_of_container
    * set function to set an element in the container, returns updated size, and also takes in max size
    * can_set function to check if we can set the element inside the container, with allowable maximum expansion size
    * set NULL function to set a containee to NULL -> fails for a non_nullable element -> given by the function
