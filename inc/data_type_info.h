@@ -1,5 +1,5 @@
-#ifndef TUPLE_INFO_H
-#define TUPLE_INFO_H
+#ifndef DATA_TYPE_INFO_H
+#define DATA_TYPE_INFO_H
 
 #include<stdint.h>
 
