@@ -18,6 +18,9 @@
    * add a hashmap for the system where types can be added,
    * add their function pointers for compare and hash
 
+ *2*
+ * refactor the project to work with data_type_info instead of the tuple_def -> data_type_info and tuple_size_def -> tuple_size_info
+ * page_layouts will only work with tuples and believe that tuples are only being stored
  * every data_type_info (except bit_fieds) can be used to get us tuple_size_info, that can be further passed into page_layout functions
    * it will consist of following
    * type
@@ -31,7 +34,7 @@
      * Union of size and bit_field_size
  * this much information is enough for the page_layout functions to determine the page_layout and the size of the tuple that is being inserted
 
- *3* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
+ *3* compact serializable form of tuple_def -> data_type_info and tuple_size_def -> tuple_size_info, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
 
 2 OPTIMIZATION FOR COMPRESSION TASKS
  *4* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
