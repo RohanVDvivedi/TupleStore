@@ -166,7 +166,7 @@ data_type_info* get_data_type_info_for_containee_of_container(const data_type_in
 		return dti->containees[index].type_info;
 
 	if(dti->type == STRING || dti->type == BLOB)
-		return dti->containee; // this is why it must be set for string and blob data types // TODO replace it with a constant UINT_1_NON_NULLABLE
+		return UINT_1_NON_NULLABLE; // this must be the containee here, so why not return the default
 
 	// else it has to be an array
 	return dti->containee;
@@ -273,7 +273,7 @@ int finalize_type_info(data_type_info* dti)
 		case STRING :
 		case BLOB :
 		{
-			dti->containee = NULL; // TODO to be set to UINT_1_NON_NULLABLE
+			dti->containee = UINT_1_NON_NULLABLE;
 			if(!finalize_type_info(dti->containee))
 				return 0;
 			dti->is_variable_sized = dti->has_variable_element_count;
