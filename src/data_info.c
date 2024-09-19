@@ -1,6 +1,9 @@
 #include<data_info.h>
 #include<page_layout_util.h>
 
+#include<serial_int.h>
+#include<large_uints.h>
+
 #include<bitmap.h>
 
 int is_nullable_type_info(const data_type_info* dti)
@@ -212,4 +215,123 @@ data_position_info get_data_position_info_for_containee_of_container(const data_
 			.type_info = containee_type_info,
 		};
 	}
+}
+
+int finalize_data_info(data_type_info* dti)
+{
+	// no need to finalize again
+	if(dti->is_finalized)
+		return 1;
+
+	switch(dti->type)
+	{
+		case BIT_FIELD :
+		{
+			if(dti->bit_field_size < 1 || 64 < dti->bit_field_size)
+				return 0;
+			dti->is_variable_sized = 0;
+			break;
+		}
+
+		case UINT :
+		case INT :
+		{
+			if(dti->size < 1 || 8 < dti->size)
+				return 0;
+			dti->is_variable_sized = 0;
+			break;
+		}
+
+		case FLOAT :
+		{
+			if((dti->size != sizeof(float)) && (dti->size != sizeof(double)) && (dti->size != sizeof(long double)))
+				return 0;
+			dti->is_variable_sized = 0;
+			break;
+		}
+
+		case LARGE_UINT :
+		{
+			if(dti->size < 1 || get_max_bytes_uint256() < dti->size)
+				return 0;
+			dti->is_variable_sized = 0;
+			break;
+		}
+
+		case STRING :
+		case BLOB :
+		{
+			dti->containee = NULL; // TODO to be set to UINT_1_NON_NULLABLE
+			if(!finalize_data_info(dti->containee))
+				return 0;
+			dti->is_variable_sized = dti->has_variable_element_count;
+			if(!dti->has_variable_element_count && dti->element_count == 0) // for a fixed element count container the element_count must never be 0
+				return 0;
+			dti->prefix_bitmap_size_in_bits = 0; // will always be zero here
+			if(dti->is_variable_sized)
+			{
+				dti->min_size = get_value_size_on_page(dti->max_size); // an empty string or blob
+				if(dti->min_size > dti->max_size)
+					return 0;
+			}
+			else
+				dti->size = dti->element_count;
+			break;
+		}
+
+		case TUPLE :
+		{
+			// TODO
+			break;
+		}
+
+		case ARRAY :
+		{
+			if(!finalize_data_info(dti->containee))
+				return 0;
+			dti->is_variable_sized = dti->has_variable_element_count || is_variable_sized_type_info(dti->containee);
+			if(!dti->has_variable_element_count && dti->element_count == 0) // for a fixed element count container the element_count must never be 0
+				return 0;
+			if(!dti->has_variable_element_count) // prefix_bitmap_size_in_bits is only defined for fixed element count containers
+			{
+				if(dti->containee->type == BIT_FIELD)
+					dti->prefix_bitmap_size_in_bits = dti->element_count * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size);
+				else if(!is_variable_sized_type_info(dti->containee))
+					dti->prefix_bitmap_size_in_bits = dti->element_count * (needs_is_valid_bit_in_prefix_bitmap(dti->containee));
+				else
+					dti->prefix_bitmap_size_in_bits = 0;
+			}
+			if(!dti->is_variable_sized)
+			{
+				// is fixed sized, hence can not have variable element count
+				// the elements must be bit fields or fixed sized elements
+				if(dti->containee->type == BIT_FIELD)
+					dti->size = bitmap_size_in_bytes(dti->prefix_bitmap_size_in_bits);
+				else
+					dti->size = bitmap_size_in_bytes(dti->prefix_bitmap_size_in_bits) + dti->element_count * dti->containee->size;
+			}
+			else
+			{
+				// get the default prefix size, only requires us to know if it needs size or element_count in prefix or not.
+				dti->min_size = get_offset_to_prefix_bitmap_for_container_type_info(dti);
+				// for variable element count, make element count to 0 and we are done
+				// but for fixed length element we need space for its elements or their offsets
+				if(!dti->has_variable_element_count)
+				{
+					if(dti->containee->type == BIT_FIELD)
+						dti->min_size += bitmap_size_in_bytes((needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size) * dti->element_count);
+					else if(!is_variable_sized_type_info(dti->containee))
+						dti->min_size += bitmap_size_in_bytes(needs_is_valid_bit_in_prefix_bitmap(dti->containee) * dti->element_count) + (dti->containee->size * dti->element_count);
+					else
+						dti->min_size += (get_value_size_on_page(dti->max_size) * dti->element_count);
+				}
+				if(dti->min_size > dti->max_size)
+					return 0;
+			}
+		}
+	}
+
+	dti->is_finalized = 1;
+
+	return 1;
 }

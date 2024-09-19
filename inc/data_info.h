@@ -60,14 +60,17 @@ struct data_type_info
 
 	int is_variable_sized : 1; // -> possibly set only for STRING, BLOB, TUPLE or ARRAY
 	// -> must be set if you are setting has_variable_element_count
+	// -> gets derieved anyway, by the finalize function for container type hence not necessary to be set
 
 	union
 	{
+		uint32_t bit_field_size; // number of bits in the bit fields, these bits need to be allocated in the prefix bitmap of the container
+
 		uint32_t size; // -> for fixed length elements
+		// -> gets derieved anyway, by the finalize function for fixed sized container types hence not necessary to be set
 
 		uint32_t min_size; // -> for variable length elements
-
-		uint32_t bit_field_size; // number of bits in the bit fields, these bits need to be allocated in the prefix bitmap of the container
+		// -> gets derieved anyway, by the finalize function for variable sized containers types hence not necessary to be set
 	};
 
 	uint32_t max_size; // -> for variable length elements, necessary to calculate bytes required to be allocated for offsets, sizes and counts
@@ -79,13 +82,15 @@ struct data_type_info
 	uint32_t element_count; // -> to be used for TUPLE or ARRAY types only, and only when has_variable_element_count == 0
 	// for fixed length string and blob, this must equal size
 
-	uint32_t prefix_bitmap_size_in_bits; // -> number of bits in the prefix bitmap, valid only for tuples and fixed element count array of fixed length elements
+	uint32_t prefix_bitmap_size_in_bits; // -> number of bits in the prefix bitmap, valid only for tuples and fixed element count array
 	// must be set to 0s for STRING and BLOB types
+	// -> gets derieved anyway, by the finalize function for container types hence not necessary to be set
 
 	data_type_info* containee;	// -> to be used for ARRAY only
 	// for string and blob types the containee is always a UINT_1_NON_NULL i.e. non-nullable UINT of size 1 byte
 
 	data_position_info containees[];	// -> to be used for TUPLE only, total element_count number of them
+	// -> these data_position_infos get derieved anyway, by the finalize function hence not necessary to be set
 };
 
 // used to access nested data like TUPLE, ARRAY, STRING and BLOB only
@@ -159,6 +164,9 @@ uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_
 // valid only if index < get_element_count_for_container_type_info
 data_type_info* get_data_type_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index);
 data_position_info get_data_position_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index);
+
+// must be called and must pass on all the types
+int finalize_data_info(data_type_info* dti);
 
 
 /*
