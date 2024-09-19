@@ -281,7 +281,79 @@ int finalize_data_info(data_type_info* dti)
 
 		case TUPLE :
 		{
-			// TODO
+			// initialize the attributes
+			dti->is_variable_sized = 0;
+			dti->prefix_bitmap_size_in_bits = 0;
+
+			// tuple will never have variable element count
+			dti->has_variable_element_count = 0;
+
+			// figure out 2 things in this loop
+			// whether the tuple is_variable_sized
+			// and the number of the bits required in prefix_bitmap, and assign bits to the bit_fields in prefix_bitmap
+			for(uint32_t i = 0; i < dti->element_count; i++)
+			{
+				data_type_info* containee_type_info = dti->containees[i].type_info;
+				data_position_info* containee_pos_info = dti->containees + i;
+
+				if(!finalize_data_info(containee_type_info))
+					return 0;
+
+				// if the element is variable_sized, then mark the tuple as variable sized
+				if(is_variable_sized_type_info(containee_type_info))
+					dti->is_variable_sized = 1;
+
+				// give this element an is_NULL bit in prefix_bitmap only if it needs it
+				if(needs_is_valid_bit_in_prefix_bitmap(containee_type_info))
+				{
+					// assign bit_offset_to_is_valid_bit and increment the prefix_bitmap_size_in_bits
+					containee_pos_info->bit_offset_to_is_valid_bit = dti->prefix_bitmap_size_in_bits;
+					dti->prefix_bitmap_size_in_bits += 1;
+				}
+
+				// assign bit offsets in prefix_bitmap, to the bit_fields
+				if(containee_type_info->type == BIT_FIELD)
+				{
+					// assign bit_offset to bit_field and increment the prefix_bitmap_size_in_bits
+					containee_pos_info->bit_offset_in_prefix_bitmap = dti->prefix_bitmap_size_in_bits;
+					dti->prefix_bitmap_size_in_bits += containee_type_info->bit_field_size;
+				}
+			}
+
+			dti->size = 0; // alse sets min_size to 0
+
+			// allocate space for storing tuple_size for variable sized tuple_def
+			if(dti->is_variable_sized)
+				dti->min_size += get_value_size_on_page(dti->max_size);
+
+			// add prefix_bitmap's size in bytes to tuple_sed size 
+			dti->size += bitmap_size_in_bytes(dti->prefix_bitmap_size_in_bits);
+
+			// now we compute the offsets (and the offsets to their byte_offsets) for all the elements
+			for(uint32_t i = 0; i < dti->element_count; i++)
+			{
+				data_type_info* containee_type_info = dti->containees[i].type_info;
+				data_position_info* containee_pos_info = dti->containees + i;
+
+				// all the work needed for BIT_FIELD is already done, hence we can skip it
+				if(containee_type_info->type == BIT_FIELD)
+					continue;
+
+				if(is_variable_sized_type_info(containee_type_info))
+				{
+					containee_pos_info->byte_offset_to_byte_offset = dti->min_size;
+					dti->min_size += get_value_size_on_page(dti->max_size);
+				}
+				else
+				{
+					containee_pos_info->byte_offset = dti->size;
+					dti->size = containee_type_info->size;
+				}
+			}
+
+			if(dti->min_size > dti->max_size)
+				return 0;
+
 			break;
 		}
 
