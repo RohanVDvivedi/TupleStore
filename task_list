@@ -18,15 +18,18 @@
    * add a hashmap for the system where types can be added,
    * add their function pointers for compare and hash
 
-*2* after this each tuple has a non-nullable bit, now for a fixed length tuple, if a non-nullable bit is set, then make a new page layout.
-  * that does not have a bit map stored for the is_valid bits, and has neither tuple_count nor the tomb_stone_count
-  * it will only have page_header and array of fixed length non-nullable tuples
-  * you will not be allowed to append, insert, or discard tuples they all fail, their cn_append, can_insert and discard_all/discard trailing tomb_stones counterparts return 0
-  * you can still get_nth_tuple, update_tuple and update_inplace_element, but can never update tuples to NULL
-  * get_tuple_count will always return the max tuple count on the page
-  * exists tuple on tha page, will return 1, if it is without bounds
-  * implement space query functions accordingly
-  * such a page can be used to build bitmap pages/indexes, and interior pages of page_table and array_table, bitmap pages for page allocation bitmaps
+ * every data_type_info (except bit_fieds) can be used to get us tuple_size_info, that can be further passed into page_layout functions
+   * it will consist of following
+   * type
+   * is_variable_sized
+   * Union of size and min_size
+   * max_size -> only used if variable sized -> necessary to know about the size requirement of prefix size and prefix element count for container types
+   * for arrays we have explicity containee information, and implicit for string and blob
+     * is_nullable -> to know if we need a is_valid bit in prefix bitmap
+     * is_bit_field
+     * is_variable_sized -> never set of is_bit_field is set -> if this is set, the size can be read from prefix, else we have only the element count in the prefix
+     * Union of size and bit_field_size
+ * this much information is enough for the page_layout functions to determine the page_layout and the size of the tuple that is being inserted
 
  *3* compact serializable form of tuple_def and tuple_def_summary, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
 
