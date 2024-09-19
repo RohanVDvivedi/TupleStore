@@ -95,6 +95,8 @@ struct data_type_info
 	// -> these data_position_infos get derieved anyway, by the finalize function hence not necessary to be set
 };
 
+#include<data_type_info_defaults.h>
+
 // used to access nested data like TUPLE, ARRAY, STRING and BLOB only
 // stores the complete path to access the object
 typedef struct positional_accessor positional_accessor;
