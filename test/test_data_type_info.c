@@ -123,17 +123,17 @@ int main()
 	print_type_info(&a1);
 	printf("\n");
 
-	data_type_info a2 = get_variable_element_count_array_type("a2", _element_count, 1000000, UINT_4_NULLABLE);
+	data_type_info a2 = get_variable_element_count_array_type("a2", 1000000, UINT_4_NULLABLE);
 	finalize_type_info(&a2);
 	print_type_info(&a2);
 	printf("\n");
 
-	a2 = get_variable_element_count_array_type("a2", _element_count, 1000000, BIT_FIELD_4_NULLABLE);
+	a2 = get_variable_element_count_array_type("a2", 1000000, BIT_FIELD_4_NULLABLE);
 	finalize_type_info(&a2);
 	print_type_info(&a2);
 	printf("\n");
 
-	a1 = get_variable_element_count_array_type("a2", _element_count, 1000000, &var_length_blob);
+	a1 = get_variable_element_count_array_type("a2", 1000000, &var_length_blob);
 	finalize_type_info(&a2);
 	print_type_info(&a2);
 	printf("\n");
