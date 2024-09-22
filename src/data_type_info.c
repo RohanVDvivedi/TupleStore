@@ -363,7 +363,7 @@ int finalize_type_info(data_type_info* dti)
 				}
 			}
 
-			if(dti->min_size > dti->max_size)
+			if(is_variable_sized_type_info(dti) && dti->min_size > dti->max_size)
 				return 0;
 
 			break;
