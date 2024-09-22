@@ -1,8 +1,5 @@
 TASKS PICKED
 
-   * test finalize function for various types, and dry run their prints
-
-
 1 NEW TYPE TASKS
  *1*
    * function to get an element in the container, return the void* to the element
