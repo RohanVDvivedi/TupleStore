@@ -500,7 +500,7 @@ static void print_type_info_recursive(data_type_info* dti, int tabs)
 					print_tabs(tabs + 2); printf("bit_offset_to_is_valid_bit : %"PRIu32"\n", containee_pos_info->bit_offset_to_is_valid_bit);
 				}
 
-				print_type_info_recursive(dti->containee, tabs + 3);
+				print_type_info_recursive(containee_type_info, tabs + 3);
 			}
 			print_tabs(tabs + 1); printf(")\n");
 		}
