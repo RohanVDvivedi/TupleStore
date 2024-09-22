@@ -133,7 +133,7 @@ int main()
 	print_type_info(&a2);
 	printf("\n");
 
-	a1 = get_variable_element_count_array_type("a2", 1000000, &var_length_blob);
+	a2 = get_variable_element_count_array_type("a2", 1000000, &var_length_blob);
 	finalize_type_info(&a2);
 	print_type_info(&a2);
 	printf("\n");
