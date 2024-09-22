@@ -113,5 +113,10 @@ int main()
 	print_type_info(&a1);
 	printf("\n");
 
+	a1 = get_fixed_element_count_array_type("a1", 3, 0, 1, BIT_FIELD_4_NULLABLE);
+	finalize_type_info(&a1);
+	print_type_info(&a1);
+	printf("\n");
+
 	return 0;
 }
