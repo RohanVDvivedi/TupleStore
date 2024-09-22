@@ -328,7 +328,7 @@ declare_large_uint_non_nullable_type(32)
 	.type_name = _type_name, \
 	.type = ARRAY, \
 	.is_nullable = _is_nullable_if_fixed_sized_element, \
-	.max_size = _max_size_if_variable_sized, \
+	.max_size = _max_size_if_variable_sized_element, \
 	.has_variable_element_count = 0, \
 	.element_count = _element_count, \
 	.containee = _containee, \

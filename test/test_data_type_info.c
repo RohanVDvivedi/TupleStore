@@ -90,5 +90,28 @@ int main()
 	print_type_info(fixed_sized_tuple);
 	printf("\n");
 
+	data_type_info* var_sized_tuple = alloca(sizeof_tuple_data_type_info(6));
+	initialize_tuple_data_type_info(var_sized_tuple, "var_sized_tuple", 0, 1000000, 6);
+	strcpy(var_sized_tuple->containees[0].field_name, "a");
+	var_sized_tuple->containees[0].type_info = INT_7_NULLABLE;
+	strcpy(var_sized_tuple->containees[1].field_name, "b");
+	var_sized_tuple->containees[1].type_info = UINT_6_NON_NULLABLE;
+	strcpy(var_sized_tuple->containees[2].field_name, "c");
+	var_sized_tuple->containees[2].type_info = &var_length_string;
+	strcpy(var_sized_tuple->containees[3].field_name, "d");
+	var_sized_tuple->containees[3].type_info = BIT_FIELD_7_NULLABLE;
+	strcpy(var_sized_tuple->containees[4].field_name, "e");
+	var_sized_tuple->containees[4].type_info = LARGE_UINT_15_NULLABLE;
+	strcpy(var_sized_tuple->containees[5].field_name, "f");
+	var_sized_tuple->containees[5].type_info = &var_length_blob;
+	finalize_type_info(var_sized_tuple);
+	print_type_info(var_sized_tuple);
+	printf("\n");
+
+	data_type_info a1 = get_fixed_element_count_array_type("a1", 3, 0, 1, UINT_4_NULLABLE);
+	finalize_type_info(&a1);
+	print_type_info(&a1);
+	printf("\n");
+
 	return 0;
 }
