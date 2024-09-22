@@ -1,6 +1,8 @@
 #include<data_type_info.h>
 
 #include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
 
 int main()
 {
@@ -73,5 +75,18 @@ int main()
 	finalize_type_info(&var_length_blob);
 	print_type_info(&var_length_blob);
 	printf("\n");
+
+	data_type_info* fixed_sized_tuple = alloca(sizeof_tuple_data_type_info(3));
+	initialize_tuple_data_type_info(fixed_sized_tuple, "fixed_sized_tuple", 1, 0, 3);
+	strcpy(fixed_sized_tuple->containees[0].field_name, "a");
+	fixed_sized_tuple->containees[0].type_info = INT_7_NULLABLE;
+	strcpy(fixed_sized_tuple->containees[1].field_name, "b");
+	fixed_sized_tuple->containees[1].type_info = UINT_6_NON_NULLABLE;
+	strcpy(fixed_sized_tuple->containees[2].field_name, "c");
+	fixed_sized_tuple->containees[2].type_info = LARGE_UINT_15_NULLABLE;
+	finalize_type_info(fixed_sized_tuple);
+	print_type_info(fixed_sized_tuple);
+	printf("\n");
+
 	return 0;
 }
