@@ -425,4 +425,14 @@ define_large_uint_non_nullable_type(32)
 	.containee = _containee, \
 }))
 
+#define initialize_tuple_data_type_info(dti, _type_name, _is_nullable_if_fixed_sized_element, _max_size_if_variable_sized, _element_count) \
+dti->is_static = 0; \
+dti->is_finalized = 0; \
+strncpy(dti->type_name, _type_name, 64); \
+dti->type = TUPLE; \
+dti->is_nullable = _is_nullable_if_fixed_sized_element; \
+dti->max_size = _max_size_if_variable_sized; \
+dti->has_variable_element_count = 0; \
+dti->element_count = _element_count;
+
 #endif
