@@ -95,6 +95,9 @@ struct data_type_info
 	// -> these data_position_infos get derieved anyway, by the finalize function hence not necessary to be set
 };
 
+// macro to calculate sizeof tuple data_type_info
+#define sizeof_tuple_data_type_info(element_count) (sizeof(data_type_info) + sizeof(data_position_info) * (element_count))
+
 #include<data_type_info_defaults.h>
 
 // used to access nested data like TUPLE, ARRAY, STRING and BLOB only
