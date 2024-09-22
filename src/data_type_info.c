@@ -359,7 +359,7 @@ int finalize_type_info(data_type_info* dti)
 				else
 				{
 					containee_pos_info->byte_offset = dti->size;
-					dti->size = containee_type_info->size;
+					dti->size += containee_type_info->size;
 				}
 			}
 
