@@ -274,76 +274,76 @@ declare_large_uint_non_nullable_type(31)
 declare_large_uint_non_nullable_type(32)
 
 #define get_fixed_length_string_type(_size, _is_nullable) \
-((data_type_info)({ \
+((data_type_info){ \
 	.is_static = 0, \
 	.is_finalized = 0, \
-	.type_name[64] = "STRING", \
+	.type_name = "STRING", \
 	.type = STRING, \
 	.is_nullable = _is_nullable, \
 	.size = _size, \
 	.has_variable_element_count = 0, \
 	.element_count = _size, \
 	.containee = UINT_1_NON_NULLABLE, \
-}))
+})
 
 #define get_fixed_length_blob_type(_size, _is_nullable) \
-((data_type_info)({ \
+((data_type_info){ \
 	.is_static = 0, \
 	.is_finalized = 0, \
-	.type_name[64] = "BLOB", \
+	.type_name = "BLOB", \
 	.type = BLOB, \
 	.is_nullable = _is_nullable, \
 	.size = _size, \
 	.has_variable_element_count = 0, \
 	.element_count = _size, \
 	.containee = UINT_1_NON_NULLABLE, \
-}))
+})
 
 #define get_variable_length_string_type(_max_size) \
-((data_type_info)({ \
+((data_type_info){ \
 	.is_static = 0, \
 	.is_finalized = 0, \
-	.type_name[64] = "STRING", \
+	.type_name = "STRING", \
 	.type = STRING, \
 	.max_size = _max_size, \
 	.has_variable_element_count = 1, \
 	.containee = UINT_1_NON_NULLABLE, \
-}))
+})
 
 #define get_variable_length_blob_type(_max_size) \
-((data_type_info)({ \
+((data_type_info){ \
 	.is_static = 0, \
 	.is_finalized = 0, \
-	.type_name[64] = "BLOB", \
+	.type_name = "BLOB", \
 	.type = BLOB, \
 	.max_size = _max_size, \
 	.has_variable_element_count = 1, \
 	.containee = UINT_1_NON_NULLABLE, \
-}))
+})
 
 #define get_fixed_element_count_array_type(_type_name, _element_count, _max_size_if_variable_sized_element, _is_nullable_if_fixed_sized_element, _containee) \
-((data_type_info)({ \
+((data_type_info){ \
 	.is_static = 0, \
 	.is_finalized = 0, \
-	.type_name[64] = _type_name, \
+	.type_name = _type_name, \
 	.type = ARRAY, \
 	.is_nullable = _is_nullable_if_fixed_sized_element, \
 	.max_size = _max_size_if_variable_sized, \
 	.has_variable_element_count = 0, \
 	.element_count = _element_count, \
 	.containee = _containee, \
-}))
+})
 
 #define get_variable_element_count_array_type(_type_name, _element_count, _max_size, _containee) \
-((data_type_info)({ \
+((data_type_info){ \
 	.is_static = 0, \
 	.is_finalized = 0, \
-	.type_name[64] = _type_name, \
+	.type_name = _type_name, \
 	.type = ARRAY, \
 	.max_size = _max_size, \
 	.has_variable_element_count = 1, \
 	.containee = _containee, \
-}))
+})
 
 #define initialize_tuple_data_type_info(dti, _type_name, _is_nullable_if_fixed_sized_element, _max_size_if_variable_sized, _element_count) \
 dti->is_static = 0; \

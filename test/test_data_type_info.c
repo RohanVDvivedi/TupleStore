@@ -43,5 +43,15 @@ int main()
 	finalize_type_info(LARGE_UINT_21_NON_NULLABLE);
 	print_type_info(LARGE_UINT_21_NON_NULLABLE);
 	printf("\n");
+
+	data_type_info fixed_length_string = get_fixed_length_string_type(12, 1);
+	finalize_type_info(&fixed_length_string);
+	print_type_info(&fixed_length_string);
+	printf("\n");
+
+	data_type_info fixed_length_blob = get_fixed_length_blob_type(15, 1);
+	finalize_type_info(&fixed_length_blob);
+	print_type_info(&fixed_length_blob);
+	printf("\n");
 	return 0;
 }
