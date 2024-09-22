@@ -53,5 +53,15 @@ int main()
 	finalize_type_info(&fixed_length_blob);
 	print_type_info(&fixed_length_blob);
 	printf("\n");
+
+	data_type_info fixed_length_string_nn = get_fixed_length_string_type(13, 0);
+	finalize_type_info(&fixed_length_string_nn);
+	print_type_info(&fixed_length_string_nn);
+	printf("\n");
+
+	data_type_info fixed_length_blob_nn = get_fixed_length_blob_type(10, 0);
+	finalize_type_info(&fixed_length_blob_nn);
+	print_type_info(&fixed_length_blob_nn);
+	printf("\n");
 	return 0;
 }
