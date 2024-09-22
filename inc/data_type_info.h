@@ -51,16 +51,16 @@ struct data_position_info
 
 struct data_type_info
 {
-	int is_static : 1; // -> if set this object is not to be freed, set for default types and custom types from extensions
-	int is_finalized : 1; // -> tuple and array data_types can only be used if this is set, else call finalize on this type and get success
+	int is_static; // -> if set this object is not to be freed, set for default types and custom types from extensions
+	int is_finalized; // -> tuple and array data_types can only be used if this is set, else call finalize on this type and get success
 
 	char type_name[64]; // -> type name of this user defined type
 
 	data_type type;
 
-	int is_nullable : 1; // -> only for fixed length elements, variable length elements are always nullable by setting their corresponding offset to 0
+	int is_nullable; // -> only for fixed length elements, variable length elements are always nullable by setting their corresponding offset to 0
 
-	int is_variable_sized : 1; // -> possibly set only for STRING, BLOB, TUPLE or ARRAY
+	int is_variable_sized; // -> possibly set only for STRING, BLOB, TUPLE or ARRAY
 	// -> must be set if you are setting has_variable_element_count
 	// -> gets derieved anyway, by the finalize function for container type hence not necessary to be set
 
@@ -78,7 +78,7 @@ struct data_type_info
 	uint32_t max_size; // -> for variable length elements, necessary to calculate bytes required to be allocated for offsets, sizes and counts
 	// max_size may never be more than the page_size of the system
 
-	int has_variable_element_count : 1; // -> always 0 for a TUPLE, could be 1 for an ARRAY, and also true for variable sie strings and blobs
+	int has_variable_element_count; // -> always 0 for a TUPLE, could be 1 for an ARRAY, and also true for variable sie strings and blobs
 	// must be set for variable sized string and blob
 
 	uint32_t element_count; // -> to be used for TUPLE or ARRAY types only, and only when has_variable_element_count == 0

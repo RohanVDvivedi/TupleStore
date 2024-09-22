@@ -215,15 +215,15 @@ data_position_info get_data_position_info_for_containee_of_container(const data_
 	else if(!is_variable_sized_type_info(containee_type_info))
 	{
 		return (data_position_info){
-			.byte_offset_to_byte_offset = first_element_offset + get_value_size_on_page(dti->max_size) * index,
+			.byte_offset = first_element_offset + containee_type_info->size * index,
+			.bit_offset_to_is_valid_bit = index * needs_is_valid_bit_in_prefix_bitmap(containee_type_info), // gets set to 0, if it won't need a is_valid bit in prefix_bitmap
 			.type_info = containee_type_info,
 		};
 	}
 	else
 	{
 		return (data_position_info){
-			.byte_offset = first_element_offset + containee_type_info->size * index,
-			.bit_offset_to_is_valid_bit = index * needs_is_valid_bit_in_prefix_bitmap(containee_type_info), // gets set to 0, if it won't need a is_valid bit in prefix_bitmap
+			.byte_offset_to_byte_offset = first_element_offset + get_value_size_on_page(dti->max_size) * index,
 			.type_info = containee_type_info,
 		};
 	}
