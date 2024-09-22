@@ -63,5 +63,15 @@ int main()
 	finalize_type_info(&fixed_length_blob_nn);
 	print_type_info(&fixed_length_blob_nn);
 	printf("\n");
+
+	data_type_info var_length_string = get_variable_length_string_type(1000000);
+	finalize_type_info(&var_length_string);
+	print_type_info(&var_length_string);
+	printf("\n");
+
+	data_type_info var_length_blob = get_variable_length_blob_type(1000);
+	finalize_type_info(&var_length_blob);
+	print_type_info(&var_length_blob);
+	printf("\n");
 	return 0;
 }
