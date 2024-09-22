@@ -1,3 +1,4 @@
+#include<data_type_info.h>
 #include<data_type_info_defaults.h>
 
 #define define_bit_field_nullable_type(_size) \
