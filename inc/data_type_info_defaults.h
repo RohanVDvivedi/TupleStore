@@ -334,7 +334,7 @@ declare_large_uint_non_nullable_type(32)
 	.containee = _containee, \
 })
 
-#define get_variable_element_count_array_type(_type_name, _element_count, _max_size, _containee) \
+#define get_variable_element_count_array_type(_type_name, _max_size, _containee) \
 ((data_type_info){ \
 	.is_static = 0, \
 	.is_finalized = 0, \
