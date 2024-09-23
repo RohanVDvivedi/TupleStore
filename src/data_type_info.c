@@ -560,5 +560,13 @@ const void* get_containee_from_container(const data_type_info* dti, const void* 
 	if(is_containee_null_in_container(dti, data, index))
 		return NULL;
 
-	// TODO
+	// fetch information about containee
+	data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, data, index);
+
+	if(containee_pos_info.type_info->type == BIT_FIELD)
+		return data + get_offset_to_prefix_bitmap_for_container_type_info(dti); // returning the pointer to the completee bitmap if the element is a bitfield
+	else if(!is_variable_sized_type_info(containee_type_info.type_info))
+		return data + containee_pos_info.byte_offset;
+	else
+		return data + read_value_from_page(data + containee_pos_info.byte_offset_to_byte_offset, dti->max_size);
 }
