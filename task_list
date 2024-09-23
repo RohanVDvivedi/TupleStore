@@ -1,7 +1,5 @@
 TASKS PICKED
 
-* initialize_minimal_data_for_type_info
-
 1 NEW TYPE TASKS
  *1*
    * set function to set an element in the container, returns updated size, and also takes in max size
