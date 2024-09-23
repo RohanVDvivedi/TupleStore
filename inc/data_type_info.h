@@ -211,4 +211,9 @@ int is_variable_sized_containee_at_end_of_container(const data_type_info* dti, v
 // if the above function passes, we do not need to call this function
 int move_variable_sized_containee_to_end_of_container(const data_type_info* dti, void* data, uint32_t index);
 
+// initializes the 0-ed out data with minimum size for this element
+// this is a NO-OP for bitfield elements
+// returns the size of the data
+uint32_t initialize_minimal_data_for_type_info(const data_type_info* dti, void* data);
+
 #endif

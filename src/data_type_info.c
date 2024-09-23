@@ -656,3 +656,23 @@ int move_variable_sized_containee_to_end_of_container(const data_type_info* dti,
 	write_value_to_page(data + containee_pos_info.byte_offset_to_byte_offset, dti->max_size, container_size - containee_size);
 	return 1;
 }
+
+void initialize_minimal_data_for_type_info(const data_type_info* dti, void* data)
+{
+	if(dti->type == BIT_FIELD)
+		return 0;
+
+	if(!is_variable_sized_type_info(dti))
+	{
+		memory_set(data, 0, dti->size);
+		return dti->size;
+	}
+	else
+	{
+		memory_set(data, 0, dti->min_size);
+		// if it has size set it to min_size, element_count if exists on the data is set to 0 by the above statement
+		if(has_size_in_its_prefix_for_container_type_info(dti))
+			write_value_to_page(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, dti->min_size);
+		return dti->min_size;
+	}
+}
