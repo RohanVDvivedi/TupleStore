@@ -1,7 +1,6 @@
 TASKS PICKED
 
-* is_containee_null_in_container
-* get_containee_from_container
+* initialize_min_sized_type_info
 * move_variable_sized_containee_to_end_of_container
   * implement logic to send a variable length element to the end of the tuple, use cutlery's left_rotate functionality
   * to move the variable length element to the end just perform memory_left_rotate(tuple + offset, tuple_size - offset, total size of variable length element_size)
