@@ -565,8 +565,61 @@ const void* get_containee_from_container(const data_type_info* dti, const void* 
 
 	if(containee_pos_info.type_info->type == BIT_FIELD)
 		return data + get_offset_to_prefix_bitmap_for_container_type_info(dti); // returning the pointer to the completee bitmap if the element is a bitfield
-	else if(!is_variable_sized_type_info(containee_type_info.type_info))
+	else if(!is_variable_sized_type_info(containee_pos_info.type_info))
 		return data + containee_pos_info.byte_offset;
 	else
 		return data + read_value_from_page(data + containee_pos_info.byte_offset_to_byte_offset, dti->max_size);
+}
+
+int move_variable_sized_containee_to_end_of_container(const data_type_info* dti, void* data, uint32_t index)
+{
+	// dti has to be a container type
+	if(!is_container_type_info(dti))
+		return 0;
+
+	// make sure that index is withint bounds, else fail
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return 0;
+
+	// if it is already null, fail
+	if(is_containee_null_in_container(dti, data, index))
+		return 0;
+
+	// fetch information about containee
+	data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, data, index);
+
+	// if this element is not variable sized then fail
+	if(!is_variable_sized_type_info(containee_pos_info.type_info))
+		return 0;
+
+	void* containee = (void*) get_containee_from_container(dti, data, index);
+	uint32_t containee_byte_offset = containee - data;
+	uint32_t containee_size = get_size_for_type_info(containee_pos_info.type_info, containee);
+	uint32_t container_size = get_size_for_type_info(dti, data);
+
+	// the containee is alreadt at the end of the container
+	if(containee_byte_offset + containee_size == container_size)
+		return 0;
+
+	// perform left rotation to psuh the containee at index to the end of the container
+	memory_left_rotate(containee, container_size - containee_byte_offset, containee_size);
+
+	for(uint32_t i = 0; i < get_element_count_for_container_type_info(dti, data); i++)
+	{
+		data_position_info pos_info_i = get_data_position_info_for_containee_of_container(dti, data, i);
+
+		// the offsets have to be adjusted but not for the index-th element and not for the fixed sized elements
+		if(i == index || !is_variable_sized_type_info(pos_info_i.type_info))
+			continue;
+
+		// move all offsets to elements that came after the containee_byte_offset front by the containee_size
+		uint32_t byte_offset_i = read_value_from_page(data + pos_info_i.byte_offset_to_byte_offset, dti->max_size);
+
+		if(byte_offset_i > containee_byte_offset)
+			write_value_to_page(data + pos_info_i.byte_offset_to_byte_offset, dti->max_size, byte_offset_i - containee_size);
+	}
+
+	// finally update the offset of the index-th element
+	write_value_to_page(data + containee_pos_info.byte_offset_to_byte_offset, dti->max_size, container_size - containee_size);
+	return 1;
 }

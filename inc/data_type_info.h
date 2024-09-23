@@ -205,4 +205,7 @@ int is_containee_null_in_container(const data_type_info* dti, const void* data, 
 
 const void* get_containee_from_container(const data_type_info* dti, const void* data, uint32_t index);
 
+// this needs to be done for modifying the variable sized element of the container, if its size would change
+int move_variable_sized_containee_to_end_of_container(const data_type_info* dti, void* data, uint32_t index);
+
 #endif
