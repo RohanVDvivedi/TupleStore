@@ -657,7 +657,7 @@ int move_variable_sized_containee_to_end_of_container(const data_type_info* dti,
 	return 1;
 }
 
-void initialize_minimal_data_for_type_info(const data_type_info* dti, void* data)
+uint32_t initialize_minimal_data_for_type_info(const data_type_info* dti, void* data)
 {
 	if(dti->type == BIT_FIELD)
 		return 0;
