@@ -1,14 +1,16 @@
 TASKS PICKED
 
+* is_containee_null_in_container
+* get_containee_from_container
+* move_variable_sized_containee_to_end_of_container
+  * implement logic to send a variable length element to the end of the tuple, use cutlery's left_rotate functionality
+  * to move the variable length element to the end just perform memory_left_rotate(tuple + offset, tuple_size - offset, total size of variable length element_size)
+  * we can do the same for making space for the appends and insert
+  * add logic to add or substract all byte offsets by a specified value, if they are greater than a particular value
+ * is_variable_sized_containee_at_end_of_container
+
 1 NEW TYPE TASKS
  *1*
-   * function to get an element in the container, return the void* to the element
-   * move_variable_sized_containee_to_end_of_container
-     * implement logic to send a variable length element to the end of the tuple, use cutlery's left_rotate functionality
-     * to move the variable length element to the end just perform memory_left_rotate(tuple + offset, tuple_size - offset, total size of variable length element_size)
-     * we can do the same for making space for the appends and insert
-     * add logic to add or substract all byte offsets by a specified value, if they are greater than a particular value
-   * is_variable_sized_containee_at_end_of_container
    * set function to set an element in the container, returns updated size, and also takes in max size
    * can_set function to check if we can set the element inside the container, with allowable maximum expansion size
    * set NULL function to set a containee to NULL -> fails for a non_nullable element -> given by the function
