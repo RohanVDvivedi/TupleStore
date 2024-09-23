@@ -477,8 +477,8 @@ static void print_type_info_recursive(const data_type_info* dti, int tabs)
 			print_tabs(tabs + 1); printf("(\n");
 			for(uint32_t i = 0; i < dti->element_count; i++)
 			{
-				data_type_info* containee_type_info = dti->containees[i].type_info;
-				data_position_info* containee_pos_info = dti->containees + i;
+				const data_type_info* containee_type_info = dti->containees[i].type_info;
+				const data_position_info* containee_pos_info = dti->containees + i;
 
 				print_tabs(tabs + 2); printf("field_name : %s\n", containee_pos_info->field_name);
 
@@ -513,7 +513,7 @@ static void print_type_info_recursive(const data_type_info* dti, int tabs)
 	}
 }
 
-void print_type_info(data_type_info* dti)
+void print_type_info(const data_type_info* dti)
 {
 	print_type_info_recursive(dti, 0);
 }
@@ -534,7 +534,7 @@ int is_containee_null_in_container(const data_type_info* dti, const void* data, 
 	if(!is_nullable_type_info(containee_pos_info.type_info))
 		return 0;
 
-	if(!is_variable_sized_type_info(containee_type_info.type_info))
+	if(!is_variable_sized_type_info(containee_pos_info.type_info))
 	{
 		// must have a bit in is_valid bitmap
 		return get_bit(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info.bit_offset_to_is_valid_bit) == 0;
