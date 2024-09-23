@@ -431,7 +431,7 @@ static void print_tabs(int tabs)
 	}
 }
 
-static void print_type_info_recursive(data_type_info* dti, int tabs)
+static void print_type_info_recursive(const data_type_info* dti, int tabs)
 {
 	print_tabs(tabs); printf("type_name : %s (%sfinalized)\n", dti->type_name, (dti->is_finalized ? "" : "not-"));
 	print_tabs(tabs); printf("type : %s\n", type_as_string[dti->type]);
@@ -516,4 +516,49 @@ static void print_type_info_recursive(data_type_info* dti, int tabs)
 void print_type_info(data_type_info* dti)
 {
 	print_type_info_recursive(dti, 0);
+}
+
+int is_containee_null_in_container(const data_type_info* dti, const void* data, uint32_t index)
+{
+	// dti has to be a container type
+	if(!is_container_type_info(dti))
+		return 1;
+
+	// make sure that index is withint bounds, else it is said to be NULL
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return 1;
+
+	data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, data, index);
+
+	// a non-nullable element can never be null
+	if(!is_nullable_type_info(containee_pos_info.type_info))
+		return 0;
+
+	if(!is_variable_sized_type_info(containee_type_info.type_info))
+	{
+		// must have a bit in is_valid bitmap
+		return get_bit(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info.bit_offset_to_is_valid_bit) == 0;
+	}
+	else
+	{
+		// variable size element is NULL if the byte_offset in the tuple of the containee is 0
+		return read_value_from_page(data + containee_pos_info.byte_offset_to_byte_offset, dti->max_size) == 0;
+	}
+}
+
+const void* get_containee_from_container(const data_type_info* dti, const void* data, uint32_t index)
+{
+	// dti has to be a container type
+	if(!is_container_type_info(dti))
+		return NULL;
+
+	// make sure that index is withint bounds, else it is said to be NULL
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return NULL;
+
+	// if it is already null return NULL
+	if(is_containee_null_in_container(dti, data, index))
+		return NULL;
+
+	// TODO
 }

@@ -176,7 +176,7 @@ data_position_info get_data_position_info_for_containee_of_container(const data_
 int finalize_type_info(data_type_info* dti);
 
 // print type info
-void print_type_info(data_type_info* dti);
+void print_type_info(const data_type_info* dti);
 
 
 /*
@@ -200,5 +200,9 @@ void print_type_info(data_type_info* dti);
 **		array2 			1 									0 									1 							1 							0
 **		array3 			1 									1 									1 							1 							1
 */
+
+int is_containee_null_in_container(const data_type_info* dti, const void* data, uint32_t index);
+
+const void* get_containee_from_container(const data_type_info* dti, const void* data, uint32_t index);
 
 #endif
