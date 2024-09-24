@@ -5,6 +5,7 @@ TASKS PICKED
  * user value to also accomodate tuple and array types
  * repurpose numeral type elements and string and blob type elements code
 
+* all below functions will take user values as input
  * set function to set an element in the container, returns updated size, and also takes in max size increment that it can suffer
  * can_set function to check if we can set the element inside the container, with allowable maximum expansion size
  * set NULL function to set a containee to NULL -> fails for a non_nullable element -> given by the function
