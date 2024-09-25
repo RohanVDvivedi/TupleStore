@@ -203,7 +203,8 @@ void print_type_info(const data_type_info* dti);
 
 int is_containee_null_in_container(const data_type_info* dti, const void* data, uint32_t index);
 
-const void* get_containee_from_container(const data_type_info* dti, const void* data, uint32_t index);
+// returns pointer to the value from the container, if the containee is a BIT_FIELD then we return the pointer to the prefix_bitmap where it resides
+const void* get_pointer_to_containee_from_container(const data_type_info* dti, const void* data, uint32_t index);
 
 int is_variable_sized_containee_at_end_of_container(const data_type_info* dti, void* data, uint32_t index);
 

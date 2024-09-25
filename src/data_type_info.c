@@ -546,7 +546,7 @@ int is_containee_null_in_container(const data_type_info* dti, const void* data, 
 	}
 }
 
-const void* get_containee_from_container(const data_type_info* dti, const void* data, uint32_t index)
+const void* get_pointer_to_containee_from_container(const data_type_info* dti, const void* data, uint32_t index)
 {
 	// dti has to be a container type
 	if(!is_container_type_info(dti))
@@ -592,7 +592,7 @@ int is_variable_sized_containee_at_end_of_container(const data_type_info* dti, v
 	if(!is_variable_sized_type_info(containee_pos_info.type_info))
 		return 0;
 
-	void* containee = (void*) get_containee_from_container(dti, data, index);
+	void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index);
 	uint32_t containee_byte_offset = containee - data;
 	uint32_t containee_size = get_size_for_type_info(containee_pos_info.type_info, containee);
 	uint32_t container_size = get_size_for_type_info(dti, data);
@@ -629,7 +629,7 @@ int move_variable_sized_containee_to_end_of_container(const data_type_info* dti,
 	if(is_variable_sized_containee_at_end_of_container(dti, data, index))
 		return 1;
 
-	void* containee = (void*) get_containee_from_container(dti, data, index);
+	void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index);
 	uint32_t containee_byte_offset = containee - data;
 	uint32_t containee_size = get_size_for_type_info(containee_pos_info.type_info, containee);
 	uint32_t container_size = get_size_for_type_info(dti, data);
