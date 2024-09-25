@@ -1,10 +1,14 @@
 TASKS PICKED
 
+ * implement function to get user_value for self
+
  * set function to set an element in the container, returns updated size, and also takes in max size increment that it can suffer
  * can_set function to check if we can set the element inside the container, with allowable maximum expansion size
- * for variable element count string, blob and arrays
-   * expand_element_count(data_type_info* dti, void* data, uint32_t i, uint32_t slots) -> adds slots number of slots after the first i elements i.e. the new empty slots will be from index i
-   * discard_elements(data_type_info* dti, void* data, uint32_t i, uint32_t slots) -> discards slots number of slots after the first i slots i.e. from slot i
+ * for variable element count string, blob and array
+   * expand_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots) -> adds slots number of slots after the first index number of elements i.e. the new empty slots will be placed at index
+   * insert_to_container(const data_type_info* dti, void* data, uint32_t index, const user_value new_containee) -> new_containee must be if type of the containee of the dti container type
+   * insert_all_to_container(const data_type_info* dti, void* data, uint32_t index, const user_value data2, uint32_t index2, uint32_t slots); data1 and data2 must be of same data_type_info
+   * discard_from_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots) -> discards slots number of slots after the first index number of slots i.e. from slot index
  * test all getter and setter fucntions
 
 1 NEW TYPE TASKS
