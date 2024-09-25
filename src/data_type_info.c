@@ -676,3 +676,45 @@ uint32_t initialize_minimal_data_for_type_info(const data_type_info* dti, void* 
 		return dti->min_size;
 	}
 }
+
+int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, uint32_t index)
+{
+	// dti has to be a container type
+	if(!is_container_type_info(dti))
+		return 0;
+
+	// make sure that index is withint bounds, else fail
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return 0;
+
+	// if it is already null, succeed
+	if(is_containee_null_in_container(dti, data, index))
+		return 1;
+
+	// fetch information about containee
+	data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, data, index);
+
+	// a non-nullable element can never be null
+	if(!is_nullable_type_info(containee_pos_info.type_info))
+		return 0;
+
+	if(needs_is_valid_bit_in_prefix_bitmap(containee_pos_info.type_info)) // must be a BIT_FIELD or a fixed sized field
+		reset_bit(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info.bit_offset_to_is_valid_bit);
+	else // else it is a variable sized field
+	{
+		uint32_t container_size = get_size_for_type_info(dti, data);
+		uint32_t containee_size = get_size_for_type_info(containee_pos_info.type_info, get_pointer_to_containee_from_container(dti, data, index));
+
+		// move containee to the end of the container
+		move_variable_sized_containee_to_end_of_container(dti, data, index);
+
+		// set containee offset to 0
+		write_value_to_page(data + containee_pos_info.byte_offset_to_byte_offset, dti->max_size, 0);
+
+		// if it has size in its prefix deduct containee_size from it
+		if(has_size_in_its_prefix_for_container_type_info(dti))
+			write_value_to_page(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, container_size - containee_size);
+	}
+
+	return 1;
+}

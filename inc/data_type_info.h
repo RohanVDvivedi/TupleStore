@@ -217,4 +217,6 @@ int move_variable_sized_containee_to_end_of_container(const data_type_info* dti,
 // returns the size of the data
 uint32_t initialize_minimal_data_for_type_info(const data_type_info* dti, void* data);
 
+int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, uint32_t index);
+
 #endif
