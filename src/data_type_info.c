@@ -518,6 +518,10 @@ void print_type_info(const data_type_info* dti)
 	print_type_info_recursive(dti, 0);
 }
 
+#include<serial_int.h>
+#include<float_accesses.h>
+#include<string.h>
+
 int is_containee_null_in_container(const data_type_info* dti, const void* data, uint32_t index)
 {
 	// dti has to be a container type
@@ -569,6 +573,87 @@ const void* get_pointer_to_containee_from_container(const data_type_info* dti, c
 		return data + containee_pos_info.byte_offset;
 	else
 		return data + read_value_from_page(data + containee_pos_info.byte_offset_to_byte_offset, dti->max_size);
+}
+
+const user_value get_user_value_to_containee_from_container(const data_type_info* dti, const void* data, uint32_t index)
+{
+	// dti has to be a container type
+	if(!is_container_type_info(dti))
+		return (*NULL_USER_VALUE);
+
+	// make sure that index is withint bounds, else it is said to be NULL_USER_VALUE
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return (*NULL_USER_VALUE);
+
+	// if it is already null return NULL_USER_VALUE
+	if(is_containee_null_in_container(dti, data, index))
+		return (*NULL_USER_VALUE);
+
+	// fetch information about containee
+	data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, data, index);
+	const void* containee = get_pointer_to_containee_from_container(dti, data, index);
+
+	user_value uval = {};
+	switch(containee_pos_info.type_info->type)
+	{
+		case BIT_FIELD :
+		{
+			uval.bit_field_value = get_bits(containee, containee_pos_info.bit_offset_in_prefix_bitmap, containee_pos_info.bit_offset_in_prefix_bitmap + containee_pos_info.type_info->size - 1);
+			break;
+		}
+		case UINT :
+		{
+			uval.uint_value = deserialize_uint64(containee, containee_pos_info.type_info->size);
+			break;
+		}
+		case INT :
+		{
+			uval.int_value = deserialize_int64(containee, containee_pos_info.type_info->size);
+			break;
+		}
+		case FLOAT :
+		{
+			if(containee_pos_info.type_info->size == sizeof(float))
+				uval.float_value = deserialize_float(containee);
+			else if(containee_pos_info.type_info->size == sizeof(double))
+				uval.double_value = deserialize_double(containee);
+			else if(containee_pos_info.type_info->size == sizeof(long double))
+				uval.long_double_value = deserialize_long_double(containee);
+		}
+		case LARGE_UINT :
+		{
+			uval.large_uint_value = deserialize_uint256(containee, containee_pos_info.type_info->size);
+			break;
+		}
+		case STRING :
+		{
+			// grab pointer to the first byte, and the element_count of the string, since it is inherently an array of non-nullable fixed length elements, they are placed sequential after the first byte
+			uval.string_value = containee + get_data_position_info_for_containee_of_container(containee_pos_info.type_info, containee, 0).byte_offset;
+			uval.string_size = get_element_count_for_container_type_info(containee_pos_info.type_info, containee);
+			// this string could be null terminated
+			uval.string_size = strnlen(uval.string_value, uval.string_size);
+			break;
+		}
+		case BLOB :
+		{
+			// grab pointer to the first byte, and the element_count of the blob, since it is inherently an array of non-nullable fixed length elements, they are placed sequential after the first byte
+			uval.data = containee + get_data_position_info_for_containee_of_container(containee_pos_info.type_info, containee, 0).byte_offset;
+			uval.data_size = get_element_count_for_container_type_info(containee_pos_info.type_info, containee);
+			break;
+		}
+		case TUPLE :
+		{
+			uval.tuple_value = containee;
+			break;
+		}
+		case ARRAY :
+		{
+			uval.array_value = containee;
+			break;
+		}
+	}
+
+	return uval;
 }
 
 int is_variable_sized_containee_at_end_of_container(const data_type_info* dti, void* data, uint32_t index)

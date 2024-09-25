@@ -25,11 +25,16 @@ struct user_value
 		uint256 large_uint_value;
 		struct
 		{
+			const void* string_value;
+			uint32_t string_size;
+		};
+		struct // used only for blob types
+		{
 			const void* data;
 			uint32_t data_size;
 		};
-		const void* tuple;
-		const void* array;
+		const void* tuple_value;
+		const void* array_value;
 	};
 };
 
