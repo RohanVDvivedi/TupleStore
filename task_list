@@ -6,7 +6,6 @@ TASKS PICKED
 * all below functions will take user values as input
  * set function to set an element in the container, returns updated size, and also takes in max size increment that it can suffer
  * can_set function to check if we can set the element inside the container, with allowable maximum expansion size
- * set NULL function to set a containee to NULL -> fails for a non_nullable element -> given by the function
  * for variable element count string, blob and arrays
    * expand_element_count(data_type_info* dti, void* data, uint32_t i, uint32_t slots) -> adds slots number of slots after the first i elements i.e. the new empty slots will be from index i
    * discard_elements(data_type_info* dti, void* data, uint32_t i, uint32_t slots) -> discards slots number of slots after the first i slots i.e. from slot i
