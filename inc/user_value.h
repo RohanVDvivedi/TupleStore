@@ -28,6 +28,8 @@ struct user_value
 			const void* data;
 			uint32_t data_size;
 		};
+		const void* tuple;
+		const void* array;
 	};
 };
 
