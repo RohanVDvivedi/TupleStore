@@ -16,13 +16,13 @@ struct user_value
 	// else one of the attributes of this union must be set, based on the given element_def
 	union
 	{
+		uint64_t bit_field_value;
 		uint64_t uint_value;
 		int64_t int_value;
 		float float_value;
 		double double_value;
 		long double long_double_value;
 		uint256 large_uint_value;
-		uint64_t bit_field_value;
 		struct
 		{
 			const void* data;
