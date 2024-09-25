@@ -1,8 +1,6 @@
 TASKS PICKED
 
- * modify getter function to get offset
  * make a new getter function that returns user value
- * user value to also accomodate tuple and array types
  * repurpose numeral type elements and string and blob type elements code
 
 * all below functions will take user values as input
