@@ -1,7 +1,5 @@
 TASKS PICKED
 
- * implement function to get user_value for self
-
  * set function to set an element in the container, returns updated size, and also takes in max size increment that it can suffer
  * can_set function to check if we can set the element inside the container, with allowable maximum expansion size
  * for variable element count string, blob and array
