@@ -254,4 +254,11 @@ int can_set_user_value_to_containee_in_container(const data_type_info* dti, cons
 // max_size_increment_allowed is never a problem for fixed length elements
 int set_user_value_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, user_value uval);
 
+
+// can not be used for BIT_FIELDs
+void print_data_for_data_type_info(const data_type_info*, const void* data);
+
+// can not be used for outermost container
+void print_user_value_for_data_type_info(const data_type_info*, user_value uval);
+
 #endif

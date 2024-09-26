@@ -1134,3 +1134,87 @@ int set_user_value_to_containee_in_container(const data_type_info* dti, void* da
 		return result;
 	}
 }
+
+void print_data_for_data_type_info(const data_type_info* dti, const void* data)
+{
+	print_user_value_for_data_type_info(dti, get_user_value_for_type_info(dti, data));
+}
+
+void print_user_value_for_data_type_info(const data_type_info* dti, user_value uval)
+{
+	if(is_user_value_NULL(&uval))
+	{
+		printf("NULL");
+		return;
+	}
+	switch(dti->type)
+	{
+		case BIT_FIELD :
+		{
+			printf("%"PRIx64, uval.bit_field_value);
+			break;
+		}
+		case UINT :
+		{
+			printf("%"PRIu64, uval.uint_value);
+			break;
+		}
+		case INT :
+		{
+			printf("%"PRId64, uval.int_value);
+			break;
+		}
+		case FLOAT :
+		{
+			if(dti->size == sizeof(float))
+				printf("%f", uval.float_value);
+			else if(dti->size == sizeof(double))
+				printf("%lf", uval.double_value);
+			else if(dti->size == sizeof(long double))
+				printf("%Lf", uval.long_double_value);
+			break;
+		}
+		case LARGE_UINT :
+		{
+			print_uint256(uval.large_uint_value);
+			break;
+		}
+		case STRING :
+		{
+			printf("\"%.*s\"", uval.string_size, ((const char*)(uval.string_value)));
+			break;
+		}
+		case BLOB :
+		{
+			printf("BLOB(%"PRIu32")[", uval.data_size);
+			for(uint32_t i = 0; i < uval.data_size; i++)
+				printf(" 0x%2"PRIx8, ((const uint8_t*)(uval.data))[i]);
+			printf("]");
+			break;
+		}
+		case TUPLE :
+		{
+			printf("(%s)(", dti->type_name);
+			for(uint32_t i = 0; i < get_element_count_for_container_type_info(dti, uval.tuple_value); i++)
+			{
+				if(i != 0)
+					printf(", ");
+				print_user_value_for_data_type_info(get_data_type_info_for_containee_of_container(dti, uval.tuple_value, i), get_user_value_to_containee_from_container(dti, uval.tuple_value, i));
+			}
+			printf(")");
+			break;
+		}
+		case ARRAY :
+		{
+			printf("ARRAY[");
+			for(uint32_t i = 0; i < get_element_count_for_container_type_info(dti, uval.array_value); i++)
+			{
+				if(i != 0)
+					printf(", ");
+				print_user_value_for_data_type_info(get_data_type_info_for_containee_of_container(dti, uval.array_value, i), get_user_value_to_containee_from_container(dti, uval.array_value, i));
+			}
+			printf("]");
+			break;
+		}
+	}
+}
