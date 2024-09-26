@@ -226,4 +226,13 @@ uint32_t initialize_minimal_data_for_type_info(const data_type_info* dti, void* 
 
 int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, uint32_t index);
 
+// data here is assumed to contain garbage
+// returns 1 if the below function will succeed
+int can_set_user_value_for_type_info(const data_type_info* dti, void* data, uint32_t max_size_increment_allowed, user_value uval);
+
+// returns 0, if the max_size_increment is violated OR the dti is BIT_FIELD type OR uval is NULL
+// max_size_increment is never a proble from fixed length elements
+// it is essentially a copy operation
+int set_user_value_for_type_info(const data_type_info* dti, void* data, uint32_t max_size_increment_allowed, user_value uval);
+
 #endif

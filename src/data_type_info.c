@@ -820,3 +820,207 @@ int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, ui
 
 	return 1;
 }
+
+int can_set_user_value_for_type_info(const data_type_info* dti, void* data, uint32_t max_size_increment_allowed, user_value uval)
+{
+	if(is_user_value_NULL(&uval))
+		return 0;
+
+	if(dti->type == BIT_FIELD)
+		return 0;
+	// if it is fixed sized, then no need to check for max_size_increment
+	if(!is_variable_sized_type_info(dti))
+	{
+		if(dti->type == BIT_FIELD)
+			return 0;
+		return 1;
+	}
+
+	switch(dti->type)
+	{
+		case STRING :
+		{
+			// limit the string length
+			uval.string_size = strnlen(uval.string_value, uval.string_size);
+
+			uint32_t old_size = get_size_for_type_info(dti, data);
+			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval.string_size;
+
+			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
+				return 0;
+			return 1;
+		}
+		case BLOB :
+		{
+			uint32_t old_size = get_size_for_type_info(dti, data);
+			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval.data_size;
+
+			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
+				return 0;
+			return 1;
+		}
+		case TUPLE :
+		{
+			uint32_t old_size = get_size_for_type_info(dti, data);
+			uint32_t new_size = get_size_for_type_info(dti, uval.tuple_value);
+
+			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
+				return 0;
+			return 1;
+		}
+		case ARRAY :
+		{
+			uint32_t old_size = get_size_for_type_info(dti, data);
+			uint32_t new_size = get_size_for_type_info(dti, uval.array_value);
+
+			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
+				return 0;
+			return 1;
+		}
+		default :
+		{
+			return 0;
+		}
+	}
+}
+
+int set_user_value_for_type_info(const data_type_info* dti, void* data, uint32_t max_size_increment_allowed, user_value uval)
+{
+	if(is_user_value_NULL(&uval))
+		return 0;
+
+	if(dti->type == BIT_FIELD)
+		return 0;
+
+	// if it is fixed sized, then no need to check for max_size_increment
+	if(!is_variable_sized_type_info(dti))
+	{
+		switch(dti->type)
+		{
+			case UINT :
+			{
+				serialize_uint64(data, dti->size, uval.uint_value);
+				return 1;
+			}
+			case INT :
+			{
+				serialize_int64(data, dti->size, uval.int_value);
+				return 1;
+			}
+			case FLOAT :
+			{
+				if(dti->size == sizeof(float))
+					serialize_float(data, uval.float_value);
+				else if(dti->size == sizeof(double))
+					serialize_double(data, uval.double_value);
+				else if(dti->size == sizeof(long double))
+					serialize_long_double(data, uval.long_double_value);
+				return 1;
+			}
+			case LARGE_UINT :
+			{
+				serialize_uint256(data, dti->size, uval.large_uint_value);
+				return 1;
+			}
+			case STRING :
+			{
+				// limit the string length
+				uval.string_size = strnlen(uval.string_value, uval.string_size);
+				uval.string_size = min(uval.string_size, dti->size);
+
+				// copy contents to data
+				memory_move(data, uval.string_value, uval.string_size);
+				// padd remaining bytes to 0
+				if(uval.string_size < dti->size)
+					memory_set(data + uval.string_size, 0, dti->size - uval.string_size);
+				return 1;
+			}
+			case BLOB :
+			{
+				uval.data_size = min(uval.data_size, dti->size);
+				// copy contents to data
+				memory_move(data, uval.data, uval.data_size);
+				return 1;
+			}
+			case TUPLE :
+			{
+				// copy contents to data
+				memory_move(data, uval.tuple_value, dti->size);
+				return 1;
+			}
+			case ARRAY :
+			{
+				// copy contents to data
+				memory_move(data, uval.array_value, dti->size);
+				return 1;
+			}
+			default :
+			{
+				return 0;
+			}
+		}
+	}
+
+	// now we know for sure that it is a variable sized type
+	// it can be only one of these composite types
+	switch(dti->type)
+	{
+		case STRING :
+		{
+			// limit the string length
+			uval.string_size = strnlen(uval.string_value, uval.string_size);
+
+			uint32_t old_size = get_size_for_type_info(dti, data);
+			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval.string_size;
+
+			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
+				return 0;
+
+			// write element count and copy contents to data
+			write_value_to_page(data, dti->max_size, uval.string_size);
+			memory_move(data + get_value_size_on_page(dti->max_size), uval.string_value, uval.string_size);
+			return 1;
+		}
+		case BLOB :
+		{
+			uint32_t old_size = get_size_for_type_info(dti, data);
+			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval.data_size;
+
+			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
+				return 0;
+
+			// write element count and copy contents to data
+			write_value_to_page(data, dti->max_size, uval.data_size);
+			memory_move(data + get_value_size_on_page(dti->max_size), uval.data, uval.data_size);
+			return 1;
+		}
+		case TUPLE :
+		{
+			uint32_t old_size = get_size_for_type_info(dti, data);
+			uint32_t new_size = get_size_for_type_info(dti, uval.tuple_value);
+
+			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
+				return 0;
+
+			// copy contents to data
+			memory_move(data, uval.tuple_value, new_size);
+			return 1;
+		}
+		case ARRAY :
+		{
+			uint32_t old_size = get_size_for_type_info(dti, data);
+			uint32_t new_size = get_size_for_type_info(dti, uval.array_value);
+
+			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
+				return 0;
+
+			// copy contents to data
+			memory_move(data, uval.array_value, new_size);
+			return 1;
+		}
+		default :
+		{
+			return 0;
+		}
+	}
+}
