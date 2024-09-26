@@ -7,7 +7,7 @@
 int main()
 {
 	data_type_info s1 = get_fixed_length_string_type(10, 0);
-	data_type_info s2 = get_fixed_length_string_type(12, 0);
+	data_type_info s2 = get_fixed_length_string_type(12, 1);
 
 	data_type_info* tuple_type_info = alloca(sizeof_tuple_data_type_info(6));
 	initialize_tuple_data_type_info(tuple_type_info, "tuple_type1", 1, 4096, 6);
