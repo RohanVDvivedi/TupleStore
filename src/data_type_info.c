@@ -821,7 +821,7 @@ int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, ui
 	return 1;
 }
 
-int can_set_user_value_for_type_info(const data_type_info* dti, void* data, uint32_t max_size_increment_allowed, user_value uval)
+int can_set_user_value_for_type_info(const data_type_info* dti, void* data, int is_valid, uint32_t max_size_increment_allowed, user_value uval)
 {
 	if(is_user_value_NULL(&uval))
 		return 0;
@@ -843,7 +843,7 @@ int can_set_user_value_for_type_info(const data_type_info* dti, void* data, uint
 			// limit the string length
 			uval.string_size = strnlen(uval.string_value, uval.string_size);
 
-			uint32_t old_size = get_size_for_type_info(dti, data);
+			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
 			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval.string_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
@@ -852,7 +852,7 @@ int can_set_user_value_for_type_info(const data_type_info* dti, void* data, uint
 		}
 		case BLOB :
 		{
-			uint32_t old_size = get_size_for_type_info(dti, data);
+			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
 			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval.data_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
@@ -861,7 +861,7 @@ int can_set_user_value_for_type_info(const data_type_info* dti, void* data, uint
 		}
 		case TUPLE :
 		{
-			uint32_t old_size = get_size_for_type_info(dti, data);
+			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
 			uint32_t new_size = get_size_for_type_info(dti, uval.tuple_value);
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
@@ -870,7 +870,7 @@ int can_set_user_value_for_type_info(const data_type_info* dti, void* data, uint
 		}
 		case ARRAY :
 		{
-			uint32_t old_size = get_size_for_type_info(dti, data);
+			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
 			uint32_t new_size = get_size_for_type_info(dti, uval.array_value);
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
@@ -884,7 +884,7 @@ int can_set_user_value_for_type_info(const data_type_info* dti, void* data, uint
 	}
 }
 
-int set_user_value_for_type_info(const data_type_info* dti, void* data, uint32_t max_size_increment_allowed, user_value uval)
+int set_user_value_for_type_info(const data_type_info* dti, void* data, int is_valid, uint32_t max_size_increment_allowed, user_value uval)
 {
 	if(is_user_value_NULL(&uval))
 		return 0;
@@ -970,7 +970,7 @@ int set_user_value_for_type_info(const data_type_info* dti, void* data, uint32_t
 			// limit the string length
 			uval.string_size = strnlen(uval.string_value, uval.string_size);
 
-			uint32_t old_size = get_size_for_type_info(dti, data);
+			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
 			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval.string_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
@@ -983,7 +983,7 @@ int set_user_value_for_type_info(const data_type_info* dti, void* data, uint32_t
 		}
 		case BLOB :
 		{
-			uint32_t old_size = get_size_for_type_info(dti, data);
+			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
 			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval.data_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
@@ -996,7 +996,7 @@ int set_user_value_for_type_info(const data_type_info* dti, void* data, uint32_t
 		}
 		case TUPLE :
 		{
-			uint32_t old_size = get_size_for_type_info(dti, data);
+			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
 			uint32_t new_size = get_size_for_type_info(dti, uval.tuple_value);
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
@@ -1008,7 +1008,7 @@ int set_user_value_for_type_info(const data_type_info* dti, void* data, uint32_t
 		}
 		case ARRAY :
 		{
-			uint32_t old_size = get_size_for_type_info(dti, data);
+			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
 			uint32_t new_size = get_size_for_type_info(dti, uval.array_value);
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
@@ -1038,7 +1038,7 @@ int set_user_value_to_containee_in_container(const data_type_info* dti, void* da
 		return 0;
 
 	// if uval is NULL, set it to NULL
-	if(is_user_value_NULL(*uval))
+	if(is_user_value_NULL(&uval))
 		return set_containee_to_NULL_in_container(dti, data, index);
 
 	// now we are sure that uval is not NULL
@@ -1054,7 +1054,7 @@ int set_user_value_to_containee_in_container(const data_type_info* dti, void* da
 
 		if(containee_pos_info.type_info->type == BIT_FIELD)
 		{
-			set_bits(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info.bit_offset_in_prefix_bitmap, containee_pos_info.bit_offset_in_prefix_bitmap + containee_pos_info.type_info->bit_field_size - 1, uval->bit_field_value);
+			set_bits(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info.bit_offset_in_prefix_bitmap, containee_pos_info.bit_offset_in_prefix_bitmap + containee_pos_info.type_info->bit_field_size - 1, uval.bit_field_value);
 			return 1;
 		}
 		else
