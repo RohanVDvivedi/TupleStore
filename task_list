@@ -1,7 +1,5 @@
 TASKS PICKED
 
- * test all getter and setter functions (fixed length ARRAY type of bitfields, fixed sized elements and variable sized elements)
-
  * for variable element count string, blob and array
    * expand_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots) -> adds slots number of slots after the first index number of elements i.e. the new empty slots will be placed at index
    * discard_from_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots) -> discards slots number of slots after the first index number of slots i.e. from slot index
