@@ -457,6 +457,9 @@ static void print_type_info_recursive(const data_type_info* dti, int tabs)
 
 	if(is_container_type_info(dti))
 	{
+		print_tabs(tabs); printf("has_size_in_prefix : %d\n", has_size_in_its_prefix_for_container_type_info(dti));
+		print_tabs(tabs); printf("has_element_count_in_prefix : %d\n", has_element_count_in_its_prefix_for_container_type_info(dti));
+
 		if(dti->has_variable_element_count)
 		{
 			print_tabs(tabs); printf("element_count : variable\n");
