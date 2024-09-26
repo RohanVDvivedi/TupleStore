@@ -665,7 +665,7 @@ const user_value get_user_value_to_containee_from_container(const data_type_info
 	{
 		case BIT_FIELD :
 		{
-			uval.bit_field_value = get_bits(containee, containee_pos_info.bit_offset_in_prefix_bitmap, containee_pos_info.bit_offset_in_prefix_bitmap + containee_pos_info.type_info->size - 1);
+			uval.bit_field_value = get_bits(containee, containee_pos_info.bit_offset_in_prefix_bitmap, containee_pos_info.bit_offset_in_prefix_bitmap + containee_pos_info.type_info->bit_field_size - 1);
 			return uval;
 		}
 		default :
@@ -785,7 +785,7 @@ int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, ui
 	if(!is_container_type_info(dti))
 		return 0;
 
-	// make sure that index is withint bounds, else fail
+	// make sure that index is within bounds, else fail
 	if(index >= get_element_count_for_container_type_info(dti, data))
 		return 0;
 
@@ -1022,5 +1022,85 @@ int set_user_value_for_type_info(const data_type_info* dti, void* data, uint32_t
 		{
 			return 0;
 		}
+	}
+}
+
+int can_set_user_value_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, user_value uval);
+
+int set_user_value_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, user_value uval)
+{
+	// dti has to be a container type
+	if(!is_container_type_info(dti))
+		return 0;
+
+	// make sure that index is within bounds, else fail
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return 0;
+
+	// if uval is NULL, set it to NULL
+	if(is_user_value_NULL(*uval))
+		return set_containee_to_NULL_in_container(dti, data, index);
+
+	// now we are sure that uval is not NULL
+
+	// fetch information about containee
+	data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, data, index);
+
+	if(!is_variable_sized_type_info(containee_pos_info.type_info))
+	{
+		// if it has is_valid_bit then set it
+		if(needs_is_valid_bit_in_prefix_bitmap(containee_pos_info.type_info)) // must be a BIT_FIELD or a fixed sized field
+			set_bit(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info.bit_offset_to_is_valid_bit);
+
+		if(containee_pos_info.type_info->type == BIT_FIELD)
+		{
+			set_bits(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info.bit_offset_in_prefix_bitmap, containee_pos_info.bit_offset_in_prefix_bitmap + containee_pos_info.type_info->bit_field_size - 1, uval->bit_field_value);
+			return 1;
+		}
+		else
+		{
+			void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index);
+			return set_user_value_for_type_info(containee_pos_info.type_info, containee, 1, max_size_increment_allowed, uval);
+		}
+	}
+	else
+	{
+		// first thing we need to do is send the concerned containee to the end of the container
+		move_variable_sized_containee_to_end_of_container(dti, data, index);
+
+		// moving the element changes its position in the container, hence the recalculation
+		containee_pos_info = get_data_position_info_for_containee_of_container(dti, data, index);
+
+		uint32_t old_container_size = get_size_for_type_info(dti, data);
+		max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - old_container_size);
+
+		void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index);
+		uint32_t old_containee_size = 0;
+		int is_old_containee_offset_valid = (containee != NULL);
+
+		// if the containee is NULL, then old_containee_size = 0
+		// and the position to insert the containee is at the end of the container
+		if(containee == NULL)
+			containee = data + old_container_size;
+		else
+			old_containee_size = get_size_for_type_info(containee_pos_info.type_info, containee);
+
+		int result = set_user_value_for_type_info(containee_pos_info.type_info, containee, is_old_containee_offset_valid, max_size_increment_allowed, uval);
+
+		// if result was a success, and the old_containee_offset was in-valid i.e 0, then set it
+		if(result && !is_old_containee_offset_valid)
+			write_value_to_page(data + containee_pos_info.byte_offset_to_byte_offset, dti->max_size, old_container_size);
+
+		// if the container has size in prefix then update it
+		if(result && has_size_in_its_prefix_for_container_type_info(dti))
+		{
+			uint32_t new_containee_size = get_size_for_type_info(containee_pos_info.type_info, containee);
+
+			uint32_t new_container_size = old_container_size - old_containee_size + new_containee_size;
+
+			write_value_to_page(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, new_container_size);
+		}
+
+		return result;
 	}
 }
