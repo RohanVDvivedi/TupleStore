@@ -203,6 +203,16 @@ void print_type_info(const data_type_info* dti);
 
 #include<user_value.h>
 
+/*
+	primitive types like BIT_FIELD, UINT, INT, FLOAT, LARGE_UINT, STRING, BLOB, can be compared and set with each other without regard to their size or their variability of their size
+	i.e. a UINT of size 1 can be set with a uservalue pointing to UINT of size 3, this might result in soem data loss but it is assumes that you know what you are doing
+		similarly, if you data_type_info-s have type = STRING, then they can be set even if they both have different fixed sizes, OR 1 being variable sized and another being fixed size, there can be data loss here
+
+	for TUPLE and ARRAY we always assume that the data_type_info of the user_value is exactly same as that of data, even if they are variable sized, then even their max_size must not be different
+	i.e. if they are variable sized their max_size also can not be different, neither can they have different containee/s
+	TUPLE and ARRAY types are literally copied from their user_values
+*/
+
 int is_containee_null_in_container(const data_type_info* dti, const void* data, uint32_t index);
 
 // returns pointer to the value from the container, if the containee is a BIT_FIELD then we return the pointer to the prefix_bitmap where it resides
