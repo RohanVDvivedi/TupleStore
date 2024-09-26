@@ -1197,7 +1197,7 @@ void print_user_value_for_data_type_info(const data_type_info* dti, user_value u
 		}
 		case TUPLE :
 		{
-			printf("(%s)(", dti->type_name);
+			printf("(%s)<%"PRIu32">(", dti->type_name, get_size_for_type_info(dti, uval.tuple_value));
 			for(uint32_t i = 0; i < get_element_count_for_container_type_info(dti, uval.tuple_value); i++)
 			{
 				if(i != 0)
@@ -1212,7 +1212,7 @@ void print_user_value_for_data_type_info(const data_type_info* dti, user_value u
 		}
 		case ARRAY :
 		{
-			printf("ARRAY[");
+			printf("ARRAY<%"PRIu32">[", get_size_for_type_info(dti, uval.array_value));
 			for(uint32_t i = 0; i < get_element_count_for_container_type_info(dti, uval.array_value); i++)
 			{
 				if(i != 0)
