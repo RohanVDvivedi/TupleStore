@@ -1,6 +1,6 @@
 TASKS PICKED
 
- * test all getter and setter functions (TUPLE and fixed length ARRAY type), and build a print function to print the data of data_type info
+ * test all getter and setter functions (TUPLE and fixed length ARRAY type), and build a print function to print the data of data_type info using user_value
 
  * for variable element count string, blob and array
    * expand_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots) -> adds slots number of slots after the first index number of elements i.e. the new empty slots will be placed at index
@@ -8,9 +8,6 @@ TASKS PICKED
 
 1 NEW TYPE TASKS
  *1*
-   * get using user_value
-   * set using user_value
-   * print function for user_value
    * add hash_map for type_name based type casting, comparing and hashing
 
  *2*
