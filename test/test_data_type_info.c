@@ -31,10 +31,13 @@ int main()
 
 	set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, (user_value){.uint_value = 5});
 	set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, (user_value){.bit_field_value = 0x6});
-	set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 0, (user_value){.string_value = "Devashree Dvivedi", .string_size = strlen("Devashree Dvivedi")});
+	set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 100, (user_value){.string_value = "Devashree Dvivedi", .string_size = strlen("Devashree Dvivedi")});
+
+	print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
+
 	set_user_value_to_containee_in_container(tuple_type_info, tuple, 3, 0, (user_value){.string_value = "ABC", .string_size = strlen("ABC")});
 	set_user_value_to_containee_in_container(tuple_type_info, tuple, 4, 0, (user_value){.string_value = "DEF", .string_size = strlen("DEF")});
-	set_user_value_to_containee_in_container(tuple_type_info, tuple, 5, 0, (user_value){.string_value = "Rupa Dvivedi", .string_size = strlen("Rupa Dvivedi")});
+	set_user_value_to_containee_in_container(tuple_type_info, tuple, 5, 300, (user_value){.string_value = "Rupa Dvivedi", .string_size = strlen("Rupa Dvivedi")});
 	set_user_value_to_containee_in_container(tuple_type_info, tuple, 6, 0, (user_value){.double_value = -5});
 	set_user_value_to_containee_in_container(tuple_type_info, tuple, 7, 0, (user_value){.bit_field_value = 0x36});
 
@@ -42,10 +45,13 @@ int main()
 
 	set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, (user_value){.uint_value = 99});
 	set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, (user_value){.bit_field_value = 0x25});
-	set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 0, (user_value){.string_value = "Manan Joshi", .string_size = strlen("Manan Joshi")});
+	set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 100, (user_value){.string_value = "Manan Joshi", .string_size = strlen("Manan Joshi")});
+
+	print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
+
 	set_user_value_to_containee_in_container(tuple_type_info, tuple, 3, 0, (user_value){.string_value = "GHIJK", .string_size = strlen("GHIJK")});
 	set_user_value_to_containee_in_container(tuple_type_info, tuple, 4, 0, (user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
-	set_user_value_to_containee_in_container(tuple_type_info, tuple, 5, 0, (user_value){.string_value = "Vipulkumar Dvivedi", .string_size = strlen("Vipulkumar Dvivedi")});
+	set_user_value_to_containee_in_container(tuple_type_info, tuple, 5, 300, (user_value){.string_value = "Vipulkumar Dvivedi", .string_size = strlen("Vipulkumar Dvivedi")});
 	set_user_value_to_containee_in_container(tuple_type_info, tuple, 6, 0, (user_value){.double_value = 55});
 	set_user_value_to_containee_in_container(tuple_type_info, tuple, 7, 0, (user_value){.bit_field_value = 0x25});
 
