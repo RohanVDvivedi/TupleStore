@@ -26,7 +26,7 @@ enum data_type
 	// they will be identified as container types
 };
 
-extern char type_as_string[][16];
+extern char types_as_string[][16];
 
 typedef struct data_type_info data_type_info;
 
