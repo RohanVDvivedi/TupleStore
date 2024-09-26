@@ -1,8 +1,6 @@
 TASKS PICKED
 
- * set function to set the data_type_info
- * set function to set an element in the container, returns updated size, and also takes in max size increment that it can suffer
- * can_set function to check if we can set the element inside the container, with allowable maximum expansion size
+ * set and can_set function for setting an element inside the contaier
 
  * for variable element count string, blob and array
    * expand_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots) -> adds slots number of slots after the first index number of elements i.e. the new empty slots will be placed at index
