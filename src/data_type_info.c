@@ -821,7 +821,7 @@ int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, ui
 	return 1;
 }
 
-int can_set_user_value_for_type_info(const data_type_info* dti, void* data, int is_valid, uint32_t max_size_increment_allowed, user_value uval)
+int can_set_user_value_for_type_info(const data_type_info* dti, const void* data, int is_valid, uint32_t max_size_increment_allowed, user_value uval)
 {
 	if(is_user_value_NULL(&uval))
 		return 0;
@@ -1025,7 +1025,37 @@ int set_user_value_for_type_info(const data_type_info* dti, void* data, int is_v
 	}
 }
 
-int can_set_user_value_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, user_value uval);
+int can_set_user_value_to_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t max_size_increment_allowed, user_value uval)
+{
+	// dti has to be a container type
+	if(!is_container_type_info(dti))
+		return 0;
+
+	// make sure that index is within bounds, else fail
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return 0;
+
+	// fetch information about containee
+	data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, data, index);
+
+	// if uval is NULL, set it to NULL
+	if(is_user_value_NULL(&uval))
+		return is_nullable_type_info(containee_pos_info.type_info);
+
+	// there will already be enough space for the fixed sized containee
+	if(!is_variable_sized_type_info(containee_pos_info.type_info))
+		return 1;
+
+	uint32_t old_container_size = get_size_for_type_info(dti, data);
+	max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - old_container_size);
+
+	const void* containee = get_pointer_to_containee_from_container(dti, data, index);
+	int is_old_containee_offset_valid = (containee != NULL);
+	if(containee == NULL)
+		containee = data + old_container_size;
+
+	return can_set_user_value_for_type_info(containee_pos_info.type_info, containee, is_old_containee_offset_valid, max_size_increment_allowed, uval);
+}
 
 int set_user_value_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, user_value uval)
 {
