@@ -1199,7 +1199,10 @@ void print_user_value_for_data_type_info(const data_type_info* dti, user_value u
 			{
 				if(i != 0)
 					printf(", ");
-				print_user_value_for_data_type_info(get_data_type_info_for_containee_of_container(dti, uval.tuple_value, i), get_user_value_to_containee_from_container(dti, uval.tuple_value, i));
+				data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, uval.tuple_value, i);
+				if(is_variable_sized_type_info(containee_pos_info.type_info))
+					printf("{%"PRIu32"}->", read_value_from_page(uval.tuple_value + containee_pos_info.byte_offset_to_byte_offset, dti->max_size));
+				print_user_value_for_data_type_info(containee_pos_info.type_info, get_user_value_to_containee_from_container(dti, uval.tuple_value, i));
 			}
 			printf(")");
 			break;
@@ -1211,7 +1214,10 @@ void print_user_value_for_data_type_info(const data_type_info* dti, user_value u
 			{
 				if(i != 0)
 					printf(", ");
-				print_user_value_for_data_type_info(get_data_type_info_for_containee_of_container(dti, uval.array_value, i), get_user_value_to_containee_from_container(dti, uval.array_value, i));
+				data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, uval.array_value, i);
+				if(is_variable_sized_type_info(containee_pos_info.type_info))
+					printf("{%"PRIu32"}->", read_value_from_page(uval.array_value + containee_pos_info.byte_offset_to_byte_offset, dti->max_size));
+				print_user_value_for_data_type_info(containee_pos_info.type_info, get_user_value_to_containee_from_container(dti, uval.array_value, i));
 			}
 			printf("]");
 			break;
