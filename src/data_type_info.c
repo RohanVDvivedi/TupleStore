@@ -1306,7 +1306,7 @@ int expand_container(const data_type_info* dti, void* data, uint32_t index, uint
 		uint32_t offset_to_first_element = prefix_bitmap_offset + prefix_bitmap_new_size;
 
 		// make room from new slots for the fixed sized containees
-		memory_move(data + offset_to_first_element + (index * byte_size), data + offset_to_first_element + ((index + slots) * byte_size), (old_element_count - index) * byte_size);
+		memory_move(data + offset_to_first_element + ((index + slots) * byte_size), data + offset_to_first_element + (index * byte_size), (old_element_count - index) * byte_size);
 
 		// zero out the new slots
 		memory_set(data + offset_to_first_element + (index * byte_size), 0, slots * byte_size);
