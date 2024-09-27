@@ -226,5 +226,37 @@ int main()
 	}
 	printf("\n\n");
 
+	{
+		data_type_info s4 = get_variable_length_string_type(300);
+		data_type_info* array_type_info = &get_variable_element_count_array_type("", 256, &s4);
+		finalize_type_info(array_type_info);
+		print_type_info(array_type_info);printf("\n");
+
+		char array[4096];
+		initialize_minimal_data_for_type_info(array_type_info, array);
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+
+		expand_container(array_type_info, array, 0, 5, 200);
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+
+		expand_container(array_type_info, array, 8, 3, 200);
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+
+		set_user_value_to_containee_in_container(array_type_info, array, 0, 50, (user_value){.string_value = "Rupa Dvivedi", .string_size = strlen("Rupa Dvivedi")});
+		set_user_value_to_containee_in_container(array_type_info, array, 1, 50, (user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, (user_value){.string_value = "Devashree Joshi", .string_size = strlen("Devashree Joshi")});
+		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, (user_value){.string_value = "Vipulkumar Dvivedi", .string_size = strlen("Vipulkumar Dvivedi")});
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+
+		expand_container(array_type_info, array, 2, 3, 200);
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+	}
+	printf("\n\n");
+
 	return 0;
 }
