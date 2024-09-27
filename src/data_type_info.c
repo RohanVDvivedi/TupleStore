@@ -1140,16 +1140,68 @@ int set_user_value_to_containee_in_container(const data_type_info* dti, void* da
 
 int can_expand_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed)
 {
+	// dti has to be a container type
+	if(!is_container_type_info(dti))
+		return 0;
+
+	// it's element_count must be variable
+	if(!has_variable_element_count_for_container_type_info(dti))
+		return 0;
+
+	// make sure that index is within [0, element_count], else fail
+	if(index > get_element_count_for_container_type_info(dti, data))
+		return 0;
+
+	// default succeed 0 slots
+	if(slots == 0)
+		return 1;
+
 	// TODO
 }
 
 int expand_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed)
 {
+	// dti has to be a container type
+	if(!is_container_type_info(dti))
+		return 0;
+
+	// it's element_count must be variable
+	if(!has_variable_element_count_for_container_type_info(dti))
+		return 0;
+
+	// make sure that index is within [0, element_count], else fail
+	if(index > get_element_count_for_container_type_info(dti, data))
+		return 0;
+
+	// default succeed 0 slots
+	if(slots == 0)
+		return 1;
+
 	// TODO
 }
 
 int discard_from_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots)
 {
+	// dti has to be a container type
+	if(!is_container_type_info(dti))
+		return 0;
+
+	// it's element_count must be variable
+	if(!has_variable_element_count_for_container_type_info(dti))
+		return 0;
+
+	// make sure that index is within [0, element_count-1], else fail
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return 0;
+
+	// must have atleast slots number of slots after first index number of slots
+	if(get_element_count_for_container_type_info(dti, data) - index < slots)
+		return 0;
+
+	// default succeed 0 slots
+	if(slots == 0)
+		return 1;
+
 	// TODO
 }
 
