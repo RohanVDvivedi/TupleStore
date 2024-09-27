@@ -165,7 +165,7 @@ int main()
 	printf("\n\n");
 
 	{
-		data_type_info* array_type_info = &get_variable_element_count_array_type("", 256, UINT_5_NON_NULLABLE);
+		data_type_info* array_type_info = &get_variable_element_count_array_type("", 256, UINT_5_NULLABLE);
 		finalize_type_info(array_type_info);
 		print_type_info(array_type_info);printf("\n");
 
@@ -174,17 +174,18 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		expand_container(array_type_info, array, 0, 4, 200);
+		expand_container(array_type_info, array, 0, 5, 200);
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		expand_container(array_type_info, array, 5, 3, 200);
+		expand_container(array_type_info, array, 8, 3, 200);
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
 		set_user_value_to_containee_in_container(array_type_info, array, 0, 50, (user_value){.uint_value = 12});
 		set_user_value_to_containee_in_container(array_type_info, array, 1, 50, (user_value){.uint_value = 13});
-		set_user_value_to_containee_in_container(array_type_info, array, 3, 50, (user_value){.uint_value = 14});
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, (user_value){.uint_value = 14});
+		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, (user_value){.uint_value = 15});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
