@@ -1138,6 +1138,21 @@ int set_user_value_to_containee_in_container(const data_type_info* dti, void* da
 	}
 }
 
+int can_expand_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed)
+{
+	// TODO
+}
+
+int expand_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed)
+{
+	// TODO
+}
+
+int discard_from_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots)
+{
+	// TODO
+}
+
 void print_data_for_data_type_info(const data_type_info* dti, const void* data)
 {
 	print_user_value_for_data_type_info(dti, get_user_value_for_type_info(dti, data));

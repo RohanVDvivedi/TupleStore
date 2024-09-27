@@ -256,7 +256,7 @@ int set_user_value_to_containee_in_container(const data_type_info* dti, void* da
 
 // returns 0, if the max_size_increment is violated OR if index is not within 0 and element_count
 // check to see if the below function will succeed
-int can_expand_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed);
+int can_expand_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed);
 
 // returns 0, if the max_size_increment is violated OR if index is not within 0 and element_count
 // added slots number of slots at the given index, if the index is equal to element count then the slots are added at the end
