@@ -254,6 +254,18 @@ int can_set_user_value_to_containee_in_container(const data_type_info* dti, cons
 // max_size_increment_allowed is never a problem for fixed length elements
 int set_user_value_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, user_value uval);
 
+// returns 0, if the max_size_increment is violated OR if index is not within 0 and element_count
+// check to see if the below function will succeed
+int can_expand_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed);
+
+// returns 0, if the max_size_increment is violated OR if index is not within 0 and element_count
+// added slots number of slots at the given index, if the index is equal to element count then the slots are added at the end
+// the new slots are either left NULL or 0, which ever is minimal work
+int expand_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed);
+
+// returns 0, if index is out of bounds OR there are not enough slots after first index slots
+// discard slots number of slots starting at index location, index muts be between 0 and (element_count - 1)
+int discard_from_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots);
 
 // can not be used for BIT_FIELDs
 void print_data_for_data_type_info(const data_type_info*, const void* data);
