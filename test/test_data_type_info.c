@@ -258,5 +258,26 @@ int main()
 	}
 	printf("\n\n");
 
+	{
+		data_type_info s4 = get_variable_length_string_type(300);
+		finalize_type_info(&s4);
+		print_type_info(&s4);printf("\n");
+
+		char s[4096];
+		set_user_value_for_type_info(&s4, s, 0, 300, (user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
+
+		print_data_for_data_type_info(&s4, s);printf("\n");
+
+		expand_container(&s4, s, 6, 11, 200);
+
+		print_data_for_data_type_info(&s4, s);printf("\n");
+
+		char* to_add = "Vipulkumar ";
+		for(char* c = to_add; (*c) != 0; c++)
+			set_user_value_to_containee_in_container(&s4, s, 6 + (c - to_add), 300, (user_value){.uint_value = (*c)});
+
+		print_data_for_data_type_info(&s4, s);printf("\n");
+	}
+
 	return 0;
 }
