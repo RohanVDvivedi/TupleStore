@@ -164,5 +164,35 @@ int main()
 	}
 	printf("\n\n");
 
+	{
+		data_type_info* array_type_info = &get_variable_element_count_array_type("", 256, UINT_5_NON_NULLABLE);
+		finalize_type_info(array_type_info);
+		print_type_info(array_type_info);printf("\n");
+
+		char array[4096];
+		initialize_minimal_data_for_type_info(array_type_info, array);
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+
+		expand_container(array_type_info, array, 0, 4, 200);
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+
+		expand_container(array_type_info, array, 5, 3, 200);
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+
+		set_user_value_to_containee_in_container(array_type_info, array, 0, 50, (user_value){.uint_value = 12});
+		set_user_value_to_containee_in_container(array_type_info, array, 1, 50, (user_value){.uint_value = 13});
+		set_user_value_to_containee_in_container(array_type_info, array, 3, 50, (user_value){.uint_value = 14});
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+
+		expand_container(array_type_info, array, 2, 3, 200);
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+	}
+	printf("\n\n");
+
 	return 0;
 }
