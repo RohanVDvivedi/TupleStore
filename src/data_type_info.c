@@ -1156,7 +1156,50 @@ int can_expand_container(const data_type_info* dti, const void* data, uint32_t i
 	if(slots == 0)
 		return 1;
 
-	// TODO
+	// since it is an array, string or a blob of variable element count
+	// it's containee is bound to be fixed
+	data_type_info* containee_type_info = dti->containee;
+
+	// fetch the old element_count, and calculate the new_element_count
+	uint32_t old_element_count = get_element_count_for_container_type_info(dti, data);
+	uint32_t new_element_count = old_element_count + slots;
+
+	// fetch the old_size, new_size will differ based on its containee
+	uint32_t old_size = get_size_for_type_info(dti, data);
+	uint32_t new_size = 0;
+
+	// prefix size and prefix element count will remain in the same place
+	// prefix_bitmap_offset will also remain in the same place
+	uint32_t prefix_bitmap_offset = get_offset_to_prefix_bitmap_for_container_type_info(dti);
+
+	if(containee_type_info->type == BIT_FIELD)
+	{
+		// all of the content of the containee is in its prefix_bitmap
+		uint32_t prefix_bits_necessary_for_1_containee = needs_is_valid_bit_in_prefix_bitmap(containee_type_info) + containee_type_info->bit_field_size;
+
+		new_size = prefix_bitmap_offset + bitmap_size_in_bytes(prefix_bits_necessary_for_1_containee * new_element_count);
+	}
+	else if(!is_variable_sized_type_info(containee_type_info))
+	{
+		uint32_t prefix_bitmap_new_size = bitmap_size_in_bytes(new_element_count * needs_is_valid_bit_in_prefix_bitmap(containee_type_info));
+
+		uint32_t byte_size = containee_type_info->size;
+
+		uint32_t new_containees_size = byte_size * new_element_count;
+
+		new_size = prefix_bitmap_offset + prefix_bitmap_new_size + new_containees_size;
+	}
+	else
+	{
+		uint32_t byte_offset_size = get_value_size_on_page(dti->max_size);
+
+		new_size = old_size + (byte_offset_size * slots);
+	}
+
+	if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
+		return 0;
+
+	return 1;
 }
 
 int expand_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed)
@@ -1199,7 +1242,7 @@ int expand_container(const data_type_info* dti, void* data, uint32_t index, uint
 		uint32_t prefix_bits_necessary_for_1_containee = needs_is_valid_bit_in_prefix_bitmap(containee_type_info) + containee_type_info->bit_field_size;
 
 		// calculate new size and check for size increments
-		uint32_t new_size = prefix_bitmap_offset + bitmap_size_in_bytes(prefix_bits_necessary_for_1_containee * new_element_count);
+		new_size = prefix_bitmap_offset + bitmap_size_in_bytes(prefix_bits_necessary_for_1_containee * new_element_count);
 		if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 			return 0;
 
@@ -1229,7 +1272,7 @@ int expand_container(const data_type_info* dti, void* data, uint32_t index, uint
 		uint32_t new_containees_size = byte_size * new_element_count;
 
 		// calculate new size and check for size increments
-		uint32_t new_size = prefix_bitmap_offset + prefix_bitmap_new_size + new_containees_size;
+		new_size = prefix_bitmap_offset + prefix_bitmap_new_size + new_containees_size;
 		if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 			return 0;
 
@@ -1273,7 +1316,7 @@ int expand_container(const data_type_info* dti, void* data, uint32_t index, uint
 		uint32_t byte_offset_size = get_value_size_on_page(dti->max_size);
 
 		// calculate new size and check for size increments
-		uint32_t new_size = old_size + (byte_offset_size * slots);
+		new_size = old_size + (byte_offset_size * slots);
 		if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 			return 0;
 
