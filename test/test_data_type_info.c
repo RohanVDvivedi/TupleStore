@@ -165,6 +165,37 @@ int main()
 	printf("\n\n");
 
 	{
+		data_type_info* array_type_info = &get_variable_element_count_array_type("", 256, BIT_FIELD_5_NULLABLE);
+		finalize_type_info(array_type_info);
+		print_type_info(array_type_info);printf("\n");
+
+		char array[4096];
+		initialize_minimal_data_for_type_info(array_type_info, array);
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+
+		expand_container(array_type_info, array, 0, 5, 200);
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+
+		expand_container(array_type_info, array, 8, 3, 200);
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+
+		set_user_value_to_containee_in_container(array_type_info, array, 0, 50, (user_value){.bit_field_value = 0x12});
+		set_user_value_to_containee_in_container(array_type_info, array, 1, 50, (user_value){.bit_field_value = 0x16});
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, (user_value){.bit_field_value = 0x04});
+		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, (user_value){.bit_field_value = 0x15});
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+
+		expand_container(array_type_info, array, 2, 3, 200);
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+	}
+	printf("\n\n");
+
+	{
 		data_type_info* array_type_info = &get_variable_element_count_array_type("", 256, UINT_5_NULLABLE);
 		finalize_type_info(array_type_info);
 		print_type_info(array_type_info);printf("\n");
