@@ -1436,7 +1436,7 @@ int discard_from_container(const data_type_info* dti, void* data, uint32_t index
 		uint32_t offset_to_first_element = prefix_bitmap_offset + prefix_bitmap_new_size;
 
 		// discard the concerning slots
-		memory_move(data + offset_to_first_element + ((index + slots) * byte_size), data + offset_to_first_element + (index * byte_size), (old_element_count - (index + slots)) * byte_size);
+		memory_move(data + offset_to_first_element + (index * byte_size), data + offset_to_first_element + ((index + slots) * byte_size), (old_element_count - (index + slots)) * byte_size);
 	}
 	else
 	{
