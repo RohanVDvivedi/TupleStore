@@ -273,6 +273,15 @@ int main()
 		expand_container(array_type_info, array, 2, 3, 200);
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
+
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, (user_value){.string_value = "Manan Joshi", .string_size = strlen("Manan Joshi")});
+		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, (user_value){.string_value = "Avyaan Joshi", .string_size = strlen("Avyaan Joshi")});
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+
+		discard_from_container(array_type_info, array, 1, 3);
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
 	}
 	printf("\n\n");
 
@@ -293,6 +302,10 @@ int main()
 		char* to_add = "Vipulkumar ";
 		for(char* c = to_add; (*c) != 0; c++)
 			set_user_value_to_containee_in_container(&s4, s, 6 + (c - to_add), 300, (user_value){.uint_value = (*c)});
+
+		print_data_for_data_type_info(&s4, s);printf("\n");
+
+		discard_from_container(&s4, s, 11, 5);
 
 		print_data_for_data_type_info(&s4, s);printf("\n");
 	}
