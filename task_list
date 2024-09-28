@@ -1,7 +1,5 @@
 TASKS PICKED
 
- * read code again and convert all bit counters arithmetic to uint64_t to avoid overflows
-
 1 NEW TYPE TASKS
  *1*
    * add hash_map for type_name based type casting, comparing and hashing
