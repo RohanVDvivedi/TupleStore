@@ -43,9 +43,12 @@ uint32_t get_size_for_type_info(const data_type_info* dti, const void* data)
 
 	// variable sized element either has its size in prefix or its element count in the prefix or both
 	if(has_size_in_its_prefix_for_container_type_info(dti))
-		return read_value_from_page(data + get_offset_to_prefix_size_for_container_type_info(dti), get_bytes_required_for_prefix_size_for_container_type_info(dti));
+	{
+		uint32_t size = read_value_from_page(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size);
+		return (size == 0) ? dti->max_size : size; // a variable sized element is never 0 sized (because it is storing size in prefix), it is probably max_size
+	}
 
-	uint32_t element_count = read_value_from_page(data + get_offset_to_prefix_element_count_for_container_type_info(dti), get_bytes_required_for_prefix_element_count_for_container_type_info(dti));
+	uint32_t element_count = read_value_from_page(data + get_offset_to_prefix_element_count_for_container_type_info(dti), dti->max_size);
 
 	// now we know for sure that this is variable sized container, but without size in its prefix
 	// so this must be a container precisely : variable sized string, variable sized blob or array of variable element count but of fixed length type
@@ -99,7 +102,7 @@ uint32_t get_element_count_for_container_type_info(const data_type_info* dti, co
 		return dti->element_count;
 
 	// else read from the data
-	return read_value_from_page(data + get_offset_to_prefix_element_count_for_container_type_info(dti), get_bytes_required_for_prefix_element_count_for_container_type_info(dti));
+	return read_value_from_page(data + get_offset_to_prefix_element_count_for_container_type_info(dti), dti->max_size);
 }
 
 int has_size_in_its_prefix_for_container_type_info(const data_type_info* dti)
