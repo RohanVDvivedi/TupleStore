@@ -1328,7 +1328,7 @@ int expand_container(const data_type_info* dti, void* data, uint32_t index, uint
 		// zero out the new slots
 		memory_set(data + copy_from, 0, copy_to - copy_from);
 
-		// since all the varibale length data is moved back by (copy_to - copy_from) bytes, we need to update teir offsets
+		// since all the varibale length data is moved back by (copy_to - copy_from) bytes, we need to update their offsets
 		for(uint32_t i = 0; i < new_element_count; i++)
 		{
 			uint32_t offset = read_value_from_page(data + prefix_bitmap_offset + (i * byte_offset_size), dti->max_size);
@@ -1368,7 +1368,111 @@ int discard_from_container(const data_type_info* dti, void* data, uint32_t index
 	if(slots == 0)
 		return 1;
 
-	// TODO
+	// since it is an array, string or a blob of variable element count
+	// it's containee is bound to be fixed
+	data_type_info* containee_type_info = dti->containee;
+
+	// fetch the old element_count, and calculate the new_element_count
+	uint32_t old_element_count = get_element_count_for_container_type_info(dti, data);
+	uint32_t new_element_count = old_element_count - slots;
+
+	// fetch the old_size, new_size will differ based on its containee
+	uint32_t old_size = get_size_for_type_info(dti, data);
+	uint32_t new_size = 0;
+
+	// prefix size and prefix element count will remain in the same place
+	// prefix_bitmap_offset will also remain in the same place
+	uint32_t prefix_bitmap_offset = get_offset_to_prefix_bitmap_for_container_type_info(dti);
+
+	if(containee_type_info->type == BIT_FIELD)
+	{
+		// all of the content of the containee is in its prefix_bitmap
+		uint32_t prefix_bits_necessary_for_1_containee = needs_is_valid_bit_in_prefix_bitmap(containee_type_info) + containee_type_info->bit_field_size;
+
+		// calculate new size
+		new_size = prefix_bitmap_offset + bitmap_size_in_bytes(prefix_bits_necessary_for_1_containee * new_element_count);
+
+		// move succeeding bits to prior location
+		for(uint32_t i = 0; i < old_element_count - (index + slots); i++)
+		{
+			uint32_t copy_from_bit = ((index + slots) + i) * prefix_bits_necessary_for_1_containee;
+			uint32_t copy_to_bit = (index + i) * prefix_bits_necessary_for_1_containee;
+			uint64_t t = get_bits(data + prefix_bitmap_offset, copy_from_bit, copy_from_bit + prefix_bits_necessary_for_1_containee - 1);
+			set_bits(data + prefix_bitmap_offset, copy_to_bit, copy_to_bit + prefix_bits_necessary_for_1_containee - 1, t);
+		}
+	}
+	else if(!is_variable_sized_type_info(containee_type_info))
+	{
+		uint32_t prefix_bitmap_old_size = bitmap_size_in_bytes(old_element_count * needs_is_valid_bit_in_prefix_bitmap(containee_type_info));
+		uint32_t prefix_bitmap_new_size = bitmap_size_in_bytes(new_element_count * needs_is_valid_bit_in_prefix_bitmap(containee_type_info));
+
+		uint32_t byte_size = containee_type_info->size;
+
+		uint32_t new_containees_size = byte_size * new_element_count;
+
+		// calculate new size and check for size increments
+		new_size = prefix_bitmap_offset + prefix_bitmap_new_size + new_containees_size;
+
+		if(needs_is_valid_bit_in_prefix_bitmap(containee_type_info)) // if these element have is_valid bits in prefix, move them back
+		{
+			for(uint32_t i = 0; i < old_element_count - (index + slots); i++)
+			{
+				uint32_t copy_from_bit = ((index + slots) + i);
+				uint32_t copy_to_bit = (index + i);
+				uint64_t t = get_bits(data + prefix_bitmap_offset, copy_from_bit, copy_from_bit);
+				set_bits(data + prefix_bitmap_offset, copy_to_bit, copy_to_bit, t);
+			}
+		}
+
+		// move data containing containees, if the bitmap shrunk
+		if(prefix_bitmap_old_size != prefix_bitmap_new_size)
+		{
+			uint32_t copy_from = prefix_bitmap_offset + prefix_bitmap_old_size;
+			uint32_t copy_to = prefix_bitmap_offset + prefix_bitmap_new_size;
+			memory_move(data + copy_to, data + copy_from, old_size - copy_from);
+		}
+
+		// calculate the offset to the array of containees
+		uint32_t offset_to_first_element = prefix_bitmap_offset + prefix_bitmap_new_size;
+
+		// discard the concerning slots
+		memory_move(data + offset_to_first_element + ((index + slots) * byte_size), data + offset_to_first_element + (index * byte_size), (old_element_count - (index + slots)) * byte_size);
+	}
+	else
+	{
+		// first make the concerning slots NULL
+		for(uint32_t i = 0; i < slots; i++)
+			set_containee_to_NULL_in_container(dti, data, index + i);
+
+		// update the old size that we have cached
+		old_size = get_size_for_type_info(dti, data);
+
+		uint32_t byte_offset_size = get_value_size_on_page(dti->max_size);
+
+		// calculate new size
+		new_size = old_size - (byte_offset_size * slots);
+
+		// make room for new slots
+		uint32_t copy_from = prefix_bitmap_offset + byte_offset_size * (index + slots);
+		uint32_t copy_to = prefix_bitmap_offset + byte_offset_size * index;
+		memory_move(data + copy_to, data + copy_from, old_size - copy_from);
+
+		// since all the varibale length data is moved back by (copy_from - copy_to) bytes, we need to update their offsets
+		for(uint32_t i = 0; i < new_element_count; i++)
+		{
+			uint32_t offset = read_value_from_page(data + prefix_bitmap_offset + (i * byte_offset_size), dti->max_size);
+			if(offset != 0)
+				write_value_to_page(data + prefix_bitmap_offset + (i * byte_offset_size), dti->max_size, offset - (copy_from - copy_to));
+		}
+	}
+
+	// update the size and element count in the prefix
+	if(has_size_in_its_prefix_for_container_type_info(dti))
+		write_value_to_page(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, new_size);
+	if(has_element_count_in_its_prefix_for_container_type_info(dti))
+		write_value_to_page(data + get_offset_to_prefix_element_count_for_container_type_info(dti), dti->max_size, new_element_count);
+
+	return 1;
 }
 
 void print_data_for_data_type_info(const data_type_info* dti, const void* data)
