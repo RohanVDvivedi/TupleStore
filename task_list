@@ -1,10 +1,11 @@
 TASKS PICKED
 
-1 NEW TYPE TASKS
- *1*
-   * add hash_map for type_name based type casting, comparing and hashing
+ * add hash_map for type_name based type casting, comparing and hashing
+ * nested accesses get, set, expand, and discard functions wth positional_accessor
 
- *2*
+1 NEW TYPE TASKS
+
+ *1*
  * refactor the project to work with data_type_info instead of the tuple_def -> data_type_info and tuple_size_def -> tuple_size_info
  * page_layouts will only work with tuples and believe that tuples are only being stored
  * every data_type_info (except bit_fieds) can be used to get us tuple_size_info, that can be further passed into page_layout functions
@@ -20,7 +21,7 @@ TASKS PICKED
      * Union of size and bit_field_size
  * this much information is enough for the page_layout functions to determine the page_layout and the size of the tuple that is being inserted
 
- *3* compact serializable form of tuple_def -> data_type_info and tuple_size_def -> tuple_size_info, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
+ *2* compact serializable form of tuple_def -> data_type_info and tuple_size_def -> tuple_size_info, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
 
 2 OPTIMIZATION FOR COMPRESSION TASKS
- *4* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
+ *3* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
