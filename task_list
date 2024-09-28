@@ -1,9 +1,6 @@
 TASKS PICKED
 
  * read code again and convert all bit counters arithmetic to uint64_t to avoid overflows
- * since the size is stored directly, constituting the total size, our max_size may not fit if the provided bytes in prefix_size -> handle this
-   * to fix this, read through the code of data_type_info and when ever you read size from the page, if it is 0, return max_size, this solutio is already implemented for tuple_def right now
-   * add comment -> size of a variable sized element will never be 0, because any variable sized element will have either size or element_count or both in its prefix
 
 1 NEW TYPE TASKS
  *1*
