@@ -6,7 +6,7 @@ TASKS PICKED
  * data_type_info is reference counted -> possible solution
  * all data_type_info get registered in global concurrent hash_tables
  * add hash_tables for type_name based type casting, comparing and hashing
- * nested accesses get, set, expand, and discard functions wth positional_accessor
+ * nested accesses get, set, expand, and discard functions with positional_accessor, taking in tuple_def and tuple as input
  * only tuples can be stored on the disk, and each tuple has a corresponding tuple_def, and each tuple_def contains a tuple_size_def
  * redefine struct tuple_def {
     tuple_size_def size_def;    // only thing required by page_layout
