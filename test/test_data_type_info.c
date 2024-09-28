@@ -232,6 +232,15 @@ int main()
 		expand_container(array_type_info, array, 2, 3, 200);
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
+
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, (user_value){.uint_value = 16});
+		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, (user_value){.uint_value = 17});
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
+
+		discard_from_container(array_type_info, array, 1, 3);
+
+		print_data_for_data_type_info(array_type_info, array);printf("\n");
 	}
 	printf("\n\n");
 
