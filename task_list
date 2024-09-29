@@ -8,6 +8,7 @@ TASKS PICKED
     data_type_info* type_info;  // can be any type_info except a BIT_FIELD type
  }
  * creation of every tuple_def finalizes its type_info, initializes its size_def
+ * tuple_size_def has 2 major fiunctions get_size and is_variable_sized
  * redefine struct tuple_size_def {
     is_variable_sized:1;
 
