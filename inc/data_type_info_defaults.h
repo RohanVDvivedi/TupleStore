@@ -158,7 +158,7 @@ extern data_type_info* LARGE_UINT_NON_NULLABLE[33];
 	.containee = UINT_NON_NULLABLE[1], \
 })
 
-#define get_fixed_length_blob_type(_size, _is_nullable) \
+#define get_fixed_length_blob_type(_type_name, _size, _is_nullable) \
 ((data_type_info){ \
 	.is_static = 0, \
 	.is_finalized = 0, \
