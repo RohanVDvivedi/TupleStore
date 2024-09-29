@@ -13,7 +13,7 @@ int main()
 		data_type_info s4 = get_variable_length_string_type("STRING", 300);
 
 		data_type_info* tuple_type_info = alloca(sizeof_tuple_data_type_info(8));
-		initialize_tuple_data_type_info(tuple_type_info, "tuple_type1", 1, 256, 8);
+		initialize_tuple_data_type_info(tuple_type_info, "tuple_type1", 1, 1024, 8);
 		tuple_type_info->containees[0].type_info = UINT_NON_NULLABLE[3];
 		tuple_type_info->containees[1].type_info = BIT_FIELD_NON_NULLABLE[5];
 		tuple_type_info->containees[2].type_info = &s3;
