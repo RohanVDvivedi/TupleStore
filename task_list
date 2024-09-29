@@ -1,8 +1,9 @@
 TASKS PICKED
 
  * find index of containee in tuple using field name
- * default compare and hash functions
- * nested get, set, hash, compare, expand, and discard functions with positional_accessor, taking in tuple_def and tuple as input
+ * default compare and hash functions for user_value
+ * convert data and data_size to blob_value and blob_size in user value struct
+ * nested get, set, hash, compare, expand, and discard functions with positional_accessor, taking in tuple_def and tuple as input using positional accessor
  * redefine struct tuple_def {
     tuple_size_def size_def;    // only thing required by page_layout
     data_type_info* type_info;  // can be any type_info except a BIT_FIELD type
