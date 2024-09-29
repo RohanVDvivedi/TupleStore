@@ -7,21 +7,21 @@
 int main()
 {
 	{
-		data_type_info s1 = get_fixed_length_string_type(10, 0);
-		data_type_info s2 = get_fixed_length_string_type(12, 1);
-		data_type_info s3 = get_variable_length_string_type(100);
-		data_type_info s4 = get_variable_length_string_type(300);
+		data_type_info s1 = get_fixed_length_string_type("STRING", 10, 0);
+		data_type_info s2 = get_fixed_length_string_type("STRING", 12, 1);
+		data_type_info s3 = get_variable_length_string_type("STRING", 100);
+		data_type_info s4 = get_variable_length_string_type("STRING", 300);
 
 		data_type_info* tuple_type_info = alloca(sizeof_tuple_data_type_info(8));
 		initialize_tuple_data_type_info(tuple_type_info, "tuple_type1", 1, 256, 8);
-		tuple_type_info->containees[0].type_info = UINT_3_NON_NULLABLE;
-		tuple_type_info->containees[1].type_info = BIT_FIELD_5_NON_NULLABLE;
+		tuple_type_info->containees[0].type_info = UINT_NON_NULLABLE[3];
+		tuple_type_info->containees[1].type_info = BIT_FIELD_NON_NULLABLE[5];
 		tuple_type_info->containees[2].type_info = &s3;
 		tuple_type_info->containees[3].type_info = &s1;
 		tuple_type_info->containees[4].type_info = &s2;
 		tuple_type_info->containees[5].type_info = &s4;
 		tuple_type_info->containees[6].type_info = FLOAT_double_NULLABLE;
-		tuple_type_info->containees[7].type_info = BIT_FIELD_5_NULLABLE;
+		tuple_type_info->containees[7].type_info = BIT_FIELD_NULLABLE[5];
 		finalize_type_info(tuple_type_info);
 		print_type_info(tuple_type_info);printf("\n");
 
@@ -72,7 +72,7 @@ int main()
 	printf("\n\n");
 
 	{
-		data_type_info* array_type_info = &get_fixed_element_count_array_type("", 3, 0, 1, BIT_FIELD_4_NULLABLE);
+		data_type_info* array_type_info = &get_fixed_element_count_array_type("", 3, 0, 1, BIT_FIELD_NULLABLE[4]);
 		finalize_type_info(array_type_info);
 		print_type_info(array_type_info);printf("\n");
 
@@ -103,7 +103,7 @@ int main()
 	printf("\n\n");
 
 	{
-		data_type_info* array_type_info = &get_fixed_element_count_array_type("", 3, 0, 1, LARGE_UINT_4_NULLABLE);
+		data_type_info* array_type_info = &get_fixed_element_count_array_type("", 3, 0, 1, LARGE_UINT_NULLABLE[4]);
 		finalize_type_info(array_type_info);
 		print_type_info(array_type_info);printf("\n");
 
@@ -134,7 +134,7 @@ int main()
 	printf("\n\n");
 
 	{
-		data_type_info s4 = get_variable_length_string_type(300);
+		data_type_info s4 = get_variable_length_string_type("STRING", 300);
 		data_type_info* array_type_info = &get_fixed_element_count_array_type("", 3, 500, 1, &s4);
 		finalize_type_info(array_type_info);
 		print_type_info(array_type_info);printf("\n");
@@ -165,7 +165,7 @@ int main()
 	printf("\n\n");
 
 	{
-		data_type_info* array_type_info = &get_variable_element_count_array_type("", 256, BIT_FIELD_5_NULLABLE);
+		data_type_info* array_type_info = &get_variable_element_count_array_type("", 256, BIT_FIELD_NULLABLE[5]);
 		finalize_type_info(array_type_info);
 		print_type_info(array_type_info);printf("\n");
 
@@ -205,7 +205,7 @@ int main()
 	printf("\n\n");
 
 	{
-		data_type_info* array_type_info = &get_variable_element_count_array_type("", 256, UINT_5_NULLABLE);
+		data_type_info* array_type_info = &get_variable_element_count_array_type("", 256, UINT_NULLABLE[5]);
 		finalize_type_info(array_type_info);
 		print_type_info(array_type_info);printf("\n");
 
@@ -245,7 +245,7 @@ int main()
 	printf("\n\n");
 
 	{
-		data_type_info s4 = get_variable_length_string_type(300);
+		data_type_info s4 = get_variable_length_string_type("STRING", 300);
 		data_type_info* array_type_info = &get_variable_element_count_array_type("", 256, &s4);
 		finalize_type_info(array_type_info);
 		print_type_info(array_type_info);printf("\n");
@@ -286,7 +286,7 @@ int main()
 	printf("\n\n");
 
 	{
-		data_type_info s4 = get_variable_length_string_type(300);
+		data_type_info s4 = get_variable_length_string_type("STRING", 300);
 		finalize_type_info(&s4);
 		print_type_info(&s4);printf("\n");
 
