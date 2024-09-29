@@ -1,12 +1,8 @@
 TASKS PICKED
 
-1 NEW TYPE TASKS
-
- *1*
+ * find index of containee in tuple using field name
  * default compare and hash functions
- * nested accesses get, set, expand, and discard functions with positional_accessor, taking in tuple_def and tuple as input
- * add hash_tables for type_name based type casting, comparing and hashing
- * only tuples can be stored on the disk, and each tuple has a corresponding tuple_def, and each tuple_def contains a tuple_size_def
+ * nested get, set, hash, compare, expand, and discard functions with positional_accessor, taking in tuple_def and tuple as input
  * redefine struct tuple_def {
     tuple_size_def size_def;    // only thing required by page_layout
     data_type_info* type_info;  // can be any type_info except a BIT_FIELD type
@@ -30,6 +26,12 @@ TASKS PICKED
     int is_containee_bit_field:1; // -> can either be a bitfield or not
     union {containee_size, containee_bit_field_size}; // -> if bitfield gives bit field size, else the actual size of fixed sized containee
  } // if packed this struct is no more than 1 + 32 + 1 + 1 + 32 + 1 + 1 + 32 = 101 bits = 13 bytes
+
+1 NEW TYPE TASKS
+
+ *1*
+ * add hash_tables for type_name based type casting, comparing and hashing
+ * only tuples can be stored on the disk, and each tuple has a corresponding tuple_def, and each tuple_def contains a tuple_size_def
 
  *2* compact serializable form of tuple_def and tuple_size_def, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
 
