@@ -28,7 +28,7 @@ TASKS PICKED
     // this is the case with variable size string, variable sized blob, and variable element count fixed sized element arrays
     does_containee_need_is_valid_bit_in_prefix:1;
     int is_containee_bit_field:1; // -> can either be a bitfield or not
-    union {size, bit_field_size}; // -> if bitfield gives bit field size, else the actual size of fixed sized containee
+    union {containee_size, containee_bit_field_size}; // -> if bitfield gives bit field size, else the actual size of fixed sized containee
  } // if packed this struct is no more than 1 + 32 + 1 + 1 + 32 + 1 + 1 + 32 = 101 bits = 13 bytes
 
  *2* compact serializable form of tuple_def and tuple_size_def, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
