@@ -1,17 +1,6 @@
 #include<data_type_info.h>
 #include<data_type_info_defaults.h>
 
-#define define_bit_field_nullable_type(_size) \
-data_type_info* BIT_FIELD_ ## _size ## _NULLABLE = &((data_type_info){ \
-	.is_static = 1, \
-	.is_finalized = 0, \
-	.type_name = "BIT_FIELD", \
-	.type = BIT_FIELD, \
-	.is_nullable = 1, \
-	.is_variable_sized = 0, \
-	.bit_field_size = _size, \
-});
-
 define_bit_field_nullable_type(1)
 define_bit_field_nullable_type(2)
 define_bit_field_nullable_type(3)
@@ -76,17 +65,6 @@ define_bit_field_nullable_type(61)
 define_bit_field_nullable_type(62)
 define_bit_field_nullable_type(63)
 define_bit_field_nullable_type(64)
-
-#define define_bit_field_non_nullable_type(_size) \
-data_type_info* BIT_FIELD_ ## _size ## _NON_NULLABLE = &((data_type_info){ \
-	.is_static = 1, \
-	.is_finalized = 0, \
-	.type_name = "BIT_FIELD", \
-	.type = BIT_FIELD, \
-	.is_nullable = 0, \
-	.is_variable_sized = 0, \
-	.bit_field_size = _size, \
-});
 
 define_bit_field_non_nullable_type(1)
 define_bit_field_non_nullable_type(2)
@@ -153,17 +131,6 @@ define_bit_field_non_nullable_type(62)
 define_bit_field_non_nullable_type(63)
 define_bit_field_non_nullable_type(64)
 
-#define define_uint_nullable_type(_size) \
-data_type_info* UINT_ ## _size ## _NULLABLE = &((data_type_info){ \
-	.is_static = 1, \
-	.is_finalized = 0, \
-	.type_name = "UINT", \
-	.type = UINT, \
-	.is_nullable = 1, \
-	.is_variable_sized = 0, \
-	.size = _size, \
-});
-
 define_uint_nullable_type(1)
 define_uint_nullable_type(2)
 define_uint_nullable_type(3)
@@ -172,17 +139,6 @@ define_uint_nullable_type(5)
 define_uint_nullable_type(6)
 define_uint_nullable_type(7)
 define_uint_nullable_type(8)
-
-#define define_uint_non_nullable_type(_size) \
-data_type_info* UINT_ ## _size ## _NON_NULLABLE = &((data_type_info){ \
-	.is_static = 1, \
-	.is_finalized = 0, \
-	.type_name = "UINT", \
-	.type = UINT, \
-	.is_nullable = 0, \
-	.is_variable_sized = 0, \
-	.size = _size, \
-});
 
 define_uint_non_nullable_type(1)
 define_uint_non_nullable_type(2)
@@ -193,17 +149,6 @@ define_uint_non_nullable_type(6)
 define_uint_non_nullable_type(7)
 define_uint_non_nullable_type(8)
 
-#define define_int_nullable_type(_size) \
-data_type_info* INT_ ## _size ## _NULLABLE = &((data_type_info){ \
-	.is_static = 1, \
-	.is_finalized = 0, \
-	.type_name = "INT", \
-	.type = INT, \
-	.is_nullable = 1, \
-	.is_variable_sized = 0, \
-	.size = _size, \
-});
-
 define_int_nullable_type(1)
 define_int_nullable_type(2)
 define_int_nullable_type(3)
@@ -212,17 +157,6 @@ define_int_nullable_type(5)
 define_int_nullable_type(6)
 define_int_nullable_type(7)
 define_int_nullable_type(8)
-
-#define define_int_non_nullable_type(_size) \
-data_type_info* INT_ ## _size ## _NON_NULLABLE = &((data_type_info){ \
-	.is_static = 1, \
-	.is_finalized = 0, \
-	.type_name = "INT", \
-	.type = INT, \
-	.is_nullable = 0, \
-	.is_variable_sized = 0, \
-	.size = _size, \
-});
 
 define_int_non_nullable_type(1)
 define_int_non_nullable_type(2)
@@ -233,46 +167,13 @@ define_int_non_nullable_type(6)
 define_int_non_nullable_type(7)
 define_int_non_nullable_type(8)
 
-#define define_float_nullable_type(size_for) \
-data_type_info* FLOAT_ ## size_for ## _NULLABLE = &((data_type_info){ \
-	.is_static = 1, \
-	.is_finalized = 0, \
-	.type_name = "FLOAT", \
-	.type = FLOAT, \
-	.is_nullable = 1, \
-	.is_variable_sized = 0, \
-	.size = sizeof(size_for), \
-});
-
 define_float_nullable_type(float)
 define_float_nullable_type(double)
 define_float_nullable_type(long_double)
 
-#define define_float_non_nullable_type(size_for) \
-data_type_info* FLOAT_ ## size_for ## _NON_NULLABLE = &((data_type_info){ \
-	.is_static = 1, \
-	.is_finalized = 0, \
-	.type_name = "FLOAT", \
-	.type = FLOAT, \
-	.is_nullable = 0, \
-	.is_variable_sized = 0, \
-	.size = sizeof(size_for), \
-});
-
 define_float_non_nullable_type(float)
 define_float_non_nullable_type(double)
 define_float_non_nullable_type(long_double)
-
-#define define_large_uint_nullable_type(_size) \
-data_type_info* LARGE_UINT_ ## _size ## _NULLABLE = &((data_type_info){ \
-	.is_static = 1, \
-	.is_finalized = 0, \
-	.type_name = "LARGE_UINT", \
-	.type = LARGE_UINT, \
-	.is_nullable = 1, \
-	.is_variable_sized = 0, \
-	.size = _size, \
-});
 
 define_large_uint_nullable_type(1)
 define_large_uint_nullable_type(2)
@@ -306,17 +207,6 @@ define_large_uint_nullable_type(29)
 define_large_uint_nullable_type(30)
 define_large_uint_nullable_type(31)
 define_large_uint_nullable_type(32)
-
-#define define_large_uint_non_nullable_type(_size) \
-data_type_info* LARGE_UINT_ ## _size ## _NON_NULLABLE = &((data_type_info){ \
-	.is_static = 1, \
-	.is_finalized = 0, \
-	.type_name = "LARGE_UINT", \
-	.type = LARGE_UINT, \
-	.is_nullable = 0, \
-	.is_variable_sized = 0, \
-	.size = _size, \
-});
 
 define_large_uint_non_nullable_type(1)
 define_large_uint_non_nullable_type(2)
