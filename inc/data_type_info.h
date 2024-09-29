@@ -172,6 +172,10 @@ uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_
 data_type_info* get_data_type_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index);
 data_position_info get_data_position_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index);
 
+// finds a containee's index using its field_name
+// if it fails, it will return -1 i.e. UINT32_MAX 
+uint32_t find_containee_using_field_name_in_tuple_type_info(const data_type_info* dti, const char* field_name);
+
 // must be called and must pass on all the types
 int finalize_type_info(data_type_info* dti);
 

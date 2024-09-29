@@ -3,8 +3,12 @@
 
 #include<serial_int.h>
 #include<large_uints.h>
+#include<float_accesses.h>
 
 #include<bitmap.h>
+
+#include<string.h>
+#include<stdio.h>
 
 char types_as_string[][16] = {
 								"BIT_FIELD",
@@ -232,6 +236,23 @@ data_position_info get_data_position_info_for_containee_of_container(const data_
 	}
 }
 
+uint32_t find_containee_using_field_name_in_tuple_type_info(const data_type_info* dti, const char* field_name)
+{
+	// fail if not a tuple
+	if(dti->type != TUPLE)
+		return -1;
+
+	// it is TUPLE hence the element_count is fixed
+
+	for(uint32_t i = 0; i < dti->element_count; i++)
+	{
+		if(strcmp(field_name, dti->containees[i].field_name) == 0)
+			return i;
+	}
+
+	return -1;
+}
+
 int finalize_type_info(data_type_info* dti)
 {
 	// no need to finalize again
@@ -423,8 +444,6 @@ int finalize_type_info(data_type_info* dti)
 	return 1;
 }
 
-#include<stdio.h>
-
 static void print_tabs(int tabs)
 {
 	while(tabs)
@@ -523,10 +542,6 @@ void print_type_info(const data_type_info* dti)
 {
 	print_type_info_recursive(dti, 0);
 }
-
-#include<serial_int.h>
-#include<float_accesses.h>
-#include<string.h>
 
 int is_containee_null_in_container(const data_type_info* dti, const void* data, uint32_t index)
 {
