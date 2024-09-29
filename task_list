@@ -1,6 +1,5 @@
 TASKS PICKED
 
- * allow type_name as parameter in type definitions and make type_definitions publicly createable
  * find index of containee in tuple using field name
  * default compare and hash functions for user_value
  * convert data and data_size to blob_value and blob_size in user value struct
