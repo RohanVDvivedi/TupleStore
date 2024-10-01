@@ -1,7 +1,7 @@
 TASKS PICKED
 
- * add out of bounds flag for user value, and a pointer for this value, OUT_OF_BOUNDS_USER_VALUE like the NULL_USER_VALUE, a function to check if the user value is put of bounds
-   * get function will return this if the index provided is put of bounds or if you attempt to index an non container value
+ * get function will return this if the index provided is put of bounds or if you attempt to index an non container value
+ * set to fail if OUT_OF_BOUNDS user value is provided
 
  * default compare and hash functions for user_value
  * convert data and data_size to blob_value and blob_size in user value struct
