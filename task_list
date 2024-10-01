@@ -2,24 +2,6 @@ TASKS PICKED
 
  * creation of every tuple_def finalizes its type_info, initializes its size_def, implement constructor from only the data_type_info
  * tuple_size_def has 2 major fiunctions get_size and is_variable_sized -> there is also a possibility to implement initialize_minimal_tuple using size_def, so implement that aswell
- * redefine struct tuple_size_def {
-    is_variable_sized:1;
-
-    union{size, min_size}; -> use size directly, if is_variable_sized = 0 
-
-    // below two fields are used only when is_variable_size = 1
-    has_size_in_prefix:1; // -> if set directly read size from the prefix
-    has_element_count_in_pefix:1; // -> need to do more work
-
-    max_size; // to read size OR element_count from prefix using read_value_from_page(, max_size)
-
-    // are only required when has_size_in_prefix = 0, and has_element_count_in_pefix = 1, this configuration implies is_variable_size = 0
-    // this also implies that the element_count is variable, but the individual element is fixed size (may or may not be nullable)
-    // this is the case with variable size string, variable sized blob, and variable element count fixed sized element arrays
-    does_containee_need_is_valid_bit_in_prefix:1;
-    int is_containee_bit_field:1; // -> can either be a bitfield or not
-    union {containee_size, containee_bit_field_size}; // -> if bitfield gives bit field size, else the actual size of fixed sized containee
- } // if packed this struct is no more than 1 + 32 + 1 + 1 + 32 + 1 + 1 + 32 = 101 bits = 13 bytes
  * constructors to construct tuple_size_def directly using size for fixed size, variable size using min_size, max_size and has_size_in_prefix AND containee data type info
  * nested get, set, hash, compare, expand, and discard functions with positional_accessor, taking in tuple_def and tuple as input using positional accessor
 

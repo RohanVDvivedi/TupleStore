@@ -32,6 +32,7 @@ struct tuple_size_def
 		uint32_t containee_bit_field_size;
 	}; // -> if is_containee_bit_field gives containee_bit_field_size in bits, else the actual size of fixed sized containee in the containee_size attribute
 };
+// if packed this struct is no more than 1 + 32 + 1 + 1 + 32 + 1 + 1 + 32 = 101 bits = 13 bytes
 
 typedef struct tuple_def tuple_def;
 struct tuple_def
