@@ -65,7 +65,28 @@ int initialize_tuple_def(tuple_def* tuple_d, data_type_info* dti)
 	return result;
 }
 
-uint32_t get_tuple_size_using_tuple_size_def(const tuple_size_def* tpl_sz_d, const void* tupl);
+uint32_t get_tuple_size_using_tuple_size_def(const tuple_size_def* tpl_sz_d, const void* tupl)
+{
+	// if fixed sized return size
+	if(!tpl_sz_d->is_variable_sized)
+		return tpl_sz_d->size;
+
+	// else we know it is variable sized
+
+	// if has size in prefix read that, and return it
+	if(tpl_sz_d->has_size_in_prefix)
+		return read_value_from_page(tupl, tpl_sz_d->max_size);
+
+	// else read element_count
+	uint32_t element_count = read_value_from_page(tupl, tpl_sz_d->max_size);
+
+	// it has element_count in its prefix but not its size
+
+	if(tpl_sz_d->is_containee_bit_field)
+		return get_value_size_on_page(tpl_sz_d->max_size) + bitmap_size_in_bytes(element_count * (tpl_sz_d->does_containee_need_is_valid_bit_in_prefix + tpl_sz_d->containee_bit_field_size));
+	else
+		return get_value_size_on_page(tpl_sz_d->max_size) + bitmap_size_in_bytes(element_count * tpl_sz_d->does_containee_need_is_valid_bit_in_prefix) + (element_count * tpl_sz_d->containee_size);
+}
 
 int is_variable_sized_tuple_size_def(const tuple_size_def* tuple_size_d);
 
