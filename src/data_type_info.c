@@ -904,9 +904,9 @@ int can_set_user_value_for_type_info(const data_type_info* dti, const void* data
 	}
 }
 
-int set_user_value_for_type_info(const data_type_info* dti, void* data, int is_valid, uint32_t max_size_increment_allowed, user_value uval)
+int set_user_value_for_type_info(const data_type_info* dti, void* data, int is_valid, uint32_t max_size_increment_allowed, const user_value* uval)
 {
-	if(is_user_value_NULL(&uval) || is_user_value_OUT_OF_BOUNDS(&uval))
+	if(is_user_value_NULL(uval) || is_user_value_OUT_OF_BOUNDS(uval))
 		return 0;
 
 	if(dti->type == BIT_FIELD)
@@ -919,59 +919,69 @@ int set_user_value_for_type_info(const data_type_info* dti, void* data, int is_v
 		{
 			case UINT :
 			{
-				serialize_uint64(data, dti->size, uval.uint_value);
+				serialize_uint64(data, dti->size, uval->uint_value);
 				return 1;
 			}
 			case INT :
 			{
-				serialize_int64(data, dti->size, uval.int_value);
+				serialize_int64(data, dti->size, uval->int_value);
 				return 1;
 			}
 			case FLOAT :
 			{
 				if(dti->size == sizeof(float))
-					serialize_float(data, uval.float_value);
+					serialize_float(data, uval->float_value);
 				else if(dti->size == sizeof(double))
-					serialize_double(data, uval.double_value);
+					serialize_double(data, uval->double_value);
 				else if(dti->size == sizeof(long double))
-					serialize_long_double(data, uval.long_double_value);
+					serialize_long_double(data, uval->long_double_value);
 				return 1;
 			}
 			case LARGE_UINT :
 			{
-				serialize_uint256(data, dti->size, uval.large_uint_value);
+				serialize_uint256(data, dti->size, uval->large_uint_value);
 				return 1;
 			}
 			case STRING :
 			{
+				user_value uval_t = *uval;
+
 				// limit the string length
-				uval.string_size = strnlen(uval.string_value, uval.string_size);
-				uval.string_size = min(uval.string_size, dti->size);
+				uval_t.string_size = strnlen(uval_t.string_value, uval_t.string_size);
+				uval_t.string_size = min(uval_t.string_size, dti->size);
 
 				// copy contents to data
-				memory_move(data, uval.string_value, uval.string_size);
+				memory_move(data, uval_t.string_value, uval_t.string_size);
 				// padd remaining bytes to 0
-				if(uval.string_size < dti->size)
-					memory_set(data + uval.string_size, 0, dti->size - uval.string_size);
+				if(uval_t.string_size < dti->size)
+					memory_set(data + uval_t.string_size, 0, dti->size - uval_t.string_size);
 				return 1;
 			}
 			case BLOB :
 			{
-				uval.data_size = min(uval.data_size, dti->size);
+				user_value uval_t = *uval;
+
+				uval_t.data_size = min(uval_t.data_size, dti->size);
 				// copy contents to data
-				memory_move(data, uval.data, uval.data_size);
+				memory_move(data, uval_t.data, uval_t.data_size);
 				return 1;
 			}
 			case TUPLE :
 			{
 				// copy contents to data
-				memory_move(data, uval.tuple_value, dti->size);
+				if(uval != EMPTY_USER_VALUE)
+					memory_move(data, uval->tuple_value, dti->size);
+				else
+					initialize_minimal_data_for_type_info(dti, data);
 				return 1;
 			}
 			case ARRAY :
 			{
 				// copy contents to data
-				memory_move(data, uval.array_value, dti->size);
+				if(uval != EMPTY_USER_VALUE)
+					memory_move(data, uval->array_value, dti->size);
+				else
+					initialize_minimal_data_for_type_info(dti, data);
 				return 1;
 			}
 			default :
@@ -987,55 +997,63 @@ int set_user_value_for_type_info(const data_type_info* dti, void* data, int is_v
 	{
 		case STRING :
 		{
+			user_value uval_t = *uval;
+
 			// limit the string length
-			uval.string_size = strnlen(uval.string_value, uval.string_size);
+			uval_t.string_size = strnlen(uval_t.string_value, uval_t.string_size);
 
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval.string_size;
+			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval_t.string_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
 
 			// write element count and copy contents to data
-			write_value_to_page(data, dti->max_size, uval.string_size);
-			memory_move(data + get_value_size_on_page(dti->max_size), uval.string_value, uval.string_size);
+			write_value_to_page(data, dti->max_size, uval_t.string_size);
+			memory_move(data + get_value_size_on_page(dti->max_size), uval_t.string_value, uval_t.string_size);
 			return 1;
 		}
 		case BLOB :
 		{
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval.data_size;
+			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval->data_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
 
 			// write element count and copy contents to data
-			write_value_to_page(data, dti->max_size, uval.data_size);
-			memory_move(data + get_value_size_on_page(dti->max_size), uval.data, uval.data_size);
+			write_value_to_page(data, dti->max_size, uval->data_size);
+			memory_move(data + get_value_size_on_page(dti->max_size), uval->data, uval->data_size);
 			return 1;
 		}
 		case TUPLE :
 		{
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_size_for_type_info(dti, uval.tuple_value);
+			uint32_t new_size = (uval == EMPTY_USER_VALUE) ? dti->min_size : get_size_for_type_info(dti, uval->tuple_value);
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
 
 			// copy contents to data
-			memory_move(data, uval.tuple_value, new_size);
+			if(uval != EMPTY_USER_VALUE)
+				memory_move(data, uval->tuple_value, dti->size);
+			else
+				initialize_minimal_data_for_type_info(dti, data);
 			return 1;
 		}
 		case ARRAY :
 		{
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_size_for_type_info(dti, uval.array_value);
+			uint32_t new_size = (uval == EMPTY_USER_VALUE) ? dti->min_size : get_size_for_type_info(dti, uval->array_value);
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
 
 			// copy contents to data
-			memory_move(data, uval.array_value, new_size);
+			if(uval != EMPTY_USER_VALUE)
+				memory_move(data, uval->array_value, dti->size);
+			else
+				initialize_minimal_data_for_type_info(dti, data);
 			return 1;
 		}
 		default :
@@ -1045,14 +1063,14 @@ int set_user_value_for_type_info(const data_type_info* dti, void* data, int is_v
 	}
 }
 
-int can_set_user_value_to_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t max_size_increment_allowed, user_value uval)
+int can_set_user_value_to_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval)
 {
 	// dti has to be a container type
 	if(!is_container_type_info(dti))
 		return 0;
 
 	// an out of bounds containee is never accessible
-	if(!is_user_value_OUT_OF_BOUNDS(&uval))
+	if(!is_user_value_OUT_OF_BOUNDS(uval))
 		return 0;
 
 	// make sure that index is within bounds, else fail
@@ -1063,7 +1081,7 @@ int can_set_user_value_to_containee_in_container(const data_type_info* dti, cons
 	data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, data, index);
 
 	// if uval is NULL, set it to NULL
-	if(is_user_value_NULL(&uval))
+	if(is_user_value_NULL(uval))
 		return is_nullable_type_info(containee_pos_info.type_info);
 
 	// there will already be enough space for the fixed sized containee
