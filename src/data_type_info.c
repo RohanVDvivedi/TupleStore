@@ -969,7 +969,7 @@ int set_user_value_for_type_info(const data_type_info* dti, void* data, int is_v
 			case TUPLE :
 			{
 				// copy contents to data
-				if(uval != EMPTY_USER_VALUE)
+				if(uval != EMPTY_USER_VALUE) // if user provided this pointer, then the tuple_value is NULL, hence we need to initialize a minimal tuple at this position
 					memory_move(data, uval->tuple_value, dti->size);
 				else
 					initialize_minimal_data_for_type_info(dti, data);
@@ -978,7 +978,7 @@ int set_user_value_for_type_info(const data_type_info* dti, void* data, int is_v
 			case ARRAY :
 			{
 				// copy contents to data
-				if(uval != EMPTY_USER_VALUE)
+				if(uval != EMPTY_USER_VALUE) // if user provided this pointer, then the array_value is NULL, hence we need to initialize a minimal tuple at this position
 					memory_move(data, uval->array_value, dti->size);
 				else
 					initialize_minimal_data_for_type_info(dti, data);
