@@ -58,6 +58,28 @@ int main()
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
 
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, EMPTY_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, EMPTY_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 0, EMPTY_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 3, 0, EMPTY_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 4, 0, EMPTY_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 5, 0, EMPTY_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 6, 0, EMPTY_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 7, 0, EMPTY_USER_VALUE);
+
+		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
+
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 3, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 4, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 5, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 6, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 7, 0, NULL_USER_VALUE);
+
+		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
+
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, NULL_USER_VALUE);
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, NULL_USER_VALUE);
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 0, NULL_USER_VALUE);
