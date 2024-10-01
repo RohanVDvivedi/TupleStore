@@ -1070,7 +1070,7 @@ int can_set_user_value_to_containee_in_container(const data_type_info* dti, cons
 		return 0;
 
 	// an out of bounds containee is never accessible
-	if(!is_user_value_OUT_OF_BOUNDS(uval))
+	if(is_user_value_OUT_OF_BOUNDS(uval))
 		return 0;
 
 	// make sure that index is within bounds, else fail
@@ -1107,7 +1107,7 @@ int set_user_value_to_containee_in_container(const data_type_info* dti, void* da
 		return 0;
 
 	// an out of bounds containee is never accessible
-	if(!is_user_value_OUT_OF_BOUNDS(uval))
+	if(is_user_value_OUT_OF_BOUNDS(uval))
 		return 0;
 
 	// make sure that index is within bounds, else fail
