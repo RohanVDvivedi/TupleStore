@@ -39,7 +39,7 @@ struct user_value
 		const void* tuple_value;
 		const void* array_value;
 
-		// below is to be discarded
+		// TODO : below attributes are to be discarded
 		struct
 		{
 			const void* data;
