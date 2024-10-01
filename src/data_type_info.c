@@ -842,30 +842,29 @@ int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, ui
 	return 1;
 }
 
-int can_set_user_value_for_type_info(const data_type_info* dti, const void* data, int is_valid, uint32_t max_size_increment_allowed, user_value uval)
+int can_set_user_value_for_type_info(const data_type_info* dti, const void* data, int is_valid, uint32_t max_size_increment_allowed, const user_value* uval)
 {
-	if(is_user_value_NULL(&uval) || is_user_value_OUT_OF_BOUNDS(&uval))
+	if(is_user_value_NULL(uval) || is_user_value_OUT_OF_BOUNDS(uval))
 		return 0;
 
 	if(dti->type == BIT_FIELD)
 		return 0;
+
 	// if it is fixed sized, then no need to check for max_size_increment
 	if(!is_variable_sized_type_info(dti))
-	{
-		if(dti->type == BIT_FIELD)
-			return 0;
 		return 1;
-	}
 
 	switch(dti->type)
 	{
 		case STRING :
 		{
+			user_value uval_t = *uval;
+
 			// limit the string length
-			uval.string_size = strnlen(uval.string_value, uval.string_size);
+			uval_t.string_size = strnlen(uval_t.string_value, uval_t.string_size);
 
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval.string_size;
+			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval_t.string_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
@@ -874,7 +873,7 @@ int can_set_user_value_for_type_info(const data_type_info* dti, const void* data
 		case BLOB :
 		{
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval.data_size;
+			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval->data_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
@@ -883,7 +882,7 @@ int can_set_user_value_for_type_info(const data_type_info* dti, const void* data
 		case TUPLE :
 		{
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_size_for_type_info(dti, uval.tuple_value);
+			uint32_t new_size = (uval == EMPTY_USER_VALUE) ? dti->min_size : get_size_for_type_info(dti, uval->tuple_value);
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
@@ -892,7 +891,7 @@ int can_set_user_value_for_type_info(const data_type_info* dti, const void* data
 		case ARRAY :
 		{
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_size_for_type_info(dti, uval.array_value);
+			uint32_t new_size = (uval == EMPTY_USER_VALUE) ? dti->min_size : get_size_for_type_info(dti, uval->array_value);
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
