@@ -123,7 +123,32 @@ uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_
 
 #include<stdio.h>
 
-void print_tuple_size_def(const tuple_size_def* tuple_size_d);
+void print_tuple_size_def(const tuple_size_def* tuple_size_d)
+{
+	printf("is_variable_sized : %d\n", tuple_size_d->is_variable_sized);
+	if(!tuple_size_d->is_variable_sized)
+	{
+		printf("size = %"PRIu32"\n", tuple_size_d->size);
+		return;
+	}
+
+	printf("min_size : %"PRIu32"\n", tuple_size_d->min_size);
+	printf("max_size : %"PRIu32"\n", tuple_size_d->max_size);
+
+	printf("has_size_in_prefix : %d\n", tuple_size_d->has_size_in_prefix);
+	printf("has_element_count_in_pefix : %d\n", tuple_size_d->has_element_count_in_pefix);
+
+	if(tuple_size_d->has_size_in_prefix)
+		return;
+
+	printf("does_containee_need_is_valid_bit_in_prefix : %d\n", tuple_size_d->does_containee_need_is_valid_bit_in_prefix);
+	printf("is_containee_bit_field : %d\n", tuple_size_d->is_containee_bit_field);
+
+	if(tuple_size_d->is_containee_bit_field)
+		printf("containee_bit_field_size : %"PRIu32"\n", tuple_size_d->containee_bit_field_size);
+	else
+		printf("containee_size : %"PRIu32"\n", tuple_size_d->containee_size);
+}
 
 void print_tuple_def(const tuple_def* tuple_d)
 {
