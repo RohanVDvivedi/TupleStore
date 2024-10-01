@@ -275,6 +275,6 @@ int discard_from_container(const data_type_info* dti, void* data, uint32_t index
 void print_data_for_data_type_info(const data_type_info* dti, const void* data);
 
 // can not be used for outermost container
-void print_user_value_for_data_type_info(const data_type_info* dti, user_value uval);
+void print_user_value_for_data_type_info(const data_type_info* dti, const user_value* uval);
 
 #endif
