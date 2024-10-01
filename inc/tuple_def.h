@@ -61,7 +61,8 @@ uint32_t get_tuple_size_using_tuple_size_def(const tuple_size_def* tpl_sz_d, con
 int is_variable_sized_tuple_size_def(const tuple_size_def* tuple_size_d);
 
 // this function is not used, it merely duplicated the logic in `uint32_t initialize_minimal_data_for_type_info(const data_type_info* dti, void* data);`
-uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_sz_d, void* tupl);
+// not publicly exposed, it is here to just show that tuple_size_def is enough to minimally initialize the tuple
+// uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_sz_d, void* tupl);
 
 // initialize a tuple_def using the data_type_info
 // it will also finalize the data_type_info
