@@ -45,6 +45,25 @@ struct tuple_def
 	data_type_info* type_info;
 };
 
+// initialize a tuple_size_def using the data_type_info
+// it will also finalize the data_type_info
+// fails with 0 only if dti->type == BIT_FIELD
+int initialize_tuple_size_def(tuple_size_def* tuple_size_d, data_type_info* dti);
 
+uint32_t get_tuple_size_using_tuple_size_def(const tuple_size_def* tpl_sz_d, const void* tupl);
+
+int is_variable_sized_tuple_size_def(const tuple_size_def* tuple_size_d);
+
+// this function is not used, it merely duplicated the logic in `uint32_t initialize_minimal_data_for_type_info(const data_type_info* dti, void* data);`
+uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_sz_d, void* tupl);
+
+// initialize a tuple_def using the data_type_info
+// it will also finalize the data_type_info
+// fails with 0 only if dti->type == BIT_FIELD
+int initialize_tuple_def(tuple_def* tuple_d, data_type_info* dti);
+
+uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl);
+
+int is_variable_sized_tuple_def(const tuple_def* tuple_d);
 
 #endif
