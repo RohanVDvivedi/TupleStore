@@ -30,42 +30,42 @@ int main()
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
 
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, (user_value){.uint_value = 5});
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, (user_value){.bit_field_value = 0x6});
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 100, (user_value){.string_value = "Devashree Dvivedi", .string_size = strlen("Devashree Dvivedi")});
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, &(user_value){.uint_value = 5});
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, &(user_value){.bit_field_value = 0x6});
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 100, &(user_value){.string_value = "Devashree Dvivedi", .string_size = strlen("Devashree Dvivedi")});
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
 
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 3, 0, (user_value){.string_value = "ABC", .string_size = strlen("ABC")});
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 4, 0, (user_value){.string_value = "DEF", .string_size = strlen("DEF")});
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 5, 300, (user_value){.string_value = "Rupa Dvivedi", .string_size = strlen("Rupa Dvivedi")});
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 6, 0, (user_value){.double_value = -5});
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 7, 0, (user_value){.bit_field_value = 0x36});
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 3, 0, &(user_value){.string_value = "ABC", .string_size = strlen("ABC")});
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 4, 0, &(user_value){.string_value = "DEF", .string_size = strlen("DEF")});
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 5, 300, &(user_value){.string_value = "Rupa Dvivedi", .string_size = strlen("Rupa Dvivedi")});
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 6, 0, &(user_value){.double_value = -5});
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 7, 0, &(user_value){.bit_field_value = 0x36});
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
 
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, (user_value){.uint_value = 99});
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, (user_value){.bit_field_value = 0x25});
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 100, (user_value){.string_value = "Manan Joshi", .string_size = strlen("Manan Joshi")});
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, &(user_value){.uint_value = 99});
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, &(user_value){.bit_field_value = 0x25});
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 100, &(user_value){.string_value = "Manan Joshi", .string_size = strlen("Manan Joshi")});
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
 
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 3, 0, (user_value){.string_value = "GHIJK", .string_size = strlen("GHIJK")});
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 4, 0, (user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 5, 300, (user_value){.string_value = "Vipulkumar DvivediXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX44444444444444444444444444444444444111111111111111111111111111111111111111111111111111111110", .string_size = strlen("Vipulkumar DvivediXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX44444444444444444444444444444444444111111111111111111111111111111111111111111111111111111110")});
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 6, 0, (user_value){.double_value = 55});
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 7, 0, (user_value){.bit_field_value = 0x25});
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 3, 0, &(user_value){.string_value = "GHIJK", .string_size = strlen("GHIJK")});
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 4, 0, &(user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 5, 300, &(user_value){.string_value = "Vipulkumar DvivediXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX44444444444444444444444444444444444111111111111111111111111111111111111111111111111111111110", .string_size = strlen("Vipulkumar DvivediXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX44444444444444444444444444444444444111111111111111111111111111111111111111111111111111111110")});
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 6, 0, &(user_value){.double_value = 55});
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 7, 0, &(user_value){.bit_field_value = 0x25});
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
 
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, (*NULL_USER_VALUE));
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, (*NULL_USER_VALUE));
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 0, (*NULL_USER_VALUE));
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 3, 0, (*NULL_USER_VALUE));
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 4, 0, (*NULL_USER_VALUE));
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 5, 0, (*NULL_USER_VALUE));
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 6, 0, (*NULL_USER_VALUE));
-		set_user_value_to_containee_in_container(tuple_type_info, tuple, 7, 0, (*NULL_USER_VALUE));
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 3, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 4, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 5, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 6, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(tuple_type_info, tuple, 7, 0, NULL_USER_VALUE);
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
 	}
@@ -81,22 +81,22 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, (user_value){.bit_field_value = 0x1});
-		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, (user_value){.bit_field_value = 0x2});
-		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, (user_value){.bit_field_value = 0x3});
+		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, &(user_value){.bit_field_value = 0x1});
+		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, &(user_value){.bit_field_value = 0x2});
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, &(user_value){.bit_field_value = 0x3});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, (user_value){.bit_field_value = 0x4});
-		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, (user_value){.bit_field_value = 0x5});
-		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, (user_value){.bit_field_value = 0x6});
+		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, &(user_value){.bit_field_value = 0x4});
+		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, &(user_value){.bit_field_value = 0x5});
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, &(user_value){.bit_field_value = 0x6});
 
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, (*NULL_USER_VALUE));
-		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, (*NULL_USER_VALUE));
-		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, (*NULL_USER_VALUE));
+		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, NULL_USER_VALUE);
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 	}
@@ -112,22 +112,22 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, (user_value){.large_uint_value = get_uint256(12)});
-		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, (user_value){.large_uint_value = get_uint256(13)});
-		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, (user_value){.large_uint_value = get_uint256(14)});
+		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, &(user_value){.large_uint_value = get_uint256(12)});
+		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, &(user_value){.large_uint_value = get_uint256(13)});
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, &(user_value){.large_uint_value = get_uint256(14)});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, (user_value){.large_uint_value = get_uint256(15)});
-		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, (user_value){.large_uint_value = get_uint256(16)});
-		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, (user_value){.large_uint_value = get_uint256(17)});
+		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, &(user_value){.large_uint_value = get_uint256(15)});
+		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, &(user_value){.large_uint_value = get_uint256(16)});
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, &(user_value){.large_uint_value = get_uint256(17)});
 
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, (*NULL_USER_VALUE));
-		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, (*NULL_USER_VALUE));
-		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, (*NULL_USER_VALUE));
+		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, NULL_USER_VALUE);
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 	}
@@ -144,21 +144,21 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container(array_type_info, array, 0, 50, (user_value){.string_value = "Devashree Dvivedi", .string_size = strlen("Devashree Dvivedi")});
-		set_user_value_to_containee_in_container(array_type_info, array, 1, 50, (user_value){.string_value = "Rupa Joshi", .string_size = strlen("Rupa Joshi")});
-		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, (user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
+		set_user_value_to_containee_in_container(array_type_info, array, 0, 50, &(user_value){.string_value = "Devashree Dvivedi", .string_size = strlen("Devashree Dvivedi")});
+		set_user_value_to_containee_in_container(array_type_info, array, 1, 50, &(user_value){.string_value = "Rupa Joshi", .string_size = strlen("Rupa Joshi")});
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, &(user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container(array_type_info, array, 1, 50, (user_value){.string_value = "Rupa Dvivedi", .string_size = strlen("Rupa Dvivedi")});
-		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, (user_value){.string_value = "Rohan Vipulkumar Dvivedi", .string_size = strlen("Rohan Vipulkumar Dvivedi")});
-		set_user_value_to_containee_in_container(array_type_info, array, 0, 50, (user_value){.string_value = "Devashree Joshi", .string_size = strlen("Devashree Joshi")});
+		set_user_value_to_containee_in_container(array_type_info, array, 1, 50, &(user_value){.string_value = "Rupa Dvivedi", .string_size = strlen("Rupa Dvivedi")});
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, &(user_value){.string_value = "Rohan Vipulkumar Dvivedi", .string_size = strlen("Rohan Vipulkumar Dvivedi")});
+		set_user_value_to_containee_in_container(array_type_info, array, 0, 50, &(user_value){.string_value = "Devashree Joshi", .string_size = strlen("Devashree Joshi")});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, (*NULL_USER_VALUE));
-		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, (*NULL_USER_VALUE));
-		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, (*NULL_USER_VALUE));
+		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, NULL_USER_VALUE);
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, NULL_USER_VALUE);
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 	}
@@ -182,10 +182,10 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container(array_type_info, array, 0, 50, (user_value){.bit_field_value = 0x12});
-		set_user_value_to_containee_in_container(array_type_info, array, 1, 50, (user_value){.bit_field_value = 0x16});
-		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, (user_value){.bit_field_value = 0x04});
-		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, (user_value){.bit_field_value = 0x15});
+		set_user_value_to_containee_in_container(array_type_info, array, 0, 50, &(user_value){.bit_field_value = 0x12});
+		set_user_value_to_containee_in_container(array_type_info, array, 1, 50, &(user_value){.bit_field_value = 0x16});
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, &(user_value){.bit_field_value = 0x04});
+		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, &(user_value){.bit_field_value = 0x15});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
@@ -193,8 +193,8 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, (user_value){.bit_field_value = 0x15});
-		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, (user_value){.bit_field_value = 0x08});
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, &(user_value){.bit_field_value = 0x15});
+		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, &(user_value){.bit_field_value = 0x08});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
@@ -222,10 +222,10 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container(array_type_info, array, 0, 50, (user_value){.uint_value = 12});
-		set_user_value_to_containee_in_container(array_type_info, array, 1, 50, (user_value){.uint_value = 13});
-		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, (user_value){.uint_value = 14});
-		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, (user_value){.uint_value = 15});
+		set_user_value_to_containee_in_container(array_type_info, array, 0, 50, &(user_value){.uint_value = 12});
+		set_user_value_to_containee_in_container(array_type_info, array, 1, 50, &(user_value){.uint_value = 13});
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, &(user_value){.uint_value = 14});
+		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, &(user_value){.uint_value = 15});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
@@ -233,8 +233,8 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, (user_value){.uint_value = 16});
-		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, (user_value){.uint_value = 17});
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, &(user_value){.uint_value = 16});
+		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, &(user_value){.uint_value = 17});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
@@ -263,10 +263,10 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container(array_type_info, array, 0, 50, (user_value){.string_value = "Rupa Dvivedi", .string_size = strlen("Rupa Dvivedi")});
-		set_user_value_to_containee_in_container(array_type_info, array, 1, 50, (user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
-		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, (user_value){.string_value = "Devashree Joshi", .string_size = strlen("Devashree Joshi")});
-		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, (user_value){.string_value = "Vipulkumar Dvivedi", .string_size = strlen("Vipulkumar Dvivedi")});
+		set_user_value_to_containee_in_container(array_type_info, array, 0, 50, &(user_value){.string_value = "Rupa Dvivedi", .string_size = strlen("Rupa Dvivedi")});
+		set_user_value_to_containee_in_container(array_type_info, array, 1, 50, &(user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, &(user_value){.string_value = "Devashree Joshi", .string_size = strlen("Devashree Joshi")});
+		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, &(user_value){.string_value = "Vipulkumar Dvivedi", .string_size = strlen("Vipulkumar Dvivedi")});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
@@ -274,8 +274,8 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, (user_value){.string_value = "Manan Joshi", .string_size = strlen("Manan Joshi")});
-		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, (user_value){.string_value = "Avyaan Joshi", .string_size = strlen("Avyaan Joshi")});
+		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, &(user_value){.string_value = "Manan Joshi", .string_size = strlen("Manan Joshi")});
+		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, &(user_value){.string_value = "Avyaan Joshi", .string_size = strlen("Avyaan Joshi")});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
@@ -291,7 +291,7 @@ int main()
 		print_type_info(&s4);printf("\n");
 
 		char s[4096];
-		set_user_value_for_type_info(&s4, s, 0, 300, (user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
+		set_user_value_for_type_info(&s4, s, 0, 300, &(user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
 
 		print_data_for_data_type_info(&s4, s);printf("\n");
 
@@ -301,7 +301,7 @@ int main()
 
 		char* to_add = "Vipulkumar ";
 		for(char* c = to_add; (*c) != 0; c++)
-			set_user_value_to_containee_in_container(&s4, s, 6 + (c - to_add), 300, (user_value){.uint_value = (*c)});
+			set_user_value_to_containee_in_container(&s4, s, 6 + (c - to_add), 300, &(user_value){.uint_value = (*c)});
 
 		print_data_for_data_type_info(&s4, s);printf("\n");
 
