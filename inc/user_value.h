@@ -31,10 +31,10 @@ struct user_value
 			const void* string_value;
 			uint32_t string_size;
 		};
-		struct // used only for blob types
+		struct
 		{
-			const void* data;
-			uint32_t data_size;
+			const void* blob_value;
+			uint32_t blob_size;
 		};
 		const void* tuple_value;
 		const void* array_value;

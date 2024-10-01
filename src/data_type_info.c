@@ -644,8 +644,8 @@ const user_value get_user_value_for_type_info(const data_type_info* dti, const v
 		case BLOB :
 		{
 			// grab pointer to the first byte, and the element_count of the blob, since it is inherently an array of non-nullable fixed length elements, they are placed sequential after the first byte
-			uval.data = data + get_data_position_info_for_containee_of_container(dti, data, 0).byte_offset;
-			uval.data_size = get_element_count_for_container_type_info(dti, data);
+			uval.blob_value = data + get_data_position_info_for_containee_of_container(dti, data, 0).byte_offset;
+			uval.blob_size = get_element_count_for_container_type_info(dti, data);
 			break;
 		}
 		case TUPLE :
@@ -873,7 +873,7 @@ int can_set_user_value_for_type_info(const data_type_info* dti, const void* data
 		case BLOB :
 		{
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval->data_size;
+			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval->blob_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
@@ -961,9 +961,9 @@ int set_user_value_for_type_info(const data_type_info* dti, void* data, int is_v
 			{
 				user_value uval_t = *uval;
 
-				uval_t.data_size = min(uval_t.data_size, dti->size);
+				uval_t.blob_size = min(uval_t.blob_size, dti->size);
 				// copy contents to data
-				memory_move(data, uval_t.data, uval_t.data_size);
+				memory_move(data, uval_t.blob_value, uval_t.blob_size);
 				return 1;
 			}
 			case TUPLE :
@@ -1016,14 +1016,14 @@ int set_user_value_for_type_info(const data_type_info* dti, void* data, int is_v
 		case BLOB :
 		{
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval->data_size;
+			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval->blob_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
 
 			// write element count and copy contents to data
-			write_value_to_page(data, dti->max_size, uval->data_size);
-			memory_move(data + get_value_size_on_page(dti->max_size), uval->data, uval->data_size);
+			write_value_to_page(data, dti->max_size, uval->blob_size);
+			memory_move(data + get_value_size_on_page(dti->max_size), uval->blob_value, uval->blob_size);
 			return 1;
 		}
 		case TUPLE :
@@ -1571,9 +1571,9 @@ void print_user_value_for_data_type_info(const data_type_info* dti, user_value u
 		}
 		case BLOB :
 		{
-			printf("BLOB(%"PRIu32")[", uval.data_size);
-			for(uint32_t i = 0; i < uval.data_size; i++)
-				printf(" 0x%2"PRIx8, ((const uint8_t*)(uval.data))[i]);
+			printf("BLOB(%"PRIu32")[", uval.blob_size);
+			for(uint32_t i = 0; i < uval.blob_size; i++)
+				printf(" 0x%2"PRIx8, ((const uint8_t*)(uval.blob_value))[i]);
 			printf("]");
 			break;
 		}
