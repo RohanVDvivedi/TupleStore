@@ -12,13 +12,19 @@
 
 user_value const * const DEFAULT_USER_VALUE = &((const user_value){});
 
-user_value const * const NULL_USER_VALUE = &((const user_value){.is_NULL = 1});
-user_value const * const ZERO_USER_VALUE = &((const user_value){.is_NULL = 0});
-user_value const * const EMPTY_USER_VALUE = &((const user_value){.is_NULL = 0, .data = NULL, .data_size = 0});
+user_value const * const NULL_USER_VALUE = &((const user_value){.is_NULL = 1, is_OUT_OF_BOUNDS = 0,});
+user_value const * const OUT_OF_BOUNDS_USER_VALUE = &((const user_value){.is_NULL = 1, is_OUT_OF_BOUNDS = 1,});
+user_value const * const ZERO_USER_VALUE = &((const user_value){.is_NULL = 0, is_OUT_OF_BOUNDS = 0,});
+user_value const * const EMPTY_USER_VALUE = &((const user_value){.is_NULL = 0, is_OUT_OF_BOUNDS = 0, .data = NULL, .data_size = 0});
 
 int is_user_value_NULL(const user_value* uval)
 {
 	return (uval == NULL) || (uval->is_NULL);
+}
+
+int is_user_value_OUT_OF_BOUNDS(const user_value* uval)
+{
+	return (uval != NULL) && uval->is_OUT_OF_BOUNDS;
 }
 
 user_value clone_user_value_with_data(const user_value* uval)

@@ -13,6 +13,9 @@ struct user_value
 	// if the user_value is NULL this bit must be set
 	int is_NULL:1;
 
+	// if a non container was indexed OR index provided was out of bounds for that container then this bit is set
+	int is_OUT_OF_BOUNDS:1;
+
 	// else one of the attributes of this union must be set, based on the given element_def
 	union
 	{
@@ -42,10 +45,13 @@ struct user_value
 extern user_value const * const DEFAULT_USER_VALUE;
 
 extern user_value const * const NULL_USER_VALUE;
+extern user_value const * const OUT_OF_BOUNDS_USER_VALUE;
 extern user_value const * const ZERO_USER_VALUE;
 extern user_value const * const EMPTY_USER_VALUE; // user_value for empty BLOB, VAR_BLOB, VAR_STRING and STRING types
 
 int is_user_value_NULL(const user_value* uval);
+
+int is_user_value_OUT_OF_BOUNDS(const user_value* uval);
 
 // you need to call free on the return_value.data, on the object created using this function
 user_value clone_user_value_with_data(const user_value* uval);
