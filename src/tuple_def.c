@@ -57,13 +57,19 @@ int initialize_tuple_size_def(tuple_size_def* tuple_size_d, data_type_info* dti)
 	return 1;
 }
 
+int initialize_tuple_def(tuple_def* tuple_d, data_type_info* dti)
+{
+	int result = initialize_tuple_size_def(&(tuple_d->size_def), dti);
+	if(result)
+		tuple_d->type_info = dti;
+	return result;
+}
+
 uint32_t get_tuple_size_using_tuple_size_def(const tuple_size_def* tpl_sz_d, const void* tupl);
 
 int is_variable_sized_tuple_size_def(const tuple_size_def* tuple_size_d);
 
 uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_sz_d, void* tupl);
-
-int initialize_tuple_def(tuple_def* tuple_d, data_type_info* dti);
 
 uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl);
 
