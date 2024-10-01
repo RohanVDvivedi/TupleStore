@@ -1,9 +1,7 @@
 TASKS PICKED
 
- * creation of every tuple_def finalizes its type_info, initializes its size_def, implement constructor from only the data_type_info
- * tuple_size_def has 2 major fiunctions get_size and is_variable_sized -> there is also a possibility to implement initialize_minimal_tuple using size_def, so implement that aswell
- * constructors to construct tuple_size_def directly using size for fixed size, variable size using min_size, max_size and has_size_in_prefix AND containee data type info
  * nested get, set, hash, compare, expand, and discard functions with positional_accessor, taking in tuple_def and tuple as input using positional accessor
+ * test and make the old testcases function and return the same output
 
 1 NEW TYPE TASKS
 
