@@ -104,7 +104,22 @@ int is_variable_sized_tuple_def(const tuple_def* tuple_d)
 }
 
 // this is left here to show that this could be done but should not be done
-// uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_sz_d, void* tupl);
+uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_sz_d, void* tupl)
+{
+	if(!tpl_sz_d->is_variable_sized)
+	{
+		memory_set(tupl, 0, tpl_sz_d->size);
+		return tpl_sz_d->size;
+	}
+	else
+	{
+		memory_set(tupl, 0, tpl_sz_d->min_size);
+		// if it has size set it to min_size, element_count if exists on the tupl is set to 0 by the above statement
+		if(tpl_sz_d->has_size_in_prefix)
+			write_value_to_page(tupl, tpl_sz_d->max_size, tpl_sz_d->min_size);
+		return tpl_sz_d->min_size;
+	}
+}
 
 #include<stdio.h>
 
