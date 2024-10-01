@@ -15,7 +15,7 @@ struct tuple_size_def
 
 		// ------ attributes below this point only used if is_variable_sized = 1
 
-		uint32_t min_size // -> suggests minimum size of the tuple for a variable sized tuple
+		uint32_t min_size; // -> suggests minimum size of the tuple for a variable sized tuple
 	};
 
 	uint32_t max_size; // to read size OR element_count from prefix using read_value_from_page(, max_size)
@@ -64,6 +64,8 @@ int is_variable_sized_tuple_size_def(const tuple_size_def* tuple_size_d);
 // not publicly exposed, it is here to just show that tuple_size_def is enough to minimally initialize the tuple
 // uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_sz_d, void* tupl);
 
+void print_tuple_size_def(const tuple_size_def* tuple_size_d);
+
 // initialize a tuple_def using the data_type_info
 // it will also finalize the data_type_info
 // fails with 0 only if dti->type == BIT_FIELD
@@ -72,5 +74,7 @@ int initialize_tuple_def(tuple_def* tuple_d, data_type_info* dti);
 uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl);
 
 int is_variable_sized_tuple_def(const tuple_def* tuple_d);
+
+void print_tuple_def(const tuple_def* tuple_d);
 
 #endif
