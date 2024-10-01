@@ -665,13 +665,13 @@ const user_value get_user_value_for_type_info(const data_type_info* dti, const v
 
 const user_value get_user_value_to_containee_from_container(const data_type_info* dti, const void* data, uint32_t index)
 {
-	// dti has to be a container type
+	// dti has to be a container type, else we can not index it and so we return OUT_OF_BOUNDS_USER_VALUE
 	if(!is_container_type_info(dti))
-		return (*NULL_USER_VALUE);
+		return (*OUT_OF_BOUNDS_USER_VALUE);
 
-	// make sure that index is withint bounds, else it is said to be NULL_USER_VALUE
+	// make sure that index is within bounds, else it is said to be OUT_OF_BOUNDS_USER_VALUE
 	if(index >= get_element_count_for_container_type_info(dti, data))
-		return (*NULL_USER_VALUE);
+		return (*OUT_OF_BOUNDS_USER_VALUE);
 
 	// if it is already null return NULL_USER_VALUE
 	if(is_containee_null_in_container(dti, data, index))
@@ -844,7 +844,7 @@ int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, ui
 
 int can_set_user_value_for_type_info(const data_type_info* dti, const void* data, int is_valid, uint32_t max_size_increment_allowed, user_value uval)
 {
-	if(is_user_value_NULL(&uval))
+	if(is_user_value_NULL(&uval) || is_user_value_OUT_OF_BOUNDS(&uval))
 		return 0;
 
 	if(dti->type == BIT_FIELD)
@@ -907,7 +907,7 @@ int can_set_user_value_for_type_info(const data_type_info* dti, const void* data
 
 int set_user_value_for_type_info(const data_type_info* dti, void* data, int is_valid, uint32_t max_size_increment_allowed, user_value uval)
 {
-	if(is_user_value_NULL(&uval))
+	if(is_user_value_NULL(&uval) || is_user_value_OUT_OF_BOUNDS(&uval))
 		return 0;
 
 	if(dti->type == BIT_FIELD)
@@ -1052,6 +1052,10 @@ int can_set_user_value_to_containee_in_container(const data_type_info* dti, cons
 	if(!is_container_type_info(dti))
 		return 0;
 
+	// an out of bounds containee is never accessible
+	if(!is_user_value_OUT_OF_BOUNDS(&uval))
+		return 0;
+
 	// make sure that index is within bounds, else fail
 	if(index >= get_element_count_for_container_type_info(dti, data))
 		return 0;
@@ -1082,6 +1086,10 @@ int set_user_value_to_containee_in_container(const data_type_info* dti, void* da
 {
 	// dti has to be a container type
 	if(!is_container_type_info(dti))
+		return 0;
+
+	// an out of bounds containee is never accessible
+	if(!is_user_value_OUT_OF_BOUNDS(&uval))
 		return 0;
 
 	// make sure that index is within bounds, else fail
