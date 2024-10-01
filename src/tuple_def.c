@@ -88,13 +88,23 @@ uint32_t get_tuple_size_using_tuple_size_def(const tuple_size_def* tpl_sz_d, con
 		return get_value_size_on_page(tpl_sz_d->max_size) + bitmap_size_in_bytes(element_count * tpl_sz_d->does_containee_need_is_valid_bit_in_prefix) + (element_count * tpl_sz_d->containee_size);
 }
 
-int is_variable_sized_tuple_size_def(const tuple_size_def* tuple_size_d);
+uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
+{
+	return get_tuple_size_using_tuple_size_def(&(tpl_d->size_def), tupl);
+}
 
-uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_sz_d, void* tupl);
+int is_variable_sized_tuple_size_def(const tuple_size_def* tuple_size_d)
+{
+	return tuple_size_d->is_variable_sized;
+}
 
-uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl);
+int is_variable_sized_tuple_def(const tuple_def* tuple_d)
+{
+	return is_variable_sized_tuple_size_def(&(tuple_d->size_def));
+}
 
-int is_variable_sized_tuple_def(const tuple_def* tuple_d);
+// this is left here to show that this could be done but should not be done
+// uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_sz_d, void* tupl);
 
 #include<stdio.h>
 
