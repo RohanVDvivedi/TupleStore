@@ -125,4 +125,10 @@ uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_
 
 void print_tuple_size_def(const tuple_size_def* tuple_size_d);
 
-void print_tuple_def(const tuple_def* tuple_d);
+void print_tuple_def(const tuple_def* tuple_d)
+{
+	printf("size_def : ");
+	print_tuple_size_def(&(tuple_d->size_def));
+	printf("type_info : ");
+	print_type_info(tuple_d->type_info);
+}
