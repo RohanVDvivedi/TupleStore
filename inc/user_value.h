@@ -38,6 +38,13 @@ struct user_value
 		};
 		const void* tuple_value;
 		const void* array_value;
+
+		// below is to be discarded
+		struct
+		{
+			const void* data;
+			uint32_t data_size;
+		};
 	};
 };
 
