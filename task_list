@@ -1,5 +1,9 @@
 TASKS PICKED
 
+ * add out of bounds flag for user value, and a pointer for this value, OUT_OF_BOUNDS_USER_VALUE like the NULL_USER_VALUE, a function to check if the user value is put of bounds
+   * get function will return this if the index provided is put of bounds or if you attempt to index an non container value
+ * 
+
  * default compare and hash functions for user_value
  * convert data and data_size to blob_value and blob_size in user value struct
  * nested get, set, hash, compare, expand, and discard functions with positional_accessor, taking in tuple_def and tuple as input using positional accessor
@@ -27,6 +31,7 @@ TASKS PICKED
     int is_containee_bit_field:1; // -> can either be a bitfield or not
     union {containee_size, containee_bit_field_size}; // -> if bitfield gives bit field size, else the actual size of fixed sized containee
  } // if packed this struct is no more than 1 + 32 + 1 + 1 + 32 + 1 + 1 + 32 = 101 bits = 13 bytes
+ * constructors to construct tuple_size_def directly using size for fixed size, variable size using min_size, max_size and has_size_in_prefix AND containee data type info
 
 1 NEW TYPE TASKS
 
