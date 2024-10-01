@@ -1081,6 +1081,7 @@ int can_set_user_value_to_containee_in_container(const data_type_info* dti, cons
 	data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, data, index);
 
 	// if uval is NULL, set it to NULL
+	// this will never increment the size requirement, hence no checks required
 	if(is_user_value_NULL(uval))
 		return is_nullable_type_info(containee_pos_info.type_info);
 
@@ -1099,14 +1100,14 @@ int can_set_user_value_to_containee_in_container(const data_type_info* dti, cons
 	return can_set_user_value_for_type_info(containee_pos_info.type_info, containee, is_old_containee_offset_valid, max_size_increment_allowed, uval);
 }
 
-int set_user_value_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, user_value uval)
+int set_user_value_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval)
 {
 	// dti has to be a container type
 	if(!is_container_type_info(dti))
 		return 0;
 
 	// an out of bounds containee is never accessible
-	if(!is_user_value_OUT_OF_BOUNDS(&uval))
+	if(!is_user_value_OUT_OF_BOUNDS(uval))
 		return 0;
 
 	// make sure that index is within bounds, else fail
@@ -1114,7 +1115,8 @@ int set_user_value_to_containee_in_container(const data_type_info* dti, void* da
 		return 0;
 
 	// if uval is NULL, set it to NULL
-	if(is_user_value_NULL(&uval))
+	// this will never increment the size requirement, hence no checks required
+	if(is_user_value_NULL(uval))
 		return set_containee_to_NULL_in_container(dti, data, index);
 
 	// now we are sure that uval is not NULL
@@ -1130,13 +1132,13 @@ int set_user_value_to_containee_in_container(const data_type_info* dti, void* da
 
 		if(containee_pos_info.type_info->type == BIT_FIELD)
 		{
-			set_bits(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info.bit_offset_in_prefix_bitmap, containee_pos_info.bit_offset_in_prefix_bitmap + containee_pos_info.type_info->bit_field_size - 1, uval.bit_field_value);
+			set_bits(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info.bit_offset_in_prefix_bitmap, containee_pos_info.bit_offset_in_prefix_bitmap + containee_pos_info.type_info->bit_field_size - 1, uval->bit_field_value);
 			return 1;
 		}
 		else
 		{
 			void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index);
-			return set_user_value_for_type_info(containee_pos_info.type_info, containee, 1, max_size_increment_allowed, uval);
+			return set_user_value_for_type_info(containee_pos_info.type_info, containee, 1 /* this attribute is NO-OP here */, max_size_increment_allowed, uval);
 		}
 	}
 	else
