@@ -1,8 +1,5 @@
 TASKS PICKED
 
- * no default user value
- * ZERO_USER_VALUE and EMPTY_USER_VALUE point to the same ZEROed out user_value, which when called with set initializes the container within
-
  * default compare and hash functions for user_value
  * convert data and data_size to blob_value and blob_size in user value struct
  * nested get, set, hash, compare, expand, and discard functions with positional_accessor, taking in tuple_def and tuple as input using positional accessor

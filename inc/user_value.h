@@ -47,7 +47,9 @@ extern user_value const * const DEFAULT_USER_VALUE;
 extern user_value const * const NULL_USER_VALUE;
 extern user_value const * const OUT_OF_BOUNDS_USER_VALUE;
 extern user_value const * const ZERO_USER_VALUE;
-extern user_value const * const EMPTY_USER_VALUE; // user_value for empty BLOB, VAR_BLOB, VAR_STRING and STRING types
+extern user_value const * const EMPTY_USER_VALUE; // same value as ZERO_USER_VALUE, but generally used for conatiners like STRING, BLOB, TUPLE and ARRAY; tuple_value and array_value here are NULLs but they are considered as if this pointer points to their most minimally initialized value
+
+// ZERO_USER_VALUE and EMPTY_USER_VALUE are identical and fully interchangeable, they mostly are just greater than NULL_USER_VALUE, but this is not guaranteed for custim user-defined types
 
 int is_user_value_NULL(const user_value* uval);
 
