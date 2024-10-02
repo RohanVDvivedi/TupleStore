@@ -56,7 +56,7 @@ const data_type_info* get_type_info_for_element_from_tuple(const tuple_def* tpl_
 	return get_type_info_for_element_from_type_info(tpl_d->type_info, pa);
 }
 
-static int can_set_element_in_data(const data_type_info* dti, positional_accessor pa, void* data, const user_value* value, uint32_t max_size_increment_allowed)
+static int can_set_element_in_data(const data_type_info* dti, positional_accessor pa, const void* data, const user_value* value, uint32_t max_size_increment_allowed)
 {
 	// result is self
 	if(IS_SELF(pa))
@@ -82,16 +82,24 @@ static int can_set_element_in_data(const data_type_info* dti, positional_accesso
 		max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - get_size_for_type_info(dti, data));
 
 	const data_type_info* child_dti = get_data_type_info_for_containee_of_container(dti, data, pa.positions[0]);
-	void* child_data = (void*) get_pointer_to_containee_from_container(dti, data, pa.positions[0]);
+	const void* child_data = get_pointer_to_containee_from_container(dti, data, pa.positions[0]);
 	return can_set_element_in_data(child_dti, NEXT_POSITION(pa), child_data, value, max_size_increment_allowed);
 }
 
-int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const user_value* value, uint32_t max_size_increment_allowed)
+int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl, const user_value* value, uint32_t max_size_increment_allowed)
 {
 	return can_set_element_in_data(tpl_d->type_info, pa, tupl, value, max_size_increment_allowed);
 }
 
-int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const user_value* value, uint32_t max_size_increment_allowed);
+int set_element_in_data(const data_type_info* dti, positional_accessor pa, void* data, const user_value* value, uint32_t max_size_increment_allowed)
+{
+	// TODO
+}
+
+int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const user_value* value, uint32_t max_size_increment_allowed)
+{
+	return set_element_in_data(tpl_d->type_info, pa, tupl, value, max_size_increment_allowed);
+}
 
 int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const tuple_def* tpl_d_in, positional_accessor pa_in, const void* tupl_in, uint32_t max_size_increment_allowed);
 

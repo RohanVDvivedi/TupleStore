@@ -36,7 +36,7 @@ const user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, posit
 const data_type_info* get_type_info_for_element_from_tuple(const tuple_def* tpl_d, positional_accessor pa);
 
 // tupl must be initialized using init_tuple
-int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const user_value* value, uint32_t max_size_increment_allowed);
+int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl, const user_value* value, uint32_t max_size_increment_allowed);
 
 // tupl must be initialized using init_tuple
 int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const user_value* value, uint32_t max_size_increment_allowed);
