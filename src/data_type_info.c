@@ -166,7 +166,7 @@ data_type_info* get_data_type_info_for_containee_of_container_without_data(const
 		return NULL;
 
 	// for fixed element count containers make sure that index is without bounds
-	if(!has_variable_element_count(dti) && index >= dti->element_count)
+	if(!has_variable_element_count_for_container_type_info(dti) && index >= dti->element_count)
 		return NULL;
 
 	// proceed as now the index is probably within bounds
