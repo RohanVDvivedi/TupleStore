@@ -1,12 +1,14 @@
 TASKS PICKED
 
- * nested get, set, hash, compare, expand, and discard functions with positional_accessor, taking in tuple_def and tuple as input using positional accessor
+ * review get and set recursive functions on tuple_def
+ * nested expand, and discard functions with positional_accessor, taking in tuple_def and tuple as input using positional accessor
  * test and make the old testcases function and return the same output
 
 1 NEW TYPE TASKS
 
  *1*
  * default compare and hash functions for user_value
+ * nested hash, compare functions with positional_accessor, taking in tuple_def and tuple as input using positional accessor
  * add hash_tables for type_name based type casting, comparing and hashing
  * only tuples can be stored on the disk, and each tuple has a corresponding tuple_def, and each tuple_def contains a tuple_size_def
 
