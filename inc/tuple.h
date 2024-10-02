@@ -4,6 +4,31 @@
 #include<tuple_def.h>
 #include<user_value.h>
 
+// ------------------------------ structure and macros to index elements inside a tuple nestedly ----------------------------------------
+
+// used to access conatiner data type info's nestedly like TUPLE, ARRAY, STRING and BLOB only
+// stores the complete path to access the object
+typedef struct positional_accessor positional_accessor;
+struct positional_accessor
+{
+	uint32_t positions_length;
+
+	uint32_t* positions;
+};
+
+// for a given positional accessor the nested child to work on is at index positions[0], if the positions_length > 0
+
+// utiities for positional accessors
+#define SELF ((positional_accessor){.positions_length = 0, .positions = NULL})													// point to self
+#define IS_SELF(pa) (pa.positions_length == 0)																					// check if points to self
+#define NEXT_POSITION(pa) ((positional_accessor){.positions_length = pa.positions_length - 1, .positions = pa.positions + 1}) 	// build a positional accessor for the next nested object
+#define STATIC_POSITION(...) ((positional_accessor){ .positions_length = sizeof((uint32_t []){ __VA_ARGS__ })/sizeof(uint32_t), .positions = (uint32_t []){ __VA_ARGS__ } })
+// usage STATIC_POSITION(a, b, c, d)
+
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ structure and macros to index elements inside a tuple nestedly ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
 // the index must be an unsigned integral value between [0, tpl_d->element_count), for the functions that are called on elements of a tuple for given a tuple definition.
 // this is the mandatory condition, since, the functions do not check this condition to be true, repetitively.
 // and the functions assume that this condition holds true while you call that particular element level function.

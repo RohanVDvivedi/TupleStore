@@ -100,25 +100,6 @@ struct data_type_info
 
 #include<data_type_info_defaults.h>
 
-// used to access nested data like TUPLE, ARRAY, STRING and BLOB only
-// stores the complete path to access the object
-typedef struct positional_accessor positional_accessor;
-struct positional_accessor
-{
-	uint32_t positions_length;
-
-	uint32_t* positions;
-};
-
-// for a given positional accessor the nest child to work on is at index positions[0], if the positions_length > 0
-
-// utiities for positional accessors
-#define SELF ((positional_accessor){.positions_length = 0, .positions = NULL})													// point to self
-#define IS_SELF(pa) (pa.positions_length == 0)																					// check if points to self
-#define NEXT_POSITION(pa) ((positional_accessor){.positions_length = pa.positions_length - 1, .positions = pa.positions + 1}) 	// build a positional accessor for the next nested object
-#define STATIC_POSITION(...) ((positional_accessor){ .positions_length = sizeof((uint32_t []){ __VA_ARGS__ })/sizeof(uint32_t), .positions = (uint32_t []){ __VA_ARGS__ } })
-// usage STATIC_POSITION(a, b, c, d)
-
 // varibale sized elements are always nullable
 // fixed length elements and bit fields are nullable if is_nullable is set
 int is_nullable_type_info(const data_type_info* dti);
