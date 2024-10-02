@@ -167,6 +167,10 @@ int has_element_count_in_its_prefix_for_container_type_info(const data_type_info
 uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_info* dti, const void* data);
 #define get_prefix_bitmap_size_for_container_type_info(dti, data) 					(bitmap_size_in_bytes(get_prefix_bitmap_size_in_bits_for_container_type_info(dti, data)))
 
+// returns NULL, if the index is definitely out of bounds (this check is performed only if it is a fixed element count container), or if you are attempting to index a non-container data_type_info
+// no checks to ensure that index is within bounds is done for variable sized strings, variable sized blobs OR variable element count arrays
+data_type_info* get_data_type_info_for_containee_of_container_without_data(const data_type_info* dti, uint32_t index);
+
 // valid for string, blob, tuple and array (generated on the fly for an array, string or blob)
 // valid only if index < get_element_count_for_container_type_info
 data_type_info* get_data_type_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index);

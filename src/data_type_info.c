@@ -159,6 +159,28 @@ uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_
 		return get_element_count_for_container_type_info(dti, data) * needs_is_valid_bit_in_prefix_bitmap(dti->containee);
 }
 
+data_type_info* get_data_type_info_for_containee_of_container_without_data(const data_type_info* dti, uint32_t index)
+{
+	// this is not a valid function call for a non container type
+	if(!is_container_type_info(dti))
+		return NULL;
+
+	// for fixed element count containers make sure that index is without bounds
+	if(!has_variable_element_count(dti) && index >= dti->element_count)
+		return NULL;
+
+	// proceed as now the index is probably within bounds
+
+	if(dti->type == TUPLE)
+		return dti->containees[index].type_info;
+
+	if(dti->type == STRING || dti->type == BLOB)
+		return UINT_NON_NULLABLE[1]; // this must be the containee here, so why not return the default
+
+	// else it has to be an array
+	return dti->containee;
+}
+
 data_type_info* get_data_type_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index)
 {
 	// this is not a valid function call for a non container type
@@ -168,6 +190,8 @@ data_type_info* get_data_type_info_for_containee_of_container(const data_type_in
 	// same thing, if the index is out of bounds
 	if(index >= get_element_count_for_container_type_info(dti, data))
 		return NULL;
+
+	// index is now surely within bounds
 
 	if(dti->type == TUPLE)
 		return dti->containees[index].type_info;
@@ -188,6 +212,8 @@ data_position_info get_data_position_info_for_containee_of_container(const data_
 	// same thing, if the index is out of bounds
 	if(index >= get_element_count_for_container_type_info(dti, data))
 		return (data_position_info){};
+
+	// index is now surely within bounds
 
 	// for a tuple return a precomputed value
 	if(dti->type == TUPLE)
