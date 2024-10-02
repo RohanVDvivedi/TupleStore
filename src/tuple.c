@@ -5,7 +5,7 @@ void init_tuple(const tuple_def* tpl_d, void* tupl)
 	initialize_minimal_data_for_type_info(tpl_d->type_info, tupl);
 }
 
-static const user_value get_value_from_element_from_type_info(const data_type_info* dti, positional_accessor pa, const void* data)
+static const user_value get_value_from_element_from_data(const data_type_info* dti, positional_accessor pa, const void* data)
 {
 	// result is self
 	if(IS_SELF(pa))
@@ -28,12 +28,12 @@ static const user_value get_value_from_element_from_type_info(const data_type_in
 
 	const data_type_info* child_dti = get_data_type_info_for_containee_of_container(dti, data, pa.positions[0]);
 	const void* child_data = get_pointer_to_containee_from_container(dti, data, pa.positions[0]);
-	return get_value_from_element_from_type_info(child_dti, NEXT_POSITION(pa), child_data);
+	return get_value_from_element_from_data(child_dti, NEXT_POSITION(pa), child_data);
 }
 
 const user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl)
 {
-	return get_value_from_element_from_type_info(tpl_d->type_info, pa, tupl);
+	return get_value_from_element_from_data(tpl_d->type_info, pa, tupl);
 }
 
 static const data_type_info* get_type_info_for_element_from_type_info(const data_type_info* dti, positional_accessor pa)
@@ -56,7 +56,15 @@ const data_type_info* get_type_info_for_element_from_tuple(const tuple_def* tpl_
 	return get_type_info_for_element_from_type_info(tpl_d->type_info, pa);
 }
 
-int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const user_value* value, uint32_t max_size_increment_allowed);
+static int can_set_element_in_data(const data_type_info* dti, positional_accessor pa, void* data, const user_value* value, uint32_t max_size_increment_allowed)
+{
+
+}
+
+int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const user_value* value, uint32_t max_size_increment_allowed)
+{
+	return can_set_element_in_data(tpl_d->type_info, pa, tupl, value, max_size_increment_allowed);
+}
 
 int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const user_value* value, uint32_t max_size_increment_allowed);
 
