@@ -2,7 +2,6 @@
 #define TUPLE_H
 
 #include<tuple_def.h>
-#include<user_value.h>
 
 // ------------------------------ structure and macros to index elements inside a tuple nestedly ----------------------------------------
 
