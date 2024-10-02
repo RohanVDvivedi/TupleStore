@@ -2,7 +2,7 @@
 
 void init_tuple(const tuple_def* tpl_d, void* tupl)
 {
-
+	initialize_minimal_data_for_type_info(tpl_d->type_info, tupl);
 }
 
 // compare and hash functions
