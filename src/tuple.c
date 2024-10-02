@@ -79,25 +79,6 @@ uint64_t hash_tuple(const void* tup, const tuple_def* tpl_d, const uint32_t* ele
 
 void print_tuple(const void* tup, const tuple_def* tpl_d)
 {
-	for(uint32_t i = 0; i < get_element_def_count_tuple_def(tpl_d); i++)
-	{
-		if(i)
-			printf(", ");
-
-		user_value ele_val = get_value_from_element_from_tuple(tpl_d, i, tup);
-
-		if(is_user_value_NULL(&ele_val))
-		{
-			printf("NULL");
-			continue;
-		}
-
-		const element_def* ele_d = get_element_def_by_id(tpl_d, i);
-
-		if(is_variable_sized_element_def(ele_d))
-			printf("[%"PRIu32"]->", deserialize_uint32(tup + ele_d->byte_offset_to_byte_offset, tpl_d->size_def.size_of_byte_offsets));
-
-		print_user_value(&ele_val, ele_d);
-	}
+	print_data_for_data_type_info(tpl_d->type_info, tup);
 	printf("\n");
 }
