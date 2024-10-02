@@ -74,7 +74,7 @@ static int can_set_element_in_data(const data_type_info* dti, positional_accesso
 	if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
 		return 0;
 
-	// if the child nested in middl is null, then we can not set its child
+	// if the child nested in middle is null, then we can not set its child
 	if(is_containee_null_in_container(dti, data, pa.positions[0]))
 		return 0;
 
@@ -91,14 +91,47 @@ int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, con
 	return can_set_element_in_data(tpl_d->type_info, pa, tupl, value, max_size_increment_allowed);
 }
 
-int set_element_in_data(const data_type_info* dti, positional_accessor pa, void* data, const user_value* value, uint32_t max_size_increment_allowed)
+int set_element_in_data(const data_type_info* dti, positional_accessor pa, void* data, const user_value* value, uint32_t max_size_increment_allowed, int move_to_end)
 {
-	// TODO
+	// result is self
+	if(IS_SELF(pa))
+		return set_user_value_for_type_info(dti, data, 1, max_size_increment_allowed, value);
+
+	// result is self's some child
+	if(pa.positions_length == 1)
+		return set_user_value_to_containee_in_container(dti, data, pa.positions[0], max_size_increment_allowed, value);
+
+	// none of the above case suffice, then recurse
+
+	if(!is_container_type_info(dti))
+		return 0;
+
+	if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
+		return 0;
+
+	// if the child nested in middle is null, then we can not set its child
+	if(is_containee_null_in_container(dti, data, pa.positions[0]))
+		return 0;
+
+	if(is_variable_sized_type_info(dti))
+		max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - get_size_for_type_info(dti, data));
+
+	// if move to end flag is set, then move child of current dti to the end
+	if(move_to_end)
+		move_variable_sized_containee_to_end_of_container(dti, data, pa.positions[0]);
+
+	const data_type_info* child_dti = get_data_type_info_for_containee_of_container(dti, data, pa.positions[0]);
+	void* child_data = (void*) get_pointer_to_containee_from_container(dti, data, pa.positions[0]);
+	return set_element_in_data(child_dti, NEXT_POSITION(pa), child_data, value, max_size_increment_allowed, move_to_end);
 }
 
 int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const user_value* value, uint32_t max_size_increment_allowed)
 {
-	return set_element_in_data(tpl_d->type_info, pa, tupl, value, max_size_increment_allowed);
+	const data_type_info* child_dti = get_type_info_for_element_from_tuple(tpl_d, pa);
+	if(child_dti == NULL)
+		return 0;
+
+	return set_element_in_data(tpl_d->type_info, pa, tupl, value, max_size_increment_allowed, is_variable_sized_type_info(child_dti));
 }
 
 int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const tuple_def* tpl_d_in, positional_accessor pa_in, const void* tupl_in, uint32_t max_size_increment_allowed);
