@@ -5,7 +5,36 @@ void init_tuple(const tuple_def* tpl_d, void* tupl)
 	initialize_minimal_data_for_type_info(tpl_d->type_info, tupl);
 }
 
-const user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl);
+static const user_value get_value_from_element_from_type_info(const data_type_info* dti, positional_accessor pa, const void* data)
+{
+	// result is self
+	if(IS_SELF(pa))
+		return get_user_value_for_type_info(dti, data);
+
+	// resul is self's some child
+	if(pa.positions_length == 1)
+		return get_user_value_to_containee_from_container(dti, data, pa.positions[0]);
+
+	// none of the above case suffice, then recurse
+
+	if(!is_container_type_info(dti))
+		return *OUT_OF_BOUNDS_USER_VALUE;
+
+	if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
+		return *OUT_OF_BOUNDS_USER_VALUE;
+
+	if(is_containee_null_in_container(dti, data, pa.positions[0]))
+		return *NULL_USER_VALUE;
+
+	const data_type_info* child_dti = get_data_type_info_for_containee_of_container(dti, data, pa.positions[0]);
+	const void* child_data = get_pointer_to_containee_from_container(dti, data, pa.positions[0]);
+	return get_value_from_element_from_type_info(child_dti, NEXT_POSITION(pa), child_data);
+}
+
+const user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl)
+{
+	return get_value_from_element_from_type_info(tpl_d->type_info, pa, tupl);
+}
 
 const data_type_info* get_type_info_for_element_from_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl);
 
