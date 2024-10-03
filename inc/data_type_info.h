@@ -266,4 +266,12 @@ void print_data_for_data_type_info(const data_type_info* dti, const void* data);
 // can not be used for outermost container
 void print_user_value_for_data_type_info(const data_type_info* dti, const user_value* uval);
 
+
+
+
+
+#include<primitive_numeral_types.h>
+
+// add comparision and hashing functions for your non null dti with data here
+
 #endif

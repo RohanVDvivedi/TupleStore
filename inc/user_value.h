@@ -55,9 +55,4 @@ int is_user_value_NULL(const user_value* uval);
 
 int is_user_value_OUT_OF_BOUNDS(const user_value* uval);
 
-// both the below functions return non-NULL values possibly 0
-// except when the dti is not a primitive numeral type info
-user_value get_MIN_user_value_for_primitive_numeral_type(const data_type_info* dti);
-user_value get_MAX_user_value_for_primitive_numeral_type(const data_type_info* dti);
-
 #endif

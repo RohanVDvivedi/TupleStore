@@ -641,83 +641,56 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 
 user_value get_MIN_value_for_primitive_numeral_type_info(const data_type_info* dti)
 {
-	user_value uval = {};
 	switch(dti->type)
 	{
 		case UINT :
-		{
-			uval.uint_value = get_UINT64_MIN(dti->size);
-			break;
-		}
+			return (user_value){.uint_value = get_UINT64_MIN(dti->size)};
 		case INT :
-		{
-			uval.int_value = get_INT64_MIN(dti->size);
-			break;
-		}
+			return (user_value){.int_value = get_INT64_MIN(dti->size)};
 		case FLOAT :
 		{
 			if(dti->size == sizeof(float))
-				uval.float_value = get_FLOAT_MIN();
+				return (user_value){.float_value = get_FLOAT_MIN()};
 			else if(dti->size == sizeof(double))
-				uval.double_value = get_DOUBLE_MIN();
+				return (user_value){.double_value = get_DOUBLE_MIN()};
 			else if(dti->size == sizeof(long double))
-				uval.long_double_value = get_LONG_DOUBLE_MIN();
-			break;
+				return (user_value){.long_double_value = get_LONG_DOUBLE_MIN()};
+			else
+				return (*NULL_USER_VALUE);
 		}
 		case LARGE_UINT :
-		{
-			uval.large_uint_value = get_min_uint256();
-			break;
-		}
+			return (user_value){.large_uint_value = get_min_uint256()};
 		case BIT_FIELD :
-		{
-			uval.bit_field_value = 0;
-			break;
-		}
+			return (user_value){.bit_field_value = 0};
 		default :
-			break;
+			return (*NULL_USER_VALUE);
 	}
-	return uval;
 }
 
 user_value get_MAX_value_for_primitive_numeral_type_info(const data_type_info* dti)
 {
-	user_value uval = {};
 	switch(dti->type)
 	{
 		case UINT :
-		{
-			uval.uint_value = get_UINT64_MAX(dti->size);
-			break;
-		}
+			return (user_value){.uint_value = get_UINT64_MAX(dti->size)};
 		case INT :
-		{
-			uval.int_value = get_INT64_MAX(dti->size);
-			break;
-		}
+			return (user_value){.int_value = get_INT64_MAX(dti->size)};
 		case FLOAT :
 		{
 			if(dti->size == sizeof(float))
-				uval.float_value = get_FLOAT_MAX();
+				return (user_value){.float_value = get_FLOAT_MAX()};
 			else if(dti->size == sizeof(double))
-				uval.double_value = get_DOUBLE_MAX();
+				return (user_value){.double_value = get_DOUBLE_MAX()};
 			else if(dti->size == sizeof(long double))
-				uval.long_double_value = get_LONG_DOUBLE_MAX();
-			break;
+				return (user_value){.long_double_value = get_LONG_DOUBLE_MAX()};
+			else
+				return (*NULL_USER_VALUE);
 		}
-		case LARGE_UINT :
-		{
-			// returns a uint256, with least significant (dti->size * CHAR_BIT) bits set to 1
-			uval.large_uint_value = get_bitmask_lower_n_bits_set_uint256(dti->size * CHAR_BIT);
-			break;
-		}
+		case LARGE_UINT : // returns a uint256, with least significant (dti->size * CHAR_BIT) bits set to 1
+			return (user_value){.large_uint_value = get_bitmask_lower_n_bits_set_uint256(dti->size * CHAR_BIT)};
 		case BIT_FIELD :
-		{
-			uval.bit_field_value = ((dti->bit_field_size == 64) ? UINT64_MAX : ((UINT64_C(1) << dti->bit_field_size) - 1));
-			break;
-		}
+			return (user_value){.bit_field_value = ((dti->bit_field_size == 64) ? UINT64_MAX : ((UINT64_C(1) << dti->bit_field_size) - 1))};
 		default :
-			break;
+			return (*NULL_USER_VALUE);
 	}
-	return uval;
 }
