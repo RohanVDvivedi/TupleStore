@@ -808,7 +808,7 @@ user_value get_MAX_value_for_primitive_numeral_type_info(const data_type_info* d
 		}
 		case BIT_FIELD :
 		{
-			uval.bit_field_value = ((dti->size == 64) ? UINT64_MAX : ((UINT64_C(1) << dti->size) - 1));
+			uval.bit_field_value = ((dti->bit_field_size == 64) ? UINT64_MAX : ((UINT64_C(1) << dti->bit_field_size) - 1));
 			break;
 		}
 		default :
