@@ -1,6 +1,5 @@
 TASKS PICKED
 
- * test function to check if it is_primitive_numeral_type_info
  * in numeral type element def we only need get min value, max value, default_type_cast and can_default_type_cast and default_compare and can_default_compare functions (directly fails with -2 if they are not comparable) and hash functions
  * nested hash, compare functions with positional_accessor, taking in tuple_def and tuple as input using positional accessor
  * default can_compare, compare and hash functions for user_value

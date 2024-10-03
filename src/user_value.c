@@ -2,8 +2,7 @@
 
 #include<tuple_def.h>
 
-#include<numeral_element_types.h>
-#include<string_or_blob_element_types_util.h>
+#include<primitive_numeral_types.h>
 
 #include<inttypes.h>
 #include<stdlib.h>
@@ -25,20 +24,6 @@ int is_user_value_NULL(const user_value* uval)
 int is_user_value_OUT_OF_BOUNDS(const user_value* uval)
 {
 	return (uval != NULL) && uval->is_OUT_OF_BOUNDS;
-}
-
-user_value clone_user_value_with_data(const user_value* uval)
-{
-	void* new_data = malloc(uval->data_size);
-	// generally this call is to be executed, while inserting default value of the element defs,
-	// so it will be called at the beginning of the application
-	// this allocation must be insignificant in quantity (too small)
-	// and is expected to not fail, if it fails you are on your own
-	// no NULL handling done here, too bad, just let the OS kill you
-
-	memory_move(new_data, uval->data, uval->data_size);
-	user_value res = {.data = new_data, .data_size = uval->data_size};
-	return res;
 }
 
 user_value get_MIN_user_value(const element_def* ele_d)

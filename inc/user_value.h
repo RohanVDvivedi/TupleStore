@@ -38,13 +38,6 @@ struct user_value
 		};
 		const void* tuple_value;
 		const void* array_value;
-
-		// TODO : below attributes are to be discarded
-		struct
-		{
-			const void* data;
-			uint32_t data_size;
-		};
 	};
 };
 
@@ -61,13 +54,6 @@ extern user_value const * const EMPTY_USER_VALUE; // same value as ZERO_USER_VAL
 int is_user_value_NULL(const user_value* uval);
 
 int is_user_value_OUT_OF_BOUNDS(const user_value* uval);
-
-// you need to call free on the return_value.data, on the object created using this function
-user_value clone_user_value_with_data(const user_value* uval);
-
-// forward declaration for element_def struct
-typedef struct element_def element_def;
-struct element_def;
 
 user_value get_MIN_user_value(const element_def* ele_d);
 

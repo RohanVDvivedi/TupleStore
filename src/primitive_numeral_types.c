@@ -868,28 +868,28 @@ user_value get_value_from_numeral_element(const void* e, const element_def* ele_
 	return uval;
 }
 
-user_value get_MIN_value_for_numeral_element_def(const element_def* ele_d)
+user_value get_MIN_value_for_primitive_numeral_type_info(const data_type_info* dti)
 {
 	user_value uval = {};
-	switch(ele_d->type)
+	switch(dti->type)
 	{
 		case UINT :
 		{
-			uval.uint_value = get_UINT64_MIN(ele_d->size);
+			uval.uint_value = get_UINT64_MIN(dti->size);
 			break;
 		}
 		case INT :
 		{
-			uval.int_value = get_INT64_MIN(ele_d->size);
+			uval.int_value = get_INT64_MIN(dti->size);
 			break;
 		}
 		case FLOAT :
 		{
-			if(ele_d->size == sizeof(float))
+			if(dti->size == sizeof(float))
 				uval.float_value = get_FLOAT_MIN();
-			else if(ele_d->size == sizeof(double))
+			else if(dti->size == sizeof(double))
 				uval.double_value = get_DOUBLE_MIN();
-			else if(ele_d->size == sizeof(long double))
+			else if(dti->size == sizeof(long double))
 				uval.long_double_value = get_LONG_DOUBLE_MIN();
 			break;
 		}
@@ -909,40 +909,40 @@ user_value get_MIN_value_for_numeral_element_def(const element_def* ele_d)
 	return uval;
 }
 
-user_value get_MAX_value_for_numeral_element_def(const element_def* ele_d)
+user_value get_MAX_value_for_primitive_numeral_type_info(const data_type_info* dti)
 {
 	user_value uval = {};
-	switch(ele_d->type)
+	switch(dti->type)
 	{
 		case UINT :
 		{
-			uval.uint_value = get_UINT64_MAX(ele_d->size);
+			uval.uint_value = get_UINT64_MAX(dti->size);
 			break;
 		}
 		case INT :
 		{
-			uval.int_value = get_INT64_MAX(ele_d->size);
+			uval.int_value = get_INT64_MAX(dti->size);
 			break;
 		}
 		case FLOAT :
 		{
-			if(ele_d->size == sizeof(float))
+			if(dti->size == sizeof(float))
 				uval.float_value = get_FLOAT_MAX();
-			else if(ele_d->size == sizeof(double))
+			else if(dti->size == sizeof(double))
 				uval.double_value = get_DOUBLE_MAX();
-			else if(ele_d->size == sizeof(long double))
+			else if(dti->size == sizeof(long double))
 				uval.long_double_value = get_LONG_DOUBLE_MAX();
 			break;
 		}
 		case LARGE_UINT :
 		{
-			// returns a uint256, with least significant (ele_d->size * CHAR_BIT) bits set to 1
-			uval.large_uint_value = get_bitmask_lower_n_bits_set_uint256(ele_d->size * CHAR_BIT);
+			// returns a uint256, with least significant (dti->size * CHAR_BIT) bits set to 1
+			uval.large_uint_value = get_bitmask_lower_n_bits_set_uint256(dti->size * CHAR_BIT);
 			break;
 		}
 		case BIT_FIELD :
 		{
-			uval.bit_field_value = ((ele_d->size == 64) ? UINT64_MAX : ((UINT64_C(1) << ele_d->size) - 1));
+			uval.bit_field_value = ((dti->size == 64) ? UINT64_MAX : ((UINT64_C(1) << dti->size) - 1));
 			break;
 		}
 		default :
