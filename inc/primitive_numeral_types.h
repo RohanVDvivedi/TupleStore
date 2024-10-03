@@ -16,8 +16,6 @@ int can_type_cast_primitive_numeral_type(const data_type_info* dti, const data_t
 
 int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, const user_value* e_from, const data_type_info* dti_from);
 
-user_value get_value_from_numeral_element(const user_value* e, const data_type_info* dti);
-
 user_value get_MIN_value_for_primitive_numeral_type_info(const data_type_info* dti);
 
 user_value get_MAX_value_for_primitive_numeral_type_info(const data_type_info* dti);
