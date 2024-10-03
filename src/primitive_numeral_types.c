@@ -19,19 +19,33 @@ int is_primitive_numeral_type_info(const data_type_info* dti)
 	}
 }
 
-int can_compare_numeral_type_element_def(const element_def* ele_d_1, const element_def* ele_d_2)
+int can_compare_primitive_numeral_type_infos(const data_type_info* dti_1, const data_type_info* dti_2)
 {
-	switch(ele_d_1->type)
+	switch(dti_1->type)
 	{
-		case UINT :
+		case BIT_FIELD :
 		{
-			switch(ele_d_2->type)
+			switch(dti_2->type)
 			{
+				case BIT_FIELD :
 				case UINT :
 				case INT :
 				case FLOAT :
 				case LARGE_UINT :
+					return 1;
+				default :
+					return 0;
+			}
+		}
+		case UINT :
+		{
+			switch(dti_2->type)
+			{
 				case BIT_FIELD :
+				case UINT :
+				case INT :
+				case FLOAT :
+				case LARGE_UINT :
 					return 1;
 				default :
 					return 0;
@@ -39,13 +53,13 @@ int can_compare_numeral_type_element_def(const element_def* ele_d_1, const eleme
 		}
 		case INT :
 		{
-			switch(ele_d_2->type)
+			switch(dti_2->type)
 			{
+				case BIT_FIELD :
 				case UINT :
 				case INT :
 				case FLOAT :
 				case LARGE_UINT :
-				case BIT_FIELD :
 					return 1;
 				default :
 					return 0;
@@ -53,12 +67,12 @@ int can_compare_numeral_type_element_def(const element_def* ele_d_1, const eleme
 		}
 		case FLOAT :
 		{
-			switch(ele_d_2->type)
+			switch(dti_2->type)
 			{
+				case BIT_FIELD :
 				case UINT :
 				case INT :
 				case FLOAT :
-				case BIT_FIELD :
 					return 1;
 				default :
 					return 0;
@@ -66,26 +80,12 @@ int can_compare_numeral_type_element_def(const element_def* ele_d_1, const eleme
 		}
 		case LARGE_UINT :
 		{
-			switch(ele_d_2->type)
+			switch(dti_2->type)
 			{
-				case INT :
-				case UINT :
-				case LARGE_UINT :
 				case BIT_FIELD :
-					return 1;
-				default :
-					return 0;
-			}
-		}
-		case BIT_FIELD :
-		{
-			switch(ele_d_2->type)
-			{
 				case UINT :
 				case INT :
-				case FLOAT :
 				case LARGE_UINT :
-				case BIT_FIELD :
 					return 1;
 				default :
 					return 0;
@@ -97,105 +97,100 @@ int can_compare_numeral_type_element_def(const element_def* ele_d_1, const eleme
 	return 0;
 }
 
-int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, const void* e2, const element_def* ele_d_2)
+int compare_primitive_numeral_type(const user_value* e1, const data_type_info* dti_1, const user_value* e2, const data_type_info* dti_2);
 {
-	switch(ele_d_1->type)
+	if(!can_compare_primitive_numeral_type_infos(dti_1, dti_2))
+		return -2;
+
+	if(is_user_value_NULL(e1) && is_user_value_NULL(e2))
+		return 0;
+	else if(is_user_value_NULL(e1) && !is_user_value_NULL(e2))
+		return -1;
+	else if(!is_user_value_NULL(e1) && is_user_value_NULL(e2))
+		return 1;
+
+	switch(dti_1->type)
 	{
-		case UINT :
+		case BIT_FIELD :
 		{
-			uint64_t e1_val = deserialize_uint64(e1, ele_d_1->size);
-			switch(ele_d_2->type)
+			switch(dti_2->type)
 			{
+				case BIT_FIELD :
+					return compare_numbers(e1->bit_field_value, e2->bit_field_value);
 				case UINT :
-				{
-					uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
-					return compare_numbers(e1_val, e2_val);
-				}
+					return compare_numbers(e1->bit_field_value, e2->uint_value);
 				case INT :
-				{
-					int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
-					return compare_numbers(e1_val, e2_val);
-				}
+					return compare_numbers(e1->bit_field_value, e2->int_value);
 				case FLOAT :
 				{
-					if(ele_d_2->size == sizeof(float))
-					{
-						float e2_val = deserialize_float(e2);
-						return compare_numbers(e1_val, e2_val);
-					}
-					else if(ele_d_2->size == sizeof(double))
-					{
-						double e2_val = deserialize_double(e2);
-						return compare_numbers(e1_val, e2_val);
-					}
-					else if(ele_d_2->size == sizeof(long double))
-					{
-						long double e2_val = deserialize_long_double(e2);
-						return compare_numbers(e1_val, e2_val);
-					}
+					if(dti_2->size == sizeof(float))
+						return compare_numbers(e1->bit_field_value, e2->float_value);
+					else if(dti_2->size == sizeof(double))
+						return compare_numbers(e1->bit_field_value, e2->double_value);
+					else if(dti_2->size == sizeof(long double))
+						return compare_numbers(e1->bit_field_value, e2->long_double_value);
 					else
 						return -2;
 				}
 				case LARGE_UINT :
-				{
-					uint256 e2_val = deserialize_uint256(e2, ele_d_2->size);
-					return compare_uint256(get_uint256(e1_val), e2_val);
-				}
+					return compare_uint256(get_uint256(e1->bit_field_value), e2->large_uint_value);
+				default :
+					return -2;
+			}
+		}
+		case UINT :
+		{
+			switch(dti_2->type)
+			{
 				case BIT_FIELD :
+					return compare_numbers(e1->uint_value, e2->bit_field_value);
+				case UINT :
+					return compare_numbers(e1->uint_value, e2->uint_value);
+				case INT :
+					return compare_numbers(e1->uint_value, e2->int_value);
+				case FLOAT :
 				{
-					uint64_t e2_val = get_bits(e2, ele_d_2->bit_offset, ele_d_2->bit_offset + ele_d_2->size - 1);
-					return compare_numbers(e1_val, e2_val);
+					if(dti_2->size == sizeof(float))
+						return compare_numbers(e1->uint_value, e2->float_value);
+					else if(dti_2->size == sizeof(double))
+						return compare_numbers(e1->uint_value, e2->double_value);
+					else if(dti_2->size == sizeof(long double))
+						return compare_numbers(e1->uint_value, e2->long_double_value);
+					else
+						return -2;
 				}
+				case LARGE_UINT :
+					return compare_uint256(get_uint256(e1->uint_value), e2->large_uint_value);
 				default :
 					return -2;
 			}
 		}
 		case INT :
 		{
-			int64_t e1_val = deserialize_int64(e1, ele_d_1->size);
-			switch(ele_d_2->type)
+			switch(dti_2->type)
 			{
+				case BIT_FIELD :
+					return compare_numbers(e1->int_value, e2->bit_field_value);
 				case UINT :
-				{
-					uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
-					return compare_numbers(e1_val, e2_val);
-				}
+					return compare_numbers(e1->int_value, e2->uint_value);
 				case INT :
-				{
-					int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
-					return compare_numbers(e1_val, e2_val);
-				}
+					return compare_numbers(e1->int_value, e2->int_value);
 				case FLOAT :
 				{
-					if(ele_d_2->size == sizeof(float))
-					{
-						float e2_val = deserialize_float(e2);
-						return compare_numbers(e1_val, e2_val);
-					}
-					else if(ele_d_2->size == sizeof(double))
-					{
-						double e2_val = deserialize_double(e2);
-						return compare_numbers(e1_val, e2_val);
-					}
-					else if(ele_d_2->size == sizeof(long double))
-					{
-						long double e2_val = deserialize_long_double(e2);
-						return compare_numbers(e1_val, e2_val);
-					}
+					if(dti_2->size == sizeof(float))
+						return compare_numbers(e1->int_value, e2->float_value);
+					else if(dti_2->size == sizeof(double))
+						return compare_numbers(e1->int_value, e2->double_value);
+					else if(dti_2->size == sizeof(long double))
+						return compare_numbers(e1->int_value, e2->long_double_value);
 					else
 						return -2;
 				}
 				case LARGE_UINT :
 				{
-					if(e1_val < 0)
+					if(e1->int_value < 0)
 						return -1;
-					uint256 e2_val = deserialize_uint256(e2, ele_d_2->size);
-					return compare_uint256(get_uint256(e1_val), e2_val);
-				}
-				case BIT_FIELD :
-				{
-					uint64_t e2_val = get_bits(e2, ele_d_2->bit_offset, ele_d_2->bit_offset + ele_d_2->size - 1);
-					return compare_numbers(e1_val, e2_val);
+					return compare_uint256(get_uint256(e1->int_value), e2->large_uint_value);
 				}
 				default :
 					return -2;
@@ -203,133 +198,76 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 		}
 		case FLOAT :
 		{
-			if(ele_d_1->size == sizeof(float))
+			if(dti_1->size == sizeof(float))
 			{
-				float e1_val = deserialize_float(e1);
-				switch(ele_d_2->type)
+				switch(dti_2->type)
 				{
+					case BIT_FIELD :
+						return compare_numbers(e1->float_value, e2->bit_field_value);
 					case UINT :
-					{
-						uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
-						return compare_numbers(e1_val, e2_val);
-					}
+						return compare_numbers(e1->float_value, e2->uint_value);
 					case INT :
-					{
-						int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
-						return compare_numbers(e1_val, e2_val);
-					}
+						return compare_numbers(e1->float_value, e2->int_value);
 					case FLOAT :
 					{
-						if(ele_d_2->size == sizeof(float))
-						{
-							float e2_val = deserialize_float(e2);
-							return compare_numbers(e1_val, e2_val);
-						}
-						else if(ele_d_2->size == sizeof(double))
-						{
-							double e2_val = deserialize_double(e2);
-							return compare_numbers(e1_val, e2_val);
-						}
-						else if(ele_d_2->size == sizeof(long double))
-						{
-							long double e2_val = deserialize_long_double(e2);
-							return compare_numbers(e1_val, e2_val);
-						}
+						if(dti_2->size == sizeof(float))
+							return compare_numbers(e1->float_value, e2->float_value);
+						else if(dti_2->size == sizeof(double))
+							return compare_numbers(e1->float_value, e2->double_value);
+						else if(dti_2->size == sizeof(long double))
+							return compare_numbers(e1->float_value, e2->long_double_value);
 						else
 							return -2;
-					}
-					case BIT_FIELD :
-					{
-						uint64_t e2_val = get_bits(e2, ele_d_2->bit_offset, ele_d_2->bit_offset + ele_d_2->size - 1);
-						return compare_numbers(e1_val, e2_val);
 					}
 					default :
 						return -2;
 				}
 			}
-			else if(ele_d_1->size == sizeof(double))
+			else if(dti_1->size == sizeof(double))
 			{
-				double e1_val = deserialize_double(e1);
-				switch(ele_d_2->type)
+				switch(dti_2->type)
 				{
+					case BIT_FIELD :
+						return compare_numbers(e1->double_value, e2->bit_field_value);
 					case UINT :
-					{
-						uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
-						return compare_numbers(e1_val, e2_val);
-					}
+						return compare_numbers(e1->double_value, e2->uint_value);
 					case INT :
-					{
-						int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
-						return compare_numbers(e1_val, e2_val);
-					}
+						return compare_numbers(e1->double_value, e2->int_value);
 					case FLOAT :
 					{
-						if(ele_d_2->size == sizeof(float))
-						{
-							float e2_val = deserialize_float(e2);
-							return compare_numbers(e1_val, e2_val);
-						}
-						else if(ele_d_2->size == sizeof(double))
-						{
-							double e2_val = deserialize_double(e2);
-							return compare_numbers(e1_val, e2_val);
-						}
-						else if(ele_d_2->size == sizeof(long double))
-						{
-							long double e2_val = deserialize_long_double(e2);
-							return compare_numbers(e1_val, e2_val);
-						}
+						if(dti_2->size == sizeof(float))
+							return compare_numbers(e1->double_value, e2->float_value);
+						else if(dti_2->size == sizeof(double))
+							return compare_numbers(e1->double_value, e2->double_value);
+						else if(dti_2->size == sizeof(long double))
+							return compare_numbers(e1->double_value, e2->long_double_value);
 						else
 							return -2;
-					}
-					case BIT_FIELD :
-					{
-						uint64_t e2_val = get_bits(e2, ele_d_2->bit_offset, ele_d_2->bit_offset + ele_d_2->size - 1);
-						return compare_numbers(e1_val, e2_val);
 					}
 					default :
 						return -2;
 				}
 			}
-			else if(ele_d_1->size == sizeof(long double))
+			else if(dti_1->size == sizeof(long double))
 			{
-				long double e1_val = deserialize_long_double(e1);
-				switch(ele_d_2->type)
+				switch(dti_2->type)
 				{
+					case BIT_FIELD :
+						return compare_numbers(e1->long_double_value, e2->bit_field_value);
 					case UINT :
-					{
-						uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
-						return compare_numbers(e1_val, e2_val);
-					}
+						return compare_numbers(e1->long_double_value, e2->uint_value);
 					case INT :
-					{
-						int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
-						return compare_numbers(e1_val, e2_val);
-					}
+						return compare_numbers(e1->long_double_value, e2->int_value);
 					case FLOAT :
 					{
-						if(ele_d_2->size == sizeof(float))
-						{
-							float e2_val = deserialize_float(e2);
-							return compare_numbers(e1_val, e2_val);
-						}
-						else if(ele_d_2->size == sizeof(double))
-						{
-							double e2_val = deserialize_double(e2);
-							return compare_numbers(e1_val, e2_val);
-						}
-						else if(ele_d_2->size == sizeof(long double))
-						{
-							long double e2_val = deserialize_long_double(e2);
-							return compare_numbers(e1_val, e2_val);
-						}
+						if(dti_2->size == sizeof(float))
+							return compare_numbers(e1->long_double_value, e2->float_value);
+						else if(dti_2->size == sizeof(double))
+							return compare_numbers(e1->long_double_value, e2->double_value);
+						else if(dti_2->size == sizeof(long double))
+							return compare_numbers(e1->long_double_value, e2->long_double_value);
 						else
 							return -2;
-					}
-					case BIT_FIELD :
-					{
-						uint64_t e2_val = get_bits(e2, ele_d_2->bit_offset, ele_d_2->bit_offset + ele_d_2->size - 1);
-						return compare_numbers(e1_val, e2_val);
 					}
 					default :
 						return -2;
@@ -340,80 +278,20 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 		}
 		case LARGE_UINT :
 		{
-			uint256 e1_val = deserialize_uint256(e1, ele_d_1->size);
-			switch(ele_d_2->type)
+			switch(dti_2->type)
 			{
+				case BIT_FIELD :
+					return compare_uint256(e1->large_uint_value, get_uint256(e2->bit_field_value));
 				case UINT :
-				{
-					uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
-					return compare_uint256(e1_val, get_uint256(e2_val));
-				}
+					return compare_uint256(e1->large_uint_value, get_uint256(e2->uint_value));
 				case INT :
 				{
-					int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
-					if(e2_val < 0)
+					if(e2->int_value < 0)
 						return 1;
-					return compare_uint256(e1_val, get_uint256(e2_val));
+					return compare_uint256(e1->large_uint_value, get_uint256(e2->int_value));
 				}
 				case LARGE_UINT :
-				{
-					uint256 e2_val = deserialize_uint256(e2, ele_d_2->size);
-					return compare_uint256(e1_val, e2_val);
-				}
-				case BIT_FIELD :
-				{
-					uint64_t e2_val = get_bits(e2, ele_d_2->bit_offset, ele_d_2->bit_offset + ele_d_2->size - 1);
-					return compare_uint256(e1_val, get_uint256(e2_val));
-				}
-				default :
-					return -2;
-			}
-		}
-		case BIT_FIELD :
-		{
-			uint64_t e1_val = get_bits(e1, ele_d_1->bit_offset, ele_d_1->bit_offset + ele_d_1->size - 1);
-			switch(ele_d_2->type)
-			{
-				case UINT :
-				{
-					uint64_t e2_val = deserialize_uint64(e2, ele_d_2->size);
-					return compare_numbers(e1_val, e2_val);
-				}
-				case INT :
-				{
-					int64_t e2_val = deserialize_int64(e2, ele_d_2->size);
-					return compare_numbers(e1_val, e2_val);
-				}
-				case FLOAT :
-				{
-					if(ele_d_2->size == sizeof(float))
-					{
-						float e2_val = deserialize_float(e2);
-						return compare_numbers(e1_val, e2_val);
-					}
-					else if(ele_d_2->size == sizeof(double))
-					{
-						double e2_val = deserialize_double(e2);
-						return compare_numbers(e1_val, e2_val);
-					}
-					else if(ele_d_2->size == sizeof(long double))
-					{
-						long double e2_val = deserialize_long_double(e2);
-						return compare_numbers(e1_val, e2_val);
-					}
-					else
-						return -2;
-				}
-				case LARGE_UINT :
-				{
-					uint256 e2_val = deserialize_uint256(e2, ele_d_2->size);
-					return compare_uint256(get_uint256(e1_val), e2_val);
-				}
-				case BIT_FIELD :
-				{
-					uint64_t e2_val = get_bits(e2, ele_d_2->bit_offset, ele_d_2->bit_offset + ele_d_2->size - 1);
-					return compare_numbers(e1_val, e2_val);
-				}
+					return compare_uint256(e1->large_uint_value, e2->large_uint_value);
 				default :
 					return -2;
 			}
@@ -421,18 +299,6 @@ int compare_numeral_type_elements(const void* e1, const element_def* ele_d_1, co
 		default :
 			return -2;
 	}
-}
-
-uint64_t hash_numeral_type_element(const void* e, const element_def* ele_d, uint64_t (*hash_func)(const void* data, uint32_t size))
-{
-	if(ele_d->type == BIT_FIELD)
-	{
-		uint64_t bit_field_value = get_bits(e, ele_d->bit_offset, ele_d->bit_offset + ele_d->size - 1);
-		serialize_uint64(&bit_field_value, sizeof(uint64_t), bit_field_value);
-		return hash_func(&bit_field_value, sizeof(uint64_t));
-	}
-	else
-		return hash_func(e, ele_d->size);
 }
 
 void set_numeral_element(void* e, const element_def* ele_d, const user_value* uval)

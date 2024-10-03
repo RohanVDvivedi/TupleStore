@@ -59,12 +59,6 @@ user_value get_MIN_user_value(const element_def* ele_d);
 
 user_value get_MAX_user_value_for_numeral_element_def(const element_def* ele_d);
 
-// returns max user value for string or blob type element,
-// limits the returned size to max_length or the maximum size of the element
-// on failure to allocate memory memory_allocation_error will be set
-// returns a list of "\xff\xff..."
-user_value get_MAX_user_value_for_string_OR_blob_element_def(const element_def* ele_d, uint32_t max_length, int* memory_allocation_error);
-
 void print_user_value(const user_value* uval, const element_def* ele_d);
 
 #endif
