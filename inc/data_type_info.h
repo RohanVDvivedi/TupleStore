@@ -225,6 +225,7 @@ int move_variable_sized_containee_to_end_of_container(const data_type_info* dti,
 uint32_t initialize_minimal_data_for_type_info(const data_type_info* dti, void* data);
 
 // returns true, if the data is minimal initialized or set to EMPTY_USER_VALUE
+// if this function returns 1, this implies data is equivalent to EMPTY_USER_VALUE
 int is_minimal_data_for_type_info(const data_type_info* dti, const void* data);
 
 int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, uint32_t index);
