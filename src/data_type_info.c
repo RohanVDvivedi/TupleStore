@@ -826,6 +826,37 @@ uint32_t initialize_minimal_data_for_type_info(const data_type_info* dti, void* 
 	}
 }
 
+static int are_zeroes(const char* data, uin32_t data_size)
+{
+	for(uint32_t i = 0; i < data_size; i++)
+		if(data[i] != 0)
+			return 0;
+	return 1;
+}
+
+int is_minimal_data_for_type_info(const data_type_info* dti, const void* data)
+{
+	if(dti->type == BIT_FIELD)
+		return 0;
+
+	if(!is_variable_sized_type_info(dti))
+		return are_zeroes(data, dti->size); // if not variable sized the completed content must be 0
+	else
+	{
+		uint32_t data_size = get_size_for_type_info(dti, data);
+		if(data_size != dti->min_size) // if variable sized the size must equal min_size
+			return 0;
+
+		// and the remaining content must be all zeroes
+		if(has_size_in_its_prefix_for_container_type_info(dti))
+			return are_zeroes(data, get_offset_to_prefix_size_for_container_type_info(dti)) &&
+					are_zeroes(data + get_offset_to_prefix_size_for_container_type_info(dti) + get_value_size_on_page(dti->max_size),
+								data_size - (get_offset_to_prefix_size_for_container_type_info(dti) + get_value_size_on_page(dti->max_size)));
+		else
+			return are_zeroes(data, data_size);
+	}
+}
+
 int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, uint32_t index)
 {
 	// dti has to be a container type

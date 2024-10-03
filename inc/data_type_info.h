@@ -221,7 +221,11 @@ int move_variable_sized_containee_to_end_of_container(const data_type_info* dti,
 // initializes the 0-ed out data with minimum size for this element
 // this is a NO-OP for bitfield elements
 // returns the size of the data
+// it is equivalent to set_user_value_for_type_info(dti, data, 0, dti->min_size, EMPTY_USER_VALUE);
 uint32_t initialize_minimal_data_for_type_info(const data_type_info* dti, void* data);
+
+// returns true, if the data is minimal initialized or set to EMPTY_USER_VALUE
+int is_minimal_data_for_type_info(const data_type_info* dti, const void* data);
 
 int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, uint32_t index);
 
