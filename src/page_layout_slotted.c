@@ -5,8 +5,6 @@
 
 #include<stdlib.h>
 
-#include<tuple.h>
-
 #include<page_header.h>
 #include<page_layout_util.h>
 
@@ -533,7 +531,7 @@ const void* get_nth_tuple_slotted_page(const void* page, uint32_t page_size, con
 	return page + ith_tuple_offset_val;
 }
 
-int set_element_in_tuple_in_place_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, uint32_t element_index, const user_value* value)
+int set_element_in_tuple_in_place_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, positional_accessor element_index, const user_value* value)
 {
 	void* tuple_concerned = (void*) get_nth_tuple_slotted_page(page, page_size, &(tpl_d->size_def), tuple_index);
 
@@ -544,23 +542,19 @@ int set_element_in_tuple_in_place_slotted_page(void* page, uint32_t page_size, c
 	// cache the old tuple size
 	uint32_t old_tuple_size = get_tuple_size(tpl_d, tuple_concerned);
 
-	uint32_t new_tuple_size = 0;
-
-	// fail if we can't set the tuple in the page
-	if(!can_set_element_in_tuple(tpl_d, element_index, tuple_concerned, value, &new_tuple_size))
+	// fail if we can't set the tuple in the page without size increment
+	if(!can_set_element_in_tuple(tpl_d, element_index, tuple_concerned, value, 0))
 		return 0;
 
-	// fail if new_tuple_size exceeds the tuple_size on the page
-	if(new_tuple_size > get_tuple_size(tpl_d, tuple_concerned))
-		return 0;
-
-	// set the element
-	int set_in_place_success = set_element_in_tuple(tpl_d, element_index, tuple_concerned, value);
+	// set the element, without any size increment
+	int set_in_place_success = set_element_in_tuple(tpl_d, element_index, tuple_concerned, value, 0);
 
 	// if set_element_in_tuple was a success, i.e tuple was updated, then do book-keeping
 	// i.e. we must update the space_occupied_by_tuples on the page
 	if(set_in_place_success)
 	{
+		uint32_t new_tuple_size = get_tuple_size(tpl_d, tuple_concerned);
+
 		void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
 		uint32_t space_occupied_by_tuples_val = read_value_from_page(space_occupied_by_tuples, page_size);
 		// update space_occupied_by_tuples_val += (new_tuple_size - old_tuple_size)

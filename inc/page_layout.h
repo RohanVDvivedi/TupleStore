@@ -1,7 +1,7 @@
 #ifndef PAGE_LAYOUT_H
 #define PAGE_LAYOUT_H
 
-#include<tuple_def.h>
+#include<tuple.h>
 #include<page_layout_enum.h>
 
 // get the page layout that will be used by the functions below,
@@ -109,7 +109,7 @@ const void* get_nth_tuple_on_page(const void* page, uint32_t page_size, const tu
 // updates an element (at index element_index) in tuple on the page (at index element_index) in place
 // this function fails if the given update will increase the tuple_size on the page
 // use this generally -> for a fixed sized element update in the tuple OR when you know that the updated variable sized value is smaller than the element in the tuple on page
-int set_element_in_tuple_in_place_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, uint32_t element_index, const user_value* value);
+int set_element_in_tuple_in_place_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, positional_accessor element_index, const user_value* value);
 
 
 

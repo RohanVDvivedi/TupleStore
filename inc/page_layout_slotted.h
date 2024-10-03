@@ -1,7 +1,7 @@
 #ifndef PAGE_LAYOUT_SLOTTED_H
 #define PAGE_LAYOUT_SLOTTED_H
 
-#include<tuple_def.h>
+#include<tuple.h>
 
 uint32_t get_minimum_page_size_for_slotted_page(uint32_t page_header_size, const tuple_size_def* tpl_sz_d, uint32_t tuple_count);
 
@@ -31,7 +31,7 @@ int swap_tuples_slotted_page(void* page, uint32_t page_size, const tuple_size_de
 
 const void* get_nth_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index);
 
-int set_element_in_tuple_in_place_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, uint32_t element_index, const user_value* value);
+int set_element_in_tuple_in_place_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, positional_accessor element_index, const user_value* value);
 
 int run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, int* memory_allocation_error);
 
