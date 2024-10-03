@@ -37,89 +37,18 @@ user_value get_MIN_user_value(const element_def* ele_d)
 		return get_MIN_value_for_string_OR_blob_element_def(ele_d);
 }
 
-user_value get_MAX_user_value_for_numeral_element_def(const element_def* ele_d)
+user_value get_MIN_user_value_for_primitive_numeral_type(const data_type_info* dti)
 {
-	if(is_numeral_type_element_def(ele_d))
-		return get_MAX_value_for_numeral_element_def(ele_d);
+	if(is_primitive_numeral_type_info(dti))
+		return get_MIN_value_for_primitive_numeral_type_info(dti);
 	else
 		return (*NULL_USER_VALUE);
 }
 
-user_value get_MAX_user_value_for_string_OR_blob_element_def(const element_def* ele_d, uint32_t max_length, int* memory_allocation_error)
+user_value get_MAX_user_value_for_primitive_numeral_type(const data_type_info* dti)
 {
-	// limit the length of max_element that get's generated
-	if(is_fixed_sized_element_def(ele_d))
-		max_length = min(max_length, ele_d->size);
-	else if(ele_d->size_specifier_prefix_size < 4) // 1U << (`4` * CHAR_BIT), overflows hence the check
-		max_length = min(max_length, 1U << (ele_d->size_specifier_prefix_size * CHAR_BIT));
-
-	// allocate new_data and set all it's max_length bytes to CHAR_MAX (max value of char data type)
-	void* new_data = malloc(max_length);
-	if(new_data == NULL)
-	{
-		(*memory_allocation_error) = 1;
+	if(is_primitive_numeral_type_info(dti))
+		return get_MAX_value_for_primitive_numeral_type_info(dti);
+	else
 		return (*NULL_USER_VALUE);
-	}
-	memory_set(new_data, UNSIGNED_MAX_VALUE_OF(unsigned char), max_length);
-
-	user_value res = {.data = new_data, .data_size = max_length};
-	return res;
-}
-
-void print_user_value(const user_value* uval, const element_def* ele_d)
-{
-	if(is_user_value_NULL(uval))
-	{
-		printf("NULL");
-		return;
-	}
-
-	switch(ele_d->type)
-	{
-		case UINT :
-		{
-			printf("%"PRIu64, uval->uint_value);
-			break;
-		}
-		case INT :
-		{
-			printf("%"PRId64, uval->int_value);
-			break;
-		}
-		case FLOAT :
-		{
-			if(ele_d->size == sizeof(float))
-				printf("%f", uval->float_value);
-			else if(ele_d->size == sizeof(double))
-				printf("%lf", uval->double_value);
-			else if(ele_d->size == sizeof(long double))
-				printf("%Lf", uval->long_double_value);
-			break;
-		}
-		case LARGE_UINT :
-		{
-			print_uint256(uval->large_uint_value);
-			break;
-		}
-		case BIT_FIELD :
-		{
-			printf("%"PRIx64, uval->bit_field_value);
-			break;
-		}
-		case STRING :
-		case VAR_STRING :
-		{
-			printf("\"%.*s\"", uval->data_size, ((const char*)(uval->data)));
-			break;
-		}
-		case BLOB :
-		case VAR_BLOB :
-		{
-			printf("BLOB(%"PRIu32")[", uval->data_size);
-			for(uint32_t i = 0; i < uval->data_size; i++)
-				printf(" 0x%2"PRIx8, ((const uint8_t*)(uval->data))[i]);
-			printf("]");
-			break;
-		}
-	}
 }
