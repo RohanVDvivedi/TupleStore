@@ -1,8 +1,5 @@
 TASKS PICKED
 
- * add a function to check if the data pointer to is an EMPTY_USER_VALUE
-   * if fixed sized then all 0s
-   * if variable sized then size == min_size, and all bytes before and after the size prefix must be 0
  * can compare using data_type_info, compare using user_value and hash function using data
    * while hashing
      * if the user value is NULL, return 0
