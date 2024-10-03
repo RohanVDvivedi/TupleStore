@@ -336,8 +336,7 @@ int discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positional_ac
 }
 
 // compare and hash functions
-
-int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, uint32_t index1, const void* tup2, const tuple_def* tpl_d2, uint32_t index2)
+/*int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, uint32_t index1, const void* tup2, const tuple_def* tpl_d2, uint32_t index2)
 {
 	const element_def* ele_d1 = get_element_def_by_id(tpl_d1, index1);
 	const element_def* ele_d2 = get_element_def_by_id(tpl_d2, index2);
@@ -403,7 +402,7 @@ uint64_t hash_tuple(const void* tup, const tuple_def* tpl_d, const uint32_t* ele
 			hash_value ^= hash_element_within_tuple(tup, tpl_d, element_ids[i], hash_func);
 	}
 	return hash_value;
-}
+}*/
 
 // print function
 
