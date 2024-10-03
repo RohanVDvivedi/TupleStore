@@ -1,6 +1,17 @@
 TASKS PICKED
 
- * can compare using data_type_info, compare using user_value and hash function using user_value and data pointers
+ * add a function to check if the data pointer to is an EMPTY_USER_VALUE
+   * if fixed sized then all 0s
+   * if variable sized then all 0s, except when it has size in prefix which must be equal to min_size
+ * can compare using data_type_info, compare using user_value and hash function using data
+   * add a comment that these functions are not compatible with EMPTY_USER_VALUE
+   * while hashing
+     * if the user value is NULL, return 0
+     * if there are multiple elements XOR their hashes
+     * string and blob types are directly hashed
+   * if both are primitive numeral type elements compare them directly
+   * if they are tuples they are comparable only if they both have same dti pointers
+   * else lastly their containee type_info must match
  * nested hash, compare functions with positional_accessor, taking in tuple_def and tuple as input using positional accessor
  * default can_compare, compare and hash functions for user_value
    * for primitve numeral type elements use the default comparator
