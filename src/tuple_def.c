@@ -103,6 +103,22 @@ int is_variable_sized_tuple_def(const tuple_def* tuple_d)
 	return is_variable_sized_tuple_size_def(&(tuple_d->size_def));
 }
 
+uint32_t get_minimum_tuple_size_using_tuple_size_def(const tuple_size_def* tuple_size_d)
+{
+	if(!is_variable_sized_tuple_size_def(tuple_size_d))
+		return tuple_size_d->size;
+
+	return tuple_size_d->min_size;
+}
+
+uint32_t get_maximum_tuple_size_using_tuple_size_def(const tuple_size_def* tuple_size_d)
+{
+	if(!is_variable_sized_tuple_size_def(tuple_size_d))
+		return tuple_size_d->size;
+
+	return tuple_size_d->max_size;
+}
+
 // this is left here to show that this could be done but should not be done
 uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_sz_d, void* tupl)
 {
