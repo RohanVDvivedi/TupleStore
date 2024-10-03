@@ -1,13 +1,21 @@
 TASKS PICKED
 
+ * test function to check if it is primitive_numeral_type_info
+ * discard string and blob type source files
+ * in numeral type element def we only need get min value, max value, default_type_cast and default_compare and can_default_compare functions (directly fails with -2 if they are not comparable) and hash functions
+ * nested hash, compare functions with positional_accessor, taking in tuple_def and tuple as input using positional accessor
+ * default can_compare, compare and hash functions for user_value
+   * for primitve numeral type elements use the default comparator
+   * strings and blobs are comparable with each other
+   * tuples are comparable if they are same data_type_info
+   * arrays are comparable if they have the comparable containees
+   * arrays and strings and blobs are comparable, if the array's containee is comparable to UINT_NON_NULLABLE[1], string and blob are nothing but specialized arrays of UINT_NON_NULLABLE[1]
  * test and make the old testcases function and return the same output
  * add new test case to test all functions of complex nested types using tuple def
 
 1 NEW TYPE TASKS
 
  *1*
- * default compare and hash functions for user_value
- * nested hash, compare functions with positional_accessor, taking in tuple_def and tuple as input using positional accessor
  * add hash_tables for type_name based type casting, comparing and hashing
  * only tuples can be stored on the disk, and each tuple has a corresponding tuple_def, and each tuple_def contains a tuple_size_def
 
