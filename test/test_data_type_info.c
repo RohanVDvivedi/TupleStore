@@ -47,6 +47,11 @@ int main()
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
 
+		const void* e3 = get_pointer_to_containee_from_container(tuple_type_info, tuple, 3);
+		const void* e4 = get_pointer_to_containee_from_container(tuple_type_info, tuple, 4);
+		printf("is 3rd element minimal = %d\n", e3 == NULL ? 0 : is_minimal_data_for_type_info(&s1, e3));
+		printf("is 4th element minimal = %d\n", e4 == NULL ? 0 : is_minimal_data_for_type_info(&s2, e4));
+
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, &(user_value){.uint_value = 99});
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, &(user_value){.bit_field_value = 0x25});
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 100, &(user_value){.string_value = "Manan Joshi", .string_size = strlen("Manan Joshi")});
@@ -72,6 +77,11 @@ int main()
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d\n", is_minimal_data_for_type_info(tuple_type_info, tuple));
 
+		e3 = get_pointer_to_containee_from_container(tuple_type_info, tuple, 3);
+		e4 = get_pointer_to_containee_from_container(tuple_type_info, tuple, 4);
+		printf("is 3rd element minimal = %d\n", e3 == NULL ? 0 : is_minimal_data_for_type_info(&s1, e3));
+		printf("is 4th element minimal = %d\n", e4 == NULL ? 0 : is_minimal_data_for_type_info(&s2, e4));
+
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, NULL_USER_VALUE);
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, NULL_USER_VALUE);
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 0, NULL_USER_VALUE);
@@ -82,6 +92,11 @@ int main()
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 7, 0, NULL_USER_VALUE);
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d\n", is_minimal_data_for_type_info(tuple_type_info, tuple));
+
+		e3 = get_pointer_to_containee_from_container(tuple_type_info, tuple, 3);
+		e4 = get_pointer_to_containee_from_container(tuple_type_info, tuple, 4);
+		printf("is 3rd element minimal = %d\n", e3 == NULL ? 0 : is_minimal_data_for_type_info(&s1, e3));
+		printf("is 4th element minimal = %d\n", e4 == NULL ? 0 : is_minimal_data_for_type_info(&s2, e4));
 
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, NULL_USER_VALUE);
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, NULL_USER_VALUE);
