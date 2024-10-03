@@ -79,7 +79,13 @@ int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, con
 		{
 			// result is self
 			if(IS_SELF(pa))
+			{
+				// null is to be set into the container containing this element
+				if(is_user_value_NULL(value))
+					return 0;
+
 				return can_set_user_value_for_type_info(dti, data, 1, max_size_increment_allowed, value);
+			}
 
 			// result is self's some child
 			if(pa.positions_length == 1)
@@ -124,7 +130,13 @@ int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* t
 		{
 			// result is self
 			if(IS_SELF(pa))
+			{
+				// null is to be set into the container containing this element
+				if(is_user_value_NULL(value))
+					return 0;
+
 				return set_user_value_for_type_info(dti, data, 1, max_size_increment_allowed, value);
+			}
 
 			// result is self's some child
 			if(pa.positions_length == 1)
