@@ -253,6 +253,10 @@ int can_expand_container(const data_type_info* dti, const void* data, uint32_t i
 int expand_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed);
 
 // returns 0, if index is out of bounds OR there are not enough slots after first index slots
+// check to see if the below function will succeed
+int can_discard_from_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t slots);
+
+// returns 0, if index is out of bounds OR there are not enough slots after first index slots
 // discard slots number of slots starting at index location, index muts be between 0 and (element_count - 1)
 int discard_from_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots);
 
