@@ -1,18 +1,18 @@
-#include<numeral_element_types.h>
+#include<primitive_numeral_types.h>
 
 #include<serial_int.h>
 #include<float_accesses.h>
 #include<bitmap.h>
 
-int is_numeral_type_element_def(const element_def* ele_d)
+int is_primitive_numeral_type_info(const data_type_info* dti)
 {
-	switch(ele_d->type)
+	switch(dti->type)
 	{
+		case BIT_FIELD :
 		case UINT :
 		case INT :
 		case FLOAT :
 		case LARGE_UINT :
-		case BIT_FIELD :
 			return 1;
 		default :
 			return 0;
