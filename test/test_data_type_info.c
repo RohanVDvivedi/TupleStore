@@ -28,13 +28,16 @@ int main()
 		char tuple[256];
 		initialize_minimal_data_for_type_info(tuple_type_info, tuple);
 
-		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
+		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d\n", is_minimal_data_for_type_info(tuple_type_info, tuple));
 
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, &(user_value){.uint_value = 5});
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, &(user_value){.bit_field_value = 0x6});
+
+		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d\n", is_minimal_data_for_type_info(tuple_type_info, tuple));
+
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 100, &(user_value){.string_value = "Devashree Dvivedi", .string_size = strlen("Devashree Dvivedi")});
 
-		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
+		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d\n", is_minimal_data_for_type_info(tuple_type_info, tuple));
 
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 3, 0, &(user_value){.string_value = "ABC", .string_size = strlen("ABC")});
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 4, 0, &(user_value){.string_value = "DEF", .string_size = strlen("DEF")});
@@ -67,7 +70,7 @@ int main()
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 6, 0, EMPTY_USER_VALUE);
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 7, 0, EMPTY_USER_VALUE);
 
-		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
+		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d\n", is_minimal_data_for_type_info(tuple_type_info, tuple));
 
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, NULL_USER_VALUE);
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, NULL_USER_VALUE);
@@ -78,7 +81,7 @@ int main()
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 6, 0, NULL_USER_VALUE);
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 7, 0, NULL_USER_VALUE);
 
-		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
+		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d\n", is_minimal_data_for_type_info(tuple_type_info, tuple));
 
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, NULL_USER_VALUE);
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, NULL_USER_VALUE);
@@ -329,7 +332,17 @@ int main()
 
 		discard_from_container(&s4, s, 11, 5);
 
-		print_data_for_data_type_info(&s4, s);printf("\n");
+		print_data_for_data_type_info(&s4, s);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&s4, s));
+
+		set_user_value_for_type_info(&s4, s, 0, 300, EMPTY_USER_VALUE);
+
+		print_data_for_data_type_info(&s4, s);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&s4, s));
+
+		int setting_to_null = set_user_value_for_type_info(&s4, s, 0, 300, NULL_USER_VALUE);
+
+		printf("tried setting to null, result = %d\n", setting_to_null);
+
+		print_data_for_data_type_info(&s4, s);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&s4, s));
 	}
 
 	return 0;
