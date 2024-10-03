@@ -826,7 +826,7 @@ uint32_t initialize_minimal_data_for_type_info(const data_type_info* dti, void* 
 	}
 }
 
-static int are_zeroes(const char* data, uin32_t data_size)
+static int are_zeroes(const char* data, uint32_t data_size)
 {
 	for(uint32_t i = 0; i < data_size; i++)
 		if(data[i] != 0)
