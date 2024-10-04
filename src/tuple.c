@@ -414,27 +414,52 @@ int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const uint32_t* el
 			compare = compare * cmp_dir[i];
 	}
 	return compare;
-}
+}*/
 
-uint64_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, uint32_t index, uint64_t (*hash_func)(const void* data, uint32_t size))
+uint64_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, positional_accessor pa, uint64_t (*hash_func)(const void* data, uint32_t size))
 {
-	const void* e = get_element_from_tuple(tpl_d, index, tup);
+	const data_type_info* dti = tpl_d->type_info;
+	const void* data = tup;
 
-	// hashing a NULL element returns a 0
-	if(e == NULL)
-		return 0;
+	while(1)
+	{
+		// loop termination cases
+		{
+			// result is self
+			if(IS_SELF(pa))
+				return hash_data_for_type_info(dti, data, hash_func);
 
-	const element_def* ele_d = get_element_def_by_id(tpl_d, index);
-	return hash_element(e, ele_d, hash_func);
+			// result is self's some child
+			if(pa.positions_length == 1)
+				return hash_containee_in_container(dti, data, pa.positions[0], hash_func);
+		}
+
+		if(!is_container_type_info(dti))
+			return 0;
+
+		if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
+			return 0;
+
+		if(is_containee_null_in_container(dti, data, pa.positions[0]))
+			return 0;
+
+		const data_type_info* child_dti = get_data_type_info_for_containee_of_container(dti, data, pa.positions[0]);
+		const void* child_data = get_pointer_to_containee_from_container(dti, data, pa.positions[0]);
+		dti = child_dti;
+		data = child_data;
+		pa = NEXT_POSITION(pa);
+	}
+
+	return 0;
 }
 
-uint64_t hash_tuple(const void* tup, const tuple_def* tpl_d, const uint32_t* element_ids, uint64_t (*hash_func)(const void* data, uint32_t size), uint32_t element_count)
+uint64_t hash_tuple(const void* tup, const tuple_def* tpl_d, const positional_accessor* element_ids, uint64_t (*hash_func)(const void* data, uint32_t size), uint32_t element_count)
 {
 	uint64_t hash_value = 0;
 	if(element_ids == NULL)
 	{
 		for(uint32_t i = 0; i < element_count; i++)
-			hash_value ^= hash_element_within_tuple(tup, tpl_d, i, hash_func);
+			hash_value ^= hash_element_within_tuple(tup, tpl_d, STATIC_POSITION(i), hash_func);
 	}
 	else
 	{
@@ -442,7 +467,7 @@ uint64_t hash_tuple(const void* tup, const tuple_def* tpl_d, const uint32_t* ele
 			hash_value ^= hash_element_within_tuple(tup, tpl_d, element_ids[i], hash_func);
 	}
 	return hash_value;
-}*/
+}
 
 // print function
 
