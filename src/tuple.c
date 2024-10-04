@@ -376,9 +376,10 @@ int discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positional_ac
 }
 
 // compare and hash functions
-/*int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, uint32_t index1, const void* tup2, const tuple_def* tpl_d2, uint32_t index2)
+int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, positional_accessor pa1, const void* tup2, const tuple_def* tpl_d2, positional_accessor pa2)
 {
-	const element_def* ele_d1 = get_element_def_by_id(tpl_d1, index1);
+	// TODO
+	/*const element_def* ele_d1 = get_element_def_by_id(tpl_d1, index1);
 	const element_def* ele_d2 = get_element_def_by_id(tpl_d2, index2);
 
 	if(!can_compare_element_defs(ele_d1, ele_d2))
@@ -399,22 +400,22 @@ int discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positional_ac
 			return 1;
 	}
 	else
-		return compare_elements(e1, get_element_def_by_id(tpl_d1, index1), e2, get_element_def_by_id(tpl_d2, index2));
+		return compare_elements(e1, get_element_def_by_id(tpl_d1, index1), e2, get_element_def_by_id(tpl_d2, index2));*/
 }
 
-int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const uint32_t* element_ids1, const void* tup2, const tuple_def* tpl_d2, const uint32_t* element_ids2, const compare_direction* cmp_dir, uint32_t element_count)
+int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_accessor* element_ids1, const void* tup2, const tuple_def* tpl_d2, const positional_accessor* element_ids2, const compare_direction* cmp_dir, uint32_t element_count)
 {
 	int compare = 0;
 	for(uint32_t i = 0; ((i < element_count) && (compare == 0)); i++)
 	{
-		compare = compare_elements_of_tuple(tup1, tpl_d1, ((element_ids1 == NULL) ? i : element_ids1[i]), tup2, tpl_d2, ((element_ids2 == NULL) ? i : element_ids2[i]));
+		compare = compare_elements_of_tuple(tup1, tpl_d1, ((element_ids1 == NULL) ? STATIC_POSITION(i) : element_ids1[i]), tup2, tpl_d2, ((element_ids2 == NULL) ? STATIC_POSITION(i) : element_ids2[i]));
 		
 		// if cmp_dir is not NULL, then compare in default direction of the element
 		if(cmp_dir != NULL)
 			compare = compare * cmp_dir[i];
 	}
 	return compare;
-}*/
+}
 
 uint64_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, positional_accessor pa, uint64_t (*hash_func)(const void* data, uint32_t size))
 {
