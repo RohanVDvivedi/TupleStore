@@ -422,39 +422,15 @@ int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_a
 
 uint64_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, positional_accessor pa, uint64_t (*hash_func)(const void* data, uint32_t size))
 {
-	const data_type_info* dti = tpl_d->type_info;
-	const void* data = tup;
+	// if the element is not accessible, then fail
+	const data_type_info* dti = get_type_info_for_element_from_tuple(tpl_d, pa);
+	if(dti == NULL)
+		return 0;
 
-	while(1)
-	{
-		// loop termination cases
-		{
-			// result is self
-			if(IS_SELF(pa))
-				return hash_data_for_type_info(dti, data, hash_func);
+	// get the user value for this element
+	const user_value uval = get_value_from_element_from_tuple(tpl_d, pa, tup);
 
-			// result is self's some child
-			if(pa.positions_length == 1)
-				return hash_containee_in_container(dti, data, pa.positions[0], hash_func);
-		}
-
-		if(!is_container_type_info(dti))
-			return 0;
-
-		if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
-			return 0;
-
-		if(is_containee_null_in_container(dti, data, pa.positions[0]))
-			return 0;
-
-		const data_type_info* child_dti = get_data_type_info_for_containee_of_container(dti, data, pa.positions[0]);
-		const void* child_data = get_pointer_to_containee_from_container(dti, data, pa.positions[0]);
-		dti = child_dti;
-		data = child_data;
-		pa = NEXT_POSITION(pa);
-	}
-
-	return 0;
+	return hash_user_value(&uval, dti, hash_func);
 }
 
 uint64_t hash_tuple(const void* tup, const tuple_def* tpl_d, const positional_accessor* element_ids, uint64_t (*hash_func)(const void* data, uint32_t size), uint32_t element_count)
