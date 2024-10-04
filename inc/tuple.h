@@ -60,6 +60,7 @@ int discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positional_ac
 // compare and hash accessors
 
 // compare functions for tuple and for an element inside the tuple
+// returns -2 if they are not comparable OR if one of the element is out if bounds
 int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, positional_accessor pa1, const void* tup2, const tuple_def* tpl_d2, positional_accessor pa2);
 
 typedef enum compare_direction compare_direction;
@@ -75,6 +76,7 @@ enum compare_direction
 // if element_ids* == NULL, then this functions compares the first element_count number of elements from both the tuples
 // if cmp_dir == NULL, then all the elements are compared in INCREASING order, else cmp_dir decides the direction of the comparison
 // else it compares the elements in the same order as provided in element_ids* (here element_count denotes size of element_ids* arrays)
+// returns -2 if they are not comparable OR if one of the element is out if bounds
 int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_accessor* element_ids1, const void* tup2, const tuple_def* tpl_d2, const positional_accessor* element_ids2, const compare_direction* cmp_dir, uint32_t element_count);
 
 
