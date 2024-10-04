@@ -355,7 +355,7 @@ void print_user_value(const user_value* uval, const data_type_info* dti)
 					printf(", ");
 				data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, uval->tuple_value, i);
 				const user_value child_uval = get_user_value_to_containee_from_container(dti, uval->tuple_value, i);
-				if(is_variable_sized_type_info(containee_pos_info.type_info) && !is_user_value_NULL(uval))
+				if(is_variable_sized_type_info(containee_pos_info.type_info) && !is_user_value_NULL(&child_uval))
 					printf("[%"PRIu32"]->", read_value_from_page(uval->tuple_value + containee_pos_info.byte_offset_to_byte_offset, dti->max_size));
 				print_user_value(&child_uval, containee_pos_info.type_info);
 			}
