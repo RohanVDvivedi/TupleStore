@@ -194,6 +194,8 @@ uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, uint
 
 #include<page_layout_util.h>
 
+/*
+// NEW PRINT CODE TO BE REPLACED
 void print_user_value(const user_value* uval, const data_type_info* dti)
 {
 	if(is_user_value_NULL(uval))
@@ -277,6 +279,98 @@ void print_user_value(const user_value* uval, const data_type_info* dti)
 				data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, uval->array_value, i);
 				if(is_variable_sized_type_info(containee_pos_info.type_info))
 					printf("{%"PRIu32"}->", read_value_from_page(uval->array_value + containee_pos_info.byte_offset_to_byte_offset, dti->max_size));
+				const user_value child_uval = get_user_value_to_containee_from_container(dti, uval->array_value, i);
+				print_user_value(&child_uval, containee_pos_info.type_info);
+			}
+			printf("]");
+			break;
+		}
+	}
+}
+*/
+
+// OLD PRINT CODE TO BE DEPRECATED
+void print_user_value(const user_value* uval, const data_type_info* dti)
+{
+	if(is_user_value_NULL(uval))
+	{
+		printf("NULL");
+		return;
+	}
+	if(is_user_value_OUT_OF_BOUNDS(uval))
+	{
+		printf("OUT_OF_BOUNDS");
+		return;
+	}
+	switch(dti->type)
+	{
+		case BIT_FIELD :
+		{
+			printf("%"PRIx64, uval->bit_field_value);
+			break;
+		}
+		case UINT :
+		{
+			printf("%"PRIu64, uval->uint_value);
+			break;
+		}
+		case INT :
+		{
+			printf("%"PRId64, uval->int_value);
+			break;
+		}
+		case FLOAT :
+		{
+			if(dti->size == sizeof(float))
+				printf("%f", uval->float_value);
+			else if(dti->size == sizeof(double))
+				printf("%lf", uval->double_value);
+			else if(dti->size == sizeof(long double))
+				printf("%Lf", uval->long_double_value);
+			break;
+		}
+		case LARGE_UINT :
+		{
+			print_uint256(uval->large_uint_value);
+			break;
+		}
+		case STRING :
+		{
+			printf("\"%.*s\"", uval->string_size, ((const char*)(uval->string_value)));
+			break;
+		}
+		case BLOB :
+		{
+			printf("BLOB(%"PRIu32")[", uval->blob_size);
+			for(uint32_t i = 0; i < uval->blob_size; i++)
+				printf(" 0x%2"PRIx8, ((const uint8_t*)(uval->blob_value))[i]);
+			printf("]");
+			break;
+		}
+		case TUPLE :
+		{
+			for(uint32_t i = 0; i < get_element_count_for_container_type_info(dti, uval->tuple_value); i++)
+			{
+				if(i != 0)
+					printf(", ");
+				data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, uval->tuple_value, i);
+				if(is_variable_sized_type_info(containee_pos_info.type_info))
+					printf("[%"PRIu32"]->", read_value_from_page(uval->tuple_value + containee_pos_info.byte_offset_to_byte_offset, dti->max_size));
+				const user_value child_uval = get_user_value_to_containee_from_container(dti, uval->tuple_value, i);
+				print_user_value(&child_uval, containee_pos_info.type_info);
+			}
+			break;
+		}
+		case ARRAY :
+		{
+			printf("ARRAY<%"PRIu32">[", get_size_for_type_info(dti, uval->array_value));
+			for(uint32_t i = 0; i < get_element_count_for_container_type_info(dti, uval->array_value); i++)
+			{
+				if(i != 0)
+					printf(", ");
+				data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, uval->array_value, i);
+				if(is_variable_sized_type_info(containee_pos_info.type_info))
+					printf("[%"PRIu32"]->", read_value_from_page(uval->array_value + containee_pos_info.byte_offset_to_byte_offset, dti->max_size));
 				const user_value child_uval = get_user_value_to_containee_from_container(dti, uval->array_value, i);
 				print_user_value(&child_uval, containee_pos_info.type_info);
 			}
