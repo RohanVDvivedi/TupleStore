@@ -29,6 +29,10 @@ uint32_t get_element_count_for_user_value(const user_value* uval, const data_typ
 	if(is_user_value_NULL(uval) || is_user_value_OUT_OF_BOUNDS(uval))
 		return 0;
 
+	// empty user value has no elements
+	if(uval == EMPTY_USER_VALUE)
+		return 0;
+
 	if(dti->type == STRING)
 		return uval->string_size;
 	else if(dti->type == BLOB)
@@ -51,6 +55,10 @@ const user_value get_containee_for_user_value(const user_value* uval, const data
 		return (*OUT_OF_BOUNDS_USER_VALUE);
 
 	if(index >= get_element_count_for_user_value(uval, dti))
+		return (*OUT_OF_BOUNDS_USER_VALUE);
+
+	// empty user value has no elements
+	if(uval == EMPTY_USER_VALUE)
 		return (*OUT_OF_BOUNDS_USER_VALUE);
 
 	if(dti->type == STRING)

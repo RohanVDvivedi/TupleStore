@@ -63,8 +63,6 @@ const user_value get_containee_for_user_value(const user_value* uval, const data
 
 int can_compare_user_value(const data_type_info* dti1, const data_type_info* dti2);
 
-// ZERO_USER_VALUE or EMPTY_USER_VALUE must not be input to any of the functions below, if your dti->type is a TUPLE or an ARRAY
-
 int compare_user_value(const user_value* uval1, const data_type_info* dti1, const user_value* uval2, const data_type_info* dti2);
 
 uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, uint64_t (*hash_func)(const void* data, uint32_t data_size));
