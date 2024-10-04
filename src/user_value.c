@@ -21,6 +21,51 @@ int is_user_value_OUT_OF_BOUNDS(const user_value* uval)
 	return (uval != NULL) && uval->is_OUT_OF_BOUNDS;
 }
 
+uint32_t get_element_count_for_user_value(const data_type_info* dti, const user_value* uval)
+{
+	if(!is_container_type_info(dti))
+		return 0;
+
+	if(is_user_value_NULL(uval) || is_user_value_OUT_OF_BOUNDS(uval))
+		return 0;
+
+	if(dti->type == STRING)
+		return uval->string_size;
+	else if(dti->type == BLOB)
+		return uval->blob_size;
+	else if(dti->type == TUPLE)
+		return get_element_count_for_container_type_info(dti, uval->tuple_value);
+	else if(dti->type == ARRAY)
+		return get_element_count_for_container_type_info(dti, uval->array_value);
+
+	// never reaches here
+	return 0;
+}
+
+const user_value get_containee_for_user_value(const data_type_info* dti, const user_value* uval, uint32_t index)
+{
+	if(!is_container_type_info(dti))
+		return (*OUT_OF_BOUNDS_USER_VALUE);
+
+	if(is_user_value_NULL(uval) || is_user_value_OUT_OF_BOUNDS(uval))
+		return (*OUT_OF_BOUNDS_USER_VALUE);
+
+	if(index >= get_element_count_for_user_value(dti, uval))
+		return (*OUT_OF_BOUNDS_USER_VALUE);
+
+	if(dti->type == STRING)
+		return (user_value){.uint_value = (((const unsigned char *)(uval->string_value))[index] & UINT64_C(0xff))};
+	else if(dti->type == BLOB)
+		return (user_value){.uint_value = (((const unsigned char *)(uval->blob_value))[index] & UINT64_C(0xff))};
+	else if(dti->type == TUPLE)
+		return get_user_value_to_containee_from_container(dti, uval->tuple_value, index);
+	else if(dti->type == ARRAY)
+		return get_user_value_to_containee_from_container(dti, uval->array_value, index);
+
+	// never reaches here
+	return (*OUT_OF_BOUNDS_USER_VALUE);
+}
+
 int can_compare_user_value(const data_type_info* dti1, const data_type_info* dti2)
 {
 	// TODO
