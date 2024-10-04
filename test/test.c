@@ -60,6 +60,18 @@ tuple_def* get_tuple_definition()
 		tuple_type_info->containees[4].type_info = &c4_type_info;
 	#endif
 
+	strcpy(tuple_type_info->containees[5].field_name, "col_5");
+	tuple_type_info->containees[5].type_info = INT_NULLABLE[1];
+
+	strcpy(tuple_type_info->containees[6].field_name, "col_6");
+	tuple_type_info->containees[6].type_info = INT_NULLABLE[1];
+
+	strcpy(tuple_type_info->containees[7].field_name, "col_7");
+	tuple_type_info->containees[7].type_info = INT_NULLABLE[1];
+
+	strcpy(tuple_type_info->containees[8].field_name, "col_8");
+	tuple_type_info->containees[8].type_info = INT_NULLABLE[1];
+
 	if(!initialize_tuple_def(&tuple_definition, tuple_type_info))
 	{
 		printf("failed finalizing tuple definition\n");
