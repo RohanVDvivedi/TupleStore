@@ -67,15 +67,25 @@ const user_value get_containee_for_user_value(const user_value* uval, const data
 
 int can_compare_user_value(const data_type_info* dti1, const data_type_info* dti2)
 {
-	// TODO
+	// same exact types, this is essential for TUPLE types
+	if(dti1 == dti2)
+		return 1;
+
+	// both are primitive types
+	if(is_primitive_numeral_type_info(dti1) && is_primitive_numeral_type_info(dti2) && can_compare_primitive_numeral_type_infos(dti1, dti2))
+		return 1;
+
+	// STRING, BLOB and ARRAY are internally comparable, if their containee types are comparable
+	if((dti1->type == STRING || dti1->type == BLOB || dti1->type == ARRAY) && (dti2->type == STRING || dti2->type == BLOB || dti2->type == ARRAY))
+		return can_compare_user_value(dti1->containee, dti2->containee);
+
+	return 0;
 }
 
-int compare_user_value(const user_value* uval1, const data_type_info* dti1, const user_value* uval2, const data_type_info* dti2)
+// before calling this function the dti1 and dti2 must pass this check : can_compare_user_value(dti1, dti2)
+static int compare_user_value_internal(const user_value* uval1, const data_type_info* dti1, const user_value* uval2, const data_type_info* dti2)
 {
 	if(is_user_value_OUT_OF_BOUNDS(uval1) || is_user_value_OUT_OF_BOUNDS(uval2))
-		return -2;
-
-	if(!can_compare_user_value(dti1, dti2))
 		return -2;
 
 	if(is_user_value_NULL(uval1) && is_user_value_NULL(uval2))
@@ -85,7 +95,59 @@ int compare_user_value(const user_value* uval1, const data_type_info* dti1, cons
 	else if(!is_user_value_NULL(uval1) && is_user_value_NULL(uval2))
 		return 1;
 
-	// TODO
+	if(is_primitive_numeral_type_info(dti1)) // both are primitive types and are comparable
+		return compare_primitive_numeral_type(uval1, dti1, uval2, dti2);
+	else if(dti1->type == TUPLE) // both are the same tuple types
+	{
+		int cmp = 0;
+		uint32_t element_count = get_element_count_for_user_value(uval1, dti1);
+		for(uint32_t i = 0; i < element_count && cmp == 0; i++)
+		{
+			const data_type_info* child_dti1 = get_data_type_info_for_containee_of_container_without_data(dti1, i);
+			const user_value child_value1 = get_containee_for_user_value(uval1, dti1, i);
+
+			const data_type_info* child_dti2 = get_data_type_info_for_containee_of_container_without_data(dti2, i);
+			const user_value child_value2 = get_containee_for_user_value(uval2, dti2, i);
+
+			cmp = compare_user_value_internal(&child_value1, child_dti1, &child_value2, child_dti2);
+		}
+		return cmp;
+	}
+	else // they both are a 9-combination of STRING, BLOB and ARRAY of comparable types
+	{
+		int cmp = 0;
+		uint32_t element_count1 = get_element_count_for_user_value(uval1, dti1);
+		uint32_t element_count2 = get_element_count_for_user_value(uval2, dti2);
+		uint32_t element_count = min(element_count1, element_count2);
+		for(uint32_t i = 0; i < element_count && cmp == 0; i++) // perform comparison over the minimum element count of both the containers
+		{
+			const data_type_info* child_dti1 = get_data_type_info_for_containee_of_container_without_data(dti1, i);
+			const user_value child_value1 = get_containee_for_user_value(uval1, dti1, i);
+
+			const data_type_info* child_dti2 = get_data_type_info_for_containee_of_container_without_data(dti2, i);
+			const user_value child_value2 = get_containee_for_user_value(uval2, dti2, i);
+
+			cmp = compare_user_value_internal(&child_value1, child_dti1, &child_value2, child_dti2);
+		}
+		if(cmp == 0 && (element_count1 != element_count2))
+		{
+			if(element_count1 > element_count2)
+				cmp = 1;
+			else
+				cmp = -1;
+		}
+		return cmp;
+	}
+}
+
+int compare_user_value(const user_value* uval1, const data_type_info* dti1, const user_value* uval2, const data_type_info* dti2)
+{
+	// first check that the element types attempted to be compared are comparable types
+	// it can be recursive fro nested arrays 
+	if(!can_compare_user_value(dti1, dti2))
+		return -2;
+
+	return compare_user_value_internal(uval1, dti1, uval2, dti2);
 }
 
 uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, uint64_t (*hash_func)(const void* data, uint32_t size))
