@@ -805,7 +805,10 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
   // set data to make tuple exceed max_size, and it should fail
   // below test cases and their calculations assume that column 2 is NULL
 	{
-		int res = set_element_in_tuple(def, STATIC_POSITION(2), tuple, &((user_value){.string_value = NULL, .string_size = PAGE_SIZE - get_tuple_size(def, tuple) - VAR_STRING_SIZE_SPECIFICER_SIZE + 5}), UINT32_MAX);
+		char test_string[4096];
+		for(int i = 0; i < 4096; i++)
+				test_string[i] = 'A';
+		int res = set_element_in_tuple(def, STATIC_POSITION(2), tuple, &((user_value){.string_value = test_string, .string_size = PAGE_SIZE - get_tuple_size(def, tuple) - VAR_STRING_SIZE_SPECIFICER_SIZE + 5}), UINT32_MAX);
 
 		printf("%d = failed to make tuple size cross max_size\n", res);
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
