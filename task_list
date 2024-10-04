@@ -4,7 +4,6 @@ TASKS PICKED
    * if both are primitive numeral type elements compare them directly
    * if they are tuples they are comparable only if they both have same dti pointers
    * else lastly their containee type_info must match
- * nested compare functions with positional_accessor, taking in tuple_def and tuple as input using positional accessor
  * test and make the old testcases function and return the same output
  * add new test case to test all functions of complex nested types using tuple def
 

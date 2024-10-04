@@ -409,7 +409,10 @@ int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_a
 	for(uint32_t i = 0; ((i < element_count) && (compare == 0)); i++)
 	{
 		compare = compare_elements_of_tuple(tup1, tpl_d1, ((element_ids1 == NULL) ? STATIC_POSITION(i) : element_ids1[i]), tup2, tpl_d2, ((element_ids2 == NULL) ? STATIC_POSITION(i) : element_ids2[i]));
-		
+
+		if(compare == -2) // this implies elements are not comparable
+			return -2;
+
 		// if cmp_dir is not NULL, then compare in default direction of the element
 		if(cmp_dir != NULL)
 			compare = compare * cmp_dir[i];
