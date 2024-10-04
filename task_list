@@ -1,9 +1,5 @@
 TASKS PICKED
 
- * can compare using data_type_info, compare using user_value using data OR user_value
-   * if both are primitive numeral type elements compare them directly
-   * if they are tuples they are comparable only if they both have same dti pointers
-   * else lastly their containee type_info must match
  * test and make the old testcases function and return the same output
  * add new test case to test all functions of complex nested types using tuple def
  * test hashing using data_type_info and a pointer and data_type_info and user value, and make sure that the results are same
