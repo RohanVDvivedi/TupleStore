@@ -4,10 +4,9 @@
 
 #include<cutlery_stds.h>
 
-user_value const * const DEFAULT_USER_VALUE = &((const user_value){});
-
 user_value const * const NULL_USER_VALUE = &((const user_value){.is_NULL = 1, .is_OUT_OF_BOUNDS = 0,});
 user_value const * const OUT_OF_BOUNDS_USER_VALUE = &((const user_value){.is_NULL = 1, .is_OUT_OF_BOUNDS = 1,});
+
 user_value const * const ZERO_USER_VALUE = &((const user_value){.is_NULL = 0, .is_OUT_OF_BOUNDS = 0,});
 user_value const * const EMPTY_USER_VALUE = ZERO_USER_VALUE;
 
@@ -27,10 +26,6 @@ uint32_t get_element_count_for_user_value(const user_value* uval, const data_typ
 		return 0;
 
 	if(is_user_value_NULL(uval) || is_user_value_OUT_OF_BOUNDS(uval))
-		return 0;
-
-	// empty user value has no elements
-	if(uval == EMPTY_USER_VALUE)
 		return 0;
 
 	if(dti->type == STRING)
@@ -55,10 +50,6 @@ const user_value get_containee_for_user_value(const user_value* uval, const data
 		return (*OUT_OF_BOUNDS_USER_VALUE);
 
 	if(index >= get_element_count_for_user_value(uval, dti))
-		return (*OUT_OF_BOUNDS_USER_VALUE);
-
-	// empty user value has no elements
-	if(uval == EMPTY_USER_VALUE)
 		return (*OUT_OF_BOUNDS_USER_VALUE);
 
 	if(dti->type == STRING)

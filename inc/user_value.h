@@ -41,15 +41,14 @@ struct user_value
 	};
 };
 
-// use default user value to make the set functions to set the value in tuple to a defautl value
-extern user_value const * const DEFAULT_USER_VALUE;
-
 extern user_value const * const NULL_USER_VALUE;
 extern user_value const * const OUT_OF_BOUNDS_USER_VALUE;
+
 extern user_value const * const ZERO_USER_VALUE;
 extern user_value const * const EMPTY_USER_VALUE; // same value as ZERO_USER_VALUE, but generally used for conatiners like STRING, BLOB, TUPLE and ARRAY; tuple_value and array_value here are NULLs but they are considered as if this pointer points to their most minimally initialized value
-
-// ZERO_USER_VALUE and EMPTY_USER_VALUE are identical and fully interchangeable, they mostly are just greater than NULL_USER_VALUE, but this is not guaranteed for custim user-defined types
+// EMPTY_USER_VALUE can only be used for setting TUPLE and ARRAY types to their empty initialized forms using set_user_value_* and can_set_user_value_* functions in data_type_info.h and set_element_in_tuple and can_set_element_in_tuple functions in tuple.h
+// you must never pass them to hash and compare functions below
+// ZERO_USER_VALUE and EMPTY_USER_VALUE must not be passed to any function except the ones that are used for setting the attribute or initializing the data
 
 int is_user_value_NULL(const user_value* uval);
 
