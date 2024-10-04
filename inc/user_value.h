@@ -58,8 +58,8 @@ int is_user_value_OUT_OF_BOUNDS(const user_value* uval);
 #include<data_type_info.h>
 
 // only a valid function calls for container_type_info -> STRING, BLOB, TUPLE and ARRAY
-uint32_t get_element_count_for_user_value(const data_type_info* dti, const user_value* uval);
-const user_value get_containee_for_user_value(const data_type_info* dti, const user_value* uval, uint32_t index);
+uint32_t get_element_count_for_user_value(const user_value* uval, const data_type_info* dti);
+const user_value get_containee_for_user_value(const user_value* uval, const data_type_info* dti, uint32_t index);
 
 int can_compare_user_value(const data_type_info* dti1, const data_type_info* dti2);
 

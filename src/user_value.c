@@ -21,7 +21,7 @@ int is_user_value_OUT_OF_BOUNDS(const user_value* uval)
 	return (uval != NULL) && uval->is_OUT_OF_BOUNDS;
 }
 
-uint32_t get_element_count_for_user_value(const data_type_info* dti, const user_value* uval)
+uint32_t get_element_count_for_user_value(const user_value* uval, const data_type_info* dti)
 {
 	if(!is_container_type_info(dti))
 		return 0;
@@ -42,7 +42,7 @@ uint32_t get_element_count_for_user_value(const data_type_info* dti, const user_
 	return 0;
 }
 
-const user_value get_containee_for_user_value(const data_type_info* dti, const user_value* uval, uint32_t index)
+const user_value get_containee_for_user_value(const user_value* uval, const data_type_info* dti, uint32_t index)
 {
 	if(!is_container_type_info(dti))
 		return (*OUT_OF_BOUNDS_USER_VALUE);
@@ -50,7 +50,7 @@ const user_value get_containee_for_user_value(const data_type_info* dti, const u
 	if(is_user_value_NULL(uval) || is_user_value_OUT_OF_BOUNDS(uval))
 		return (*OUT_OF_BOUNDS_USER_VALUE);
 
-	if(index >= get_element_count_for_user_value(dti, uval))
+	if(index >= get_element_count_for_user_value(uval, dti))
 		return (*OUT_OF_BOUNDS_USER_VALUE);
 
 	if(dti->type == STRING)
@@ -116,26 +116,19 @@ uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, uint
 
 		return hash_func(serialized_value, get_size_for_type_info(dti ,serialized_value));
 	}
-	else if(dti->type == STRING)
-	{
-		uint32_t hash = 0;
-		for(uint32_t i = 0; i < uval->string_size; i++)
-			hash ^= hash_func(uval->string_value + i, 1);
-		return hash;
-	}
-	else if(dti->type == BLOB)
-	{
-		uint32_t hash = 0;
-		for(uint32_t i = 0; i < uval->blob_size; i++)
-			hash ^= hash_func(uval->blob_value + i, 1);
-		return hash;
-	}
-	else if(dti->type == TUPLE)
-		return hash_data_for_type_info(dti, uval->tuple_value, hash_func);
-	else if(dti->type == ARRAY)
-		return hash_data_for_type_info(dti, uval->array_value, hash_func);
 	else
-		return 0;
+	{
+		uint32_t hash = 0;
+		for(uint32_t i = 0; i < get_element_count_for_user_value(uval, dti); i++)
+		{
+			const data_type_info* child_dti = get_data_type_info_for_containee_of_container_without_data(dti, i);
+			if(child_dti == NULL)
+				return -2;
+			const user_value child_value = get_containee_for_user_value(uval, dti, i);
+			hash ^= hash_user_value(&child_value, child_dti, hash_func);
+		}
+		return hash;
+	}
 }
 
 #include<page_layout_util.h>
