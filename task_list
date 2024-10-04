@@ -1,13 +1,12 @@
 TASKS PICKED
 
- * test and make the old testcases function and return the same output
+ * implement a simple set element in tuple from tuple
+ * test and make the old testcase 2 function and return the same output
  * add new test case to test all functions of complex nested types using tuple def
 
 1 NEW TYPE TASKS
 
- *1*
- * add hash_tables for type_name based type casting, comparing and hashing
- * only tuples can be stored on the disk, and each tuple has a corresponding tuple_def, and each tuple_def contains a tuple_size_def
+ *1* add hash_tables for type_name based type casting, comparing and hashing
 
  *2* compact serializable form of tuple_def and tuple_size_def, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
 
