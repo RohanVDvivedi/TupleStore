@@ -21,6 +21,11 @@ int is_user_value_OUT_OF_BOUNDS(const user_value* uval)
 	return (uval != NULL) && uval->is_OUT_OF_BOUNDS;
 }
 
+int compare_user_value(const user_value* uval1, const data_type_info* dti1, const user_value* uval2, const data_type_info* dti2)
+{
+	// TODO
+}
+
 uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, uint64_t (*hash_func)(const void* data, uint32_t size))
 {
 	if(is_user_value_OUT_OF_BOUNDS(uval))

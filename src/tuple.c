@@ -378,29 +378,25 @@ int discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positional_ac
 // compare and hash functions
 int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, positional_accessor pa1, const void* tup2, const tuple_def* tpl_d2, positional_accessor pa2)
 {
-	// TODO
-	/*const element_def* ele_d1 = get_element_def_by_id(tpl_d1, index1);
-	const element_def* ele_d2 = get_element_def_by_id(tpl_d2, index2);
-
-	if(!can_compare_element_defs(ele_d1, ele_d2))
+	// if the element is not accessible, then fail
+	const data_type_info* dti1 = get_type_info_for_element_from_tuple(tpl_d1, pa1);
+	if(dti1 == NULL)
 		return -2;
 
-	const void* e1 = get_element_from_tuple(tpl_d1, index1, tup1);
-	const void* e2 = get_element_from_tuple(tpl_d2, index2, tup2);
+	// if the element is not accessible, then fail
+	const data_type_info* dti2 = get_type_info_for_element_from_tuple(tpl_d2, pa2);
+	if(dti2 == NULL)
+		return -2;
 
-	// handling case when elements are NULL
-	if(e1 == NULL && e2 == NULL)
-		return 0;
-	else if(e1 == NULL || e2 == NULL)
-	{
-		// a NULL element is always considered lesser than a NON NULL element
-		if(e1 == NULL)
-			return -1;
-		else
-			return 1;
-	}
-	else
-		return compare_elements(e1, get_element_def_by_id(tpl_d1, index1), e2, get_element_def_by_id(tpl_d2, index2));*/
+	// get the user value for this element
+	const user_value uval1 = get_value_from_element_from_tuple(tpl_d1, pa1, tup1);
+
+	// get the user value for this element
+	const user_value uval2 = get_value_from_element_from_tuple(tpl_d2, pa2, tup2);
+
+	// TODO : handle logic for custom compare function
+
+	return compare_user_value(&uval1, dti1, &uval2, dti2);
 }
 
 int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_accessor* element_ids1, const void* tup2, const tuple_def* tpl_d2, const positional_accessor* element_ids2, const compare_direction* cmp_dir, uint32_t element_count)
@@ -429,6 +425,8 @@ uint64_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, posi
 
 	// get the user value for this element
 	const user_value uval = get_value_from_element_from_tuple(tpl_d, pa, tup);
+
+	// TODO : handle logic for custom hash function
 
 	return hash_user_value(&uval, dti, hash_func);
 }
