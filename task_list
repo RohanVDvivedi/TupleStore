@@ -2,7 +2,6 @@ TASKS PICKED
 
  * test and make the old testcases function and return the same output
  * add new test case to test all functions of complex nested types using tuple def
- * test hashing using data_type_info and a pointer and data_type_info and user value, and make sure that the results are same
 
 1 NEW TYPE TASKS
 
