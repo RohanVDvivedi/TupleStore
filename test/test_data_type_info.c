@@ -1,8 +1,17 @@
 #include<data_type_info.h>
+#include<tuple.h>
 
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+
+uint64_t hash_func(const void* data, uint32_t size)
+{
+	uint64_t hash = 13;
+	for(uint32_t i = 0; i < size; i++)
+		hash += (hash ^ (((uint64_t)((const char*)data)[i]) + UINT64_C(1157)));
+	return hash;
+}
 
 int main()
 {
@@ -56,7 +65,16 @@ int main()
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, &(user_value){.bit_field_value = 0x25});
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 2, 100, &(user_value){.string_value = "Manan Joshi", .string_size = strlen("Manan Joshi")});
 
-		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
+		print_data_for_data_type_info(tuple_type_info, tuple);
+		{
+			const user_value uval = get_user_value_for_type_info(tuple_type_info, tuple);
+			tuple_def* tpl_d = &(tuple_def){};
+			initialize_tuple_def(tpl_d, tuple_type_info);
+			printf("    hashes = %"PRIu64" = %"PRIu64" = %"PRIu64"\n",
+				hash_user_value(&uval, tuple_type_info, hash_func),
+				hash_tuple(tuple, tpl_d, NULL, hash_func, tuple_type_info->element_count),
+				hash_tuple(tuple, tpl_d, &SELF, hash_func, 1));
+		}
 
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 3, 0, &(user_value){.string_value = "GHIJK", .string_size = strlen("GHIJK")});
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 4, 0, &(user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
@@ -64,7 +82,16 @@ int main()
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 6, 0, &(user_value){.double_value = 55});
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 7, 0, &(user_value){.bit_field_value = 0x25});
 
-		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
+		print_data_for_data_type_info(tuple_type_info, tuple);
+		{
+			const user_value uval = get_user_value_for_type_info(tuple_type_info, tuple);
+			tuple_def* tpl_d = &(tuple_def){};
+			initialize_tuple_def(tpl_d, tuple_type_info);
+			printf("    hashes = %"PRIu64" = %"PRIu64" = %"PRIu64"\n",
+				hash_user_value(&uval, tuple_type_info, hash_func),
+				hash_tuple(tuple, tpl_d, NULL, hash_func, tuple_type_info->element_count),
+				hash_tuple(tuple, tpl_d, &SELF, hash_func, 1));
+		}
 
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, EMPTY_USER_VALUE);
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 1, 0, EMPTY_USER_VALUE);
@@ -75,7 +102,16 @@ int main()
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 6, 0, EMPTY_USER_VALUE);
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 7, 0, EMPTY_USER_VALUE);
 
-		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d\n", is_minimal_data_for_type_info(tuple_type_info, tuple));
+		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d", is_minimal_data_for_type_info(tuple_type_info, tuple));
+		{
+			const user_value uval = get_user_value_for_type_info(tuple_type_info, tuple);
+			tuple_def* tpl_d = &(tuple_def){};
+			initialize_tuple_def(tpl_d, tuple_type_info);
+			printf("    hashes = %"PRIu64" = %"PRIu64" = %"PRIu64"\n",
+				hash_user_value(&uval, tuple_type_info, hash_func),
+				hash_tuple(tuple, tpl_d, NULL, hash_func, tuple_type_info->element_count),
+				hash_tuple(tuple, tpl_d, &SELF, hash_func, 1));
+		}
 
 		e3 = get_pointer_to_containee_from_container(tuple_type_info, tuple, 3);
 		e4 = get_pointer_to_containee_from_container(tuple_type_info, tuple, 4);
@@ -91,7 +127,16 @@ int main()
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 6, 0, NULL_USER_VALUE);
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 7, 0, NULL_USER_VALUE);
 
-		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d\n", is_minimal_data_for_type_info(tuple_type_info, tuple));
+		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d", is_minimal_data_for_type_info(tuple_type_info, tuple));
+		{
+			const user_value uval = get_user_value_for_type_info(tuple_type_info, tuple);
+			tuple_def* tpl_d = &(tuple_def){};
+			initialize_tuple_def(tpl_d, tuple_type_info);
+			printf("    hashes = %"PRIu64" = %"PRIu64" = %"PRIu64"\n",
+				hash_user_value(&uval, tuple_type_info, hash_func),
+				hash_tuple(tuple, tpl_d, NULL, hash_func, tuple_type_info->element_count),
+				hash_tuple(tuple, tpl_d, &SELF, hash_func, 1));
+		}
 
 		e3 = get_pointer_to_containee_from_container(tuple_type_info, tuple, 3);
 		e4 = get_pointer_to_containee_from_container(tuple_type_info, tuple, 4);
@@ -125,20 +170,44 @@ int main()
 		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, &(user_value){.bit_field_value = 0x2});
 		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, &(user_value){.bit_field_value = 0x3});
 
-		print_data_for_data_type_info(array_type_info, array);printf("\n");
+		print_data_for_data_type_info(array_type_info, array);
+		{
+			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			tuple_def* tpl_d = &(tuple_def){};
+			initialize_tuple_def(tpl_d, array_type_info);
+			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
+				hash_user_value(&uval, array_type_info, hash_func),
+				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+		}
 
 		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, &(user_value){.bit_field_value = 0x4});
 		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, &(user_value){.bit_field_value = 0x5});
 		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, &(user_value){.bit_field_value = 0x6});
 
 
-		print_data_for_data_type_info(array_type_info, array);printf("\n");
+		print_data_for_data_type_info(array_type_info, array);
+		{
+			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			tuple_def* tpl_d = &(tuple_def){};
+			initialize_tuple_def(tpl_d, array_type_info);
+			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
+				hash_user_value(&uval, array_type_info, hash_func),
+				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+		}
 
 		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, NULL_USER_VALUE);
 		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, NULL_USER_VALUE);
 		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, NULL_USER_VALUE);
 
-		print_data_for_data_type_info(array_type_info, array);printf("\n");
+		print_data_for_data_type_info(array_type_info, array);
+		{
+			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			tuple_def* tpl_d = &(tuple_def){};
+			initialize_tuple_def(tpl_d, array_type_info);
+			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
+				hash_user_value(&uval, array_type_info, hash_func),
+				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+		}
 	}
 	printf("\n\n");
 
@@ -150,26 +219,58 @@ int main()
 		char array[4096];
 		initialize_minimal_data_for_type_info(array_type_info, array);
 
-		print_data_for_data_type_info(array_type_info, array);printf("\n");
+		print_data_for_data_type_info(array_type_info, array);
+		{
+			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			tuple_def* tpl_d = &(tuple_def){};
+			initialize_tuple_def(tpl_d, array_type_info);
+			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
+				hash_user_value(&uval, array_type_info, hash_func),
+				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+		}
 
 		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, &(user_value){.large_uint_value = get_uint256(12)});
 		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, &(user_value){.large_uint_value = get_uint256(13)});
 		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, &(user_value){.large_uint_value = get_uint256(14)});
 
-		print_data_for_data_type_info(array_type_info, array);printf("\n");
+		print_data_for_data_type_info(array_type_info, array);
+		{
+			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			tuple_def* tpl_d = &(tuple_def){};
+			initialize_tuple_def(tpl_d, array_type_info);
+			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
+				hash_user_value(&uval, array_type_info, hash_func),
+				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+		}
 
 		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, &(user_value){.large_uint_value = get_uint256(15)});
 		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, &(user_value){.large_uint_value = get_uint256(16)});
 		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, &(user_value){.large_uint_value = get_uint256(17)});
 
 
-		print_data_for_data_type_info(array_type_info, array);printf("\n");
+		print_data_for_data_type_info(array_type_info, array);
+		{
+			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			tuple_def* tpl_d = &(tuple_def){};
+			initialize_tuple_def(tpl_d, array_type_info);
+			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
+				hash_user_value(&uval, array_type_info, hash_func),
+				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+		}
 
 		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, NULL_USER_VALUE);
 		set_user_value_to_containee_in_container(array_type_info, array, 1, 0, NULL_USER_VALUE);
 		set_user_value_to_containee_in_container(array_type_info, array, 2, 0, NULL_USER_VALUE);
 
-		print_data_for_data_type_info(array_type_info, array);printf("\n");
+		print_data_for_data_type_info(array_type_info, array);
+		{
+			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			tuple_def* tpl_d = &(tuple_def){};
+			initialize_tuple_def(tpl_d, array_type_info);
+			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
+				hash_user_value(&uval, array_type_info, hash_func),
+				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+		}
 	}
 	printf("\n\n");
 
@@ -308,7 +409,15 @@ int main()
 		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, &(user_value){.string_value = "Devashree Joshi", .string_size = strlen("Devashree Joshi")});
 		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, &(user_value){.string_value = "Vipulkumar Dvivedi", .string_size = strlen("Vipulkumar Dvivedi")});
 
-		print_data_for_data_type_info(array_type_info, array);printf("\n");
+		print_data_for_data_type_info(array_type_info, array);
+		{
+			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			tuple_def* tpl_d = &(tuple_def){};
+			initialize_tuple_def(tpl_d, array_type_info);
+			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
+				hash_user_value(&uval, array_type_info, hash_func),
+				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+		}
 
 		expand_container(array_type_info, array, 2, 3, 200);
 
@@ -317,7 +426,15 @@ int main()
 		set_user_value_to_containee_in_container(array_type_info, array, 2, 50, &(user_value){.string_value = "Manan Joshi", .string_size = strlen("Manan Joshi")});
 		set_user_value_to_containee_in_container(array_type_info, array, 4, 50, &(user_value){.string_value = "Avyaan Joshi", .string_size = strlen("Avyaan Joshi")});
 
-		print_data_for_data_type_info(array_type_info, array);printf("\n");
+		print_data_for_data_type_info(array_type_info, array);
+		{
+			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			tuple_def* tpl_d = &(tuple_def){};
+			initialize_tuple_def(tpl_d, array_type_info);
+			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
+				hash_user_value(&uval, array_type_info, hash_func),
+				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+		}
 
 		discard_from_container(array_type_info, array, 1, 3);
 
