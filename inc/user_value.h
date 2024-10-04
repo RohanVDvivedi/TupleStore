@@ -55,4 +55,6 @@ int is_user_value_NULL(const user_value* uval);
 
 int is_user_value_OUT_OF_BOUNDS(const user_value* uval);
 
+uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, uint64_t (*hash_func)(const void* data, uint32_t data_size));
+
 #endif
