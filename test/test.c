@@ -22,14 +22,14 @@ char page[PAGE_SIZE] = {};
 char temp_page[PAGE_SIZE] = {};
 
 tuple_def tuple_definition;
-char tuple_type_info_memory[sizeof_tuple_data_type_info(5)];
+char tuple_type_info_memory[sizeof_tuple_data_type_info(9)];
 data_type_info* tuple_type_info = (data_type_info*)tuple_type_info_memory;
 data_type_info c2_type_info;
 data_type_info c4_type_info;
 
 tuple_def* get_tuple_definition()
 {
-	initialize_tuple_data_type_info(tuple_type_info, "my_table", 1, PAGE_SIZE, 5);
+	initialize_tuple_data_type_info(tuple_type_info, "my_table", 1, PAGE_SIZE, 9);
 
 	strcpy(tuple_type_info->containees[0].field_name, "col_0");
 	tuple_type_info->containees[0].type_info = INT_NULLABLE[5];
