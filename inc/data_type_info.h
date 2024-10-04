@@ -277,6 +277,15 @@ void print_user_value_for_data_type_info(const data_type_info* dti, const user_v
 
 #include<primitive_numeral_types.h>
 
-// add comparision and hashing functions for your non null dti with data here
+// comparision utility
+
+// hashing utility
+
+// does not work for BIT_FIELD
+// non containers are hashed directly, containers are hashed element by element, and XORed together
+// so STRING, variable sized STRING and an ARRAY of UINT_NON_NULLABLE[1] with same content hash to the same value
+uint64_t hash_data_for_type_info(const data_type_info* dti, const void* data, uint64_t (*hash_func)(const void* data, uint32_t size));
+
+uint64_t hash_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, uint64_t (*hash_func)(const void* data, uint32_t size));
 
 #endif

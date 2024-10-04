@@ -1696,3 +1696,57 @@ void print_user_value_for_data_type_info(const data_type_info* dti, const user_v
 		}
 	}
 }
+
+uint64_t hash_data_for_type_info(const data_type_info* dti, const void* data, uint64_t (*hash_func)(const void* data, uint32_t size))
+{
+	if(dti->type == BIT_FIELD)
+		return 0;
+
+	// if it is not a container hash as is
+	if(!is_container_type_info(dti))
+		return hash_func(data, dti->size);
+
+	uint32_t hash = 0;
+	for(uint32_t i = 0; i < get_element_count_for_container_type_info(dti, data); i++)
+	{
+		// if it is a string and the i-th element is a 0
+		// containee of a STRING is UINT_NON_NULLABLE[1], i.e. non-nullable hence we do not need to check
+		if(dti->type == STRING && get_user_value_to_containee_from_container(dti, data, i).uint_value == 0)
+			break;
+
+		hash ^= hash_containee_in_container(dti, data, i, hash_func);
+	}
+
+	return hash;
+}
+
+uint64_t hash_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, uint64_t (*hash_func)(const void* data, uint32_t size))
+{
+	if(!is_container_type_info(dti))
+		return 0;
+
+	// if index is out-of-bounds, treat it as null
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return 0;
+
+	// if it the index-th containee is null, return 0
+	if(is_containee_null_in_container(dti, data, index))
+		return 0;
+
+	// we now know that the containee must exist
+	data_position_info child_pos = get_data_position_info_for_containee_of_container(dti, data, index);
+	const void* child_data = get_pointer_to_containee_from_container(dti, data, index);
+
+	if(child_pos.type_info == BIT_FIELD)
+	{
+		uint64_t hash = 0;
+		for(uint32_t i = 0; i < child_pos.type_info->bit_field_size; i++)
+		{
+			char bit_data = !!get_bit(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), child_pos.bit_offset_in_prefix_bitmap + i);
+			hash ^= hash_func(&bit_data, 1);
+		}
+		return hash;
+	}
+	else
+		return hash_data_for_type_info(child_pos.type_info, child_data, hash_func);
+}
