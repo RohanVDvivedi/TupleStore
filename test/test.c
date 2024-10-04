@@ -21,105 +21,55 @@ char page[PAGE_SIZE] = {};
 
 char temp_page[PAGE_SIZE] = {};
 
+tuple_def tuple_definition;
+char tuple_type_info_memory[sizeof_tuple_data_type_info(5)];
+data_type_info* tuple_type_info = (data_type_info*)tuple_type_info_memory;
+data_type_info c2_type_info;
+data_type_info c4_type_info;
+
 tuple_def* get_tuple_definition()
 {
-	// initialize tuple definition and insert element definitions
-	tuple_def* def = get_new_tuple_def("my_table", 16, PAGE_SIZE);
+	initialize_tuple_data_type_info(tuple_type_info, "my_table", 1, PAGE_SIZE, 5);
 
-	int res = insert_element_def(def, "col_0", INT, 5, 0, NULL);
-	if(res == 0)
-	{
-		printf("failed adding column 0\n");
-		exit(-1);
-	}
+	strcpy(tuple_type_info->containees[0].field_name, "col_0");
+	tuple_type_info->containees[0].type_info = INT_NULLABLE[5];
 
-	res = insert_element_def(def, "col_1", UINT, 1, 0, NULL);
-	if(res == 0)
-	{
-		printf("failed adding column 1\n");
-		exit(-1);
-	}
+	strcpy(tuple_type_info->containees[1].field_name, "col_1");
+	tuple_type_info->containees[1].type_info = UINT_NULLABLE[1];
 
 	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
-		res = insert_element_def(def, "col_2", STRING, 15, 0, NULL);
+		c2_type_info = get_fixed_length_string_type("STRING", 15, 1);
+		strcpy(tuple_type_info->containees[2].field_name, "col_2");
+		tuple_type_info->containees[2].type_info = &c2_type_info;
 	#else
-		res = insert_element_def(def, "var_col_2", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE, 0, NULL);
+		c2_type_info = get_variable_length_string_type("STRING", 1 << (VAR_STRING_SIZE_SPECIFICER_SIZE * 8));
+		strcpy(tuple_type_info->containees[2].field_name, "var_col_2");
+		tuple_type_info->containees[2].type_info = &c2_type_info;
 	#endif
-	if(res == 0)
-	{
-		printf("failed adding column 2\n");
-		exit(-1);
-	}
 
-	res = insert_element_def(def, "col_3", FLOAT, 8, 0, NULL);
-	if(res == 0)
-	{
-		printf("failed adding column 3\n");
-		exit(-1);
-	}
+	strcpy(tuple_type_info->containees[3].field_name, "col_3");
+	tuple_type_info->containees[3].type_info = FLOAT_double_NULLABLE;
 
 	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
-		res = insert_element_def(def, "col_4", STRING, 8, 0, NULL);
+		c4_type_info = get_fixed_length_string_type("STRING", 8, 1);
+		strcpy(tuple_type_info->containees[4].field_name, "col_4");
+		tuple_type_info->containees[4].type_info = &c4_type_info;
 	#else
-		res = insert_element_def(def, "var_col_4", VAR_STRING, VAR_STRING_SIZE_SPECIFICER_SIZE, 0, NULL);
+		c4_type_info = get_variable_length_string_type("STRING", 1 << (VAR_STRING_SIZE_SPECIFICER_SIZE * 8));
+		strcpy(tuple_type_info->containees[4].field_name, "var_col_4");
+		tuple_type_info->containees[4].type_info = &c4_type_info;
 	#endif
-	if(res == 0)
-	{
-		printf("failed adding column 4\n");
-		exit(-1);
-	}
 
-	res = insert_element_def(def, "col_5", INT, 1, 0, NULL);
-	if(res == 0)
-	{
-		printf("failed adding column 5\n");
-		exit(-1);
-	}
-	res = insert_element_def(def, "col_6", INT, 1, 0, NULL);
-	if(res == 0)
-	{
-		printf("failed adding column 6\n");
-		exit(-1);
-	}
-	res = insert_element_def(def, "col_7", INT, 1, 0, NULL);
-	if(res == 0)
-	{
-		printf("failed adding column 7\n");
-		exit(-1);
-	}
-	res = insert_element_def(def, "col_8", INT, 1, 0, NULL);
-	if(res == 0)
-	{
-		printf("failed adding column 8\n");
-		exit(-1);
-	}
-
-	res = insert_element_def(def, "col_3", FLOAT, 4, 0, NULL);
-	printf("attempting to insert an element def with the 'col_2' name => %d\n", res);
-
-	res = insert_element_def(def, "col_1", FLOAT, 4, 0, NULL);
-	printf("attempting to insert an element def with the 'col_1' name => %d\n", res);
-
-	res = insert_element_def(def, "col_0", FLOAT, 4, 0, NULL);
-	printf("attempting to insert an element def with the 'col_4' name => %d\n", res);
-
-	res = finalize_tuple_def(def);
-	if(res == 0)
+	if(!initialize_tuple_def(&tuple_definition, tuple_type_info))
 	{
 		printf("failed finalizing tuple definition\n");
 		exit(-1);
 	}
 
-	if(is_empty_tuple_def(def))
-	{
-		printf("ERROR BUILDING TUPLE DEFINITION\n");
-		exit(-1);
-	}
-
-	print_tuple_def(def);
+	print_tuple_def(&tuple_definition);
 	printf("\n\n");
 
-	return def;
+	return &tuple_definition;
 }
 
 // a row like struct for ease in building test tuples
@@ -139,11 +89,11 @@ void build_tuple_from_row_struct(const tuple_def* def, void* tuple, const row* r
 
 	init_tuple(def, tuple);
 
-	set_element_in_tuple(def, column_no++, tuple, &((user_value){.int_value = r->c0}));
-	set_element_in_tuple(def, column_no++, tuple, &((user_value){.uint_value = r->c1}));
-	set_element_in_tuple(def, column_no++, tuple, (r->c2 == NULL) ? NULL : &((user_value){.data = r->c2, .data_size = strlen(r->c2)}));
-	set_element_in_tuple(def, column_no++, tuple, &((user_value){.double_value = r->c3}));
-	set_element_in_tuple(def, column_no++, tuple, (r->c4 == NULL) ? NULL : &((user_value){.data = r->c4, .data_size = strlen(r->c4)}));
+	set_element_in_tuple(def, STATIC_POSITION(column_no++), tuple, &((user_value){.int_value = r->c0}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(column_no++), tuple, &((user_value){.uint_value = r->c1}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(column_no++), tuple, (r->c2 == NULL) ? NULL : &((user_value){.string_value = r->c2, .string_size = strlen(r->c2)}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(column_no++), tuple, &((user_value){.double_value = r->c3}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(column_no++), tuple, (r->c4 == NULL) ? NULL : &((user_value){.string_value = r->c4, .string_size = strlen(r->c4)}), UINT32_MAX);
 	
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 	print_tuple(tuple, def);
@@ -216,10 +166,10 @@ int main()
 				compare_tuples(
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 2), 
 								def,
-								((uint32_t[]){2}),
+								((positional_accessor[]){STATIC_POSITION(2)}),
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 3), 
 								def,
-								((uint32_t[]){2}),
+								((positional_accessor[]){STATIC_POSITION(2)}),
 								((compare_direction[]){DECREASING}),
 								1)
 			);
@@ -228,10 +178,10 @@ int main()
 				compare_tuples(
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 3), 
 								def,
-								((uint32_t[]){2}),
+								((positional_accessor[]){STATIC_POSITION(2)}),
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 2), 
 								def,
-								((uint32_t[]){2}),
+								((positional_accessor[]){STATIC_POSITION(2)}),
 								((compare_direction[]){DECREASING}),
 								1)
 			);
@@ -245,17 +195,17 @@ int main()
 								def,
 								NULL,
 								((compare_direction[]){DECREASING, DECREASING, DECREASING, DECREASING, DECREASING}),
-								get_element_def_count_tuple_def(def))
+								5)
 			);
 
 	printf("compare(tuple_0 , tuple_1) = %d\n\n", 
 				compare_tuples(
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 0), 
 								def,
-								((uint32_t[]){2}),
+								((positional_accessor[]){STATIC_POSITION(2)}),
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 1), 
 								def,
-								((uint32_t[]){2}),
+								((positional_accessor[]){STATIC_POSITION(2)}),
 								((compare_direction[]){DECREASING}),
 								1)
 			);
@@ -269,17 +219,17 @@ int main()
 								def,
 								NULL,
 								((compare_direction[]){DECREASING, DECREASING, DECREASING, DECREASING, DECREASING}),
-								get_element_def_count_tuple_def(def))
+								5)
 			);
 
 	printf("compare(tuple_1 , tuple_2) = %d\n\n", 
 				compare_tuples(
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 1), 
 								def,
-								((uint32_t[]){2, 3}),
+								((positional_accessor[]){STATIC_POSITION(2), STATIC_POSITION(3)}),
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 2), 
 								def,
-								((uint32_t[]){2, 3}),
+								((positional_accessor[]){STATIC_POSITION(2), STATIC_POSITION(3)}),
 								((compare_direction[]){DECREASING, DECREASING}),
 								2)
 			);
@@ -288,10 +238,10 @@ int main()
 				compare_tuples(
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 1), 
 								def,
-								((uint32_t[]){1, 0}),
+								((positional_accessor[]){STATIC_POSITION(1), STATIC_POSITION(0)}),
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 2), 
 								def,
-								((uint32_t[]){1, 0}),
+								((positional_accessor[]){STATIC_POSITION(1), STATIC_POSITION(0)}),
 								((compare_direction[]){DECREASING, DECREASING}),
 								2)
 			);
@@ -300,10 +250,10 @@ int main()
 				compare_tuples(
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 1), 
 								def,
-								((uint32_t[]){3, 2}),
+								((positional_accessor[]){STATIC_POSITION(3), STATIC_POSITION(2)}),
 								get_nth_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 2), 
 								def,
-								((uint32_t[]){3, 2}),
+								((positional_accessor[]){STATIC_POSITION(3), STATIC_POSITION(2)}),
 								((compare_direction[]){DECREASING, DECREASING}),
 								2)
 			);
@@ -320,7 +270,7 @@ int main()
 	// --------------- UPDATE INPLACE
 
 	printf("updating inplace at tuple_index 1 and element_index 2\n");
-	res = set_element_in_tuple_in_place_on_page(page, PAGE_SIZE, def, 1, 2, &((user_value){.data = "Rohan is bad boy", .data_size = strlen("Rohan is bad boy")}));
+	res = set_element_in_tuple_in_place_on_page(page, PAGE_SIZE, def, 1, STATIC_POSITION(2), &((user_value){.string_value = "Rohan is bad boy", .string_size = strlen("Rohan is bad boy")}));
 	printf("This update must fail on variable_sized tuple_def : %d\n", res);
 
 	// ---------------	PRINT PAGE
@@ -331,7 +281,7 @@ int main()
 	// --------------- UPDATE INPLACE
 
 	printf("updating inplace at tuple_index 1 and element_index 2\n");
-	res = set_element_in_tuple_in_place_on_page(page, PAGE_SIZE, def, 1, 2, &((user_value){.data = "Rohan is dad", .data_size = strlen("Rohan is dad")}));
+	res = set_element_in_tuple_in_place_on_page(page, PAGE_SIZE, def, 1, STATIC_POSITION(2), &((user_value){.string_value = "Rohan is dad", .string_size = strlen("Rohan is dad")}));
 	printf("This update must not fail : %d\n", res);
 
 	// ---------------	PRINT PAGE
@@ -770,7 +720,6 @@ int main()
 	test_updates_inserts_inside_tuple(def, tuple_cache);
 
 	// delete tuple_def
-	delete_tuple_def(def);
 
 	return 0;
 }
@@ -782,7 +731,7 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 	{
 		int64_t c0 = 123;
 
-		set_element_in_tuple(def, 0, tuple, &((user_value){.int_value = c0}));
+		set_element_in_tuple(def, STATIC_POSITION(0), tuple, &((user_value){.int_value = c0}), UINT32_MAX);
 
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 		print_tuple(tuple, def);
@@ -790,19 +739,19 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 
 		c0 = 456;
 
-		set_element_in_tuple(def, 0, tuple, &((user_value){.int_value = c0}));
+		set_element_in_tuple(def, STATIC_POSITION(0), tuple, &((user_value){.int_value = c0}), UINT32_MAX);
 
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 		print_tuple(tuple, def);
 		printf("\n\n");
 
-		set_element_in_tuple(def, 0, tuple, NULL);
+		set_element_in_tuple(def, STATIC_POSITION(0), tuple, NULL, UINT32_MAX);
 
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 		print_tuple(tuple, def);
 		printf("\n\n");
 
-		set_element_in_tuple(def, 0, tuple, NULL);
+		set_element_in_tuple(def, STATIC_POSITION(0), tuple, NULL, UINT32_MAX);
 
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 		print_tuple(tuple, def);
@@ -810,15 +759,15 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 	}
 
 #ifndef TEST_FIXED_ARRAY_PAGE_LAYOUT
-	set_element_in_tuple(def, 2, tuple, &((user_value){.data = "Rohan", .data_size = strlen("Rohan")}));
-	set_element_in_tuple(def, 4, tuple, &((user_value){.data = "Dvivedi", .data_size = strlen("Dvivedi")}));
+	set_element_in_tuple(def, STATIC_POSITION(2), tuple, &((user_value){.string_value = "Rohan", .string_size = strlen("Rohan")}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(4), tuple, &((user_value){.string_value = "Dvivedi", .string_size = strlen("Dvivedi")}), UINT32_MAX);
 
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 	print_tuple(tuple, def);
 	printf("\n\n");
 
 	{
-		set_element_in_tuple(def, 2, tuple, NULL);
+		set_element_in_tuple(def, STATIC_POSITION(2), tuple, NULL, UINT32_MAX);
 
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 		print_tuple(tuple, def);
@@ -826,7 +775,7 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 
 		char* c2 = "Hello";
 
-		set_element_in_tuple(def, 2, tuple, &((user_value){.data = c2, .data_size = strlen(c2)}));
+		set_element_in_tuple(def, STATIC_POSITION(2), tuple, &((user_value){.string_value = c2, .string_size = strlen(c2)}), UINT32_MAX);
 
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 		print_tuple(tuple, def);
@@ -834,19 +783,19 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 
 		c2 = "World";
 
-		set_element_in_tuple(def, 4, tuple, &((user_value){.data = c2, .data_size = strlen(c2)}));
+		set_element_in_tuple(def, STATIC_POSITION(4), tuple, &((user_value){.string_value = c2, .string_size = strlen(c2)}), UINT32_MAX);
 
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 		print_tuple(tuple, def);
 		printf("\n\n");
 
-		set_element_in_tuple(def, 2, tuple, NULL);
+		set_element_in_tuple(def, STATIC_POSITION(2), tuple, NULL, UINT32_MAX);
 
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 		print_tuple(tuple, def);
 		printf("\n\n");
 
-		set_element_in_tuple(def, 2, tuple, NULL);
+		set_element_in_tuple(def, STATIC_POSITION(2), tuple, NULL, UINT32_MAX);
 
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 		print_tuple(tuple, def);
@@ -856,7 +805,7 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
   // set data to make tuple exceed max_size, and it should fail
   // below test cases and their calculations assume that column 2 is NULL
 	{
-		int res = set_element_in_tuple(def, 2, tuple, &((user_value){.data = NULL, .data_size = PAGE_SIZE - get_tuple_size(def, tuple) - get_element_def_by_id(def, 2)->size_specifier_prefix_size + 5}));
+		int res = set_element_in_tuple(def, STATIC_POSITION(2), tuple, &((user_value){.string_value = NULL, .string_size = PAGE_SIZE - get_tuple_size(def, tuple) - VAR_STRING_SIZE_SPECIFICER_SIZE + 5}), UINT32_MAX);
 
 		printf("%d = failed to make tuple size cross max_size\n", res);
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
@@ -865,7 +814,7 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 	}
 
 	{
-		int res = set_element_in_tuple(def, 2, tuple, &((user_value){.data = "Mr. Rohan Vipulkumar Dvivedi", .data_size = strlen("Mr. Rohan Vipulkumar Dvivedi")}));
+		int res = set_element_in_tuple(def, STATIC_POSITION(2), tuple, &((user_value){.string_value = "Mr. Rohan Vipulkumar Dvivedi", .string_size = strlen("Mr. Rohan Vipulkumar Dvivedi")}), UINT32_MAX);
 
 		printf("%d = success to update a value to column 2\n", res);
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
