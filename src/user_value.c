@@ -21,8 +21,26 @@ int is_user_value_OUT_OF_BOUNDS(const user_value* uval)
 	return (uval != NULL) && uval->is_OUT_OF_BOUNDS;
 }
 
+int can_compare_user_value(const data_type_info* dti1, const data_type_info* dti2)
+{
+	// TODO
+}
+
 int compare_user_value(const user_value* uval1, const data_type_info* dti1, const user_value* uval2, const data_type_info* dti2)
 {
+	if(is_user_value_OUT_OF_BOUNDS(uval1) || is_user_value_OUT_OF_BOUNDS(uval2))
+		return -2;
+
+	if(!can_compare_user_value(dti1, dti2))
+		return -2;
+
+	if(is_user_value_NULL(uval1) && is_user_value_NULL(uval2))
+		return 0;
+	else if(is_user_value_NULL(uval1) && !is_user_value_NULL(uval2))
+		return -1;
+	else if(!is_user_value_NULL(uval1) && is_user_value_NULL(uval2))
+		return 1;
+
 	// TODO
 }
 

@@ -57,6 +57,8 @@ int is_user_value_OUT_OF_BOUNDS(const user_value* uval);
 
 #include<data_type_info.h>
 
+int can_compare_user_value(const data_type_info* dti1, const data_type_info* dti2);
+
 // ZERO_USER_VALUE or EMPTY_USER_VALUE must not be input to any of the functions below, if your dti->type is a TUPLE or an ARRAY
 
 int compare_user_value(const user_value* uval1, const data_type_info* dti1, const user_value* uval2, const data_type_info* dti2);
