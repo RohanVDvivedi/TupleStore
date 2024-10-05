@@ -67,7 +67,7 @@ uint32_t get_size_for_type_info(const data_type_info* dti, const void* data)
 		 + (element_count * dti->containee->size);
 }
 
-int overwrite_size_for_container_type_info_with_size_in_prefix(const data_type_info* dti, const void* data, uint32_t new_size)
+int overwrite_size_for_container_type_info_with_size_in_prefix(const data_type_info* dti, void* data, uint32_t new_size)
 {
 	if(!has_size_in_its_prefix_for_container_type_info(dti))
 		return 0;
