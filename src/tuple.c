@@ -171,7 +171,44 @@ int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* t
 	return 0;
 }
 
-int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const tuple_def* tpl_d_in, positional_accessor pa_in, const void* tupl_in, uint32_t max_size_increment_allowed);
+int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const tuple_def* tpl_d_in, positional_accessor pa_in, const void* tupl_in, uint32_t max_size_increment_allowed)
+{
+	const user_value uval_in = get_value_from_element_from_tuple(tpl_d_in, pa_in, tupl_in);
+	if(is_user_value_OUT_OF_BOUNDS(&uval_in))
+		return 0;
+	const data_type_info* dti_in = get_type_info_for_element_from_tuple(tpl_d_in, pa_in);
+	if(dti_in == NULL)
+		return 0;
+	const data_type_info* dti = get_type_info_for_element_from_tuple(tpl_d, pa);
+	if(dti == NULL)
+		return 0;
+
+	if(is_primitive_numeral_type_info(dti))
+	{
+		if(!is_primitive_numeral_type_info(dti_in))
+			return 0;
+		if(!can_type_cast_primitive_numeral_type(dti, dti_in))
+			return 0;
+		user_value uval_in_settable = {};
+		type_cast_primitive_numeral_type(&uval_in_settable, dti, &uval_in, dti_in);
+		return set_element_in_tuple(tpl_d, pa, tupl, &uval_in_settable, max_size_increment_allowed);
+	}
+	else if((dti->type == STRING && dti->type == BLOB) || (dti_in->type == STRING && dti_in->type == BLOB))
+	{
+		user_value uval_in_settable;
+		if(dti->type == BLOB && dti_in->type == STRING)
+			uval_in_settable = (user_value){.blob_value = uval_in.string_value, .blob_size = uval_in.string_size};
+		else if(dti->type == STRING && dti_in->type == BLOB)
+			uval_in_settable = (user_value){.string_value = uval_in.blob_value, .string_size = uval_in.blob_size};
+		else
+			uval_in_settable = uval_in;
+		return set_element_in_tuple(tpl_d, pa, tupl, &uval_in_settable, max_size_increment_allowed);
+	}
+	else if(dti->type == TUPLE && dti == dti_in) // for TUPLE both must be same types
+		return set_element_in_tuple(tpl_d, pa, tupl, &uval_in, max_size_increment_allowed);
+	else
+		return 0;
+}
 
 uint32_t get_element_count_for_element_from_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl)
 {
