@@ -551,6 +551,12 @@ int main()
 		print_tuple(data, &def);
 		printf("\n");
 
+		printf("\n");
+		printf("setting nested variable sized element to NULL_USER_VALUE : : \n");
+		set_element_in_tuple(&def, STATIC_POSITION(2, 1), data, NULL_USER_VALUE, UINT32_MAX);
+		print_tuple(data, &def);
+		printf("\n");
+
 
 		printf("\n");
 		printf("discarding : : \n");
@@ -575,6 +581,71 @@ int main()
 		discard_elements_from_element_in_tuple(&def, SELF, data, 0, 4);
 		print_tuple(data, &def);
 		printf("\n");
+
+		print_tuple(data, &def);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&arr0, data));
+
+	}
+	printf("\n\n");
+
+	{
+		data_type_info arr2 = get_fixed_element_count_array_type("ARRAY", 4, 0, 1, INT_NON_NULLABLE[4]);
+		data_type_info arr1 = get_fixed_element_count_array_type("ARRAY", 4, 0, 1, &arr2);
+		data_type_info arr0 = get_fixed_element_count_array_type("ARRAY", 4, 0, 1, &arr1);
+		finalize_type_info(&arr0);
+		print_type_info(&arr0);printf("\n");
+		tuple_def def;
+		initialize_tuple_def(&def, &arr0);
+
+		char data[4096];
+		init_tuple(&def, data);
+		print_tuple(data, &def);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&arr0, data));
+
+		for(int i = 0; i < 4; i++)
+		{
+			set_element_in_tuple(&def, STATIC_POSITION(i), data, EMPTY_USER_VALUE, UINT32_MAX);
+			for(int j = 0; j < 4; j++)
+			{
+				set_element_in_tuple(&def, STATIC_POSITION(i, j), data, EMPTY_USER_VALUE, UINT32_MAX);
+				for(int k = 0; k < 4; k++)
+				{
+					set_element_in_tuple(&def, STATIC_POSITION(i, j, k), data, &(user_value){.int_value = (i * 4 * 4 + j * 4 + k)}, UINT32_MAX);
+				}
+			}
+		}
+
+		printf("\n");
+		printf("intiialized : : \n");
+		print_tuple(data, &def);
+		printf("\n");
+
+
+		printf("\n");
+		printf("setting nested variable sized element to EMPTY_USER_VALUE : : \n");
+		set_element_in_tuple(&def, STATIC_POSITION(2, 1), data, EMPTY_USER_VALUE, UINT32_MAX);
+		print_tuple(data, &def);
+		printf("\n");
+
+		printf("\n");
+		printf("setting nested variable sized element to NULL_USER_VALUE : : \n");
+		set_element_in_tuple(&def, STATIC_POSITION(2, 1), data, NULL_USER_VALUE, UINT32_MAX);
+		print_tuple(data, &def);
+		printf("\n");
+
+
+		printf("\n");
+		printf("discarding : : \n");
+		for(int i = 0; i < 4; i++)
+		{
+			for(int j = 0; j < 4; j++)
+			{
+				for(int k = 0; k < 4; k++)
+				{
+					set_element_in_tuple(&def, STATIC_POSITION(i, j, k), data, &(user_value){.int_value = -1}, UINT32_MAX);
+					print_tuple(data, &def);
+					printf("\n");
+				}
+			}
+		}
 
 		print_tuple(data, &def);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&arr0, data));
 
