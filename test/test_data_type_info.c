@@ -547,7 +547,6 @@ int main()
 
 		printf("\n");
 		printf("discarding : : ");
-		expand_element_count_for_element_in_tuple(&def, SELF, data, 0, 4, UINT32_MAX);
 		for(int i = 0; i < 4; i++)
 		{
 			for(int j = 0; j < 4; j++)
