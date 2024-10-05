@@ -124,6 +124,16 @@ uint32_t get_maximum_tuple_size_using_tuple_size_def(const tuple_size_def* tuple
 	return tuple_size_d->max_size;
 }
 
+uint32_t get_minimum_tuple_size(const tuple_def* tuple_d)
+{
+	return get_minimum_tuple_size_using_tuple_size_def(&(tuple_d->size_def));
+}
+
+uint32_t get_maximum_tuple_size(const tuple_def* tuple_d)
+{
+	return get_maximum_tuple_size_using_tuple_size_def(&(tuple_d->size_def));
+}
+
 // this is left here to show that this could be done but should not be done
 uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_sz_d, void* tupl)
 {
