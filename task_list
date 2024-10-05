@@ -1,8 +1,5 @@
 TASKS PICKED
 
- * function to check all positional_accessors are indexable for a tuple_def
- * function to check no keys are OUT_OF_BOUNDS for a tuple_def
-
 1 NEW TYPE TASKS
 
  *1* add hash_tables for type_name based type casting, comparing and hashing
