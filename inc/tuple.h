@@ -35,6 +35,11 @@ const user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, posit
 
 const data_type_info* get_type_info_for_element_from_tuple(const tuple_def* tpl_d, positional_accessor pa);
 
+// below 2 functions can be used to ensure that no positions are OUT_OF_BOUNDS or inaccessible for the given tple and tuple def
+// these functions should be used prior to accessing key elements in the record
+int are_all_positions_accessible_for_tuple_def(const tuple_def* tpl_d, const positional_accessor* element_ids, uint32_t element_count);
+int are_all_positions_accessible_for_tuple(const void* tupl, const tuple_def* tpl_d, const positional_accessor* element_ids, uint32_t element_count);
+
 // tupl must be initialized using init_tuple, before you call this function
 int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl, const user_value* value, uint32_t max_size_increment_allowed);
 

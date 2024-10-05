@@ -68,6 +68,30 @@ const data_type_info* get_type_info_for_element_from_tuple(const tuple_def* tpl_
 	return NULL;
 }
 
+int are_all_positions_accessible_for_tuple_def(const tuple_def* tpl_d, const positional_accessor* element_ids, uint32_t element_count)
+{
+	for(uint32_t i = 0; i < element_count; i++)
+	{
+		const data_type_info* key_dti = get_type_info_for_element_from_tuple(tpl_d, ((element_ids == NULL) ? STATIC_POSITION(i) : element_ids[i]));
+		if(key_dti == NULL)
+			return 0;
+	}
+
+	return 1;
+}
+
+int are_all_positions_accessible_for_tuple(const void* tupl, const tuple_def* tpl_d, const positional_accessor* element_ids, uint32_t element_count)
+{
+	for(uint32_t i = 0; i < element_count; i++)
+	{
+		const user_value key = get_value_from_element_from_tuple(tpl_d, ((element_ids == NULL) ? STATIC_POSITION(i) : element_ids[i]), tupl);
+		if(is_user_value_OUT_OF_BOUNDS(&key))
+			return 0;
+	}
+
+	return 1;
+}
+
 int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl, const user_value* value, uint32_t max_size_increment_allowed)
 {
 	const data_type_info* dti = tpl_d->type_info;
