@@ -476,6 +476,36 @@ int main()
 
 		print_data_for_data_type_info(&s4, s);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&s4, s));
 	}
+	printf("\n\n");
+
+	// comapre string and array
+	{
+		data_type_info str = get_variable_length_string_type("STRING", 300);
+		data_type_info arr = get_variable_element_count_array_type("ARRAY", 300, INT_NULLABLE[4]);
+
+		finalize_type_info(&str);
+		finalize_type_info(&arr);
+
+		char string[4096];
+		char array[4096];
+
+		set_user_value_for_type_info(&str, string, 0, 300, &(user_value){.string_value = "ABC", .string_size = 3});
+
+		set_user_value_for_type_info(&arr, array, 0, 300, EMPTY_USER_VALUE);
+		expand_container(&arr, array, 0, 4, 300);
+		set_user_value_to_containee_in_container(&arr, array, 0, 0, &(user_value){.int_value = 'A'});
+		set_user_value_to_containee_in_container(&arr, array, 1, 0, &(user_value){.int_value = 'B'});
+		set_user_value_to_containee_in_container(&arr, array, 2, 0, &(user_value){.int_value = 'C'});
+
+		const user_value string_uval = get_user_value_for_type_info(&str, string);
+		const user_value array_uval = get_user_value_for_type_info(&arr, array);
+
+		print_user_value(&string_uval, &str); printf("\n");
+		print_user_value(&array_uval, &arr); printf("\n");
+
+		printf("cmp(string, array) = %d\n", compare_user_value(&string_uval, &str, &array_uval, &arr));
+	}
+	printf("\n\n");
 
 	return 0;
 }
