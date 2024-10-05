@@ -540,13 +540,20 @@ int main()
 		}
 
 		printf("\n");
-		printf("intiialized : : ");
+		printf("intiialized : : \n");
 		print_tuple(data, &def);
 		printf("\n");
 
 
 		printf("\n");
-		printf("discarding : : ");
+		printf("setting nested variable sized element to EMPTY_USER_VALUE : : \n");
+		set_element_in_tuple(&def, STATIC_POSITION(2, 1), data, EMPTY_USER_VALUE, UINT32_MAX);
+		print_tuple(data, &def);
+		printf("\n");
+
+
+		printf("\n");
+		printf("discarding : : \n");
 		for(int i = 0; i < 4; i++)
 		{
 			for(int j = 0; j < 4; j++)
