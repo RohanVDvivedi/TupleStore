@@ -114,6 +114,11 @@ int is_variable_sized_type_info(const data_type_info* dti);
 // size of BIT_FIELD is returned as 0, as they only occupy data in the prefix_bitmap
 uint32_t get_size_for_type_info(const data_type_info* dti, const void* data);
 
+// NOTE:: call this function only if you know whta you are doing
+// if the container has size in prefix, then it is overwritten with the new provided size
+// this call must exist only in this library and must not exist in the user code
+int overwrite_size_for_container_type_info_with_size_in_prefix(const data_type_info* dti, const void* data, uint32_t new_size);
+
 // true only for string, blob, tuple and array
 int is_container_type_info(const data_type_info* dti);
 

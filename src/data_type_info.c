@@ -67,6 +67,19 @@ uint32_t get_size_for_type_info(const data_type_info* dti, const void* data)
 		 + (element_count * dti->containee->size);
 }
 
+int overwrite_size_for_container_type_info_with_size_in_prefix(const data_type_info* dti, const void* data, uint32_t new_size)
+{
+	if(!has_size_in_its_prefix_for_container_type_info(dti))
+		return 0;
+
+	if(new_size > dti->max_size)
+		return 0;
+
+	write_value_to_page(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, new_size);
+
+	return 1;
+}
+
 int is_container_type_info(const data_type_info* dti)
 {
 	return dti->type == STRING || dti->type == BLOB || dti->type == TUPLE || dti->type == ARRAY;
