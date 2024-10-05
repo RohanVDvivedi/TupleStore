@@ -42,7 +42,7 @@ struct user_value
 };
 
 extern user_value const * const NULL_USER_VALUE;
-extern user_value const * const OUT_OF_BOUNDS_USER_VALUE;
+extern user_value const * const OUT_OF_BOUNDS_USER_VALUE; // OUT_OF_BOUNDS_USER_VALUE must have its is_NULL bit set, it is logically NULL also
 
 extern user_value const * const ZERO_USER_VALUE;
 extern user_value const * const EMPTY_USER_VALUE; // same value as ZERO_USER_VALUE, but generally used for conatiners like STRING, BLOB, TUPLE and ARRAY; tuple_value and array_value here are NULLs but they are considered as if this pointer points to their most minimally initialized value

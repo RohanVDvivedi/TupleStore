@@ -195,6 +195,10 @@ static int set_element_in_tuple_INTERNAL(const data_type_info* dti, positional_a
 
 int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const user_value* value, uint32_t max_size_increment_allowed)
 {
+	// can not set using an OUT_OF_BOUNDS user value
+	if(is_user_value_OUT_OF_BOUNDS(value))
+		return 0;
+
 	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple(tpl_d, pa);
 	if(inner_most_dti == NULL)
 		return 0;
@@ -481,13 +485,9 @@ int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, positio
 
 	// get the user value for this element
 	const user_value uval1 = get_value_from_element_from_tuple(tpl_d1, pa1, tup1);
-	if(is_user_value_OUT_OF_BOUNDS(&uval1))
-		return -2;
 
 	// get the user value for this element
 	const user_value uval2 = get_value_from_element_from_tuple(tpl_d2, pa2, tup2);
-	if(is_user_value_OUT_OF_BOUNDS(&uval2))
-		return -2;
 
 	// TODO : handle logic for custom compare function
 
