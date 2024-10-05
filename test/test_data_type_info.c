@@ -507,5 +507,45 @@ int main()
 	}
 	printf("\n\n");
 
+	// set variable length array in variable length array
+	{
+		data_type_info arr2 = get_variable_element_count_array_type("ARRAY", 4096, INT_NULLABLE[4]);
+		data_type_info arr1 = get_variable_element_count_array_type("ARRAY", 4096, &arr2);
+		data_type_info arr0 = get_variable_element_count_array_type("ARRAY", 4096, &arr1);
+		finalize_type_info(&arr0);
+		print_type_info(&arr0);printf("\n");
+		tuple_def def;
+		initialize_tuple_def(&def, &arr0);
+
+		char data[4096];
+		init_tuple(&def, data);
+		print_tuple(data, &def);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&arr0, data));
+
+		expand_element_count_for_element_in_tuple(&def, SELF, data, 0, 4, UINT32_MAX);
+		print_tuple(data, &def);
+		for(int i = 0; i < 4; i++)
+		{
+			set_element_in_tuple(&def, STATIC_POSITION(i), data, EMPTY_USER_VALUE, UINT32_MAX);
+			print_tuple(data, &def);
+
+			expand_element_count_for_element_in_tuple(&def, STATIC_POSITION(i), data, 0, 4, UINT32_MAX);
+			print_tuple(data, &def);
+			for(int j = 0; j < 4; j++)
+			{
+				set_element_in_tuple(&def, STATIC_POSITION(i, j), data, EMPTY_USER_VALUE, UINT32_MAX);
+				print_tuple(data, &def);
+
+				expand_element_count_for_element_in_tuple(&def, STATIC_POSITION(i, j), data, 0, 4, UINT32_MAX);
+				print_tuple(data, &def);
+				for(int k = 0; k < 4; k++)
+				{
+					set_element_in_tuple(&def, STATIC_POSITION(i, j, k), data, &(user_value){.int_value = (i * 4 * 4 + j * 4 + k)}, UINT32_MAX);
+					print_tuple(data, &def);
+				}
+			}
+		}
+	}
+	printf("\n\n");
+
 	return 0;
 }
