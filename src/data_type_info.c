@@ -356,6 +356,10 @@ int finalize_type_info(data_type_info* dti)
 
 		case TUPLE :
 		{
+			// you can never finalize a TUPLE type with no elements
+			if(dti->element_count == 0)
+				return 0;
+
 			// initialize the attributes
 			dti->is_variable_sized = 0;
 			dti->prefix_bitmap_size_in_bits = 0;
