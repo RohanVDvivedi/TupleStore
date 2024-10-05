@@ -640,15 +640,33 @@ int main()
 			{
 				for(int k = 0; k < 4; k++)
 				{
-					set_element_in_tuple(&def, STATIC_POSITION(i, j, k), data, &(user_value){.int_value = -1}, UINT32_MAX);
+					set_element_in_tuple(&def, STATIC_POSITION(i, j, k), data, &(user_value){.int_value = 0}, UINT32_MAX);
 					print_tuple(data, &def);
 					printf("\n");
 				}
 			}
 		}
 
+		printf("\n");
 		print_tuple(data, &def);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&arr0, data));
 
+		printf("\nsetting all to NULL and checking if it is minimal\n");
+		set_element_in_tuple(&def, STATIC_POSITION(0), data, NULL_USER_VALUE, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(1), data, NULL_USER_VALUE, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(2), data, NULL_USER_VALUE, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(3), data, NULL_USER_VALUE, UINT32_MAX);
+		print_tuple(data, &def);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&arr0, data));
+
+		printf("\nsetting all to EMPTY then NULL and checking if it is minimal\n");
+		set_element_in_tuple(&def, STATIC_POSITION(0), data, EMPTY_USER_VALUE, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(1), data, EMPTY_USER_VALUE, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(2), data, EMPTY_USER_VALUE, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(3), data, EMPTY_USER_VALUE, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(0), data, NULL_USER_VALUE, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(1), data, NULL_USER_VALUE, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(2), data, NULL_USER_VALUE, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(3), data, NULL_USER_VALUE, UINT32_MAX);
+		print_tuple(data, &def);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&arr0, data));
 	}
 	printf("\n\n");
 
