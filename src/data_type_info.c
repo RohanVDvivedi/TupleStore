@@ -622,6 +622,33 @@ const void* get_pointer_to_containee_from_container(const data_type_info* dti, c
 		return data + read_value_from_page(data + containee_pos_info.byte_offset_to_byte_offset, dti->max_size);
 }
 
+uint32_t get_size_of_containee_from_container(const data_type_info* dti, const void* data, uint32_t index)
+{
+	// must be a container type info to call this function
+	if(!is_container_type_info(dti))
+		return 0;
+
+	// make sure that index is withint bounds
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return 0;
+
+	// fetch information about containee
+	data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, data, index);
+
+	if(containee_pos_info.type_info->type == BIT_FIELD)
+		return 0;
+	else if(!is_variable_sized_type_info(containee_pos_info.type_info))
+		return dti->size;
+	else
+	{
+		const void* containee = get_pointer_to_containee_from_container(dti, data, index);
+		if(containee == NULL) // a NULL varibale sized element is said to be not containing any space
+			return 0;
+		else
+			return get_size_for_type_info(containee_pos_info.type_info, containee);
+	}
+}
+
 const user_value get_user_value_for_type_info(const data_type_info* dti, const void* data)
 {
 	if(data == NULL)

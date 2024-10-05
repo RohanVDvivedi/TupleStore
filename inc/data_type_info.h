@@ -207,6 +207,11 @@ int is_containee_null_in_container(const data_type_info* dti, const void* data, 
 // returns pointer to the value from the container, if the containee is a BIT_FIELD then we return the pointer to the prefix_bitmap where it resides
 const void* get_pointer_to_containee_from_container(const data_type_info* dti, const void* data, uint32_t index);
 
+// for fixed length elements it is same as dti->size
+// for variable length elements, it is 0 if they are NULL
+// else we get their size from their pointer
+uint32_t get_size_of_containee_from_container(const data_type_info* dti, const void* data, uint32_t index);
+
 // returns NULL by default for BIT_FIELD types, as bit_fields must exist inside a container
 const user_value get_user_value_for_type_info(const data_type_info* dti, const void* data);
 
