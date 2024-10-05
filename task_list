@@ -1,7 +1,5 @@
 TASKS PICKED
 
- * implement a simple set element in tuple from tuple
- * test and make the old testcase 2 function and return the same output
  * add new test case to test all functions of complex nested types using tuple def
 
 1 NEW TYPE TASKS
