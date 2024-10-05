@@ -522,28 +522,56 @@ int main()
 		print_tuple(data, &def);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&arr0, data));
 
 		expand_element_count_for_element_in_tuple(&def, SELF, data, 0, 4, UINT32_MAX);
-		print_tuple(data, &def);
 		for(int i = 0; i < 4; i++)
 		{
 			set_element_in_tuple(&def, STATIC_POSITION(i), data, EMPTY_USER_VALUE, UINT32_MAX);
-			print_tuple(data, &def);
 
 			expand_element_count_for_element_in_tuple(&def, STATIC_POSITION(i), data, 0, 4, UINT32_MAX);
-			print_tuple(data, &def);
 			for(int j = 0; j < 4; j++)
 			{
 				set_element_in_tuple(&def, STATIC_POSITION(i, j), data, EMPTY_USER_VALUE, UINT32_MAX);
-				print_tuple(data, &def);
 
 				expand_element_count_for_element_in_tuple(&def, STATIC_POSITION(i, j), data, 0, 4, UINT32_MAX);
-				print_tuple(data, &def);
 				for(int k = 0; k < 4; k++)
 				{
 					set_element_in_tuple(&def, STATIC_POSITION(i, j, k), data, &(user_value){.int_value = (i * 4 * 4 + j * 4 + k)}, UINT32_MAX);
-					print_tuple(data, &def);
 				}
 			}
 		}
+
+		printf("\n");
+		printf("intiialized : : ");
+		print_tuple(data, &def);
+		printf("\n");
+
+
+		printf("\n");
+		printf("discarding : : ");
+		expand_element_count_for_element_in_tuple(&def, SELF, data, 0, 4, UINT32_MAX);
+		for(int i = 0; i < 4; i++)
+		{
+			for(int j = 0; j < 4; j++)
+			{
+				for(int k = 0; k < 4; k++)
+				{
+					set_element_in_tuple(&def, STATIC_POSITION(i, j, k), data, &(user_value){.int_value = -1}, UINT32_MAX);
+					print_tuple(data, &def);
+					printf("\n");
+				}
+				discard_elements_from_element_in_tuple(&def, STATIC_POSITION(i, j), data, 0, 4);
+				print_tuple(data, &def);
+				printf("\n");
+			}
+			discard_elements_from_element_in_tuple(&def, STATIC_POSITION(i), data, 0, 4);
+			print_tuple(data, &def);
+			printf("\n");
+		}
+		discard_elements_from_element_in_tuple(&def, SELF, data, 0, 4);
+		print_tuple(data, &def);
+		printf("\n");
+
+		print_tuple(data, &def);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&arr0, data));
+
 	}
 	printf("\n\n");
 
