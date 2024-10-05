@@ -79,6 +79,8 @@ uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl);
 
 int is_variable_sized_tuple_def(const tuple_def* tuple_d);
 
+int is_fixed_sized_tuple_def(const tuple_def* tuple_d);
+
 void print_tuple_def(const tuple_def* tuple_d);
 
 #endif

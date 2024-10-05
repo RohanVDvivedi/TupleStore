@@ -103,6 +103,11 @@ int is_variable_sized_tuple_def(const tuple_def* tuple_d)
 	return is_variable_sized_tuple_size_def(&(tuple_d->size_def));
 }
 
+int is_fixed_sized_tuple_def(const tuple_def* tuple_d)
+{
+	return !is_variable_sized_tuple_def(tuple_d);
+}
+
 uint32_t get_minimum_tuple_size_using_tuple_size_def(const tuple_size_def* tuple_size_d)
 {
 	if(!is_variable_sized_tuple_size_def(tuple_size_d))
