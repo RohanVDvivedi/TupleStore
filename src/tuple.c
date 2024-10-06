@@ -232,16 +232,7 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, positional_accessor 
 		return set_element_in_tuple(tpl_d, pa, tupl, &uval_in_settable, max_size_increment_allowed);
 	}
 	else if((dti->type == STRING || dti->type == BLOB) && (dti_in->type == STRING || dti_in->type == BLOB))
-	{
-		user_value uval_in_settable;
-		if(dti->type == BLOB && dti_in->type == STRING)
-			uval_in_settable = (user_value){.blob_value = uval_in.string_value, .blob_size = uval_in.string_size};
-		else if(dti->type == STRING && dti_in->type == BLOB)
-			uval_in_settable = (user_value){.string_value = uval_in.blob_value, .string_size = uval_in.blob_size};
-		else
-			uval_in_settable = uval_in;
-		return set_element_in_tuple(tpl_d, pa, tupl, &uval_in_settable, max_size_increment_allowed);
-	}
+		return set_element_in_tuple(tpl_d, pa, tupl, &uval_in, max_size_increment_allowed); // string_value, blob_value and string_or_blob_value are interchangeable
 	else if(dti->type == TUPLE && dti == dti_in) // for TUPLE both must be same types
 		return set_element_in_tuple(tpl_d, pa, tupl, &uval_in, max_size_increment_allowed);
 	else

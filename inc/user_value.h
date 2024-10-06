@@ -36,6 +36,12 @@ struct user_value
 			const void* blob_value;
 			uint32_t blob_size;
 		};
+		struct
+		{
+			const void* string_or_blob_value;
+			uint32_t string_or_blob_size;
+		};
+		// above 3 structs to access string and blob values must be identical, and can be used interchangeably
 		const void* tuple_value;
 		const void* array_value;
 	};
