@@ -42,7 +42,7 @@ const user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, posit
 	return *NULL_USER_VALUE;
 }
 
-const data_type_info* get_type_info_for_element_from_tuple(const tuple_def* tpl_d, positional_accessor pa)
+const data_type_info* get_type_info_for_element_from_tuple_def(const tuple_def* tpl_d, positional_accessor pa)
 {
 	const data_type_info* dti = tpl_d->type_info;
 
@@ -72,7 +72,7 @@ int are_all_positions_accessible_for_tuple_def(const tuple_def* tpl_d, const pos
 {
 	for(uint32_t i = 0; i < element_count; i++)
 	{
-		const data_type_info* key_dti = get_type_info_for_element_from_tuple(tpl_d, ((element_ids == NULL) ? STATIC_POSITION(i) : element_ids[i]));
+		const data_type_info* key_dti = get_type_info_for_element_from_tuple_def(tpl_d, ((element_ids == NULL) ? STATIC_POSITION(i) : element_ids[i]));
 		if(key_dti == NULL)
 			return 0;
 	}
@@ -199,7 +199,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* t
 	if(is_user_value_OUT_OF_BOUNDS(value))
 		return 0;
 
-	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple(tpl_d, pa);
+	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
 	if(inner_most_dti == NULL)
 		return 0;
 
@@ -214,10 +214,10 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, positional_accessor 
 	const user_value uval_in = get_value_from_element_from_tuple(tpl_d_in, pa_in, tupl_in);
 	if(is_user_value_OUT_OF_BOUNDS(&uval_in))
 		return 0;
-	const data_type_info* dti_in = get_type_info_for_element_from_tuple(tpl_d_in, pa_in);
+	const data_type_info* dti_in = get_type_info_for_element_from_tuple_def(tpl_d_in, pa_in);
 	if(dti_in == NULL)
 		return 0;
-	const data_type_info* dti = get_type_info_for_element_from_tuple(tpl_d, pa);
+	const data_type_info* dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
 	if(dti == NULL)
 		return 0;
 
@@ -275,7 +275,7 @@ uint32_t get_element_count_for_element_from_tuple(const tuple_def* tpl_d, positi
 
 int can_expand_element_count_for_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed)
 {
-	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple(tpl_d, pa);
+	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
 	if(inner_most_dti == NULL || !has_variable_element_count_for_container_type_info(inner_most_dti))
 		return 0;
 
@@ -358,7 +358,7 @@ int expand_element_count_for_element_in_tuple_INTERNAL(const data_type_info* dti
 
 int expand_element_count_for_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed)
 {
-	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple(tpl_d, pa);
+	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
 	if(inner_most_dti == NULL || !has_variable_element_count_for_container_type_info(inner_most_dti))
 		return 0;
 
@@ -370,7 +370,7 @@ int expand_element_count_for_element_in_tuple(const tuple_def* tpl_d, positional
 
 int can_discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl, uint32_t index, uint32_t slots)
 {
-	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple(tpl_d, pa);
+	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
 	if(inner_most_dti == NULL || !has_variable_element_count_for_container_type_info(inner_most_dti))
 		return 0;
 
@@ -451,7 +451,7 @@ int discard_elements_from_element_in_tuple_INTERNAL(const data_type_info* dti, p
 
 int discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, uint32_t index, uint32_t slots)
 {
-	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple(tpl_d, pa);
+	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
 	if(inner_most_dti == NULL || !has_variable_element_count_for_container_type_info(inner_most_dti))
 		return 0;
 
@@ -465,12 +465,12 @@ int discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positional_ac
 int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, positional_accessor pa1, const void* tup2, const tuple_def* tpl_d2, positional_accessor pa2)
 {
 	// if the element is not accessible, then fail
-	const data_type_info* dti1 = get_type_info_for_element_from_tuple(tpl_d1, pa1);
+	const data_type_info* dti1 = get_type_info_for_element_from_tuple_def(tpl_d1, pa1);
 	if(dti1 == NULL)
 		return -2;
 
 	// if the element is not accessible, then fail
-	const data_type_info* dti2 = get_type_info_for_element_from_tuple(tpl_d2, pa2);
+	const data_type_info* dti2 = get_type_info_for_element_from_tuple_def(tpl_d2, pa2);
 	if(dti2 == NULL)
 		return -2;
 
@@ -505,7 +505,7 @@ int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_a
 uint64_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, positional_accessor pa, uint64_t (*hash_func)(const void* data, uint32_t size))
 {
 	// if the element is not accessible, then fail
-	const data_type_info* dti = get_type_info_for_element_from_tuple(tpl_d, pa);
+	const data_type_info* dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
 	if(dti == NULL)
 		return 0;
 
