@@ -231,7 +231,7 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, positional_accessor 
 		type_cast_primitive_numeral_type(&uval_in_settable, dti, &uval_in, dti_in);
 		return set_element_in_tuple(tpl_d, pa, tupl, &uval_in_settable, max_size_increment_allowed);
 	}
-	else if((dti->type == STRING && dti->type == BLOB) || (dti_in->type == STRING && dti_in->type == BLOB))
+	else if((dti->type == STRING || dti->type == BLOB) && (dti_in->type == STRING || dti_in->type == BLOB))
 	{
 		user_value uval_in_settable;
 		if(dti->type == BLOB && dti_in->type == STRING)
