@@ -1,11 +1,14 @@
 TASKS PICKED
 
+  * soon after tuple indexer is merged with new nested access api changes, replace with a more descriptive function to print user values
+
 1 NEW TYPE TASKS
 
  *1*
   * add hash_tables for type_name based type casting, comparing and hashing
+    * also support getting min and max values for given types
+    * as soon as you implement type based comparators for the tuple store, the suffix truncation in bplus tree will break so fix that soon after that
   * add logic for stream based hashing and hash value calculation
-  * replace with a more descriptive function to print user values
 
  *2* compact serializable form of tuple_def and tuple_size_def, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
 
