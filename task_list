@@ -1,14 +1,14 @@
 TASKS PICKED
 
+ * add logic for stream based hashing and hash value calculation, implement interface in Cutlery first, use it in TupleStore and implemnt a test hasher in TupleIndexer
+ * compact serializable form of tuple_def, data_type_info and tuple_size_def, for WALe, network and TupleIndexer's reference page
+
 1 NEW TYPE TASKS
 
  *1*
   * add hash_tables for type_name based type casting, comparing and hashing
     * also support getting min and max values for given types
     * as soon as you implement type based comparators for the tuple store, the suffix truncation in bplus tree will break so fix that soon after that
-  * add logic for stream based hashing and hash value calculation
-
- *2* compact serializable form of tuple_def and tuple_size_def, to be stored in WAL or passed over network, and functions to serialize and deserialize it, use Cutlery streams after it has been implemented/moved to Cutlery.
 
 2 OPTIMIZATION FOR COMPRESSION TASKS
- *3* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
+ *2* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
