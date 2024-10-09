@@ -67,19 +67,14 @@ const user_value get_containee_for_user_value(const user_value* uval, const data
 
 int can_compare_user_value(const data_type_info* dti1, const data_type_info* dti2)
 {
-	// same exact types, this is essential for TUPLE types
-	if(dti1 == dti2)
+	if(are_identical_type_info(dti1, dti2)) // logically same exact types, this is essential for TUPLE and ARRAY types
 		return 1;
-
-	// both are primitive types
-	if(is_primitive_numeral_type_info(dti1) && is_primitive_numeral_type_info(dti2) && can_compare_primitive_numeral_type_infos(dti1, dti2))
+	else if(is_primitive_numeral_type_info(dti1) && is_primitive_numeral_type_info(dti2) && can_compare_primitive_numeral_type_infos(dti1, dti2)) // both are primitive numeral types
 		return 1;
-
-	// STRING, BLOB and ARRAY are internally comparable, if their containee types are comparable
-	if((dti1->type == STRING || dti1->type == BLOB || dti1->type == ARRAY) && (dti2->type == STRING || dti2->type == BLOB || dti2->type == ARRAY))
+	else if((dti1->type == STRING || dti1->type == BLOB || dti1->type == ARRAY) && (dti2->type == STRING || dti2->type == BLOB || dti2->type == ARRAY)) // STRING, BLOB and ARRAY are internally comparable, if their containee types are comparable
 		return can_compare_user_value(dti1->containee, dti2->containee);
-
-	return 0;
+	else
+		return 0;
 }
 
 // before calling this function the dti1 and dti2 must pass this check : can_compare_user_value(dti1, dti2)
