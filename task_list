@@ -1,7 +1,9 @@
 TASKS PICKED
 
+ * serialization/deserialization functions for
+   * tuple_size_def
+   * data_type_info
  * add logic for stream based hashing and hash value calculation, implement interface in Cutlery first, use it in TupleStore and implemnt a test hasher in TupleIndexer
- * compact serializable form of tuple_def, data_type_info and tuple_size_def, for WALe, network and TupleIndexer's reference page
 
 1 NEW TYPE TASKS
 
