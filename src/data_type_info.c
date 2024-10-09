@@ -509,7 +509,7 @@ int are_identical_type_info(const data_type_info* dti1, const data_type_info* dt
 	if(is_variable_sized_type_info(dti1) != is_variable_sized_type_info(dti2))
 		return 0;
 
-	// if they both are variable sized, compare their min_size and max_size, else comapre their size
+	// if they both are variable sized, compare their min_size and max_size, else compare their size and is_nullable
 	if(!is_variable_sized_type_info(dti1))
 	{
 		if(dti1->is_nullable != dti2->is_nullable) // they both must be nullable or not
@@ -562,9 +562,11 @@ int are_identical_type_info(const data_type_info* dti1, const data_type_info* dt
 
 		case ARRAY :
 		{
+			// both must be variable element_count or not
 			if(dti1->has_variable_element_count != dti2->has_variable_element_count)
 				return 0;
 
+			// if they are not variable element count, then compare their element_count
 			if(!dti1->has_variable_element_count)
 			{
 				if(dti1->element_count != dti2->element_count)
