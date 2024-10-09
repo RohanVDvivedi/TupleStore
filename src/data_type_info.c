@@ -487,6 +487,95 @@ int finalize_type_info(data_type_info* dti)
 	return 1;
 }
 
+int are_identical_type_info(const data_type_info* dti1, const data_type_info* dti2)
+{
+	// if either of dti1 or dti2 is not finalized, we fail
+	if(!dti1->is_finalized)
+		return 0;
+	if(!dti2->is_finalized)
+		return 0;
+
+	// if the passed pointers are equal, they are equal
+	if(dti1 == dti2)
+		return 1;
+
+	// if their type or type_name are not equal, fail
+	if(dti1->type != dti2->type)
+		return 0;
+	if(strcmp(dti1->type_name, dti2->type_name) != 0)
+		return 0;
+
+	// both must be either fixed sized or variable sized
+	if(is_variable_sized_type_info(dti1) != is_variable_sized_type_info(dti2))
+		return 0;
+
+	// if they both are variable sized, compare their min_size and max_size, else comapre their size
+	if(!is_variable_sized_type_info(dti1))
+	{
+		if(dti1->is_nullable != dti2->is_nullable) // they both must be nullable or not
+			return 0;
+		if(dti1->type == BIT_FIELD)
+		{
+			if(dti1->bit_field_size != dti2->bit_field_size) // both must have same bit_field_size
+				return 0;
+		}
+		else
+		{
+			if(dti1->size != dti2->size) // both must have same size
+				return 0;
+		}
+	}
+	else
+	{
+		// both must have same min_size and max_size
+		if(dti1->min_size != dti2->min_size)
+			return 0;
+		if(dti1->max_size != dti2->max_size)
+			return 0;
+	}
+
+	switch(dti1->type)
+	{
+		case BIT_FIELD :
+		case UINT :
+		case INT :
+		case FLOAT :
+		case LARGE_UINT :
+		case STRING :
+		case BLOB :
+		default :
+			return 1;
+
+		case TUPLE :
+		{
+			// both must have the same element_count
+			if(dti1->element_count != dti2->element_count)
+				return 0;
+
+			// and all the element type_infos must be identical
+			for(uint32_t i = 0; i < dti1->element_count; i++)
+				if(!are_identical_type_info(dti1->containees[i].type_info, dti1->containees[i].type_info))
+					return 0;
+
+			return 1;
+		}
+
+		case ARRAY :
+		{
+			if(dti1->has_variable_element_count != dti2->has_variable_element_count)
+				return 0;
+
+			if(!dti1->has_variable_element_count)
+			{
+				if(dti1->element_count != dti2->element_count)
+					return 0;
+			}
+
+			return are_identical_type_info(dti1->containee, dti1->containee);
+		}
+	}
+}
+
 static void print_tabs(int tabs)
 {
 	while(tabs)

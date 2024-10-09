@@ -169,6 +169,9 @@ uint32_t find_containee_using_field_name_in_tuple_type_info(const data_type_info
 // must be called and must pass on all the types
 int finalize_type_info(data_type_info* dti);
 
+// returns 1, if the 2 data_type_info are logically identical
+int are_identical_type_info(const data_type_info* dti1, const data_type_info* dti2);
+
 // print type info
 void print_type_info(const data_type_info* dti);
 
