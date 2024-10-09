@@ -1,7 +1,5 @@
 TASKS PICKED
 
- * utility function to check if the data_type_info are identical
-   * refactor set_element_in_tuple_from_tuple and compare functions everywhere to use this logic to check logical equality of data_type_info
  * serialization/deserialization functions for
    * tuple_size_def
    * data_type_info
