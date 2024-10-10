@@ -29,10 +29,10 @@ int initialize_tuple_size_def(tuple_size_def* tuple_size_d, data_type_info* dti)
 	tuple_size_d->max_size = dti->max_size;
 
 	tuple_size_d->has_size_in_prefix = has_size_in_its_prefix_for_container_type_info(dti);
-	tuple_size_d->has_element_count_in_pefix = has_element_count_in_its_prefix_for_container_type_info(dti);
+	tuple_size_d->has_element_count_in_prefix = has_element_count_in_its_prefix_for_container_type_info(dti);
 
 	// a variable sized type must either have size or element_count in prefix
-	if(!tuple_size_d->has_size_in_prefix && !tuple_size_d->has_element_count_in_pefix)
+	if(!tuple_size_d->has_size_in_prefix && !tuple_size_d->has_element_count_in_prefix)
 		return 0;
 
 	// if it already has size in prefix, we are done
@@ -152,6 +152,57 @@ uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_
 	}
 }
 
+#define BIT_OFFSET_FOR_is_variable_sized                          0
+#define BIT_OFFSET_FOR_has_size_in_prefix                         1
+#define BIT_OFFSET_FOR_has_element_count_in_prefix                 2
+#define BIT_OFFSET_FOR_does_containee_need_is_valid_bit_in_prefix 3
+#define BIT_OFFSET_FOR_is_containee_bit_field                     4
+
+uint32_t serialize_tuple_size_def(const tuple_size_def* tuple_size_d, void* data)
+{
+	char* s = data;
+	s[0] = 0;
+	uint32_t data_size = 1;
+
+	if(tuple_size_d->is_variable_sized)
+		s[0] |= (1 << BIT_OFFSET_FOR_is_variable_sized);
+
+	if(!tuple_size_d->is_variable_sized)
+	{
+		serialize_uint32(s + data_size, 4, tuple_size_d->size); data_size += 4;
+		return data_size;
+	}
+
+	serialize_uint32(s + data_size, 4, tuple_size_d->min_size); data_size += 4;
+	serialize_uint32(s + data_size, 4, tuple_size_d->max_size); data_size += 4;
+
+	if(tuple_size_d->has_size_in_prefix)
+		s[0] |= (1 << BIT_OFFSET_FOR_has_size_in_prefix);
+
+	if(tuple_size_d->has_element_count_in_prefix)
+		s[0] |= (1 << BIT_OFFSET_FOR_has_element_count_in_prefix);
+
+	if(tuple_size_d->has_size_in_prefix)
+		return data_size;
+
+	if(tuple_size_d->does_containee_need_is_valid_bit_in_prefix)
+		s[0] |= (1 << BIT_OFFSET_FOR_does_containee_need_is_valid_bit_in_prefix);
+
+	if(tuple_size_d->is_containee_bit_field)
+		s[0] |= (1 << BIT_OFFSET_FOR_is_containee_bit_field);
+
+	if(tuple_size_d->is_containee_bit_field)
+		serialize_uint32(s + data_size, 4, tuple_size_d->containee_size); 
+	else
+		serialize_uint32(s + data_size, 4, tuple_size_d->containee_bit_field_size);
+	data_size += 4;
+	return data_size;
+}
+
+int deserialize_tuple_size_def(tuple_size_def* tuple_size_d, void* data, uint32_t size)
+{
+}
+
 #include<stdio.h>
 
 void print_tuple_size_def(const tuple_size_def* tuple_size_d)
@@ -167,7 +218,7 @@ void print_tuple_size_def(const tuple_size_def* tuple_size_d)
 	printf("max_size : %"PRIu32"\n", tuple_size_d->max_size);
 
 	printf("has_size_in_prefix : %d\n", tuple_size_d->has_size_in_prefix);
-	printf("has_element_count_in_pefix : %d\n", tuple_size_d->has_element_count_in_pefix);
+	printf("has_element_count_in_prefix : %d\n", tuple_size_d->has_element_count_in_prefix);
 
 	if(tuple_size_d->has_size_in_prefix)
 		return;

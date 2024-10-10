@@ -25,9 +25,9 @@ struct tuple_size_def
 
 	// ------ attributes below this point only used if is_variable_sized = 1 and has_size_in_prefix = 0
 
-	int has_element_count_in_pefix; // -> need to do more work, to know the size if has_size_inprefix = 0, but has_element_count_in_prefix = 1
+	int has_element_count_in_prefix; // -> need to do more work, to know the size if has_size_inprefix = 0, but has_element_count_in_prefix = 1
 
-	// below attributes are only required when is_variable_sized = 1, has_size_in_prefix = 0, and has_element_count_in_pefix = 1
+	// below attributes are only required when is_variable_sized = 1, has_size_in_prefix = 0, and has_element_count_in_prefix = 1
 	// this also implies that the element_count is variable, but the individual element is fixed size (may or may not be nullable)
 	// this is the case with variable size string, variable sized blob, and variable element count arrays of fixed sized elements
 	int does_containee_need_is_valid_bit_in_prefix;
@@ -67,6 +67,11 @@ uint32_t get_maximum_tuple_size_using_tuple_size_def(const tuple_size_def* tuple
 // this function is not used, it merely duplicated the logic in `uint32_t initialize_minimal_data_for_type_info(const data_type_info* dti, void* data);`
 // not publicly exposed, it is here to just show that tuple_size_def is enough to minimally initialize the tuple
 // uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_sz_d, void* tupl);
+
+// serialize deserialize function for tuple_size_def
+// for serialization it is assumed that data has atleast 13 bytes to hold the serialized form of tuple_size_d
+uint32_t serialize_tuple_size_def(const tuple_size_def* tuple_size_d, void* data);
+int deserialize_tuple_size_def(tuple_size_def* tuple_size_d, void* data, uint32_t size);
 
 void print_tuple_size_def(const tuple_size_def* tuple_size_d);
 
