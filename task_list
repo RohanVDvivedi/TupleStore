@@ -1,8 +1,6 @@
 TASKS PICKED
 
- * serialization/deserialization functions for
-   * tuple_size_def
-   * data_type_info
+ * serialization/deserialization functions for data_type_info
    * first serialize then deserialize it and then check if the input and output are identical using are_identical_type_info() function
  * add logic for stream based hashing and hash value calculation, implement interface in Cutlery first, use it in TupleStore and implemnt a test hasher in TupleIndexer
 
