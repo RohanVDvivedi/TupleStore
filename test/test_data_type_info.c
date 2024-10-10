@@ -688,5 +688,103 @@ int main()
 	}
 	printf("\n\n");
 
+	{
+		data_type_info s1 = get_fixed_length_string_type("STRING", 10, 0);
+		data_type_info s2 = get_fixed_length_string_type("STRING", 12, 1);
+		data_type_info s3 = get_variable_length_string_type("STRING", 100);
+		data_type_info s4 = get_variable_length_string_type("STRING", 300);
+
+		data_type_info* tuple_type_info = alloca(sizeof_tuple_data_type_info(8));
+		initialize_tuple_data_type_info(tuple_type_info, "tuple_type1", 1, 1024, 8);
+		tuple_type_info->containees[0].type_info = UINT_NON_NULLABLE[3];
+		tuple_type_info->containees[1].type_info = BIT_FIELD_NON_NULLABLE[5];
+		tuple_type_info->containees[2].type_info = &s3;
+		tuple_type_info->containees[3].type_info = &s1;
+		tuple_type_info->containees[4].type_info = &s2;
+		tuple_type_info->containees[5].type_info = &s4;
+		tuple_type_info->containees[6].type_info = FLOAT_double_NULLABLE;
+		tuple_type_info->containees[7].type_info = BIT_FIELD_NULLABLE[5];
+		finalize_type_info(tuple_type_info);
+
+		tuple_size_def tsd;
+		initialize_tuple_size_def(&tsd, tuple_type_info);
+
+		print_tuple_size_def(&tsd);printf("\n");
+
+		char serial_tsd[13];
+		uint32_t serial_tsd_size = serialize_tuple_size_def(&tsd, serial_tsd);
+
+		tuple_size_def tsd2;
+		int res = deserialize_tuple_size_def(&tsd2, serial_tsd, serial_tsd_size);
+		if(res)
+			print_tuple_size_def(&tsd2);
+		else
+			printf("failed to deserialize\n");
+	}
+	printf("\n\n");
+
+	{
+		data_type_info s4 = get_variable_length_string_type("STRING", 300);
+		finalize_type_info(&s4);
+
+		tuple_size_def tsd;
+		initialize_tuple_size_def(&tsd, &s4);
+
+		print_tuple_size_def(&tsd);printf("\n");
+
+		char serial_tsd[13];
+		uint32_t serial_tsd_size = serialize_tuple_size_def(&tsd, serial_tsd);
+
+		tuple_size_def tsd2;
+		int res = deserialize_tuple_size_def(&tsd2, serial_tsd, serial_tsd_size);
+		if(res)
+			print_tuple_size_def(&tsd2);
+		else
+			printf("failed to deserialize\n");
+	}
+	printf("\n\n");
+
+	{
+		data_type_info* array_type_info = &get_variable_element_count_array_type("", 256, UINT_NULLABLE[5]);
+		finalize_type_info(array_type_info);
+
+		tuple_size_def tsd;
+		initialize_tuple_size_def(&tsd, array_type_info);
+
+		print_tuple_size_def(&tsd);printf("\n");
+
+		char serial_tsd[13];
+		uint32_t serial_tsd_size = serialize_tuple_size_def(&tsd, serial_tsd);
+
+		tuple_size_def tsd2;
+		int res = deserialize_tuple_size_def(&tsd2, serial_tsd, serial_tsd_size);
+		if(res)
+			print_tuple_size_def(&tsd2);
+		else
+			printf("failed to deserialize\n");
+	}
+	printf("\n\n");
+
+	{
+		data_type_info* array_type_info = &get_variable_element_count_array_type("", 256, BIT_FIELD_NULLABLE[5]);
+		finalize_type_info(array_type_info);
+
+		tuple_size_def tsd;
+		initialize_tuple_size_def(&tsd, array_type_info);
+
+		print_tuple_size_def(&tsd);printf("\n");
+
+		char serial_tsd[13];
+		uint32_t serial_tsd_size = serialize_tuple_size_def(&tsd, serial_tsd);
+
+		tuple_size_def tsd2;
+		int res = deserialize_tuple_size_def(&tsd2, serial_tsd, serial_tsd_size);
+		if(res)
+			print_tuple_size_def(&tsd2);
+		else
+			printf("failed to deserialize\n");
+	}
+	printf("\n\n");
+
 	return 0;
 }
