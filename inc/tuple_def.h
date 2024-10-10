@@ -71,7 +71,7 @@ uint32_t get_maximum_tuple_size_using_tuple_size_def(const tuple_size_def* tuple
 // serialize deserialize function for tuple_size_def
 // for serialization it is assumed that data has atleast 13 bytes to hold the serialized form of tuple_size_d
 uint32_t serialize_tuple_size_def(const tuple_size_def* tuple_size_d, void* data);
-int deserialize_tuple_size_def(tuple_size_def* tuple_size_d, void* data, uint32_t size);
+int deserialize_tuple_size_def(tuple_size_def* tuple_size_d, const void* data, uint32_t size); // ensures that data is not read beyond the size parameter
 
 void print_tuple_size_def(const tuple_size_def* tuple_size_d);
 

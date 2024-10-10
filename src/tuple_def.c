@@ -192,15 +192,47 @@ uint32_t serialize_tuple_size_def(const tuple_size_def* tuple_size_d, void* data
 		s[0] |= (1 << BIT_OFFSET_FOR_is_containee_bit_field);
 
 	if(tuple_size_d->is_containee_bit_field)
-		serialize_uint32(s + data_size, 4, tuple_size_d->containee_size); 
+		serialize_uint32(s + data_size, 4, tuple_size_d->containee_size);
 	else
 		serialize_uint32(s + data_size, 4, tuple_size_d->containee_bit_field_size);
 	data_size += 4;
 	return data_size;
 }
 
-int deserialize_tuple_size_def(tuple_size_def* tuple_size_d, void* data, uint32_t size)
+int deserialize_tuple_size_def(tuple_size_def* tuple_size_d, const void* data, uint32_t size)
 {
+	const char* s = data;
+	uint32_t bytes_parsed = 1;
+
+	tuple_size_d->is_variable_sized = !!(s[0] & (1 << BIT_OFFSET_FOR_is_variable_sized));
+
+	if(!tuple_size_d->is_variable_sized)
+	{
+		if(bytes_parsed + 4 > size) return 0;
+		tuple_size_d->size = deserialize_uint32(s + bytes_parsed, 4); bytes_parsed += 4;
+		return 1;
+	}
+
+	if(bytes_parsed + 8 > size) return 0;
+	tuple_size_d->min_size = deserialize_uint32(s + bytes_parsed, 4); bytes_parsed += 4;
+	tuple_size_d->max_size = deserialize_uint32(s + bytes_parsed, 4); bytes_parsed += 4;
+
+	tuple_size_d->has_size_in_prefix = !!(s[0] & (1 << BIT_OFFSET_FOR_has_size_in_prefix));
+	tuple_size_d->has_element_count_in_prefix = !!(s[0] & (1 << BIT_OFFSET_FOR_has_element_count_in_prefix));
+
+	if(tuple_size_d->has_size_in_prefix)
+		return 1;
+
+	tuple_size_d->does_containee_need_is_valid_bit_in_prefix = !!(s[0] & (1 << BIT_OFFSET_FOR_does_containee_need_is_valid_bit_in_prefix));
+	tuple_size_d->is_containee_bit_field = !!(s[0] & (1 << BIT_OFFSET_FOR_is_containee_bit_field));
+
+	if(bytes_parsed + 4 > size) return 0;
+	if(tuple_size_d->is_containee_bit_field)
+		tuple_size_d->containee_size = deserialize_uint32(s + bytes_parsed, 4);
+	else
+		tuple_size_d->containee_bit_field_size = deserialize_uint32(s + bytes_parsed, 4);
+
+	return bytes_parsed;
 }
 
 #include<stdio.h>
