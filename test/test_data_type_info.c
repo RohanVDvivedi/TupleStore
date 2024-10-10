@@ -670,5 +670,23 @@ int main()
 	}
 	printf("\n\n");
 
+	{
+		tuple_size_def tsd;
+		initialize_tuple_size_def(&tsd, UINT_NULLABLE[6]);
+
+		print_tuple_size_def(&tsd);printf("\n");
+
+		char serial_tsd[13];
+		uint32_t serial_tsd_size = serialize_tuple_size_def(&tsd, serial_tsd);
+
+		tuple_size_def tsd2;
+		int res = deserialize_tuple_size_def(&tsd2, serial_tsd, serial_tsd_size);
+		if(res)
+			print_tuple_size_def(&tsd2);
+		else
+			printf("failed to deserialize\n");
+	}
+	printf("\n\n");
+
 	return 0;
 }
