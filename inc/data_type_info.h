@@ -171,7 +171,7 @@ int finalize_type_info(data_type_info* dti);
 
 uint32_t get_byte_count_for_serialized_type_info(const data_type_info* dti); // returns number of bytes in serialized type_info
 uint32_t serialize_type_info(const data_type_info* dti, void* data); // data must be able to hold atleast enough bytes to serialize dti, you may get this size by calling get_byte_count_for_serialized_type_info first
-int deserialize_type_info(const data_type_info* dti, const void* data, uint32_t data_size); // this function fails if we require more bytes than data_size for deserialization
+data_type_info* deserialize_type_info(const void* data, uint32_t data_size); // this function fails if we require more bytes than data_size for deserialization, it will fail with a NULL
 
 // returns 1, if the 2 data_type_info are logically identical
 int are_identical_type_info(const data_type_info* dti1, const data_type_info* dti2);
