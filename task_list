@@ -1,7 +1,7 @@
 TASKS PICKED
 
- * serialization/deserialization functions for data_type_info
-   * first serialize then deserialize it and then check if the input and output are identical using are_identical_type_info() function
+ * test serialization and deserialization functions for data_type_info for all current tests, first serialize, then deserialize, then finalize the output and then compare that the original and the clone are logically equal
+   * call this function in all the current testcases
  * add logic for stream based hashing and hash value calculation, implement interface in Cutlery first, use it in TupleStore and implemnt a test hasher in TupleIndexer
 
 1 NEW TYPE TASKS
