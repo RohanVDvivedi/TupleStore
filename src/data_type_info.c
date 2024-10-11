@@ -1188,6 +1188,12 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
+	else if(serialized_bytes[0] <= 242) // ARRAY
+	{
+
+	}
+	else
+		return NULL;
 }
 
 int are_identical_type_info(const data_type_info* dti1, const data_type_info* dti2)
