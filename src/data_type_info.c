@@ -616,6 +616,37 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 
 			break;
 		}
+		case TUPLE :
+		{
+			if(!is_variable_sized_type_info(dti))
+			{
+				if(is_nullable_type_info(dti))
+					serialized_bytes[0] = 236;
+				else
+					serialized_bytes[0] = 237;
+
+				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->element_count); bytes_consumed += 4;
+			}
+			else
+			{
+				serialized_bytes[0] = 238;
+
+				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->element_count); bytes_consumed += 4;
+
+				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->max_size); bytes_consumed += 4;
+			}
+
+			bytes_consumed += serialize_type_name(dti->type_name, serialized_bytes + bytes_consumed);
+
+			for(uint32_t i = 0; i < dti->element_count; i++)
+			{
+				bytes_consumed += serialize_type_name(dti->containees[i].field_name, serialized_bytes + bytes_consumed);
+
+				bytes_consumed += serialize_type_info(cdti->containees[i].type_info, serialized_bytes + bytes_consumed);
+			}
+
+			break;
+		}
 	}
 
 	return bytes_consumed;
