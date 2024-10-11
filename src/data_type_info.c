@@ -751,10 +751,26 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 	return bytes_consumed;
 }
 
+// returns UINT32_MAX on error
 static uint32_t deserialize_type_name(void* result, const void* data, uint32_t data_size)
 {
-	uint32_t type_name_length = min(strnlen(data, min(64, data_size)) + 1, 64);
-	strncpy(result, data, type_name_length);
+	uint32_t type_name_length = strnlen(data, min(64, data_size));
+	if(type_name_length != 64) // then it must have null terminator at the end
+	{
+		if(type_name_length != data_size)
+		{
+			if(((const char*)data)[type_name_length] != '\0') // this case must never occur
+				return UINT32_MAX;
+			else
+				type_name_length += 1; // count the null terminator in the length to be copied
+		}
+		else // hitting data_size without null terminator is an error
+			return UINT32_MAX;
+	}
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wstringop-truncation"
+		strncpy(result, data, type_name_length);
+	#pragma GCC diagnostic pop
 	return type_name_length;
 }
 
@@ -773,7 +789,11 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		uint32_t size = serialized_bytes[0] + 1;
 
 		data_type_info dti = define_bit_field_nullable_type("", size);
-		deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		if(type_name_length == UINT32_MAX)
+			return NULL;
+		else
+			bytes_consumed += type_name_length;
 
 		if(are_identical_type_info(&dti, BIT_FIELD_NULLABLE[size]))
 			return BIT_FIELD_NULLABLE[size];
@@ -793,7 +813,11 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		uint32_t size = serialized_bytes[0] - 63;
 
 		data_type_info dti = define_bit_field_non_nullable_type("", size);
-		deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		if(type_name_length == UINT32_MAX)
+			return NULL;
+		else
+			bytes_consumed += type_name_length;
 
 		if(are_identical_type_info(&dti, BIT_FIELD_NON_NULLABLE[size]))
 			return BIT_FIELD_NON_NULLABLE[size];
@@ -813,7 +837,11 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		uint32_t size = serialized_bytes[0] - 127;
 
 		data_type_info dti = define_uint_nullable_type("", size);
-		deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		if(type_name_length == UINT32_MAX)
+			return NULL;
+		else
+			bytes_consumed += type_name_length;
 
 		if(are_identical_type_info(&dti, UINT_NULLABLE[size]))
 			return UINT_NULLABLE[size];
@@ -833,7 +861,11 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		uint32_t size = serialized_bytes[0] - 135;
 
 		data_type_info dti = define_uint_non_nullable_type("", size);
-		deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		if(type_name_length == UINT32_MAX)
+			return NULL;
+		else
+			bytes_consumed += type_name_length;
 
 		if(are_identical_type_info(&dti, UINT_NON_NULLABLE[size]))
 			return UINT_NON_NULLABLE[size];
@@ -853,7 +885,11 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		uint32_t size = serialized_bytes[0] - 143;
 
 		data_type_info dti = define_int_nullable_type("", size);
-		deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		if(type_name_length == UINT32_MAX)
+			return NULL;
+		else
+			bytes_consumed += type_name_length;
 
 		if(are_identical_type_info(&dti, INT_NULLABLE[size]))
 			return INT_NULLABLE[size];
@@ -873,7 +909,11 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		uint32_t size = serialized_bytes[0] - 151;
 
 		data_type_info dti = define_int_non_nullable_type("", size);
-		deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		if(type_name_length == UINT32_MAX)
+			return NULL;
+		else
+			bytes_consumed += type_name_length;
 
 		if(are_identical_type_info(&dti, INT_NON_NULLABLE[size]))
 			return INT_NON_NULLABLE[size];
@@ -899,7 +939,11 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			dti = define_float_nullable_type("", double);
 		else if(type_no == 3)
 			dti = define_float_nullable_type("", long_double);
-		deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		if(type_name_length == UINT32_MAX)
+			return NULL;
+		else
+			bytes_consumed += type_name_length;
 
 		if(are_identical_type_info(&dti, FLOAT_float_NULLABLE))
 			return FLOAT_float_NULLABLE;
@@ -929,7 +973,11 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			dti = define_float_non_nullable_type("", double);
 		else if(type_no == 3)
 			dti = define_float_non_nullable_type("", long_double);
-		deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		if(type_name_length == UINT32_MAX)
+			return NULL;
+		else
+			bytes_consumed += type_name_length;
 
 		if(are_identical_type_info(&dti, FLOAT_float_NULLABLE))
 			return FLOAT_float_NULLABLE;
@@ -953,7 +1001,11 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		uint32_t size = serialized_bytes[0] - 165;
 
 		data_type_info dti = define_large_uint_nullable_type("", size);
-		deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		if(type_name_length == UINT32_MAX)
+			return NULL;
+		else
+			bytes_consumed += type_name_length;
 
 		if(are_identical_type_info(&dti, LARGE_UINT_NULLABLE[size]))
 			return LARGE_UINT_NULLABLE[size];
@@ -973,7 +1025,11 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		uint32_t size = serialized_bytes[0] - 197;
 
 		data_type_info dti = define_large_uint_non_nullable_type("", size);
-		deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		if(type_name_length == UINT32_MAX)
+			return NULL;
+		else
+			bytes_consumed += type_name_length;
 
 		if(are_identical_type_info(&dti, LARGE_UINT_NON_NULLABLE[size]))
 			return LARGE_UINT_NON_NULLABLE[size];
@@ -985,6 +1041,150 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			return NULL;
 		}
 		(*dti_p) = dti;
+		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
+		return dti_p;
+	}
+	else if(serialized_bytes[0] <= 232) // STRING
+	{
+		data_type_info dti = {};
+
+		if(serialized_bytes[0] <= 231)
+		{
+			int is_nullable = (serialized_bytes[0] == 230);
+
+			if(bytes_consumed + 4 < data_size)
+				return NULL;
+			uint32_t element_count = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
+
+			dti = get_fixed_length_string_type("", element_count, is_nullable);
+		}
+		else
+		{
+			if(bytes_consumed + 4 < data_size)
+				return NULL;
+			uint32_t max_size = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
+
+			dti = get_variable_length_string_type("", max_size);
+		}
+		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		if(type_name_length == UINT32_MAX)
+			return NULL;
+		else
+			bytes_consumed += type_name_length;
+
+		data_type_info* dti_p = malloc(sizeof(data_type_info));
+		if(dti_p == NULL)
+		{
+			(*allocation_error) = 1;
+			return NULL;
+		}
+		(*dti_p) = dti;
+		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
+		return dti_p;
+	}
+	else if(serialized_bytes[0] <= 235) // BLOB
+	{
+		data_type_info dti = {};
+
+		if(serialized_bytes[0] <= 234)
+		{
+			int is_nullable = (serialized_bytes[0] == 233);
+
+			if(bytes_consumed + 4 < data_size)
+				return NULL;
+			uint32_t element_count = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
+
+			dti = get_fixed_length_blob_type("", element_count, is_nullable);
+		}
+		else
+		{
+			if(bytes_consumed + 4 < data_size)
+				return NULL;
+			uint32_t max_size = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
+
+			dti = get_variable_length_blob_type("", max_size);
+		}
+		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		if(type_name_length == UINT32_MAX)
+			return NULL;
+		else
+			bytes_consumed += type_name_length;
+
+		data_type_info* dti_p = malloc(sizeof(data_type_info));
+		if(dti_p == NULL)
+		{
+			(*allocation_error) = 1;
+			return NULL;
+		}
+		(*dti_p) = dti;
+		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
+		return dti_p;
+	}
+	else if(serialized_bytes[0] <= 238) // TUPLE
+	{
+		data_type_info* dti_p = NULL;
+
+		if(serialized_bytes[0] <= 237)
+		{
+			int is_nullable = (serialized_bytes[0] == 236);
+
+			if(bytes_consumed + 4 < data_size)
+				return NULL;
+			uint32_t element_count = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
+
+			dti_p = malloc(sizeof_tuple_data_type_info(element_count));
+
+			initialize_tuple_data_type_info(dti_p, "", is_nullable, 0, element_count);
+		}
+		else
+		{
+			if(bytes_consumed + 4 < data_size)
+				return NULL;
+			uint32_t element_count = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
+
+			if(bytes_consumed + 4 < data_size)
+				return NULL;
+			uint32_t max_size = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
+
+			dti_p = malloc(sizeof_tuple_data_type_info(element_count));
+
+			initialize_tuple_data_type_info(dti_p, "", 1, max_size, element_count);
+		}
+		uint32_t type_name_length = deserialize_type_name(dti_p->type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		if(type_name_length == UINT32_MAX)
+		{
+			// no containees initialized yet, hence no need to destroy the containees
+			free(dti_p);
+			return NULL;
+		}
+		else
+			bytes_consumed += type_name_length;
+
+		for(uint32_t i = 0; i < dti_p->element_count; i++)
+		{
+			uint32_t field_name_length = deserialize_type_name(dti_p->containees[i].field_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+			if(field_name_length == UINT32_MAX)
+				goto DESTROY_ALL_CHILDREN_UNTIL_i_AND_FAIL;
+			else
+				bytes_consumed += field_name_length;
+
+			dti_p->containees[i].type_info = deserialize_type_info(serialized_bytes + bytes_consumed, data_size - bytes_consumed, allocation_error);
+			if(dti_p->containees[i].type_info == NULL)
+				goto DESTROY_ALL_CHILDREN_UNTIL_i_AND_FAIL;
+			else
+				bytes_consumed += get_byte_count_for_serialized_type_info(dti_p->containees[i].type_info);
+
+			// logic below this is to handle failure in the loop, so if you succeed until here continue
+			continue;
+
+			DESTROY_ALL_CHILDREN_UNTIL_i_AND_FAIL:;
+			{
+				// TODO destroy all children of dti_p
+				free(dti_p);
+				return NULL;
+			}
+		}
+
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
