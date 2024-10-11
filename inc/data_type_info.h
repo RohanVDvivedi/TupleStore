@@ -171,7 +171,9 @@ int finalize_type_info(data_type_info* dti);
 
 uint32_t get_byte_count_for_serialized_type_info(const data_type_info* dti); // returns number of bytes in serialized type_info
 uint32_t serialize_type_info(const data_type_info* dti, void* data); // data must be able to hold atleast enough bytes to serialize dti, you may get this size by calling get_byte_count_for_serialized_type_info first
-data_type_info* deserialize_type_info(const void* data, uint32_t data_size); // this function fails if we require more bytes than data_size for deserialization, it will fail with a NULL
+data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int* allocation_error); // this function fails if we require more bytes than data_size for deserialization, it will fail with a NULL
+// if the returned value is NULL, and allocation_error is set, then the failure happenned because we were unable to allocate a data_type_info node using the malloc std c allocator
+// for the return value of this function you may destroy all nodes recursively except the ones marked is_static = 1
 
 // returns 1, if the 2 data_type_info are logically identical
 int are_identical_type_info(const data_type_info* dti1, const data_type_info* dti2);
