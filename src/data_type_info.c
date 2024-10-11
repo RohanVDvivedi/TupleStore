@@ -940,6 +940,44 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		(*dti_p) = dti;
 		return dti_p;
 	}
+	else if(serialized_bytes[0] <= 197)
+	{
+		uint32_t size = serialized_bytes[0] - 165;
+
+		data_type_info dti = define_large_uint_nullable_type("", size);
+		deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+
+		if(are_identical_type_info(&dti, LARGE_UINT_NULLABLE[size]))
+			return LARGE_UINT_NULLABLE[size];
+
+		data_type_info* dti_p = malloc(sizeof(data_type_info));
+		if(dti_p == NULL)
+		{
+			(*allocation_error) = 1;
+			return NULL;
+		}
+		(*dti_p) = dti;
+		return dti_p;
+	}
+	else if(serialized_bytes[0] <= 229)
+	{
+		uint32_t size = serialized_bytes[0] - 197;
+
+		data_type_info dti = define_large_uint_non_nullable_type("", size);
+		deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+
+		if(are_identical_type_info(&dti, LARGE_UINT_NON_NULLABLE[size]))
+			return LARGE_UINT_NON_NULLABLE[size];
+
+		data_type_info* dti_p = malloc(sizeof(data_type_info));
+		if(dti_p == NULL)
+		{
+			(*allocation_error) = 1;
+			return NULL;
+		}
+		(*dti_p) = dti;
+		return dti_p;
+	}
 }
 
 int are_identical_type_info(const data_type_info* dti1, const data_type_info* dti2)
