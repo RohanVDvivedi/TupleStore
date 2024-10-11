@@ -640,7 +640,7 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 
 			for(uint32_t i = 0; i < dti->element_count; i++)
 			{
-				bytes_consumed += serialize_type_name(dti->containees[i].field_name, serialized_bytes + bytes_consumed);
+				bytes_consumed += serialize_type_name(dti->containees[i].field_name, serialized_bytes + bytes_consumed); // field name is also 64 bytes, so it's serialization works same as type_name
 
 				bytes_consumed += serialize_type_info(cdti->containees[i].type_info, serialized_bytes + bytes_consumed);
 			}
