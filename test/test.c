@@ -38,11 +38,11 @@ tuple_def* get_tuple_definition()
 	tuple_type_info->containees[1].type_info = UINT_NULLABLE[1];
 
 	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
-		c2_type_info = get_fixed_length_string_type("STRING", 15, 1);
+		c2_type_info = get_fixed_length_string_type("", 15, 1);
 		strcpy(tuple_type_info->containees[2].field_name, "col_2");
 		tuple_type_info->containees[2].type_info = &c2_type_info;
 	#else
-		c2_type_info = get_variable_length_string_type("STRING", 1 << (VAR_STRING_SIZE_SPECIFICER_SIZE * 8));
+		c2_type_info = get_variable_length_string_type("", 1 << (VAR_STRING_SIZE_SPECIFICER_SIZE * 8));
 		strcpy(tuple_type_info->containees[2].field_name, "var_col_2");
 		tuple_type_info->containees[2].type_info = &c2_type_info;
 	#endif
@@ -51,11 +51,11 @@ tuple_def* get_tuple_definition()
 	tuple_type_info->containees[3].type_info = FLOAT_double_NULLABLE;
 
 	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
-		c4_type_info = get_fixed_length_string_type("STRING", 8, 1);
+		c4_type_info = get_fixed_length_string_type("", 8, 1);
 		strcpy(tuple_type_info->containees[4].field_name, "col_4");
 		tuple_type_info->containees[4].type_info = &c4_type_info;
 	#else
-		c4_type_info = get_variable_length_string_type("STRING", 1 << (VAR_STRING_SIZE_SPECIFICER_SIZE * 8));
+		c4_type_info = get_variable_length_string_type("", 1 << (VAR_STRING_SIZE_SPECIFICER_SIZE * 8));
 		strcpy(tuple_type_info->containees[4].field_name, "var_col_4");
 		tuple_type_info->containees[4].type_info = &c4_type_info;
 	#endif

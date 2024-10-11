@@ -22,7 +22,7 @@ data_type_info var_string_type_info;
 
 tuple_def* get_tuple_definition()
 {
-	var_string_type_info = get_variable_length_string_type("STRING", 1 << (VAR_STRING_SIZE_SPECIFICER_SIZE * 8));
+	var_string_type_info = get_variable_length_string_type("", 1 << (VAR_STRING_SIZE_SPECIFICER_SIZE * 8));
 
 	if(!initialize_tuple_def(&tuple_definition, &var_string_type_info))
 	{

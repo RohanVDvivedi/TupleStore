@@ -25,7 +25,7 @@ tuple_def* get_tuple_definition()
 	strcpy(tuple_type_info->containees[1].field_name, "col_1");
 	tuple_type_info->containees[1].type_info = LARGE_UINT_NULLABLE[5];
 
-	c2_type_info = get_variable_length_string_type("STRING", 1 << (2 * 8));
+	c2_type_info = get_variable_length_string_type("", 1 << (2 * 8));
 	strcpy(tuple_type_info->containees[2].field_name, "var_col_2");
 	tuple_type_info->containees[2].type_info = &c2_type_info;
 
@@ -35,7 +35,7 @@ tuple_def* get_tuple_definition()
 	strcpy(tuple_type_info->containees[4].field_name, "col_4");
 	tuple_type_info->containees[4].type_info = BIT_FIELD_NULLABLE[9];
 
-	c5_type_info = get_variable_length_string_type("STRING", 1 << (2 * 8));
+	c5_type_info = get_variable_length_string_type("", 1 << (2 * 8));
 	strcpy(tuple_type_info->containees[5].field_name, "var_col_5");
 	tuple_type_info->containees[5].type_info = &c5_type_info;
 

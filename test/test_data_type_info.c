@@ -16,10 +16,10 @@ uint64_t hash_func(const void* data, uint32_t size)
 int main()
 {
 	{
-		data_type_info s1 = get_fixed_length_string_type("STRING", 10, 0);
-		data_type_info s2 = get_fixed_length_string_type("STRING", 12, 1);
-		data_type_info s3 = get_variable_length_string_type("STRING", 100);
-		data_type_info s4 = get_variable_length_string_type("STRING", 300);
+		data_type_info s1 = get_fixed_length_string_type("", 10, 0);
+		data_type_info s2 = get_fixed_length_string_type("", 12, 1);
+		data_type_info s3 = get_variable_length_string_type("", 100);
+		data_type_info s4 = get_variable_length_string_type("", 300);
 
 		data_type_info* tuple_type_info = alloca(sizeof_tuple_data_type_info(8));
 		initialize_tuple_data_type_info(tuple_type_info, "tuple_type1", 1, 1024, 8);
@@ -275,7 +275,7 @@ int main()
 	printf("\n\n");
 
 	{
-		data_type_info s4 = get_variable_length_string_type("STRING", 300);
+		data_type_info s4 = get_variable_length_string_type("", 300);
 		data_type_info* array_type_info = &get_fixed_element_count_array_type("", 3, 500, 1, &s4);
 		finalize_type_info(array_type_info);
 		print_type_info(array_type_info);printf("\n");
@@ -386,7 +386,7 @@ int main()
 	printf("\n\n");
 
 	{
-		data_type_info s4 = get_variable_length_string_type("STRING", 300);
+		data_type_info s4 = get_variable_length_string_type("", 300);
 		data_type_info* array_type_info = &get_variable_element_count_array_type("", 256, &s4);
 		finalize_type_info(array_type_info);
 		print_type_info(array_type_info);printf("\n");
@@ -443,7 +443,7 @@ int main()
 	printf("\n\n");
 
 	{
-		data_type_info s4 = get_variable_length_string_type("STRING", 300);
+		data_type_info s4 = get_variable_length_string_type("", 300);
 		finalize_type_info(&s4);
 		print_type_info(&s4);printf("\n");
 
@@ -480,8 +480,8 @@ int main()
 
 	// comapre string and array
 	{
-		data_type_info str = get_variable_length_string_type("STRING", 300);
-		data_type_info arr = get_variable_element_count_array_type("ARRAY", 300, INT_NULLABLE[4]);
+		data_type_info str = get_variable_length_string_type("", 300);
+		data_type_info arr = get_variable_element_count_array_type("", 300, INT_NULLABLE[4]);
 
 		finalize_type_info(&str);
 		finalize_type_info(&arr);
@@ -509,9 +509,9 @@ int main()
 
 	// set variable length array in variable length array
 	{
-		data_type_info arr2 = get_variable_element_count_array_type("ARRAY", 4096, INT_NULLABLE[4]);
-		data_type_info arr1 = get_variable_element_count_array_type("ARRAY", 4096, &arr2);
-		data_type_info arr0 = get_variable_element_count_array_type("ARRAY", 4096, &arr1);
+		data_type_info arr2 = get_variable_element_count_array_type("", 4096, INT_NULLABLE[4]);
+		data_type_info arr1 = get_variable_element_count_array_type("", 4096, &arr2);
+		data_type_info arr0 = get_variable_element_count_array_type("", 4096, &arr1);
 		finalize_type_info(&arr0);
 		print_type_info(&arr0);printf("\n");
 		tuple_def def;
@@ -588,9 +588,9 @@ int main()
 	printf("\n\n");
 
 	{
-		data_type_info arr2 = get_fixed_element_count_array_type("ARRAY", 4, 0, 1, INT_NON_NULLABLE[4]);
-		data_type_info arr1 = get_fixed_element_count_array_type("ARRAY", 4, 0, 1, &arr2);
-		data_type_info arr0 = get_fixed_element_count_array_type("ARRAY", 4, 0, 1, &arr1);
+		data_type_info arr2 = get_fixed_element_count_array_type("", 4, 0, 1, INT_NON_NULLABLE[4]);
+		data_type_info arr1 = get_fixed_element_count_array_type("", 4, 0, 1, &arr2);
+		data_type_info arr0 = get_fixed_element_count_array_type("", 4, 0, 1, &arr1);
 		finalize_type_info(&arr0);
 		print_type_info(&arr0);printf("\n");
 		tuple_def def;
@@ -689,10 +689,10 @@ int main()
 	printf("\n\n");
 
 	{
-		data_type_info s1 = get_fixed_length_string_type("STRING", 10, 0);
-		data_type_info s2 = get_fixed_length_string_type("STRING", 12, 1);
-		data_type_info s3 = get_variable_length_string_type("STRING", 100);
-		data_type_info s4 = get_variable_length_string_type("STRING", 300);
+		data_type_info s1 = get_fixed_length_string_type("", 10, 0);
+		data_type_info s2 = get_fixed_length_string_type("", 12, 1);
+		data_type_info s3 = get_variable_length_string_type("", 100);
+		data_type_info s4 = get_variable_length_string_type("", 300);
 
 		data_type_info* tuple_type_info = alloca(sizeof_tuple_data_type_info(8));
 		initialize_tuple_data_type_info(tuple_type_info, "tuple_type1", 1, 1024, 8);
@@ -724,7 +724,7 @@ int main()
 	printf("\n\n");
 
 	{
-		data_type_info s4 = get_variable_length_string_type("STRING", 300);
+		data_type_info s4 = get_variable_length_string_type("", 300);
 		finalize_type_info(&s4);
 
 		tuple_size_def tsd;
