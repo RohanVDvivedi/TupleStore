@@ -1249,6 +1249,40 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		return NULL;
 }
 
+void destroy_non_static_type_info_recursively(data_type_info* dti)
+{
+	if(dti->is_static)
+		return;
+
+	switch(dti->type)
+	{
+		case BIT_FIELD :
+		case UINT :
+		case INT :
+		case FLOAT :
+		case LARGE_UINT :
+		{
+			free(dti);
+			return;
+		}
+		case STRING :
+		case BLOB :
+		case ARRAY :
+		{
+			destroy_non_static_type_info_recursively(dti->containee);
+			free(dti);
+			return;
+		}
+		case TUPLE :
+		{
+			for(uint32_t i = 0; i < dti->element_count; i++)
+				destroy_non_static_type_info_recursively(dti->containees[i].type_info);
+			free(dti);
+			return;
+		}
+	}
+}
+
 int are_identical_type_info(const data_type_info* dti1, const data_type_info* dti2)
 {
 	// if either of dti1 or dti2 is not finalized, we fail
