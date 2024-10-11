@@ -751,7 +751,7 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 	return bytes_consumed;
 }
 
-data_type_info* deserialize_type_info(const void* data, uint32_t data_size)
+data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int* allocation_error)
 {
 	// TODO
 }
