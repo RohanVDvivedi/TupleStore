@@ -54,7 +54,7 @@ struct data_type_info
 	int is_static; // -> if set this object is not to be freed, set for default types and custom types from extensions
 	int is_finalized; // -> tuple and array data_types can only be used if this is set, else call finalize on this type and get success
 
-	char type_name[64]; // -> type name of this user defined type
+	char type_name[64]; // -> type name of this user defined type, equivalent to a typedef in C
 
 	data_type type;
 
