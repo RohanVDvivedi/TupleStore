@@ -785,6 +785,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			return NULL;
 		}
 		(*dti_p) = dti;
+		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
 	else if(serialized_bytes[0] <= 127)
@@ -804,6 +805,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			return NULL;
 		}
 		(*dti_p) = dti;
+		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
 	else if(serialized_bytes[0] <= 135)
@@ -823,6 +825,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			return NULL;
 		}
 		(*dti_p) = dti;
+		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
 	else if(serialized_bytes[0] <= 143)
@@ -842,6 +845,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			return NULL;
 		}
 		(*dti_p) = dti;
+		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
 	else if(serialized_bytes[0] <= 151)
@@ -861,6 +865,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			return NULL;
 		}
 		(*dti_p) = dti;
+		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
 	else if(serialized_bytes[0] <= 159)
@@ -880,6 +885,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			return NULL;
 		}
 		(*dti_p) = dti;
+		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
 	else if(serialized_bytes[0] <= 162)
@@ -909,6 +915,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			return NULL;
 		}
 		(*dti_p) = dti;
+		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
 	else if(serialized_bytes[0] <= 165)
@@ -938,6 +945,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			return NULL;
 		}
 		(*dti_p) = dti;
+		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
 	else if(serialized_bytes[0] <= 197)
@@ -957,6 +965,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			return NULL;
 		}
 		(*dti_p) = dti;
+		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
 	else if(serialized_bytes[0] <= 229)
@@ -976,6 +985,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			return NULL;
 		}
 		(*dti_p) = dti;
+		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
 }
