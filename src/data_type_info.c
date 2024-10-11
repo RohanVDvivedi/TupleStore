@@ -589,7 +589,7 @@ static void print_tabs(int tabs)
 
 static void print_type_info_recursive(const data_type_info* dti, int tabs)
 {
-	print_tabs(tabs); printf("type_name : %s (%sfinalized)\n", dti->type_name, (dti->is_finalized ? "" : "not-"));
+	print_tabs(tabs); printf("type_name : \"%.*s\" (%sfinalized)\n", 64,  dti->type_name, (dti->is_finalized ? "" : "not-"));
 	print_tabs(tabs); printf("type : %s\n", types_as_string[dti->type]);
 	print_tabs(tabs); printf("is_nullable : %d\n", is_nullable_type_info(dti));
 	print_tabs(tabs); printf("is_variable_sized : %d\n", is_variable_sized_type_info(dti));
