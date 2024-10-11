@@ -742,6 +742,8 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->max_size); bytes_consumed += 4;
 			}
 
+			bytes_consumed += serialize_type_name(dti->type_name, serialized_bytes + bytes_consumed);
+
 			bytes_consumed += serialize_type_info(dti->containee, serialized_bytes + bytes_consumed);
 
 			break;
@@ -1190,7 +1192,58 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 	}
 	else if(serialized_bytes[0] <= 242) // ARRAY
 	{
+		data_type_info dti = {};
 
+		if(serialized_bytes[0] <= 240)
+		{
+			int is_nullable = (serialized_bytes[0] == 239);
+
+			if(bytes_consumed + 4 < data_size)
+				return NULL;
+			uint32_t element_count = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
+
+			dti = get_fixed_element_count_array_type("", element_count, 0, is_nullable, NULL);
+		}
+		else if(serialized_bytes[0] <= 241)
+		{
+			if(bytes_consumed + 4 < data_size)
+				return NULL;
+			uint32_t element_count = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
+
+			if(bytes_consumed + 4 < data_size)
+				return NULL;
+			uint32_t max_size = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
+
+			dti = get_fixed_element_count_array_type("", element_count, max_size, 1, NULL);
+		}
+		else // 242
+		{
+			if(bytes_consumed + 4 < data_size)
+				return NULL;
+			uint32_t max_size = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
+
+			dti = get_variable_element_count_array_type("", max_size, NULL);
+		}
+		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		if(type_name_length == UINT32_MAX)
+			return NULL;
+		else
+			bytes_consumed += type_name_length;
+
+		dti.containee = deserialize_type_info(serialized_bytes + bytes_consumed, data_size - bytes_consumed, allocation_error);
+		if(dti.containee == NULL)
+			return NULL;
+
+		data_type_info* dti_p = malloc(sizeof(data_type_info));
+		if(dti_p == NULL)
+		{
+			(*allocation_error) = 1;
+			// TODO destroy containee
+			return NULL;
+		}
+		(*dti_p) = dti;
+		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
+		return dti_p;
 	}
 	else
 		return NULL;
