@@ -169,7 +169,8 @@ uint32_t find_containee_using_field_name_in_tuple_type_info(const data_type_info
 // must be called and must pass on all the types
 int finalize_type_info(data_type_info* dti);
 
-uint32_t serialize_type_info(const data_type_info* dti, void* data); // data must be able to hold atleast enough bytes to serialize dti, you may get this size by first passing data = NULL
+uint32_t get_byte_count_for_serialized_type_info(const data_type_info* dti); // returns number of bytes in serialized type_info
+uint32_t serialize_type_info(const data_type_info* dti, void* data); // data must be able to hold atleast enough bytes to serialize dti, you may get this size by calling get_byte_count_for_serialized_type_info first
 int deserialize_type_info(const data_type_info* dti, const void* data, uint32_t data_size); // this function fails if we require more bytes than data_size for deserialization
 
 // returns 1, if the 2 data_type_info are logically identical
