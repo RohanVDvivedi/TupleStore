@@ -1135,6 +1135,11 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			uint32_t element_count = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
 
 			dti_p = malloc(sizeof_tuple_data_type_info(element_count));
+			if(dti_p == NULL)
+			{
+				(*allocation_error) = 1;
+				return NULL;
+			}
 
 			initialize_tuple_data_type_info(dti_p, "", is_nullable, 0, element_count);
 		}
@@ -1149,6 +1154,11 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			uint32_t max_size = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
 
 			dti_p = malloc(sizeof_tuple_data_type_info(element_count));
+			if(dti_p == NULL)
+			{
+				(*allocation_error) = 1;
+				return NULL;
+			}
 
 			initialize_tuple_data_type_info(dti_p, "", 1, max_size, element_count);
 		}
@@ -1181,7 +1191,9 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 
 			DESTROY_ALL_CHILDREN_UNTIL_i_AND_FAIL:;
 			{
-				// TODO destroy all children of dti_p
+				// destroy all children of dti_p
+				for(uint32_t j = 0; j < i; j++)
+					destroy_non_static_type_info_recursively(dti_p->containees[j].type_info);
 				free(dti_p);
 				return NULL;
 			}
@@ -1238,7 +1250,8 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		if(dti_p == NULL)
 		{
 			(*allocation_error) = 1;
-			// TODO destroy containee
+			// destroy containee
+			destroy_non_static_type_info_recursively(dti.containee);
 			return NULL;
 		}
 		(*dti_p) = dti;
