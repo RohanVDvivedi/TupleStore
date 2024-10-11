@@ -487,12 +487,80 @@ int finalize_type_info(data_type_info* dti)
 	return 1;
 }
 
-static uint32_t serialize_type_name(const char* type_name, char* holder)
+static uint32_t get_byte_count_for_serialized_type_name(const char* type_name)
 {
 	uint32_t type_name_length = strnlen(type_name, 64) + 1;
 	if(type_name_length > 64)
 		type_name_length = 64;
-	strncpy(holder, type_name, type_name_length);
+	return type_name_length;
+}
+
+uint32_t get_byte_count_for_serialized_type_info(const data_type_info* dti)
+{
+	uint32_t bytes_consumed = 1;
+
+	switch(dti->type)
+	{
+		case BIT_FIELD :
+		case UINT :
+		case INT :
+		case FLOAT :
+		case LARGE_UINT :
+		{
+			bytes_consumed += get_byte_count_for_serialized_type_name(dti->type_name);
+			break;
+		}
+		case STRING :
+		case BLOB :
+		{
+			bytes_consumed += 4;
+			bytes_consumed += get_byte_count_for_serialized_type_name(dti->type_name);
+			break;
+		}
+		case TUPLE :
+		{
+			if(!is_variable_sized_type_info(dti))
+				bytes_consumed += 4;
+			else
+				bytes_consumed += 8;
+
+			bytes_consumed += get_byte_count_for_serialized_type_name(dti->type_name);
+
+			for(uint32_t i = 0; i < dti->element_count; i++)
+			{
+				bytes_consumed += get_byte_count_for_serialized_type_name(dti->containees[i].field_name); // field name is also 64 bytes, so it's serialization works same as type_name
+				bytes_consumed += get_byte_count_for_serialized_type_info(dti->containees[i].type_info);
+			}
+
+			break;
+		}
+		case ARRAY :
+		{
+			if(!is_variable_sized_type_info(dti)) // fixed sized array implies fixed element count and containing fixed sized containee
+				bytes_consumed += 4;
+			else
+			{
+				if(!has_variable_element_count_for_container_type_info(dti))
+					bytes_consumed += 4;
+
+				bytes_consumed += 4;
+			}
+
+			bytes_consumed +=  get_byte_count_for_serialized_type_info(dti->containee);
+
+			break;
+		}
+	}
+
+	return bytes_consumed;
+}
+
+static uint32_t serialize_type_name(const char* type_name, unsigned char* holder)
+{
+	uint32_t type_name_length = strnlen(type_name, 64) + 1;
+	if(type_name_length > 64)
+		type_name_length = 64;
+	strncpy((char*) holder, type_name, type_name_length);
 	return type_name_length;
 }
 
@@ -642,7 +710,7 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 			{
 				bytes_consumed += serialize_type_name(dti->containees[i].field_name, serialized_bytes + bytes_consumed); // field name is also 64 bytes, so it's serialization works same as type_name
 
-				bytes_consumed += serialize_type_info(cdti->containees[i].type_info, serialized_bytes + bytes_consumed);
+				bytes_consumed += serialize_type_info(dti->containees[i].type_info, serialized_bytes + bytes_consumed);
 			}
 
 			break;
@@ -660,7 +728,7 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 			}
 			else
 			{
-				if(!has_variable_element_count(dti))
+				if(!has_variable_element_count_for_container_type_info(dti))
 				{
 					serialized_bytes[0] = 241;
 
@@ -674,7 +742,7 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->max_size); bytes_consumed += 4;
 			}
 
-			bytes_consumed += serialize_type_info(cdti->containee, serialized_bytes + bytes_consumed);
+			bytes_consumed += serialize_type_info(dti->containee, serialized_bytes + bytes_consumed);
 
 			break;
 		}
