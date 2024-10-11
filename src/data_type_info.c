@@ -647,6 +647,37 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 
 			break;
 		}
+		case ARRAY :
+		{
+			if(!is_variable_sized_type_info(dti)) // fixed sized array implies fixed element count and containing fixed sized containee
+			{
+				if(is_nullable_type_info(dti))
+					serialized_bytes[0] = 239;
+				else
+					serialized_bytes[0] = 240;
+
+				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->element_count); bytes_consumed += 4;
+			}
+			else
+			{
+				if(!has_variable_element_count(dti))
+				{
+					serialized_bytes[0] = 241;
+
+					serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->element_count); bytes_consumed += 4;
+				}
+				else
+				{
+					serialized_bytes[0] = 242;
+				}
+
+				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->max_size); bytes_consumed += 4;
+			}
+
+			bytes_consumed += serialize_type_info(cdti->containee, serialized_bytes + bytes_consumed);
+
+			break;
+		}
 	}
 
 	return bytes_consumed;
