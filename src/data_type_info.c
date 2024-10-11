@@ -487,6 +487,145 @@ int finalize_type_info(data_type_info* dti)
 	return 1;
 }
 
+static uint32_t serialize_type_name(const char* type_name, char* holder)
+{
+	uint32_t type_name_length = strnlen(type_name, 64) + 1;
+	if(type_name_length > 64)
+		type_name_length = 64;
+	strncpy(holder, type_name, type_name_length);
+	return type_name_length;
+}
+
+uint32_t serialize_type_info(const data_type_info* dti, void* data)
+{
+	unsigned char* serialized_bytes = data;
+	uint32_t bytes_consumed = 1;
+
+	switch(dti->type)
+	{
+		case BIT_FIELD :
+		{
+			if(is_nullable_type_info(dti))
+				serialized_bytes[0] = 0 + dti->bit_field_size - 1;
+			else
+				serialized_bytes[0] = 64 + dti->bit_field_size - 1;
+
+			bytes_consumed += serialize_type_name(dti->type_name, serialized_bytes + bytes_consumed);
+
+			break;
+		}
+		case UINT :
+		{
+			if(is_nullable_type_info(dti))
+				serialized_bytes[0] = 128 + dti->size - 1;
+			else
+				serialized_bytes[0] = 136 + dti->size - 1;
+
+			bytes_consumed += serialize_type_name(dti->type_name, serialized_bytes + bytes_consumed);
+
+			break;
+		}
+		case INT :
+		{
+			if(is_nullable_type_info(dti))
+				serialized_bytes[0] = 144 + dti->size - 1;
+			else
+				serialized_bytes[0] = 152 + dti->size - 1;
+
+			bytes_consumed += serialize_type_name(dti->type_name, serialized_bytes + bytes_consumed);
+
+			break;
+		}
+		case FLOAT :
+		{
+			if(is_nullable_type_info(dti))
+			{
+				if(dti->size == sizeof(float))
+					serialized_bytes[0] = 160;
+				else if(dti->size == sizeof(double))
+					serialized_bytes[0] = 161;
+				else
+					serialized_bytes[0] = 162;
+			}
+			else
+			{
+				if(dti->size == sizeof(float))
+					serialized_bytes[0] = 163;
+				else if(dti->size == sizeof(double))
+					serialized_bytes[0] = 164;
+				else
+					serialized_bytes[0] = 165;
+			}
+
+			bytes_consumed += serialize_type_name(dti->type_name, serialized_bytes + bytes_consumed);
+
+			break;
+		}
+		case LARGE_UINT :
+		{
+			if(is_nullable_type_info(dti))
+				serialized_bytes[0] = 166 + dti->size - 1;
+			else
+				serialized_bytes[0] = 198 + dti->size - 1;
+
+			bytes_consumed += serialize_type_name(dti->type_name, serialized_bytes + bytes_consumed);
+
+			break;
+		}
+		case STRING :
+		{
+			if(!is_variable_sized_type_info(dti))
+			{
+				if(is_nullable_type_info(dti))
+					serialized_bytes[0] = 230;
+				else
+					serialized_bytes[0] = 231;
+
+				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->element_count); bytes_consumed += 4;
+			}
+			else
+			{
+				serialized_bytes[0] = 232;
+
+				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->max_size); bytes_consumed += 4;
+			}
+
+			bytes_consumed += serialize_type_name(dti->type_name, serialized_bytes + bytes_consumed);
+
+			break;
+		}
+		case BLOB :
+		{
+			if(!is_variable_sized_type_info(dti))
+			{
+				if(is_nullable_type_info(dti))
+					serialized_bytes[0] = 233;
+				else
+					serialized_bytes[0] = 234;
+
+				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->element_count); bytes_consumed += 4;
+			}
+			else
+			{
+				serialized_bytes[0] = 235;
+
+				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->max_size); bytes_consumed += 4;
+			}
+
+			bytes_consumed += serialize_type_name(dti->type_name, serialized_bytes + bytes_consumed);
+
+			break;
+		}
+	}
+
+	return bytes_consumed;
+}
+
+int deserialize_type_info(const data_type_info* dti, const void* data, uint32_t data_size)
+{
+	// TODO
+}
+
 int are_identical_type_info(const data_type_info* dti1, const data_type_info* dti2)
 {
 	// if either of dti1 or dti2 is not finalized, we fail
