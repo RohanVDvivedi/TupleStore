@@ -5,6 +5,8 @@
 #include<tuple.h>
 #include<page_layout.h>
 
+#include<test_serde_for_type_info.h>
+
 #define VAR_STRING_SIZE_SPECIFICER_SIZE 2
 
 // uncomment the page size that you want to test with
@@ -32,6 +34,8 @@ tuple_def* get_tuple_definition()
 
 	print_tuple_def(&tuple_definition);
 	printf("\n\n");
+
+	test_serde_for_type_info(&var_string_type_info);
 
 	return &tuple_definition;
 }
