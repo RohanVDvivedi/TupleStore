@@ -501,11 +501,11 @@ int main()
 		data_type_info str = get_variable_length_string_type("", 300);
 		data_type_info arr = get_variable_element_count_array_type("", 300, INT_NULLABLE[4]);
 
-		test_serde_for_type_info(&str);
-		test_serde_for_type_info(&arr);
-
 		finalize_type_info(&str);
 		finalize_type_info(&arr);
+
+		test_serde_for_type_info(&str);
+		test_serde_for_type_info(&arr);
 
 		char string[4096];
 		char array[4096];
