@@ -10,6 +10,10 @@ void test_serde_for_type_info(const data_type_info* dti)
 	uint32_t bytes_used = serialize_type_info(dti, bytes);
 	printf("used %"PRIu32" bytes for serializing dti\n", bytes_used);
 
+	for(uint32_t i = 0; i < bytes_size; i++)
+		printf("%03"PRIu8" ", ((unsigned char)bytes[i]));
+	printf("\n");
+
 	int allocation_error = 0;
 	data_type_info* dti2 = deserialize_type_info(bytes, bytes_used, &allocation_error);
 	if(allocation_error)
