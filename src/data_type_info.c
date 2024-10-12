@@ -1054,7 +1054,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		{
 			int is_nullable = (serialized_bytes[0] == 230);
 
-			if(bytes_consumed + 4 < data_size)
+			if(bytes_consumed + 4 > data_size)
 				return NULL;
 			uint32_t element_count = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
 
@@ -1062,7 +1062,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		}
 		else
 		{
-			if(bytes_consumed + 4 < data_size)
+			if(bytes_consumed + 4 > data_size)
 				return NULL;
 			uint32_t max_size = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
 
@@ -1092,7 +1092,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		{
 			int is_nullable = (serialized_bytes[0] == 233);
 
-			if(bytes_consumed + 4 < data_size)
+			if(bytes_consumed + 4 > data_size)
 				return NULL;
 			uint32_t element_count = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
 
@@ -1100,7 +1100,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		}
 		else
 		{
-			if(bytes_consumed + 4 < data_size)
+			if(bytes_consumed + 4 > data_size)
 				return NULL;
 			uint32_t max_size = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
 
@@ -1130,7 +1130,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		{
 			int is_nullable = (serialized_bytes[0] == 236);
 
-			if(bytes_consumed + 4 < data_size)
+			if(bytes_consumed + 4 > data_size)
 				return NULL;
 			uint32_t element_count = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
 
@@ -1145,11 +1145,11 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		}
 		else
 		{
-			if(bytes_consumed + 4 < data_size)
+			if(bytes_consumed + 4 > data_size)
 				return NULL;
 			uint32_t element_count = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
 
-			if(bytes_consumed + 4 < data_size)
+			if(bytes_consumed + 4 > data_size)
 				return NULL;
 			uint32_t max_size = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
 
@@ -1210,7 +1210,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		{
 			int is_nullable = (serialized_bytes[0] == 239);
 
-			if(bytes_consumed + 4 < data_size)
+			if(bytes_consumed + 4 > data_size)
 				return NULL;
 			uint32_t element_count = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
 
@@ -1218,11 +1218,11 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		}
 		else if(serialized_bytes[0] <= 241)
 		{
-			if(bytes_consumed + 4 < data_size)
+			if(bytes_consumed + 4 > data_size)
 				return NULL;
 			uint32_t element_count = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
 
-			if(bytes_consumed + 4 < data_size)
+			if(bytes_consumed + 4 > data_size)
 				return NULL;
 			uint32_t max_size = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
 
@@ -1230,7 +1230,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		}
 		else // 242
 		{
-			if(bytes_consumed + 4 < data_size)
+			if(bytes_consumed + 4 > data_size)
 				return NULL;
 			uint32_t max_size = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
 
