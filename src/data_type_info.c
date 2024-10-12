@@ -546,6 +546,8 @@ uint32_t get_byte_count_for_serialized_type_info(const data_type_info* dti)
 				bytes_consumed += 4;
 			}
 
+			bytes_consumed += get_byte_count_for_serialized_type_name(dti->type_name);
+
 			bytes_consumed +=  get_byte_count_for_serialized_type_info(dti->containee);
 
 			break;
