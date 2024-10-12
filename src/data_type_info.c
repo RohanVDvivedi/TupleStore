@@ -932,7 +932,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 	}
 	else if(serialized_bytes[0] <= 162)
 	{
-		uint32_t type_no = serialized_bytes[0] - 151;
+		uint32_t type_no = serialized_bytes[0] - 159;
 
 		data_type_info dti = {};
 		if(type_no == 1)
