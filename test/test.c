@@ -5,6 +5,8 @@
 #include<tuple.h>
 #include<page_layout.h>
 
+#include<test_serde_for_type_info.h>
+
 // comment the below macro to test the SLOTTED_PAGE_LAYOUT
 //#define TEST_FIXED_ARRAY_PAGE_LAYOUT
 #define VAR_STRING_SIZE_SPECIFICER_SIZE 2
@@ -77,6 +79,8 @@ tuple_def* get_tuple_definition()
 		printf("failed finalizing tuple definition\n");
 		exit(-1);
 	}
+
+	test_serde_for_type_info(tuple_type_info);
 
 	print_tuple_def(&tuple_definition);
 	printf("\n\n");
