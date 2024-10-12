@@ -5,6 +5,8 @@
 #include<stdlib.h>
 #include<string.h>
 
+#include<test_serde_for_type_info.h>
+
 uint64_t hash_func(const void* data, uint32_t size)
 {
 	uint64_t hash = 13;
@@ -33,6 +35,8 @@ int main()
 		tuple_type_info->containees[7].type_info = BIT_FIELD_NULLABLE[5];
 		finalize_type_info(tuple_type_info);
 		print_type_info(tuple_type_info);printf("\n");
+
+		test_serde_for_type_info(tuple_type_info);
 
 		char tuple[256];
 		initialize_minimal_data_for_type_info(tuple_type_info, tuple);
@@ -161,6 +165,8 @@ int main()
 		finalize_type_info(array_type_info);
 		print_type_info(array_type_info);printf("\n");
 
+		test_serde_for_type_info(array_type_info);
+
 		char array[4096];
 		initialize_minimal_data_for_type_info(array_type_info, array);
 
@@ -215,6 +221,8 @@ int main()
 		data_type_info* array_type_info = &get_fixed_element_count_array_type("", 3, 0, 1, LARGE_UINT_NULLABLE[4]);
 		finalize_type_info(array_type_info);
 		print_type_info(array_type_info);printf("\n");
+
+		test_serde_for_type_info(array_type_info);
 
 		char array[4096];
 		initialize_minimal_data_for_type_info(array_type_info, array);
@@ -280,6 +288,8 @@ int main()
 		finalize_type_info(array_type_info);
 		print_type_info(array_type_info);printf("\n");
 
+		test_serde_for_type_info(array_type_info);
+
 		char array[4096];
 		initialize_minimal_data_for_type_info(array_type_info, array);
 
@@ -309,6 +319,8 @@ int main()
 		data_type_info* array_type_info = &get_variable_element_count_array_type("", 256, BIT_FIELD_NULLABLE[5]);
 		finalize_type_info(array_type_info);
 		print_type_info(array_type_info);printf("\n");
+
+		test_serde_for_type_info(array_type_info);
 
 		char array[4096];
 		initialize_minimal_data_for_type_info(array_type_info, array);
@@ -350,6 +362,8 @@ int main()
 		finalize_type_info(array_type_info);
 		print_type_info(array_type_info);printf("\n");
 
+		test_serde_for_type_info(array_type_info);
+
 		char array[4096];
 		initialize_minimal_data_for_type_info(array_type_info, array);
 
@@ -390,6 +404,8 @@ int main()
 		data_type_info* array_type_info = &get_variable_element_count_array_type("", 256, &s4);
 		finalize_type_info(array_type_info);
 		print_type_info(array_type_info);printf("\n");
+
+		test_serde_for_type_info(array_type_info);
 
 		char array[4096];
 		initialize_minimal_data_for_type_info(array_type_info, array);
@@ -447,6 +463,8 @@ int main()
 		finalize_type_info(&s4);
 		print_type_info(&s4);printf("\n");
 
+		test_serde_for_type_info(&s4);
+
 		char s[4096];
 		set_user_value_for_type_info(&s4, s, 0, 300, &(user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
 
@@ -483,6 +501,9 @@ int main()
 		data_type_info str = get_variable_length_string_type("", 300);
 		data_type_info arr = get_variable_element_count_array_type("", 300, INT_NULLABLE[4]);
 
+		test_serde_for_type_info(&str);
+		test_serde_for_type_info(&arr);
+
 		finalize_type_info(&str);
 		finalize_type_info(&arr);
 
@@ -516,6 +537,8 @@ int main()
 		print_type_info(&arr0);printf("\n");
 		tuple_def def;
 		initialize_tuple_def(&def, &arr0);
+
+		test_serde_for_type_info(&arr0);
 
 		char data[4096];
 		init_tuple(&def, data);
@@ -595,6 +618,8 @@ int main()
 		print_type_info(&arr0);printf("\n");
 		tuple_def def;
 		initialize_tuple_def(&def, &arr0);
+
+		test_serde_for_type_info(&arr0);
 
 		char data[4096];
 		init_tuple(&def, data);
