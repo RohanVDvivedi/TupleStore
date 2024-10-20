@@ -347,6 +347,7 @@ int main()
 	
 	print_page(page, PAGE_SIZE, def);
 	printf("\n\n");
+	printf("trailing tomb stones count = %"PRIu32"\n\n", get_trailing_tomb_stones_count_on_page(page, PAGE_SIZE, &(def->size_def)));
 
 	// ---------------- DISCARDING TRAILING TOMB STONES
 
@@ -371,6 +372,7 @@ int main()
 	
 	print_page(page, PAGE_SIZE, def);
 	printf("\n\n");
+	printf("trailing tomb stones count = %"PRIu32"\n\n", get_trailing_tomb_stones_count_on_page(page, PAGE_SIZE, &(def->size_def)));
 
 	// ---------------- DISCARDING TRAILING TOMB STONES
 
@@ -381,6 +383,7 @@ int main()
 	
 	print_page(page, PAGE_SIZE, def);
 	printf("\n\n");
+	printf("trailing tomb stones count = %"PRIu32"\n\n", get_trailing_tomb_stones_count_on_page(page, PAGE_SIZE, &(def->size_def)));
 
 	// ---------------	PRINT PAGE IN HEX
 	
