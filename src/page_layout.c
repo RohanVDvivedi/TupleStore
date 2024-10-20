@@ -183,6 +183,19 @@ uint32_t discard_trailing_tomb_stones_on_page(void* page, uint32_t page_size, co
 	return 0;
 }
 
+uint32_t get_trailing_tomb_stones_count_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)
+{
+	uint32_t result = 0;
+	for(uint32_t tuple_count_concerned = get_tuple_count_on_page(page, page_size, tpl_sz_d); tuple_count_concerned > 0; tuple_count_concerned--) // iterate over complete range to tuple_count in reverse
+	{
+		if(exists_tuple_on_page(page, page_size, tpl_sz_d, tuple_count_concerned - 1)) // if the last tuple exists break out of the loop
+			break;
+		else // else increment the result counter
+			result += 1;
+	}
+	return result;
+}
+
 int exists_tuple_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index)
 {
 	switch(get_page_layout_type(tpl_sz_d))

@@ -91,6 +91,9 @@ void discard_all_tuples_on_page(void* page, uint32_t page_size, const tuple_size
 // it will return the number of trailing tombstones, that were discarded
 uint32_t discard_trailing_tomb_stones_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
+// returns number of trailing tomb stones on the page
+uint32_t get_trailing_tomb_stones_count_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
+
 // to check if a tuple at the given index in the page exists
 // returns 0, if the tuple was a tombstone OR if the index is out of bounds i.e. when index >= get_tuple_count())
 int exists_tuple_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index);
