@@ -278,6 +278,7 @@ int main()
 	
 	print_page(page, PAGE_SIZE, def);
 	printf("\n\n");
+	printf("trailing tomb stones count = %"PRIu32"\n\n", get_trailing_tomb_stones_count_on_page(page, PAGE_SIZE, &(def->size_def)));
 
 	// ---------------	PRINT PAGE IN HEX
 	
@@ -685,6 +686,7 @@ int main()
 
 			print_page(page, PAGE_SIZE, def);
 			printf("\n\n");
+			printf("trailing tomb stones count = %"PRIu32"\n\n", get_trailing_tomb_stones_count_on_page(page, PAGE_SIZE, &(def->size_def)));
 		}
 	}
 
@@ -700,6 +702,7 @@ int main()
 			printf("Discarding trailing tomb stones : \n\n\n");
 			print_page(page, PAGE_SIZE, def);
 			printf("\n\n");
+			printf("trailing tomb stones count = %"PRIu32"\n\n", get_trailing_tomb_stones_count_on_page(page, PAGE_SIZE, &(def->size_def)));
 		}
 	}
 
@@ -710,6 +713,7 @@ int main()
 	res = update_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 2, tuple_cache);
 	printf("Update(2) : %d\n\n\n", res);
 	print_page(page, PAGE_SIZE, def);
+	printf("trailing tomb stones count = %"PRIu32"\n\n", get_trailing_tomb_stones_count_on_page(page, PAGE_SIZE, &(def->size_def)));
 
 	r = &(row){5, 94, "Rohan's, project : Simple Tuple Storage Model.", 35.7};
 	build_tuple_from_row_struct(def, tuple_cache, r);
