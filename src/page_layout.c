@@ -31,7 +31,14 @@ uint32_t get_minimum_page_size(uint32_t page_header_size, const tuple_size_def* 
 
 uint32_t get_maximum_tuple_count_on_page(uint32_t page_header_size, uint32_t page_size, const tuple_size_def* tpl_sz_d)
 {
-	return get_space_to_be_allotted_to_all_tuples_on_page(page_header_size, page_size, tpl_sz_d) / (get_minimum_tuple_size_using_tuple_size_def(tpl_sz_d) + get_additional_space_overhead_per_tuple_on_page(page_size, tpl_sz_d));
+	switch(get_page_layout_type(tpl_sz_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+			return get_maximum_tuple_count_slotted_page(page_header_size, page_size, tpl_sz_d);
+		case FIXED_ARRAY_PAGE_LAYOUT :
+			return get_maximum_tuple_count_fixed_array_page(page_header_size, page_size, tpl_sz_d);
+	}
+	return 0;
 }
 
 int init_page(void* page, uint32_t page_size, uint32_t page_header_size, const tuple_size_def* tpl_sz_d)
