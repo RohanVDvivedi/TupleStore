@@ -1,4 +1,9 @@
 TASKS PICKED
+ 
+ * add function to zero out free space on the page
+   * returns 1 only if there were any free space bytes on the page
+   * very simple task for both slotted page and fixed array page
+   * just call memory_set(page + get_offset_to_start_of_free_space, 0, get_offset_to_end_of_free_space - get_offset_to_start_of_free_space); for the corresponding page type
 
  * add logic for stream based hashing and hash value calculation, implement interface in Cutlery first, use it in TupleStore and implemnt a test hasher in TupleIndexer
 
@@ -8,9 +13,3 @@ TASKS PICKED
   * add hash_tables for type_name based type casting, comparing and hashing
     * also support getting min and max values for given types
     * as soon as you implement type based comparators for the tuple store, the suffix truncation in bplus tree will break so fix that soon after that
-
-2 OPTIMIZATION FOR COMPRESSION TASKS
- *2* make provisions to reset the unused bytes (bytes in free space) to 0s on the page while performing init_page and run_page_compaction.
-   * very simple task for both slotted page and fixed array page
-     * just call memory_set(page + get_offset_to_start_of_free_space, 0, get_offset_to_end_of_free_space - get_offset_to_start_of_free_space);
-     * then test everything from tuple store to tuple indexer and also mini transaction engine
