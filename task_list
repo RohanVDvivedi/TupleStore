@@ -5,7 +5,17 @@ TASKS PICKED
    * very simple task for both slotted page and fixed array page
    * just call memory_set(page + get_offset_to_start_of_free_space, 0, get_offset_to_end_of_free_space - get_offset_to_start_of_free_space); for the corresponding page type
 
- * add logic for stream based hashing and hash value calculation, implement interface in Cutlery first, use it in TupleStore and implemnt a test hasher in TupleIndexer
+ * make hashers take these struct to hash
+  struct byte_stream_hasher{
+   uint64_t hash;
+   uint64_t hash_func(uint64_t hash, uint8_t byte);
+   }
+   uint64_t hash_bytes(ts_hasher* tsh, uint8_t* bytes, uint32_t size);
+   uint64_t hash_byte(ts_hasher* tsh, uint8_t byte);
+   * use these in all the functions that demand hashing
+   * implement a simple hash function based on this scheme like fnv 1a here (http://www.isthe.com/chongo/tech/comp/fnv/)
+   * and a macro to create a local variable for such a hasher, that gets its pointer passed around and hash values returned
+   like #define FNV_1A &(byte_stream_hasher){.hash = FNV_1A_CONSTANT, .hash_func = fnv_1a_byte_stream_hash_func}
 
 1 NEW TYPE TASKS
 
