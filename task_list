@@ -10,4 +10,6 @@ TASKS PICKED
     * as soon as you implement type based comparators for the tuple store, the suffix truncation in bplus tree will break so fix that soon after that
 
 2 OPTIMIZATION FOR COMPRESSION TASKS
- *2* make provisions to reset the unused bytes to 0s on the page while performing init_page and run_page_compaction. The reseting of bits should happen always on init_page and run_page_compaction. and should happen if a macro is defined.
+ *2* make provisions to reset the unused bytes (bytes in free space) to 0s on the page while performing init_page and run_page_compaction.
+   * very simple task for both slotted page and fixed array page
+     * just call memory_set(page + get_offset_to_start_of_free_space, 0, get_offset_to_end_of_free_space - get_offset_to_start_of_free_space);
