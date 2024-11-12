@@ -2309,6 +2309,14 @@ int expand_container(const data_type_info* dti, void* data, uint32_t index, uint
 			uint32_t to_zero_bit = (index + i) * prefix_bits_necessary_for_1_containee;
 			set_bits(data + prefix_bitmap_offset, to_zero_bit, to_zero_bit + prefix_bits_necessary_for_1_containee - 1, 0);
 		}
+
+		// zero out unused bits in prefix bitmap
+		{
+			uint64_t total_bits_in_prefix_bitmap = new_element_count * prefix_bits_necessary_for_1_containee;
+			uint64_t upper_limit = UINT_ALIGN_UP(total_bits_in_prefix_bitmap, 8);
+			if(upper_limit > total_bits_in_prefix_bitmap)
+				set_bits(data + prefix_bitmap_offset, total_bits_in_prefix_bitmap, upper_limit - 1, 0);
+		}
 	}
 	else if(!is_variable_sized_type_info(containee_type_info))
 	{
@@ -2358,6 +2366,15 @@ int expand_container(const data_type_info* dti, void* data, uint32_t index, uint
 
 		// zero out the new slots
 		memory_set(data + offset_to_first_element + (index * byte_size), 0, slots * byte_size);
+
+		// zero out unused bits in prefix bitmap
+		if(needs_is_valid_bit_in_prefix_bitmap(containee_type_info))
+		{
+			uint64_t total_bits_in_prefix_bitmap = new_element_count /* * needs_is_valid_bit_in_prefix_bitmap(containee_type_info)*/ ; // multiplying with 1 is no fun
+			uint64_t upper_limit = UINT_ALIGN_UP(total_bits_in_prefix_bitmap, 8);
+			if(upper_limit > total_bits_in_prefix_bitmap)
+				set_bits(data + prefix_bitmap_offset, total_bits_in_prefix_bitmap, upper_limit - 1, 0);
+		}
 	}
 	else
 	{
