@@ -676,8 +676,22 @@ int main()
 
 	// ---------------  DELETE ALL TUPLES AT ONCE
 
+	printf("discarding all tuples on temp page ::\n");
 	discard_all_tuples_on_page(temp_page, PAGE_SIZE, &(def->size_def));
 	print_page(temp_page, PAGE_SIZE, def);
+	printf("\n\n");
+
+	printf("showing you output before and after zeroing out free space on temp_page\n");
+	printf("\nTEMP PAGE :: (before zeroing out free space)\n");
+	print_page(temp_page, PAGE_SIZE, def);
+	print_page_in_hex(temp_page, PAGE_SIZE);
+	printf("\n\n");
+
+	zero_out_free_space_on_page(temp_page, PAGE_SIZE, &(def->size_def));
+
+	printf("\nTEMP PAGE :: (after zeroing out free space)\n");
+	print_page(temp_page, PAGE_SIZE, def);
+	print_page_in_hex(temp_page, PAGE_SIZE);
 	printf("\n\n");
 
 	// ---------------  DELETE ALL TUPLES
