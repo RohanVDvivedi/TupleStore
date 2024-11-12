@@ -1,9 +1,4 @@
 TASKS PICKED
- 
- * add function to zero out free space on the page
-   * returns 1 only if there were any free space bytes on the page
-   * very simple task for both slotted page and fixed array page
-   * just call memory_set(page + get_offset_to_start_of_free_space, 0, get_offset_to_end_of_free_space - get_offset_to_start_of_free_space); for the corresponding page type
 
  * make hashers take these struct to hash
   struct byte_stream_hasher{
