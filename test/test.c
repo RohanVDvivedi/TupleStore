@@ -611,14 +611,14 @@ int main()
 	printf("showing you output before and after zeroing out free space on temp_page\n");
 	printf("\nTEMP PAGE :: (before zeroing out free space)\n");
 	print_page(temp_page, PAGE_SIZE, def);
-	print_page_in_hex(page, PAGE_SIZE);
+	print_page_in_hex(temp_page, PAGE_SIZE);
 	printf("\n\n");
 
 	zero_out_free_space_on_page(temp_page, PAGE_SIZE, &(def->size_def));
 
 	printf("\nTEMP PAGE :: (after zeroing out free space)\n");
 	print_page(temp_page, PAGE_SIZE, def);
-	print_page_in_hex(page, PAGE_SIZE);
+	print_page_in_hex(temp_page, PAGE_SIZE);
 	printf("\n\n");
 
 	// ---------------  SWAP TUPLES
