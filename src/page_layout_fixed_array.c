@@ -382,6 +382,15 @@ int run_page_compaction_fixed_array_page(void* page, uint32_t page_size, const t
 	return 0;
 }
 
+int zero_out_free_space_fixed_array_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)
+{
+	if(0 == get_free_space_fixed_array_page(page, page_size, tpl_sz_d))
+		return 0;
+
+	memory_set(page + get_offset_to_start_of_free_space(page, page_size, tpl_sz_d), 0, get_offset_to_end_of_free_space(page_size) - get_offset_to_start_of_free_space(page, page_size, tpl_sz_d));
+	return 1;
+}
+
 uint32_t get_free_space_fixed_array_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d)
 {
 	return get_offset_to_end_of_free_space(page_size) - get_offset_to_start_of_free_space(page, page_size, tpl_sz_d);
