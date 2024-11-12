@@ -16,4 +16,8 @@ uint64_t tuple_hash_byte(tuple_hasher* th, uint8_t byte);
 
 uint64_t tuple_hash_bytes(tuple_hasher* th, const uint8_t* bytes, uint32_t byte_count);
 
+/* SAMPLE IMPLEMENTATION */
+
+#define FNV_64_TUPLE_HASHER (&(tuple_hasher){.hash = 0xcbf29ce484222325ULL, .hash_update = fnv_64_update})
+
 #endif
