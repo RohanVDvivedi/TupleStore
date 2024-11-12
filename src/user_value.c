@@ -142,7 +142,7 @@ int compare_user_value(const user_value* uval1, const data_type_info* dti1, cons
 	return compare_user_value_internal(uval1, dti1, uval2, dti2);
 }
 
-uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, uint64_t (*hash_func)(const void* data, uint32_t size))
+uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tuple_hasher* th)
 {
 	if(is_user_value_OUT_OF_BOUNDS(uval))
 		return 0;
@@ -152,13 +152,12 @@ uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, uint
 
 	if(dti->type == BIT_FIELD)
 	{
-		uint32_t hash = 0;
 		for(uint32_t i = 0; i < dti->bit_field_size; i++)
 		{
 			char bit_data = !!((uval->bit_field_value >> i) & UINT64_C(1));
-			hash ^= hash_func(&bit_data, 1);
+			tuple_hash_byte(th, bit_data)
 		}
-		return hash;
+		return th->hash;
 	}
 	else if(!is_container_type_info(dti)) // case for UINT, INT, FLOAT and LARGE_UINT
 	{
@@ -167,20 +166,23 @@ uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, uint
 
 		set_user_value_for_type_info(dti, serialized_value, 0, 0 /* has to be fixed sized, hence this parameter is never used*/, uval);
 
-		return hash_func(serialized_value, get_size_for_type_info(dti ,serialized_value));
+		return tuple_hash_bytes(th, serialized_value, get_size_for_type_info(dti ,serialized_value));
+	}
+	else if(dti->type == STRING || dti->type == BLOB)
+	{
+		return tuple_hash_bytes(th, uval->string_or_blob_value, uval->string_or_blob_size);
 	}
 	else
 	{
-		uint32_t hash = 0;
 		for(uint32_t i = 0; i < get_element_count_for_user_value(uval, dti); i++)
 		{
 			const data_type_info* child_dti = get_data_type_info_for_containee_of_container_without_data(dti, i);
 			if(child_dti == NULL)
 				return -2;
 			const user_value child_value = get_containee_for_user_value(uval, dti, i);
-			hash ^= hash_user_value(&child_value, child_dti, hash_func);
+			hash_user_value(&child_value, child_dti, th);
 		}
-		return hash;
+		return th->hash;
 	}
 }
 
