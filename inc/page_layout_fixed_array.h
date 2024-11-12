@@ -37,6 +37,8 @@ int set_element_in_tuple_in_place_fixed_array_page(void* page, uint32_t page_siz
 
 int run_page_compaction_fixed_array_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, int* memory_allocation_error);
 
+int zero_out_free_space_fixed_array_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
+
 uint32_t get_free_space_fixed_array_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
 uint32_t get_space_occupied_by_tuples_fixed_array_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t start_index, uint32_t last_index);
