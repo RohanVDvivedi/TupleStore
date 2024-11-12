@@ -7,14 +7,6 @@
 
 #include<test_serde_for_type_info.h>
 
-uint64_t hash_func(const void* data, uint32_t size)
-{
-	uint64_t hash = 13;
-	for(uint32_t i = 0; i < size; i++)
-		hash += (hash ^ (((uint64_t)((const char*)data)[i]) + UINT64_C(1157)));
-	return hash;
-}
-
 int main()
 {
 	{
@@ -77,9 +69,9 @@ int main()
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, tuple_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, tuple_type_info, hash_func),
-				hash_tuple(tuple, tpl_d, NULL, hash_func, tuple_type_info->element_count),
-				hash_tuple(tuple, tpl_d, &SELF, hash_func, 1));
+				hash_user_value(&uval, tuple_type_info, FNV_64_TUPLE_HASHER),
+				hash_tuple(tuple, tpl_d, NULL, FNV_64_TUPLE_HASHER, tuple_type_info->element_count),
+				hash_tuple(tuple, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 3, 0, &(user_value){.string_value = "GHIJK", .string_size = strlen("GHIJK")});
@@ -94,9 +86,9 @@ int main()
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, tuple_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, tuple_type_info, hash_func),
-				hash_tuple(tuple, tpl_d, NULL, hash_func, tuple_type_info->element_count),
-				hash_tuple(tuple, tpl_d, &SELF, hash_func, 1));
+				hash_user_value(&uval, tuple_type_info, FNV_64_TUPLE_HASHER),
+				hash_tuple(tuple, tpl_d, NULL, FNV_64_TUPLE_HASHER, tuple_type_info->element_count),
+				hash_tuple(tuple, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
 		set_user_value_to_containee_in_container(tuple_type_info, tuple, 0, 0, EMPTY_USER_VALUE);
@@ -114,9 +106,9 @@ int main()
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, tuple_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, tuple_type_info, hash_func),
-				hash_tuple(tuple, tpl_d, NULL, hash_func, tuple_type_info->element_count),
-				hash_tuple(tuple, tpl_d, &SELF, hash_func, 1));
+				hash_user_value(&uval, tuple_type_info, FNV_64_TUPLE_HASHER),
+				hash_tuple(tuple, tpl_d, NULL, FNV_64_TUPLE_HASHER, tuple_type_info->element_count),
+				hash_tuple(tuple, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
 		e3 = get_pointer_to_containee_from_container(tuple_type_info, tuple, 3);
@@ -139,9 +131,9 @@ int main()
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, tuple_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, tuple_type_info, hash_func),
-				hash_tuple(tuple, tpl_d, NULL, hash_func, tuple_type_info->element_count),
-				hash_tuple(tuple, tpl_d, &SELF, hash_func, 1));
+				hash_user_value(&uval, tuple_type_info, FNV_64_TUPLE_HASHER),
+				hash_tuple(tuple, tpl_d, NULL, FNV_64_TUPLE_HASHER, tuple_type_info->element_count),
+				hash_tuple(tuple, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
 		e3 = get_pointer_to_containee_from_container(tuple_type_info, tuple, 3);
@@ -184,8 +176,8 @@ int main()
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, hash_func),
-				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
 		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, &(user_value){.bit_field_value = 0x4});
@@ -199,8 +191,8 @@ int main()
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, hash_func),
-				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
 		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, NULL_USER_VALUE);
@@ -213,8 +205,8 @@ int main()
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, hash_func),
-				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 	}
 	printf("\n\n");
@@ -235,8 +227,8 @@ int main()
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, hash_func),
-				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
 		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, &(user_value){.large_uint_value = get_uint256(12)});
@@ -249,8 +241,8 @@ int main()
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, hash_func),
-				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
 		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, &(user_value){.large_uint_value = get_uint256(15)});
@@ -264,8 +256,8 @@ int main()
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, hash_func),
-				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
 		set_user_value_to_containee_in_container(array_type_info, array, 0, 0, NULL_USER_VALUE);
@@ -278,8 +270,8 @@ int main()
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, hash_func),
-				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 	}
 	printf("\n\n");
@@ -433,8 +425,8 @@ int main()
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, hash_func),
-				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
 		expand_container(array_type_info, array, 2, 3, 200);
@@ -450,8 +442,8 @@ int main()
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, hash_func),
-				hash_tuple(array, tpl_d, &SELF, hash_func, 1));
+				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
 		discard_from_container(array_type_info, array, 1, 3);

@@ -18,6 +18,7 @@ uint64_t tuple_hash_bytes(tuple_hasher* th, const uint8_t* bytes, uint32_t byte_
 
 /* SAMPLE IMPLEMENTATION */
 
+void fnv_64_update(uint64_t* hash, uint8_t byte);
 #define FNV_64_TUPLE_HASHER (&(tuple_hasher){.hash = 0xcbf29ce484222325ULL, .hash_update = fnv_64_update})
 
 #endif
