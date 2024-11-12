@@ -2568,16 +2568,15 @@ void print_data_for_data_type_info(const data_type_info* dti, const void* data)
 	print_user_value(&uval, dti);
 }
 
-uint64_t hash_data_for_type_info(const data_type_info* dti, const void* data, uint64_t (*hash_func)(const void* data, uint32_t size))
+uint64_t hash_data_for_type_info(const data_type_info* dti, const void* data, tuple_hasher* th)
 {
 	if(dti->type == BIT_FIELD)
 		return 0;
 
 	// if it is not a container hash as is
 	if(!is_container_type_info(dti))
-		return hash_func(data, dti->size);
+		return tuple_hash_bytes(th, data, dti->size);
 
-	uint32_t hash = 0;
 	for(uint32_t i = 0; i < get_element_count_for_container_type_info(dti, data); i++)
 	{
 		// if it is a string and the i-th element is a 0
@@ -2585,13 +2584,13 @@ uint64_t hash_data_for_type_info(const data_type_info* dti, const void* data, ui
 		if(dti->type == STRING && get_user_value_to_containee_from_container(dti, data, i).uint_value == 0)
 			break;
 
-		hash ^= hash_containee_in_container(dti, data, i, hash_func);
+		hash_containee_in_container(dti, data, i, th);
 	}
 
-	return hash;
+	return th->hash;
 }
 
-uint64_t hash_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, uint64_t (*hash_func)(const void* data, uint32_t size))
+uint64_t hash_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, tuple_hasher* th)
 {
 	if(!is_container_type_info(dti))
 		return 0;
@@ -2610,14 +2609,13 @@ uint64_t hash_containee_in_container(const data_type_info* dti, const void* data
 
 	if(child_pos.type_info == BIT_FIELD)
 	{
-		uint64_t hash = 0;
 		for(uint32_t i = 0; i < child_pos.type_info->bit_field_size; i++)
 		{
 			char bit_data = !!get_bit(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), child_pos.bit_offset_in_prefix_bitmap + i);
-			hash ^= hash_func(&bit_data, 1);
+			tuple_hash_byte(th, bit_data);
 		}
-		return hash;
+		return th->hash;
 	}
 	else
-		return hash_data_for_type_info(child_pos.type_info, child_data, hash_func);
+		return hash_data_for_type_info(child_pos.type_info, child_data, th);
 }

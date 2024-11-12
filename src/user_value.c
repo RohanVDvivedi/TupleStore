@@ -155,7 +155,7 @@ uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tupl
 		for(uint32_t i = 0; i < dti->bit_field_size; i++)
 		{
 			char bit_data = !!((uval->bit_field_value >> i) & UINT64_C(1));
-			tuple_hash_byte(th, bit_data)
+			tuple_hash_byte(th, bit_data);
 		}
 		return th->hash;
 	}
@@ -166,7 +166,7 @@ uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tupl
 
 		set_user_value_for_type_info(dti, serialized_value, 0, 0 /* has to be fixed sized, hence this parameter is never used*/, uval);
 
-		return tuple_hash_bytes(th, serialized_value, get_size_for_type_info(dti ,serialized_value));
+		return tuple_hash_bytes(th, (const uint8_t*) serialized_value, get_size_for_type_info(dti ,serialized_value));
 	}
 	else if(dti->type == STRING || dti->type == BLOB)
 	{
