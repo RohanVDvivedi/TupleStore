@@ -2571,7 +2571,7 @@ void print_data_for_data_type_info(const data_type_info* dti, const void* data)
 uint64_t hash_data_for_type_info(const data_type_info* dti, const void* data, tuple_hasher* th)
 {
 	if(dti->type == BIT_FIELD)
-		return 0;
+		return th->hash;
 
 	// if it is not a container hash as is
 	if(!is_container_type_info(dti))
@@ -2593,15 +2593,15 @@ uint64_t hash_data_for_type_info(const data_type_info* dti, const void* data, tu
 uint64_t hash_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, tuple_hasher* th)
 {
 	if(!is_container_type_info(dti))
-		return 0;
+		return th->hash;
 
 	// if index is out-of-bounds, treat it as null
 	if(index >= get_element_count_for_container_type_info(dti, data))
-		return 0;
+		return th->hash;
 
 	// if it the index-th containee is null, return 0
 	if(is_containee_null_in_container(dti, data, index))
-		return 0;
+		return th->hash;
 
 	// we now know that the containee must exist
 	data_position_info child_pos = get_data_position_info_for_containee_of_container(dti, data, index);

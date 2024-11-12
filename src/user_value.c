@@ -144,11 +144,11 @@ int compare_user_value(const user_value* uval1, const data_type_info* dti1, cons
 
 uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tuple_hasher* th)
 {
-	if(is_user_value_OUT_OF_BOUNDS(uval))
-		return 0;
+	if(is_user_value_OUT_OF_BOUNDS(uval)) // no bytes to hash
+		return th->hash;
 
-	if(is_user_value_NULL(uval))
-		return 0;
+	if(is_user_value_NULL(uval)) // no bytes to hash
+		return th->hash;
 
 	if(dti->type == BIT_FIELD)
 	{
@@ -166,7 +166,7 @@ uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tupl
 
 		set_user_value_for_type_info(dti, serialized_value, 0, 0 /* has to be fixed sized, hence this parameter is never used*/, uval);
 
-		return tuple_hash_bytes(th, (const uint8_t*) serialized_value, get_size_for_type_info(dti ,serialized_value));
+		return tuple_hash_bytes(th, (const uint8_t*)serialized_value, get_size_for_type_info(dti ,serialized_value));
 	}
 	else if(dti->type == STRING || dti->type == BLOB)
 	{
@@ -177,8 +177,6 @@ uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tupl
 		for(uint32_t i = 0; i < get_element_count_for_user_value(uval, dti); i++)
 		{
 			const data_type_info* child_dti = get_data_type_info_for_containee_of_container_without_data(dti, i);
-			if(child_dti == NULL)
-				return -2;
 			const user_value child_value = get_containee_for_user_value(uval, dti, i);
 			hash_user_value(&child_value, child_dti, th);
 		}

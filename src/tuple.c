@@ -503,7 +503,7 @@ uint64_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, posi
 	// if the element is not accessible, then fail
 	const data_type_info* dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
 	if(dti == NULL)
-		return 0;
+		return th->hash;
 
 	// get the user value for this element
 	const user_value uval = get_value_from_element_from_tuple(tpl_d, pa, tup);
