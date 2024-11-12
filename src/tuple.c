@@ -498,7 +498,7 @@ int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_a
 	return compare;
 }
 
-uint64_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, positional_accessor pa, uint64_t (*hash_func)(const void* data, uint32_t size))
+uint64_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, positional_accessor pa, tuple_hasher* th)
 {
 	// if the element is not accessible, then fail
 	const data_type_info* dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
@@ -508,25 +508,22 @@ uint64_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, posi
 	// get the user value for this element
 	const user_value uval = get_value_from_element_from_tuple(tpl_d, pa, tup);
 
-	// TODO : handle logic for custom hash function
-
-	return hash_user_value(&uval, dti, hash_func);
+	return hash_user_value(&uval, dti, th);
 }
 
-uint64_t hash_tuple(const void* tup, const tuple_def* tpl_d, const positional_accessor* element_ids, uint64_t (*hash_func)(const void* data, uint32_t size), uint32_t element_count)
+uint64_t hash_tuple(const void* tup, const tuple_def* tpl_d, const positional_accessor* element_ids, tuple_hasher* th, uint32_t element_count)
 {
-	uint64_t hash_value = 0;
 	if(element_ids == NULL)
 	{
 		for(uint32_t i = 0; i < element_count; i++)
-			hash_value ^= hash_element_within_tuple(tup, tpl_d, STATIC_POSITION(i), hash_func);
+			hash_element_within_tuple(tup, tpl_d, STATIC_POSITION(i), th);
 	}
 	else
 	{
 		for(uint32_t i = 0; i < element_count; i++)
-			hash_value ^= hash_element_within_tuple(tup, tpl_d, element_ids[i], hash_func);
+			hash_element_within_tuple(tup, tpl_d, element_ids[i], th);
 	}
-	return hash_value;
+	return th->hash;
 }
 
 // print function
