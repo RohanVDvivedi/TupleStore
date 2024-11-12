@@ -731,6 +731,8 @@ int main()
 		tuple_type_info->containees[5].type_info = &s4;
 		tuple_type_info->containees[6].type_info = FLOAT_double_NULLABLE;
 		tuple_type_info->containees[7].type_info = BIT_FIELD_NULLABLE[5];
+		for(int i = 0; i < 8; i++)
+			strcpy(tuple_type_info->containees[i].field_name, "");
 		finalize_type_info(tuple_type_info);
 
 		tuple_size_def tsd;
