@@ -132,6 +132,7 @@ int run_page_compaction(void* page, uint32_t page_size, const tuple_size_def* tp
 
 // returns 1, if there were any bytes that were free and were zeroed out
 // returns 0, if there was no free space on the page
+// it only zeros out the free space on the page and does not touch fragmented space on the page
 int zero_out_free_space_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
 
