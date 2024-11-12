@@ -5,6 +5,8 @@ typedef struct tuple_hasher tuple_hasher;
 struct tuple_hasher
 {
 	uint64_t hash;
+
+	// update the hash value on an incomming byte
 	void hash_update(uint64_t* hash, uint8_t byte);
 };
 

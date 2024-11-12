@@ -302,11 +302,13 @@ void print_data_for_data_type_info(const data_type_info* dti, const void* data);
 
 // hashing utility
 
+#include<tuple_hasher.h>
+
 // does not work for BIT_FIELD
 // non containers are hashed directly, containers are hashed element by element, and XORed together
 // so STRING, variable sized STRING and an ARRAY of UINT_NON_NULLABLE[1] with same content hash to the same value
-uint64_t hash_data_for_type_info(const data_type_info* dti, const void* data, uint64_t (*hash_func)(const void* data, uint32_t size));
+uint64_t hash_data_for_type_info(const data_type_info* dti, const void* data, tuple_hasher* th);
 
-uint64_t hash_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, uint64_t (*hash_func)(const void* data, uint32_t size));
+uint64_t hash_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, tuple_hasher* th);
 
 #endif

@@ -70,7 +70,8 @@ int can_compare_user_value(const data_type_info* dti1, const data_type_info* dti
 
 int compare_user_value(const user_value* uval1, const data_type_info* dti1, const user_value* uval2, const data_type_info* dti2);
 
-uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, uint64_t (*hash_func)(const void* data, uint32_t data_size));
+#include<tuple_hasher.h>
+uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tuple_hasher* th);
 
 void print_user_value(const user_value* uval, const data_type_info* dti);
 
