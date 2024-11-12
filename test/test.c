@@ -421,6 +421,19 @@ int main()
 	print_page(page, PAGE_SIZE, def);
 	printf("\n\n");
 
+	printf("showing you output before and after zeroing out free space on page\n");
+	printf("\nPAGE :: (before zeroing out free space)\n");
+	print_page(page, PAGE_SIZE, def);
+	print_page_in_hex(page, PAGE_SIZE);
+	printf("\n\n");
+
+	zero_out_free_space_on_page(page, PAGE_SIZE, &(def->size_def));
+
+	printf("\nPAGE :: (after zeroing out free space)\n");
+	print_page(page, PAGE_SIZE, def);
+	print_page_in_hex(page, PAGE_SIZE);
+	printf("\n\n");
+
 	// ---------------	PRINT PAGE IN HEX
 	
 	print_page_in_hex(page, PAGE_SIZE);
