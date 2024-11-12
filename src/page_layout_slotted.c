@@ -665,6 +665,15 @@ int run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple
 	return was_page_compacted;
 }
 
+int zero_out_free_space_slotted_page(void* page, uint32_t page_size)
+{
+	if(0 == get_free_space_slotted_page(page, page_size))
+		return 0;
+
+	memory_set(page + get_offset_to_start_of_free_space(page, page_size), 0, get_offset_to_end_of_free_space(page, page_size) - get_offset_to_start_of_free_space(page, page_size));
+	return 1;
+}
+
 uint32_t get_free_space_slotted_page(const void* page, uint32_t page_size)
 {
 	return get_offset_to_end_of_free_space(page, page_size) - get_offset_to_start_of_free_space(page, page_size);

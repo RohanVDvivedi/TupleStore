@@ -274,7 +274,7 @@ int zero_out_free_space_on_page(void* page, uint32_t page_size, const tuple_size
 	switch(get_page_layout_type(tpl_sz_d))
 	{
 		case SLOTTED_PAGE_LAYOUT :
-			return zero_out_free_space_slotted_page(page, page_size, tpl_sz_d);
+			return zero_out_free_space_slotted_page(page, page_size);
 		case FIXED_ARRAY_PAGE_LAYOUT :
 			return zero_out_free_space_fixed_array_page(page, page_size, tpl_sz_d);
 	}
