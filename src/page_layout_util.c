@@ -12,6 +12,9 @@ uint32_t get_value_size_on_page(uint32_t page_size)
 		return 3;
 	else
 		return 4;
+	// This function is very frequently called inside the TupleStore, hence an attempt to make it jump free
+	// using the line below, but it turns out it makes not difference in performance numbers, hence opting to leave a more readable code in the source code
+	//return 4 - (page_size <= (UINT32_C(1) << 24)) - (page_size <= (UINT32_C(1) << 16)) - (page_size <= (UINT32_C(1) << 8));
 }
 
 uint32_t read_value_from_page(const void* value, uint32_t page_size)
