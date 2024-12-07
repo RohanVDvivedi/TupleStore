@@ -1598,6 +1598,7 @@ const user_value get_user_value_for_type_info(const data_type_info* dti, const v
 				uval.double_value = deserialize_double(data);
 			else if(dti->size == sizeof(long double))
 				uval.long_double_value = deserialize_long_double(data);
+			break;
 		}
 		case LARGE_UINT :
 		{
