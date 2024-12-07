@@ -10,10 +10,31 @@
 // an offset of 256 will be outside the page, so if you need to store that then set it to 0, and them in return read it as page_size
 // when your size is 256, then you must be storing size only for a variable length data, this data because it stores size in prefic will never be 0 bytes, hece use 0 for page_size of size
 // This optimization is done to save off 1 byte worth of information of the offsets, sizes and element_counts, And computers generally tend to give us data pages that are almost always powers of 2.
-uint32_t get_value_size_on_page(uint32_t page_size);
+static inline uint32_t get_value_size_on_page(uint32_t page_size)
+{
+	/*if(page_size <= (UINT32_C(1) << 8))
+		return 1;
+	else if(page_size <= (UINT32_C(1) << 16))
+		return 2;
+	else if(page_size <= (UINT32_C(1) << 24))
+		return 3;
+	else
+		return 4;*/
+	// This function is very frequently called inside the TupleStore, hence an attempt to make it jump free
+	// using the line below
+	return 4 - (page_size <= (UINT32_C(1) << 24)) - (page_size <= (UINT32_C(1) << 16)) - (page_size <= (UINT32_C(1) << 8));
+}
 
-uint32_t read_value_from_page(const void* value, uint32_t page_size);
+#include<serial_int.h>
 
-void write_value_to_page(void* value, uint32_t page_size, uint32_t to_write);
+static inline uint32_t read_value_from_page(const void* value, uint32_t page_size)
+{
+	return deserialize_uint32(value, get_value_size_on_page(page_size));
+}
+
+static inline void write_value_to_page(void* value, uint32_t page_size, uint32_t to_write)
+{
+	serialize_uint32(value, get_value_size_on_page(page_size), to_write);
+}
 
 #endif
