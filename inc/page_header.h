@@ -3,6 +3,8 @@
 
 #include<stdint.h>
 
+#include<page_header_util.h>
+
 // this is the total number of bytes that are required on the page (of given page_size) to store the page header (of given page_header_size)
 // this space includes the page_header_size and its prefix that stores the size of the page_header
 uint32_t get_space_required_for_page_header(uint32_t page_header_size, uint32_t page_size);
@@ -22,9 +24,6 @@ const void* get_page_header_ua(const void* page, uint32_t page_size);
 // initializes page_header in the page to have page_header size
 // page_header contents are uninitialized
 int init_page_header(void* page, uint32_t page_size, uint32_t page_header_size);
-
-// returns offset to the end of page_header in the given page
-uint32_t get_offset_to_end_of_page_header(const void* page, uint32_t page_size);
 
 // returns pointer to the end of page header on the page
 // i.e. pointer to the start of data section on the page

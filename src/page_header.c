@@ -16,7 +16,7 @@ int can_page_header_fit_on_page(uint32_t page_header_size, uint32_t page_size)
 
 uint32_t get_page_header_size(const void* page, uint32_t page_size)
 {
-	return read_value_from_page(page + 0, page_size);
+	return get_page_header_size_INLINE(page, page_size);
 }
 
 void* get_page_header(void* page, uint32_t page_size)
@@ -43,11 +43,6 @@ int init_page_header(void* page, uint32_t page_size, uint32_t page_header_size)
 	memory_set(page + get_value_size_on_page(page_size), 0, page_header_size);
 
 	return 1;
-}
-
-uint32_t get_offset_to_end_of_page_header(const void* page, uint32_t page_size)
-{
-	return get_value_size_on_page(page_size) + get_page_header_size(page, page_size);
 }
 
 void* get_end_of_page_header(void* page, uint32_t page_size)
