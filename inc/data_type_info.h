@@ -30,11 +30,9 @@ extern char types_as_string[][16];
 
 typedef struct data_type_info data_type_info;
 
-typedef struct data_position_info data_position_info;
-struct data_position_info
+typedef struct data_positional_info data_positional_info;
+struct data_positional_info
 {
-	char field_name[64]; // -> field name of this field
-
 	union
 	{
 		uint32_t byte_offset; // -> for fixed length fields
@@ -47,6 +45,14 @@ struct data_position_info
 	uint32_t bit_offset_to_is_valid_bit; // -> for bit fields and fixed length elements only, and only when they have is_nullable bit set in the type_info
 
 	data_type_info* type_info; // -> type information of this field
+};
+
+typedef struct data_position_info data_position_info;
+struct data_position_info
+{
+	char field_name[64]; // -> field name of this field
+
+	data_positional_info al; // -> information about the actual position inthe tuple or array
 };
 
 struct data_type_info
@@ -160,6 +166,7 @@ data_type_info* get_data_type_info_for_containee_of_container_without_data(const
 // valid for string, blob, tuple and array (generated on the fly for an array, string or blob)
 // valid only if index < get_element_count_for_container_type_info
 data_type_info* get_data_type_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index);
+data_positional_info get_data_positional_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index); // always prefer to use this over data_position_info
 data_position_info get_data_position_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index);
 
 // finds a containee's index using its field_name
