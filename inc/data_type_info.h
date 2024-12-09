@@ -239,9 +239,9 @@ const void* get_pointer_to_containee_from_container(const data_type_info* dti, c
 uint32_t get_size_of_containee_from_container(const data_type_info* dti, const void* data, uint32_t index);
 
 // returns NULL by default for BIT_FIELD types, as bit_fields must exist inside a container
-const user_value get_user_value_for_type_info(const data_type_info* dti, const void* data);
+int get_user_value_for_type_info(user_value* uval, const data_type_info* dti, const void* data);
 
-const user_value get_user_value_to_containee_from_container(const data_type_info* dti, const void* data, uint32_t index);
+int get_user_value_to_containee_from_container(user_value* uval, const data_type_info* dti, const void* data, uint32_t index);
 
 int is_variable_sized_containee_at_end_of_container(const data_type_info* dti, void* data, uint32_t index);
 

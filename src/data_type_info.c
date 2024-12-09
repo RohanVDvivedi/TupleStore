@@ -1590,102 +1590,109 @@ uint32_t get_size_of_containee_from_container(const data_type_info* dti, const v
 	}
 }
 
-const user_value get_user_value_for_type_info(const data_type_info* dti, const void* data)
+int get_user_value_for_type_info(user_value* uval, const data_type_info* dti, const void* data)
 {
-	if(data == NULL)
-		return (*NULL_USER_VALUE);
-
-	user_value uval = {};
 	switch(dti->type)
 	{
 		case BIT_FIELD :
 		{
-			return (*NULL_USER_VALUE);
+			return 0;
 		}
 		case UINT :
 		{
-			uval.uint_value = deserialize_uint64(data, dti->size);
+			uval->is_NULL = 0;
+			uval->uint_value = deserialize_uint64(data, dti->size);
 			break;
 		}
 		case INT :
 		{
-			uval.int_value = deserialize_int64(data, dti->size);
+			uval->is_NULL = 0;
+			uval->int_value = deserialize_int64(data, dti->size);
 			break;
 		}
 		case FLOAT :
 		{
+			uval->is_NULL = 0;
 			if(dti->size == sizeof(float))
-				uval.float_value = deserialize_float(data);
+				uval->float_value = deserialize_float(data);
 			else if(dti->size == sizeof(double))
-				uval.double_value = deserialize_double(data);
+				uval->double_value = deserialize_double(data);
 			else if(dti->size == sizeof(long double))
-				uval.long_double_value = deserialize_long_double(data);
+				uval->long_double_value = deserialize_long_double(data);
 			break;
 		}
 		case LARGE_UINT :
 		{
-			uval.large_uint_value = deserialize_uint256(data, dti->size);
+			uval->is_NULL = 0;
+			uval->large_uint_value = deserialize_uint256(data, dti->size);
 			break;
 		}
 		case STRING :
 		{
+			uval->is_NULL = 0;
 			// grab pointer to the first byte, and the element_count of the string, since it is inherently an array of non-nullable fixed length elements, they are placed sequential after the first byte
-			uval.string_value = data + get_data_positional_info_for_containee_of_container(dti, data, 0).byte_offset;
-			uval.string_size = get_element_count_for_container_type_info(dti, data);
+			uval->string_value = data + get_data_positional_info_for_containee_of_container(dti, data, 0).byte_offset;
+			uval->string_size = get_element_count_for_container_type_info(dti, data);
 			// this string could be null terminated
-			uval.string_size = strnlen(uval.string_value, uval.string_size);
+			uval->string_size = strnlen(uval->string_value, uval->string_size);
 			break;
 		}
 		case BLOB :
 		{
+			uval->is_NULL = 0;
 			// grab pointer to the first byte, and the element_count of the blob, since it is inherently an array of non-nullable fixed length elements, they are placed sequential after the first byte
-			uval.blob_value = data + get_data_positional_info_for_containee_of_container(dti, data, 0).byte_offset;
-			uval.blob_size = get_element_count_for_container_type_info(dti, data);
+			uval->blob_value = data + get_data_positional_info_for_containee_of_container(dti, data, 0).byte_offset;
+			uval->blob_size = get_element_count_for_container_type_info(dti, data);
 			break;
 		}
 		case TUPLE :
 		{
-			uval.tuple_value = data;
+			uval->is_NULL = 0;
+			uval->tuple_value = data;
 			break;
 		}
 		case ARRAY :
 		{
-			uval.array_value = data;
+			uval->is_NULL = 0;
+			uval->array_value = data;
 			break;
 		}
 	}
 
-	return uval;
+	return 1;
 }
 
-const user_value get_user_value_to_containee_from_container(const data_type_info* dti, const void* data, uint32_t index)
+int get_user_value_to_containee_from_container(user_value* uval, const data_type_info* dti, const void* data, uint32_t index)
 {
 	// dti has to be a container type, else we can not index it and so we return OUT_OF_BOUNDS_USER_VALUE
 	if(!is_container_type_info(dti))
-		return (*OUT_OF_BOUNDS_USER_VALUE);
+		return 0;
 
 	// make sure that index is within bounds, else it is said to be OUT_OF_BOUNDS_USER_VALUE
 	if(index >= get_element_count_for_container_type_info(dti, data))
-		return (*OUT_OF_BOUNDS_USER_VALUE);
+		return 0;
 
 	// if it is already null return NULL_USER_VALUE
 	if(is_containee_null_in_container(dti, data, index))
-		return (*NULL_USER_VALUE);
+	{
+		uval->is_NULL = 1;
+		return 1;
+	}
 
 	// fetch information about containee
 	data_positional_info containee_pos_info = get_data_positional_info_for_containee_of_container(dti, data, index);
 	const void* containee = get_pointer_to_containee_from_container(dti, data, index);
 
-	user_value uval = {};
 	switch(containee_pos_info.type_info->type)
 	{
 		case BIT_FIELD :
 		{
-			uval.bit_field_value = get_bits(containee, containee_pos_info.bit_offset_in_prefix_bitmap, containee_pos_info.bit_offset_in_prefix_bitmap + containee_pos_info.type_info->bit_field_size - 1);
-			return uval;
+			uval->is_NULL = 0;
+			uval->bit_field_value = get_bits(containee, containee_pos_info.bit_offset_in_prefix_bitmap, containee_pos_info.bit_offset_in_prefix_bitmap + containee_pos_info.type_info->bit_field_size - 1);
+			return 1;
 		}
 		default :
-			return get_user_value_for_type_info(containee_pos_info.type_info, containee);
+			return get_user_value_for_type_info(uval, containee_pos_info.type_info, containee);
 	}
 }
 
@@ -1870,7 +1877,7 @@ int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, ui
 
 int can_set_user_value_for_type_info(const data_type_info* dti, const void* data, int is_valid, uint32_t max_size_increment_allowed, const user_value* uval)
 {
-	if(is_user_value_NULL(uval) || is_user_value_OUT_OF_BOUNDS(uval))
+	if(is_user_value_NULL(uval))
 		return 0;
 
 	if(dti->type == BIT_FIELD)
@@ -1932,7 +1939,7 @@ int can_set_user_value_for_type_info(const data_type_info* dti, const void* data
 
 int set_user_value_for_type_info(const data_type_info* dti, void* data, int is_valid, uint32_t max_size_increment_allowed, const user_value* uval)
 {
-	if(is_user_value_NULL(uval) || is_user_value_OUT_OF_BOUNDS(uval))
+	if(is_user_value_NULL(uval))
 		return 0;
 
 	if(dti->type == BIT_FIELD)
@@ -2095,10 +2102,6 @@ int can_set_user_value_to_containee_in_container(const data_type_info* dti, cons
 	if(!is_container_type_info(dti))
 		return 0;
 
-	// an out of bounds containee is never accessible
-	if(is_user_value_OUT_OF_BOUNDS(uval))
-		return 0;
-
 	// make sure that index is within bounds, else fail
 	if(index >= get_element_count_for_container_type_info(dti, data))
 		return 0;
@@ -2130,10 +2133,6 @@ int set_user_value_to_containee_in_container(const data_type_info* dti, void* da
 {
 	// dti has to be a container type
 	if(!is_container_type_info(dti))
-		return 0;
-
-	// an out of bounds containee is never accessible
-	if(is_user_value_OUT_OF_BOUNDS(uval))
 		return 0;
 
 	// make sure that index is within bounds, else fail
@@ -2587,7 +2586,8 @@ int discard_from_container(const data_type_info* dti, void* data, uint32_t index
 
 void print_data_for_data_type_info(const data_type_info* dti, const void* data)
 {
-	const user_value uval = get_user_value_for_type_info(dti, data);
+	user_value uval;
+	get_user_value_for_type_info(&uval, dti, data);
 	print_user_value(&uval, dti);
 }
 
@@ -2604,8 +2604,13 @@ uint64_t hash_data_for_type_info(const data_type_info* dti, const void* data, tu
 	{
 		// if it is a string and the i-th element is a 0
 		// containee of a STRING is UINT_NON_NULLABLE[1], i.e. non-nullable hence we do not need to check
-		if(dti->type == STRING && get_user_value_to_containee_from_container(dti, data, i).uint_value == 0)
-			break;
+		if(dti->type == STRING)
+		{
+			user_value uval_i;
+			get_user_value_to_containee_from_container(&uval_i, dti, data, i);
+			if(uval_i.uint_value == 0)
+				break;
+		}
 
 		hash_containee_in_container(dti, data, i, th);
 	}

@@ -4,10 +4,9 @@
 
 #include<cutlery_stds.h>
 
-user_value const * const NULL_USER_VALUE = &((const user_value){.is_NULL = 1, .is_OUT_OF_BOUNDS = 0,});
-user_value const * const OUT_OF_BOUNDS_USER_VALUE = &((const user_value){.is_NULL = 1, .is_OUT_OF_BOUNDS = 1,});
+user_value const * const NULL_USER_VALUE = &((const user_value){.is_NULL = 1,});
 
-user_value const * const ZERO_USER_VALUE = &((const user_value){.is_NULL = 0, .is_OUT_OF_BOUNDS = 0,});
+user_value const * const ZERO_USER_VALUE = &((const user_value){.is_NULL = 0,});
 user_value const * const EMPTY_USER_VALUE = ZERO_USER_VALUE;
 
 uint32_t get_element_count_for_user_value(const user_value* uval, const data_type_info* dti)
@@ -15,7 +14,7 @@ uint32_t get_element_count_for_user_value(const user_value* uval, const data_typ
 	if(!is_container_type_info(dti))
 		return 0;
 
-	if(is_user_value_NULL(uval) || is_user_value_OUT_OF_BOUNDS(uval))
+	if(is_user_value_NULL(uval))
 		return 0;
 
 	if(dti->type == STRING)
@@ -31,28 +30,32 @@ uint32_t get_element_count_for_user_value(const user_value* uval, const data_typ
 	return 0;
 }
 
-const user_value get_containee_for_user_value(const user_value* uval, const data_type_info* dti, uint32_t index)
+int get_containee_for_user_value(user_value* uval_c, const user_value* uval, const data_type_info* dti, uint32_t index)
 {
 	if(!is_container_type_info(dti))
-		return (*OUT_OF_BOUNDS_USER_VALUE);
+		return 0;
 
-	if(is_user_value_NULL(uval) || is_user_value_OUT_OF_BOUNDS(uval))
-		return (*OUT_OF_BOUNDS_USER_VALUE);
+	if(is_user_value_NULL(uval))
+	{
+		uval_c->is_NULL = 1;
+		return 1;
+	}
 
 	if(index >= get_element_count_for_user_value(uval, dti))
-		return (*OUT_OF_BOUNDS_USER_VALUE);
+		return 0;
 
-	if(dti->type == STRING)
-		return (user_value){.uint_value = (((const unsigned char *)(uval->string_value))[index] & UINT64_C(0xff))};
-	else if(dti->type == BLOB)
-		return (user_value){.uint_value = (((const unsigned char *)(uval->blob_value))[index] & UINT64_C(0xff))};
+	if(dti->type == STRING || dti->type == BLOB)
+	{
+		uval_c->uint_value = (((const unsigned char *)(uval->string_or_blob_value))[index] & UINT64_C(0xff));
+		return 1;
+	}
 	else if(dti->type == TUPLE)
-		return get_user_value_to_containee_from_container(dti, uval->tuple_value, index);
+		return get_user_value_to_containee_from_container(uval_c, dti, uval->tuple_value, index);
 	else if(dti->type == ARRAY)
-		return get_user_value_to_containee_from_container(dti, uval->array_value, index);
+		return get_user_value_to_containee_from_container(uval_c, dti, uval->array_value, index);
 
 	// never reaches here
-	return (*OUT_OF_BOUNDS_USER_VALUE);
+	return 0;
 }
 
 int can_compare_user_value(const data_type_info* dti1, const data_type_info* dti2)
@@ -86,10 +89,14 @@ static int compare_user_value_internal(const user_value* uval1, const data_type_
 		for(uint32_t i = 0; i < element_count && cmp == 0; i++)
 		{
 			const data_type_info* child_dti1 = get_data_type_info_for_containee_of_container_without_data(dti1, i);
-			const user_value child_value1 = get_containee_for_user_value(uval1, dti1, i);
+			user_value child_value1;
+			if(!get_containee_for_user_value(&child_value1, uval1, dti1, i))
+				return -2;
 
 			const data_type_info* child_dti2 = get_data_type_info_for_containee_of_container_without_data(dti2, i);
-			const user_value child_value2 = get_containee_for_user_value(uval2, dti2, i);
+			user_value child_value2;
+			if(!get_containee_for_user_value(&child_value2, uval2, dti2, i))
+				return -2;
 
 			cmp = compare_user_value_internal(&child_value1, child_dti1, &child_value2, child_dti2);
 		}
@@ -104,10 +111,14 @@ static int compare_user_value_internal(const user_value* uval1, const data_type_
 		for(uint32_t i = 0; i < element_count && cmp == 0; i++) // perform comparison over the minimum element count of both the containers
 		{
 			const data_type_info* child_dti1 = get_data_type_info_for_containee_of_container_without_data(dti1, i);
-			const user_value child_value1 = get_containee_for_user_value(uval1, dti1, i);
+			user_value child_value1;
+			if(!get_containee_for_user_value(&child_value1, uval1, dti1, i))
+				return -2;
 
 			const data_type_info* child_dti2 = get_data_type_info_for_containee_of_container_without_data(dti2, i);
-			const user_value child_value2 = get_containee_for_user_value(uval2, dti2, i);
+			user_value child_value2;
+			if(!get_containee_for_user_value(&child_value2, uval2, dti2, i))
+				return -2;
 
 			cmp = compare_user_value_internal(&child_value1, child_dti1, &child_value2, child_dti2);
 		}
@@ -134,9 +145,6 @@ int compare_user_value(const user_value* uval1, const data_type_info* dti1, cons
 
 uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tuple_hasher* th)
 {
-	if(is_user_value_OUT_OF_BOUNDS(uval)) // no bytes to hash
-		return th->hash;
-
 	if(is_user_value_NULL(uval)) // no bytes to hash
 		return th->hash;
 
@@ -167,7 +175,9 @@ uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tupl
 		for(uint32_t i = 0; i < get_element_count_for_user_value(uval, dti); i++)
 		{
 			const data_type_info* child_dti = get_data_type_info_for_containee_of_container_without_data(dti, i);
-			const user_value child_value = get_containee_for_user_value(uval, dti, i);
+			user_value child_value;
+			if(!get_containee_for_user_value(&child_value, uval, dti, i))
+				continue;
 			hash_user_value(&child_value, child_dti, th);
 		}
 		return th->hash;
@@ -181,11 +191,6 @@ void print_user_value(const user_value* uval, const data_type_info* dti)
 	if(is_user_value_NULL(uval))
 	{
 		printf("NULL");
-		return;
-	}
-	if(is_user_value_OUT_OF_BOUNDS(uval))
-	{
-		printf("OUT_OF_BOUNDS");
 		return;
 	}
 	switch(dti->type)
@@ -241,7 +246,9 @@ void print_user_value(const user_value* uval, const data_type_info* dti)
 				if(i != 0)
 					printf(", ");
 				data_position_info containee_pos_info = get_data_position_info_for_containee_of_container(dti, uval->tuple_value, i);
-				const user_value child_uval = get_user_value_to_containee_from_container(dti, uval->tuple_value, i);
+				user_value child_uval;
+				if(!get_user_value_to_containee_from_container(&child_uval, dti, uval->tuple_value, i))
+					continue;
 				if(is_variable_sized_type_info(containee_pos_info.al.type_info) && !is_user_value_NULL(&child_uval))
 					printf("[%"PRIu32"]->", read_value_from_page(uval->tuple_value + containee_pos_info.al.byte_offset_to_byte_offset, dti->max_size));
 				print_user_value(&child_uval, containee_pos_info.al.type_info);
@@ -257,7 +264,9 @@ void print_user_value(const user_value* uval, const data_type_info* dti)
 				if(i != 0)
 					printf(", ");
 				data_positional_info containee_pos_info = get_data_positional_info_for_containee_of_container(dti, uval->array_value, i);
-				const user_value child_uval = get_user_value_to_containee_from_container(dti, uval->array_value, i);
+				user_value child_uval;
+				if(!get_user_value_to_containee_from_container(&child_uval, dti, uval->array_value, i))
+					continue;
 				if(is_variable_sized_type_info(containee_pos_info.type_info) && !is_user_value_NULL(&child_uval))
 					printf("[%"PRIu32"]->", read_value_from_page(uval->tuple_value + containee_pos_info.byte_offset_to_byte_offset, dti->max_size));
 				print_user_value(&child_uval, containee_pos_info.type_info);

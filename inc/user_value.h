@@ -11,10 +11,7 @@ typedef struct user_value user_value;
 struct user_value
 {
 	// if the user_value is NULL this bit must be set
-	int is_NULL:1;
-
-	// if a non container was indexed OR index provided was out of bounds for that container then this bit is set
-	int is_OUT_OF_BOUNDS:1;
+	int is_NULL;
 
 	// else one of the attributes of this union must be set, based on the given element_def
 	union
@@ -48,7 +45,6 @@ struct user_value
 };
 
 extern user_value const * const NULL_USER_VALUE;
-extern user_value const * const OUT_OF_BOUNDS_USER_VALUE; // OUT_OF_BOUNDS_USER_VALUE must have its is_NULL bit set, it is logically NULL also
 
 extern user_value const * const ZERO_USER_VALUE;
 extern user_value const * const EMPTY_USER_VALUE; // same value as ZERO_USER_VALUE, but generally used for conatiners like STRING, BLOB, TUPLE and ARRAY; tuple_value and array_value here are NULLs but they are considered as if this pointer points to their most minimally initialized value
@@ -61,16 +57,11 @@ static inline int is_user_value_NULL(const user_value* uval)
 	return (uval == NULL) || (uval->is_NULL);
 }
 
-static inline int is_user_value_OUT_OF_BOUNDS(const user_value* uval)
-{
-	return (uval != NULL) && uval->is_OUT_OF_BOUNDS;
-}
-
 #include<data_type_info.h>
 
 // only a valid function calls for container_type_info -> STRING, BLOB, TUPLE and ARRAY
 uint32_t get_element_count_for_user_value(const user_value* uval, const data_type_info* dti);
-const user_value get_containee_for_user_value(const user_value* uval, const data_type_info* dti, uint32_t index);
+int get_containee_for_user_value(user_value* uval_c, const user_value* uval, const data_type_info* dti, uint32_t index);
 
 int can_compare_user_value(const data_type_info* dti1, const data_type_info* dti2);
 

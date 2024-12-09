@@ -5,7 +5,7 @@ void init_tuple(const tuple_def* tpl_d, void* tupl)
 	initialize_minimal_data_for_type_info(tpl_d->type_info, tupl);
 }
 
-const user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl)
+int get_value_from_element_from_tuple(user_value* uval, const tuple_def* tpl_d, positional_accessor pa, const void* tupl)
 {
 	const data_type_info* dti = tpl_d->type_info;
 	const void* data = tupl;
@@ -16,21 +16,24 @@ const user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, posit
 		{
 			// result is self
 			if(IS_SELF(pa))
-				return get_user_value_for_type_info(dti, data);
+				return get_user_value_for_type_info(uval, dti, data);
 
 			// result is self's some child
 			if(pa.positions_length == 1)
-				return get_user_value_to_containee_from_container(dti, data, pa.positions[0]);
+				return get_user_value_to_containee_from_container(uval, dti, data, pa.positions[0]);
 		}
 
 		if(!is_container_type_info(dti))
-			return *OUT_OF_BOUNDS_USER_VALUE;
+			return 0;
 
 		if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
-			return *OUT_OF_BOUNDS_USER_VALUE;
+			return 0;
 
 		if(is_containee_null_in_container(dti, data, pa.positions[0]))
-			return *NULL_USER_VALUE;
+		{
+			uval->is_NULL = 1;
+			return 1;
+		}
 
 		const data_type_info* child_dti = get_data_type_info_for_containee_of_container(dti, data, pa.positions[0]);
 		const void* child_data = get_pointer_to_containee_from_container(dti, data, pa.positions[0]);
@@ -39,7 +42,7 @@ const user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, posit
 		pa = NEXT_POSITION(pa);
 	}
 
-	return *NULL_USER_VALUE;
+	return 0;
 }
 
 const data_type_info* get_type_info_for_element_from_tuple_def(const tuple_def* tpl_d, positional_accessor pa)
@@ -84,8 +87,8 @@ int are_all_positions_accessible_for_tuple(const void* tupl, const tuple_def* tp
 {
 	for(uint32_t i = 0; i < element_count; i++)
 	{
-		const user_value key = get_value_from_element_from_tuple(tpl_d, ((element_ids == NULL) ? STATIC_POSITION(i) : element_ids[i]), tupl);
-		if(is_user_value_OUT_OF_BOUNDS(&key))
+		user_value key;
+		if(!get_value_from_element_from_tuple(&key, tpl_d, ((element_ids == NULL) ? STATIC_POSITION(i) : element_ids[i]), tupl))
 			return 0;
 	}
 
@@ -195,10 +198,6 @@ static int set_element_in_tuple_INTERNAL(const data_type_info* dti, positional_a
 
 int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const user_value* value, uint32_t max_size_increment_allowed)
 {
-	// can not set using an OUT_OF_BOUNDS user value
-	if(is_user_value_OUT_OF_BOUNDS(value))
-		return 0;
-
 	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
 	if(inner_most_dti == NULL)
 		return 0;
@@ -211,8 +210,8 @@ int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* t
 
 int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const tuple_def* tpl_d_in, positional_accessor pa_in, const void* tupl_in, uint32_t max_size_increment_allowed)
 {
-	const user_value uval_in = get_value_from_element_from_tuple(tpl_d_in, pa_in, tupl_in);
-	if(is_user_value_OUT_OF_BOUNDS(&uval_in))
+	user_value uval_in;
+	if(!get_value_from_element_from_tuple(&uval_in, tpl_d_in, pa_in, tupl_in))
 		return 0;
 	const data_type_info* dti_in = get_type_info_for_element_from_tuple_def(tpl_d_in, pa_in);
 	if(dti_in == NULL)
@@ -471,10 +470,14 @@ int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, positio
 		return -2;
 
 	// get the user value for this element
-	const user_value uval1 = get_value_from_element_from_tuple(tpl_d1, pa1, tup1);
+	user_value uval1;
+	if(!get_value_from_element_from_tuple(&uval1, tpl_d1, pa1, tup1))
+		return -2;
 
 	// get the user value for this element
-	const user_value uval2 = get_value_from_element_from_tuple(tpl_d2, pa2, tup2);
+	user_value uval2;
+	if(!get_value_from_element_from_tuple(&uval2, tpl_d2, pa2, tup2))
+		return -2;
 
 	// TODO : handle logic for custom compare function
 
@@ -506,7 +509,9 @@ uint64_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, posi
 		return th->hash;
 
 	// get the user value for this element
-	const user_value uval = get_value_from_element_from_tuple(tpl_d, pa, tup);
+	user_value uval;
+	if(!get_value_from_element_from_tuple(&uval, tpl_d, pa, tup))
+		return th->hash;
 
 	return hash_user_value(&uval, dti, th);
 }

@@ -31,7 +31,7 @@ struct positional_accessor
 
 void init_tuple(const tuple_def* tpl_d, void* tupl);
 
-const user_value get_value_from_element_from_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl);
+int get_value_from_element_from_tuple(user_value* uval, const tuple_def* tpl_d, positional_accessor pa, const void* tupl);
 
 const data_type_info* get_type_info_for_element_from_tuple_def(const tuple_def* tpl_d, positional_accessor pa);
 
