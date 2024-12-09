@@ -10,16 +10,6 @@ user_value const * const OUT_OF_BOUNDS_USER_VALUE = &((const user_value){.is_NUL
 user_value const * const ZERO_USER_VALUE = &((const user_value){.is_NULL = 0, .is_OUT_OF_BOUNDS = 0,});
 user_value const * const EMPTY_USER_VALUE = ZERO_USER_VALUE;
 
-int is_user_value_NULL(const user_value* uval)
-{
-	return (uval == NULL) || (uval->is_NULL);
-}
-
-int is_user_value_OUT_OF_BOUNDS(const user_value* uval)
-{
-	return (uval != NULL) && uval->is_OUT_OF_BOUNDS;
-}
-
 uint32_t get_element_count_for_user_value(const user_value* uval, const data_type_info* dti)
 {
 	if(!is_container_type_info(dti))

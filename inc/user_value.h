@@ -56,9 +56,15 @@ extern user_value const * const EMPTY_USER_VALUE; // same value as ZERO_USER_VAL
 // you must never pass them to hash and compare functions below
 // ZERO_USER_VALUE and EMPTY_USER_VALUE must not be passed to any function except the ones that are used for setting the attribute or initializing the data
 
-int is_user_value_NULL(const user_value* uval);
+static inline int is_user_value_NULL(const user_value* uval)
+{
+	return (uval == NULL) || (uval->is_NULL);
+}
 
-int is_user_value_OUT_OF_BOUNDS(const user_value* uval);
+static inline int is_user_value_OUT_OF_BOUNDS(const user_value* uval)
+{
+	return (uval != NULL) && uval->is_OUT_OF_BOUNDS;
+}
 
 #include<data_type_info.h>
 
