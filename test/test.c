@@ -34,45 +34,45 @@ tuple_def* get_tuple_definition()
 	initialize_tuple_data_type_info(tuple_type_info, "my_table", 1, PAGE_SIZE, 9);
 
 	strcpy(tuple_type_info->containees[0].field_name, "col_0");
-	tuple_type_info->containees[0].type_info = INT_NULLABLE[5];
+	tuple_type_info->containees[0].al.type_info = INT_NULLABLE[5];
 
 	strcpy(tuple_type_info->containees[1].field_name, "col_1");
-	tuple_type_info->containees[1].type_info = UINT_NULLABLE[1];
+	tuple_type_info->containees[1].al.type_info = UINT_NULLABLE[1];
 
 	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
 		c2_type_info = get_fixed_length_string_type("", 15, 1);
 		strcpy(tuple_type_info->containees[2].field_name, "col_2");
-		tuple_type_info->containees[2].type_info = &c2_type_info;
+		tuple_type_info->containees[2].al.type_info = &c2_type_info;
 	#else
 		c2_type_info = get_variable_length_string_type("", 1 << (VAR_STRING_SIZE_SPECIFICER_SIZE * 8));
 		strcpy(tuple_type_info->containees[2].field_name, "var_col_2");
-		tuple_type_info->containees[2].type_info = &c2_type_info;
+		tuple_type_info->containees[2].al.type_info = &c2_type_info;
 	#endif
 
 	strcpy(tuple_type_info->containees[3].field_name, "col_3");
-	tuple_type_info->containees[3].type_info = FLOAT_double_NULLABLE;
+	tuple_type_info->containees[3].al.type_info = FLOAT_double_NULLABLE;
 
 	#ifdef TEST_FIXED_ARRAY_PAGE_LAYOUT
 		c4_type_info = get_fixed_length_string_type("", 8, 1);
 		strcpy(tuple_type_info->containees[4].field_name, "col_4");
-		tuple_type_info->containees[4].type_info = &c4_type_info;
+		tuple_type_info->containees[4].al.type_info = &c4_type_info;
 	#else
 		c4_type_info = get_variable_length_string_type("", 1 << (VAR_STRING_SIZE_SPECIFICER_SIZE * 8));
 		strcpy(tuple_type_info->containees[4].field_name, "var_col_4");
-		tuple_type_info->containees[4].type_info = &c4_type_info;
+		tuple_type_info->containees[4].al.type_info = &c4_type_info;
 	#endif
 
 	strcpy(tuple_type_info->containees[5].field_name, "col_5");
-	tuple_type_info->containees[5].type_info = INT_NULLABLE[1];
+	tuple_type_info->containees[5].al.type_info = INT_NULLABLE[1];
 
 	strcpy(tuple_type_info->containees[6].field_name, "col_6");
-	tuple_type_info->containees[6].type_info = INT_NULLABLE[1];
+	tuple_type_info->containees[6].al.type_info = INT_NULLABLE[1];
 
 	strcpy(tuple_type_info->containees[7].field_name, "col_7");
-	tuple_type_info->containees[7].type_info = INT_NULLABLE[1];
+	tuple_type_info->containees[7].al.type_info = INT_NULLABLE[1];
 
 	strcpy(tuple_type_info->containees[8].field_name, "col_8");
-	tuple_type_info->containees[8].type_info = INT_NULLABLE[1];
+	tuple_type_info->containees[8].al.type_info = INT_NULLABLE[1];
 
 	if(!initialize_tuple_def(&tuple_definition, tuple_type_info))
 	{

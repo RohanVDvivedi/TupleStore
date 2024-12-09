@@ -22,33 +22,33 @@ tuple_def* get_tuple_definition()
 	initialize_tuple_data_type_info(tuple_type_info, "my_table", 1, MAX_TUPLE_SIZE, 9);
 
 	strcpy(tuple_type_info->containees[0].field_name, "col_0");
-	tuple_type_info->containees[0].type_info = BIT_FIELD_NULLABLE[5];
+	tuple_type_info->containees[0].al.type_info = BIT_FIELD_NULLABLE[5];
 
 	strcpy(tuple_type_info->containees[1].field_name, "col_1");
-	tuple_type_info->containees[1].type_info = LARGE_UINT_NULLABLE[5];
+	tuple_type_info->containees[1].al.type_info = LARGE_UINT_NULLABLE[5];
 
 	c2_type_info = get_variable_length_string_type("", 1 << (2 * 8));
 	strcpy(tuple_type_info->containees[2].field_name, "var_col_2");
-	tuple_type_info->containees[2].type_info = &c2_type_info;
+	tuple_type_info->containees[2].al.type_info = &c2_type_info;
 
 	strcpy(tuple_type_info->containees[3].field_name, "col_3");
-	tuple_type_info->containees[3].type_info = INT_NULLABLE[3];
+	tuple_type_info->containees[3].al.type_info = INT_NULLABLE[3];
 
 	strcpy(tuple_type_info->containees[4].field_name, "col_4");
-	tuple_type_info->containees[4].type_info = BIT_FIELD_NULLABLE[9];
+	tuple_type_info->containees[4].al.type_info = BIT_FIELD_NULLABLE[9];
 
 	c5_type_info = get_variable_length_string_type("", 1 << (2 * 8));
 	strcpy(tuple_type_info->containees[5].field_name, "var_col_5");
-	tuple_type_info->containees[5].type_info = &c5_type_info;
+	tuple_type_info->containees[5].al.type_info = &c5_type_info;
 
 	strcpy(tuple_type_info->containees[6].field_name, "col_6");
-	tuple_type_info->containees[6].type_info = UINT_NULLABLE[5];
+	tuple_type_info->containees[6].al.type_info = UINT_NULLABLE[5];
 
 	strcpy(tuple_type_info->containees[7].field_name, "col_7");
-	tuple_type_info->containees[7].type_info = FLOAT_long_double_NULLABLE;
+	tuple_type_info->containees[7].al.type_info = FLOAT_long_double_NULLABLE;
 
 	strcpy(tuple_type_info->containees[8].field_name, "col_8");
-	tuple_type_info->containees[8].type_info = LARGE_UINT_NULLABLE[4];
+	tuple_type_info->containees[8].al.type_info = LARGE_UINT_NULLABLE[4];
 
 	if(!initialize_tuple_def(&tuple_definition, tuple_type_info))
 	{

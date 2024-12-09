@@ -17,14 +17,14 @@ int main()
 
 		data_type_info* tuple_type_info = alloca(sizeof_tuple_data_type_info(8));
 		initialize_tuple_data_type_info(tuple_type_info, "tuple_type1", 1, 1024, 8);
-		tuple_type_info->containees[0].type_info = UINT_NON_NULLABLE[3];
-		tuple_type_info->containees[1].type_info = BIT_FIELD_NON_NULLABLE[5];
-		tuple_type_info->containees[2].type_info = &s3;
-		tuple_type_info->containees[3].type_info = &s1;
-		tuple_type_info->containees[4].type_info = &s2;
-		tuple_type_info->containees[5].type_info = &s4;
-		tuple_type_info->containees[6].type_info = FLOAT_double_NULLABLE;
-		tuple_type_info->containees[7].type_info = BIT_FIELD_NULLABLE[5];
+		tuple_type_info->containees[0].al.type_info = UINT_NON_NULLABLE[3];
+		tuple_type_info->containees[1].al.type_info = BIT_FIELD_NON_NULLABLE[5];
+		tuple_type_info->containees[2].al.type_info = &s3;
+		tuple_type_info->containees[3].al.type_info = &s1;
+		tuple_type_info->containees[4].al.type_info = &s2;
+		tuple_type_info->containees[5].al.type_info = &s4;
+		tuple_type_info->containees[6].al.type_info = FLOAT_double_NULLABLE;
+		tuple_type_info->containees[7].al.type_info = BIT_FIELD_NULLABLE[5];
 		for(int i = 0; i < 8; i++)
 			strcpy(tuple_type_info->containees[i].field_name, "");
 		finalize_type_info(tuple_type_info);
@@ -65,7 +65,8 @@ int main()
 
 		print_data_for_data_type_info(tuple_type_info, tuple);
 		{
-			const user_value uval = get_user_value_for_type_info(tuple_type_info, tuple);
+			user_value uval;
+			get_user_value_for_type_info(&uval, tuple_type_info, tuple);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, tuple_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64" = %"PRIu64"\n",
@@ -82,7 +83,8 @@ int main()
 
 		print_data_for_data_type_info(tuple_type_info, tuple);
 		{
-			const user_value uval = get_user_value_for_type_info(tuple_type_info, tuple);
+			user_value uval;
+			get_user_value_for_type_info(&uval, tuple_type_info, tuple);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, tuple_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64" = %"PRIu64"\n",
@@ -102,7 +104,8 @@ int main()
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d", is_minimal_data_for_type_info(tuple_type_info, tuple));
 		{
-			const user_value uval = get_user_value_for_type_info(tuple_type_info, tuple);
+			user_value uval;
+			get_user_value_for_type_info(&uval, tuple_type_info, tuple);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, tuple_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64" = %"PRIu64"\n",
@@ -127,7 +130,8 @@ int main()
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d", is_minimal_data_for_type_info(tuple_type_info, tuple));
 		{
-			const user_value uval = get_user_value_for_type_info(tuple_type_info, tuple);
+			user_value uval;
+			get_user_value_for_type_info(&uval, tuple_type_info, tuple);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, tuple_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64" = %"PRIu64"\n",
@@ -172,7 +176,8 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			user_value uval;
+			get_user_value_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
@@ -187,7 +192,8 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			user_value uval;
+			get_user_value_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
@@ -201,7 +207,8 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			user_value uval;
+			get_user_value_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
@@ -223,7 +230,8 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			user_value uval;
+			get_user_value_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
@@ -237,7 +245,8 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			user_value uval;
+			get_user_value_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
@@ -252,7 +261,8 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			user_value uval;
+			get_user_value_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
@@ -266,7 +276,8 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			user_value uval;
+			get_user_value_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
@@ -421,7 +432,8 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			user_value uval;
+			get_user_value_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
@@ -438,7 +450,8 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			const user_value uval = get_user_value_for_type_info(array_type_info, array);
+			user_value uval;
+			get_user_value_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
@@ -512,8 +525,10 @@ int main()
 		set_user_value_to_containee_in_container(&arr, array, 1, 0, &(user_value){.int_value = 'B'});
 		set_user_value_to_containee_in_container(&arr, array, 2, 0, &(user_value){.int_value = 'C'});
 
-		const user_value string_uval = get_user_value_for_type_info(&str, string);
-		const user_value array_uval = get_user_value_for_type_info(&arr, array);
+		user_value string_uval;
+		get_user_value_for_type_info(&string_uval, &str, string);
+		user_value array_uval;
+		get_user_value_for_type_info(&array_uval, &arr, array);
 
 		print_user_value(&string_uval, &str); printf("\n");
 		print_user_value(&array_uval, &arr); printf("\n");
@@ -715,14 +730,14 @@ int main()
 
 		data_type_info* tuple_type_info = alloca(sizeof_tuple_data_type_info(8));
 		initialize_tuple_data_type_info(tuple_type_info, "tuple_type1", 1, 1024, 8);
-		tuple_type_info->containees[0].type_info = UINT_NON_NULLABLE[3];
-		tuple_type_info->containees[1].type_info = BIT_FIELD_NON_NULLABLE[5];
-		tuple_type_info->containees[2].type_info = &s3;
-		tuple_type_info->containees[3].type_info = &s1;
-		tuple_type_info->containees[4].type_info = &s2;
-		tuple_type_info->containees[5].type_info = &s4;
-		tuple_type_info->containees[6].type_info = FLOAT_double_NULLABLE;
-		tuple_type_info->containees[7].type_info = BIT_FIELD_NULLABLE[5];
+		tuple_type_info->containees[0].al.type_info = UINT_NON_NULLABLE[3];
+		tuple_type_info->containees[1].al.type_info = BIT_FIELD_NON_NULLABLE[5];
+		tuple_type_info->containees[2].al.type_info = &s3;
+		tuple_type_info->containees[3].al.type_info = &s1;
+		tuple_type_info->containees[4].al.type_info = &s2;
+		tuple_type_info->containees[5].al.type_info = &s4;
+		tuple_type_info->containees[6].al.type_info = FLOAT_double_NULLABLE;
+		tuple_type_info->containees[7].al.type_info = BIT_FIELD_NULLABLE[5];
 		for(int i = 0; i < 8; i++)
 			strcpy(tuple_type_info->containees[i].field_name, "");
 		finalize_type_info(tuple_type_info);
