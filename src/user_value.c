@@ -46,6 +46,7 @@ int get_containee_for_user_value(user_value* uval_c, const user_value* uval, con
 
 	if(dti->type == STRING || dti->type == BLOB)
 	{
+		uval_c->is_NULL = 0;
 		uval_c->uint_value = (((const unsigned char *)(uval->string_or_blob_value))[index] & UINT64_C(0xff));
 		return 1;
 	}
