@@ -47,6 +47,11 @@ struct data_positional_info
 	data_type_info* type_info; // -> type information of this field
 };
 
+// data_positional_info belongs to a container inside a container
+// it must have a non-null type_info, unless the index is out of bounds
+#define INVALID_DATA_POSITIONAL_INFO ((data_positional_info){.type_info = NULL;})
+#define IS_INVALID_DATA_POSITIONAL_INFO(pos_info) ((pos_info)->type_info == NULL)
+
 typedef struct data_position_info data_position_info;
 struct data_position_info
 {
