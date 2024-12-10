@@ -233,6 +233,11 @@ void print_type_info(const data_type_info* dti);
 	TUPLE and ARRAY types are literally copied from their user_values
 */
 
+/*
+	For all the functions below that take data_positional_info* containee_pos_info, this parameter is the cached prior copy of the accessible element inside the container (array or tuple or string or blob)
+	if you do not have ithis information prior to making this call pass a pointer to a local variable that is set to INVALID_DATA_POSITIONAL_INFO
+*/
+
 static inline int is_containee_null_in_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info);
 
 // returns pointer to the value from the container, if the containee is a BIT_FIELD then we return the pointer to the prefix_bitmap where it resides

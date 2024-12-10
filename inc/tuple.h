@@ -64,6 +64,11 @@ int can_discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positiona
 
 int discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, uint32_t index, uint32_t slots);
 
+/*
+	For all the above functions that have a can_MODIFY() for its corresponding MODIFY() call
+	then you must first ensure that the modification is possible, using the can_MODIFY() function, and then call MODIFY() function
+	because the MODIFY() call may end up modifying the tuple, yet fail to modify, this is because we can not know inadvance if the modification would succeed to a nested element
+*/
 
 
 // compare and hash accessors
