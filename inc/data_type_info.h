@@ -171,7 +171,8 @@ static inline data_type_info* get_data_type_info_for_containee_of_container_with
 // valid for string, blob, tuple and array (generated on the fly for an array, string or blob)
 // valid only if index < get_element_count_for_container_type_info
 static inline data_type_info* get_data_type_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index);
-static inline data_positional_info get_data_positional_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index); // always prefer to use this over data_position_info
+// below function is evaluated only if the passed cached_return is INVALID_DATA_POSITION_INFO, else it is a NO-OP
+static inline int get_data_positional_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* cached_return); // always prefer to use this over data_position_info
 
 // finds a containee's index using its field_name
 // if it fails, it will return -1 i.e. UINT32_MAX 
@@ -530,21 +531,28 @@ static inline data_type_info* get_data_type_info_for_containee_of_container(cons
 	return dti->containee;
 }
 
-static inline data_positional_info get_data_positional_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index)
+static inline int get_data_positional_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* cached_return)
 {
+	// if a prior valid value was returned then no need to do anything further
+	if(!IS_INVALID_DATA_POSITIONAL_INFO(cached_return))
+		return 1;
+
 	// this is not a valid function call for a non container type
 	if(!is_container_type_info(dti))
-		return (data_positional_info){};
+		return 0;
 
 	// same thing, if the index is out of bounds
 	if(index >= get_element_count_for_container_type_info(dti, data))
-		return (data_positional_info){};
+		return 0;
 
 	// index is now surely within bounds
 
 	// for a tuple return a precomputed value
 	if(dti->type == TUPLE)
-		return dti->containees[index].al;
+	{
+		(*cached_return) = dti->containees[index].al;
+		return 1;
+	}
 
 	// case statement for strings, blobs and arrays
 
@@ -557,35 +565,39 @@ static inline data_positional_info get_data_positional_info_for_containee_of_con
 	{
 		if(needs_is_valid_bit_in_prefix_bitmap(containee_type_info))
 		{
-			return (data_positional_info){
+			(*cached_return) = (data_positional_info){
 				.bit_offset_in_prefix_bitmap = ((1 + containee_type_info->bit_field_size) * index) + 1,
 				.bit_offset_to_is_valid_bit = ((1 + containee_type_info->bit_field_size) * index),
 				.type_info = containee_type_info,
 			};
+			return 1;
 		}
 		else
 		{
-			return (data_positional_info){
+			(*cached_return) = (data_positional_info){
 				.bit_offset_in_prefix_bitmap = containee_type_info->bit_field_size * index,
 				.bit_offset_to_is_valid_bit = 0, // will be unused
 				.type_info = containee_type_info,
 			};
+			return 1;
 		}
 	}
 	else if(!is_variable_sized_type_info(containee_type_info))
 	{
-		return (data_positional_info){
+		(*cached_return) = (data_positional_info){
 			.byte_offset = first_element_offset + containee_type_info->size * index,
 			.bit_offset_to_is_valid_bit = index * needs_is_valid_bit_in_prefix_bitmap(containee_type_info), // gets set to 0, if it won't need a is_valid bit in prefix_bitmap
 			.type_info = containee_type_info,
 		};
+		return 1;
 	}
 	else
 	{
-		return (data_positional_info){
+		(*cached_return) = (data_positional_info){
 			.byte_offset_to_byte_offset = first_element_offset + get_value_size_on_page(dti->max_size) * index,
 			.type_info = containee_type_info,
 		};
+		return 1;
 	}
 }
 
