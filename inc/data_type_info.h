@@ -49,7 +49,7 @@ struct data_positional_info
 
 // data_positional_info belongs to a container inside a container
 // it must have a non-null type_info, unless the index is out of bounds
-#define INVALID_DATA_POSITIONAL_INFO ((data_positional_info){.type_info = NULL;})
+#define INVALID_DATA_POSITIONAL_INFO ((data_positional_info){.type_info = NULL})
 #define IS_INVALID_DATA_POSITIONAL_INFO(pos_info) ((pos_info)->type_info == NULL)
 
 typedef struct data_position_info data_position_info;
@@ -233,26 +233,26 @@ void print_type_info(const data_type_info* dti);
 	TUPLE and ARRAY types are literally copied from their user_values
 */
 
-static inline int is_containee_null_in_container(const data_type_info* dti, const void* data, uint32_t index);
+static inline int is_containee_null_in_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info);
 
 // returns pointer to the value from the container, if the containee is a BIT_FIELD then we return the pointer to the prefix_bitmap where it resides
-static inline const void* get_pointer_to_containee_from_container(const data_type_info* dti, const void* data, uint32_t index);
+static inline const void* get_pointer_to_containee_from_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info);
 
 // for fixed length elements it is same as dti->size
 // for variable length elements, it is 0 if they are NULL
 // else we get their size from their pointer
-static inline uint32_t get_size_of_containee_from_container(const data_type_info* dti, const void* data, uint32_t index);
+static inline uint32_t get_size_of_containee_from_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info);
 
 // returns NULL by default for BIT_FIELD types, as bit_fields must exist inside a container
 static inline int get_user_value_for_type_info(user_value* uval, const data_type_info* dti, const void* data);
 
-static inline int get_user_value_to_containee_from_container(user_value* uval, const data_type_info* dti, const void* data, uint32_t index);
+static inline int get_user_value_to_containee_from_container(user_value* uval, const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info);
 
-static inline int is_variable_sized_containee_at_end_of_container(const data_type_info* dti, void* data, uint32_t index);
+static inline int is_variable_sized_containee_at_end_of_container(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info);
 
 // this needs to be done for modifying the variable sized element of the container, if its size would change
 // if the above function passes, we do not need to call this function
-static inline int move_variable_sized_containee_to_end_of_container(const data_type_info* dti, void* data, uint32_t index);
+static inline int move_variable_sized_containee_to_end_of_container(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info);
 
 // initializes the 0-ed out data with minimum size for this element
 // this is a NO-OP for bitfield elements
@@ -264,7 +264,7 @@ static inline uint32_t initialize_minimal_data_for_type_info(const data_type_inf
 // if this function returns 1, this implies data is equivalent to EMPTY_USER_VALUE
 static inline int is_minimal_data_for_type_info(const data_type_info* dti, const void* data);
 
-static inline int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, uint32_t index);
+static inline int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info);
 
 // data here is assumed to contain garbage
 // max_size_increment_allowed is never a problem for fixed length elements
@@ -278,11 +278,11 @@ static inline int set_user_value_for_type_info(const data_type_info* dti, void* 
 
 // returns 0, if the max_size_increment is violated OR uval is NULL and the element is non-NULLABLE
 // max_size_increment_allowed is never a problem for fixed length elements
-static inline int can_set_user_value_to_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval);
+static inline int can_set_user_value_to_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval, data_positional_info* containee_pos_info);
 
 // returns 0, if the max_size_increment is violated OR uval is NULL and the element is non-NULLABLE
 // max_size_increment_allowed is never a problem for fixed length elements
-static inline int set_user_value_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval);
+static inline int set_user_value_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval, data_positional_info* containee_pos_info);
 
 // returns 0, if the max_size_increment is violated OR if index is not within 0 and element_count
 // check to see if the below function will succeed
@@ -321,7 +321,7 @@ void print_data_for_data_type_info(const data_type_info* dti, const void* data);
 // so STRING, variable sized STRING and an ARRAY of UINT_NON_NULLABLE[1] with same content hash to the same value
 uint64_t hash_data_for_type_info(const data_type_info* dti, const void* data, tuple_hasher* th);
 
-uint64_t hash_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, tuple_hasher* th);
+uint64_t hash_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, tuple_hasher* th, data_positional_info* containee_pos_info);
 
 
 // static inline implementation
@@ -601,7 +601,7 @@ static inline int get_data_positional_info_for_containee_of_container(const data
 	}
 }
 
-static inline int is_containee_null_in_container(const data_type_info* dti, const void* data, uint32_t index)
+static inline int is_containee_null_in_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
 	// dti has to be a container type
 	if(!is_container_type_info(dti))
@@ -611,25 +611,25 @@ static inline int is_containee_null_in_container(const data_type_info* dti, cons
 	if(index >= get_element_count_for_container_type_info(dti, data))
 		return 1;
 
-	data_positional_info containee_pos_info = get_data_positional_info_for_containee_of_container(dti, data, index);
+	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
 
 	// a non-nullable element can never be null
-	if(!is_nullable_type_info(containee_pos_info.type_info))
+	if(!is_nullable_type_info(containee_pos_info->type_info))
 		return 0;
 
-	if(!is_variable_sized_type_info(containee_pos_info.type_info))
+	if(!is_variable_sized_type_info(containee_pos_info->type_info))
 	{
 		// must have a bit in is_valid bitmap
-		return get_bit(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info.bit_offset_to_is_valid_bit) == 0;
+		return get_bit(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info->bit_offset_to_is_valid_bit) == 0;
 	}
 	else
 	{
 		// variable size element is NULL if the byte_offset in the tuple of the containee is 0
-		return read_value_from_page(data + containee_pos_info.byte_offset_to_byte_offset, dti->max_size) == 0;
+		return read_value_from_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size) == 0;
 	}
 }
 
-static inline const void* get_pointer_to_containee_from_container(const data_type_info* dti, const void* data, uint32_t index)
+static inline const void* get_pointer_to_containee_from_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
 	// dti has to be a container type
 	if(!is_container_type_info(dti))
@@ -640,21 +640,21 @@ static inline const void* get_pointer_to_containee_from_container(const data_typ
 		return NULL;
 
 	// if it is already null return NULL
-	if(is_containee_null_in_container(dti, data, index))
+	if(is_containee_null_in_container(dti, data, index, containee_pos_info))
 		return NULL;
 
 	// fetch information about containee
-	data_positional_info containee_pos_info = get_data_positional_info_for_containee_of_container(dti, data, index);
+	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
 
-	if(containee_pos_info.type_info->type == BIT_FIELD)
+	if(containee_pos_info->type_info->type == BIT_FIELD)
 		return data + get_offset_to_prefix_bitmap_for_container_type_info(dti); // returning the pointer to the completee bitmap if the element is a bitfield
-	else if(!is_variable_sized_type_info(containee_pos_info.type_info))
-		return data + containee_pos_info.byte_offset;
+	else if(!is_variable_sized_type_info(containee_pos_info->type_info))
+		return data + containee_pos_info->byte_offset;
 	else
-		return data + read_value_from_page(data + containee_pos_info.byte_offset_to_byte_offset, dti->max_size);
+		return data + read_value_from_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size);
 }
 
-static inline uint32_t get_size_of_containee_from_container(const data_type_info* dti, const void* data, uint32_t index)
+static inline uint32_t get_size_of_containee_from_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
 	// must be a container type info to call this function
 	if(!is_container_type_info(dti))
@@ -665,19 +665,19 @@ static inline uint32_t get_size_of_containee_from_container(const data_type_info
 		return 0;
 
 	// fetch information about containee
-	data_positional_info containee_pos_info = get_data_positional_info_for_containee_of_container(dti, data, index);
+	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
 
-	if(containee_pos_info.type_info->type == BIT_FIELD)
+	if(containee_pos_info->type_info->type == BIT_FIELD)
 		return 0;
-	else if(!is_variable_sized_type_info(containee_pos_info.type_info))
+	else if(!is_variable_sized_type_info(containee_pos_info->type_info))
 		return dti->size;
 	else
 	{
-		const void* containee = get_pointer_to_containee_from_container(dti, data, index);
+		const void* containee = get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
 		if(containee == NULL) // a NULL varibale sized element is said to be not containing any space
 			return 0;
 		else
-			return get_size_for_type_info(containee_pos_info.type_info, containee);
+			return get_size_for_type_info(containee_pos_info->type_info, containee);
 	}
 }
 
@@ -722,7 +722,8 @@ static inline int get_user_value_for_type_info(user_value* uval, const data_type
 		{
 			uval->is_NULL = 0;
 			// grab pointer to the first byte, and the element_count of the string, since it is inherently an array of non-nullable fixed length elements, they are placed sequential after the first byte
-			uval->string_value = data + get_data_positional_info_for_containee_of_container(dti, data, 0).byte_offset;
+			// and the first byte is right where the prefix ends, there is not prefix_bitmap, so we can use its offset as index to first possible byte
+			uval->string_value = data + get_offset_to_prefix_bitmap_for_container_type_info(dti);
 			uval->string_size = get_element_count_for_container_type_info(dti, data);
 			// this string could be null terminated
 			uval->string_size = strnlen(uval->string_value, uval->string_size);
@@ -732,7 +733,8 @@ static inline int get_user_value_for_type_info(user_value* uval, const data_type
 		{
 			uval->is_NULL = 0;
 			// grab pointer to the first byte, and the element_count of the blob, since it is inherently an array of non-nullable fixed length elements, they are placed sequential after the first byte
-			uval->blob_value = data + get_data_positional_info_for_containee_of_container(dti, data, 0).byte_offset;
+			// and the first byte is right where the prefix ends, there is not prefix_bitmap, so we can use its offset as index to first possible byte
+			uval->blob_value = data + get_offset_to_prefix_bitmap_for_container_type_info(dti);
 			uval->blob_size = get_element_count_for_container_type_info(dti, data);
 			break;
 		}
@@ -753,7 +755,7 @@ static inline int get_user_value_for_type_info(user_value* uval, const data_type
 	return 1;
 }
 
-static inline int get_user_value_to_containee_from_container(user_value* uval, const data_type_info* dti, const void* data, uint32_t index)
+static inline int get_user_value_to_containee_from_container(user_value* uval, const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
 	// dti has to be a container type, else we can not index it and so we return OUT_OF_BOUNDS_USER_VALUE
 	if(!is_container_type_info(dti))
@@ -764,30 +766,30 @@ static inline int get_user_value_to_containee_from_container(user_value* uval, c
 		return 0;
 
 	// if it is already null return NULL_USER_VALUE
-	if(is_containee_null_in_container(dti, data, index))
+	if(is_containee_null_in_container(dti, data, index, containee_pos_info))
 	{
 		uval->is_NULL = 1;
 		return 1;
 	}
 
 	// fetch information about containee
-	data_positional_info containee_pos_info = get_data_positional_info_for_containee_of_container(dti, data, index);
-	const void* containee = get_pointer_to_containee_from_container(dti, data, index);
+	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
+	const void* containee = get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
 
-	switch(containee_pos_info.type_info->type)
+	switch(containee_pos_info->type_info->type)
 	{
 		case BIT_FIELD :
 		{
 			uval->is_NULL = 0;
-			uval->bit_field_value = get_bits(containee, containee_pos_info.bit_offset_in_prefix_bitmap, containee_pos_info.bit_offset_in_prefix_bitmap + containee_pos_info.type_info->bit_field_size - 1);
+			uval->bit_field_value = get_bits(containee, containee_pos_info->bit_offset_in_prefix_bitmap, containee_pos_info->bit_offset_in_prefix_bitmap + containee_pos_info->type_info->bit_field_size - 1);
 			return 1;
 		}
 		default :
-			return get_user_value_for_type_info(uval, containee_pos_info.type_info, containee);
+			return get_user_value_for_type_info(uval, containee_pos_info->type_info, containee);
 	}
 }
 
-static inline int is_variable_sized_containee_at_end_of_container(const data_type_info* dti, void* data, uint32_t index)
+static inline int is_variable_sized_containee_at_end_of_container(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
 	// dti has to be a container type
 	if(!is_container_type_info(dti))
@@ -798,19 +800,19 @@ static inline int is_variable_sized_containee_at_end_of_container(const data_typ
 		return 0;
 
 	// if it is already null, fail
-	if(is_containee_null_in_container(dti, data, index))
+	if(is_containee_null_in_container(dti, data, index, containee_pos_info))
 		return 0;
 
 	// fetch information about containee
-	data_positional_info containee_pos_info = get_data_positional_info_for_containee_of_container(dti, data, index);
+	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
 
 	// if this element is not variable sized then fail
-	if(!is_variable_sized_type_info(containee_pos_info.type_info))
+	if(!is_variable_sized_type_info(containee_pos_info->type_info))
 		return 0;
 
-	void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index);
+	void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
 	uint32_t containee_byte_offset = containee - data;
-	uint32_t containee_size = get_size_for_type_info(containee_pos_info.type_info, containee);
+	uint32_t containee_size = get_size_for_type_info(containee_pos_info->type_info, containee);
 	uint32_t container_size = get_size_for_type_info(dti, data);
 
 	// the containee is at the end of the container
@@ -820,7 +822,7 @@ static inline int is_variable_sized_containee_at_end_of_container(const data_typ
 	return 0;
 }
 
-static inline int move_variable_sized_containee_to_end_of_container(const data_type_info* dti, void* data, uint32_t index)
+static inline int move_variable_sized_containee_to_end_of_container(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
 	// dti has to be a container type
 	if(!is_container_type_info(dti))
@@ -831,23 +833,23 @@ static inline int move_variable_sized_containee_to_end_of_container(const data_t
 		return 0;
 
 	// if it is already null, fail
-	if(is_containee_null_in_container(dti, data, index))
+	if(is_containee_null_in_container(dti, data, index, containee_pos_info))
 		return 0;
 
 	// fetch information about containee
-	data_positional_info containee_pos_info = get_data_positional_info_for_containee_of_container(dti, data, index);
+	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
 
 	// if this element is not variable sized then fail
-	if(!is_variable_sized_type_info(containee_pos_info.type_info))
+	if(!is_variable_sized_type_info(containee_pos_info->type_info))
 		return 0;
 
 	// if the index-th element is already at the end then fail
-	if(is_variable_sized_containee_at_end_of_container(dti, data, index))
+	if(is_variable_sized_containee_at_end_of_container(dti, data, index, containee_pos_info))
 		return 1;
 
-	void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index);
+	void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
 	uint32_t containee_byte_offset = containee - data;
-	uint32_t containee_size = get_size_for_type_info(containee_pos_info.type_info, containee);
+	uint32_t containee_size = get_size_for_type_info(containee_pos_info->type_info, containee);
 	uint32_t container_size = get_size_for_type_info(dti, data);
 
 	// perform left rotation to psuh the containee at index to the end of the container
@@ -855,7 +857,8 @@ static inline int move_variable_sized_containee_to_end_of_container(const data_t
 
 	for(uint32_t i = 0; i < get_element_count_for_container_type_info(dti, data); i++)
 	{
-		data_positional_info pos_info_i = get_data_positional_info_for_containee_of_container(dti, data, i);
+		data_positional_info pos_info_i = INVALID_DATA_POSITIONAL_INFO;
+		get_data_positional_info_for_containee_of_container(dti, data, i, &pos_info_i);
 
 		// the offsets have to be adjusted but not for the index-th element and not for the fixed sized elements
 		if(i == index || !is_variable_sized_type_info(pos_info_i.type_info))
@@ -869,7 +872,7 @@ static inline int move_variable_sized_containee_to_end_of_container(const data_t
 	}
 
 	// finally update the offset of the index-th element
-	write_value_to_page(data + containee_pos_info.byte_offset_to_byte_offset, dti->max_size, container_size - containee_size);
+	write_value_to_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size, container_size - containee_size);
 	return 1;
 }
 
@@ -924,7 +927,7 @@ static inline int is_minimal_data_for_type_info(const data_type_info* dti, const
 	}
 }
 
-static inline int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, uint32_t index)
+static inline int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
 	// dti has to be a container type
 	if(!is_container_type_info(dti))
@@ -935,28 +938,28 @@ static inline int set_containee_to_NULL_in_container(const data_type_info* dti, 
 		return 0;
 
 	// if it is already null, succeed
-	if(is_containee_null_in_container(dti, data, index))
+	if(is_containee_null_in_container(dti, data, index, containee_pos_info))
 		return 1;
 
 	// fetch information about containee
-	data_positional_info containee_pos_info = get_data_positional_info_for_containee_of_container(dti, data, index);
+	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
 
 	// a non-nullable element can never be null
-	if(!is_nullable_type_info(containee_pos_info.type_info))
+	if(!is_nullable_type_info(containee_pos_info->type_info))
 		return 0;
 
-	if(needs_is_valid_bit_in_prefix_bitmap(containee_pos_info.type_info)) // must be a BIT_FIELD or a fixed sized field
-		reset_bit(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info.bit_offset_to_is_valid_bit);
+	if(needs_is_valid_bit_in_prefix_bitmap(containee_pos_info->type_info)) // must be a BIT_FIELD or a fixed sized field
+		reset_bit(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info->bit_offset_to_is_valid_bit);
 	else // else it is a variable sized field
 	{
 		uint32_t container_size = get_size_for_type_info(dti, data);
-		uint32_t containee_size = get_size_for_type_info(containee_pos_info.type_info, get_pointer_to_containee_from_container(dti, data, index));
+		uint32_t containee_size = get_size_for_type_info(containee_pos_info->type_info, get_pointer_to_containee_from_container(dti, data, index, containee_pos_info));
 
 		// move containee to the end of the container
-		move_variable_sized_containee_to_end_of_container(dti, data, index);
+		move_variable_sized_containee_to_end_of_container(dti, data, index, containee_pos_info);
 
 		// set containee offset to 0
-		write_value_to_page(data + containee_pos_info.byte_offset_to_byte_offset, dti->max_size, 0);
+		write_value_to_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size, 0);
 
 		// if it has size in its prefix deduct containee_size from it
 		if(has_size_in_its_prefix_for_container_type_info(dti))
@@ -1187,7 +1190,7 @@ static inline int set_user_value_for_type_info(const data_type_info* dti, void* 
 	}
 }
 
-static inline int can_set_user_value_to_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval)
+static inline int can_set_user_value_to_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval, data_positional_info* containee_pos_info)
 {
 	// dti has to be a container type
 	if(!is_container_type_info(dti))
@@ -1198,29 +1201,29 @@ static inline int can_set_user_value_to_containee_in_container(const data_type_i
 		return 0;
 
 	// fetch information about containee
-	data_positional_info containee_pos_info = get_data_positional_info_for_containee_of_container(dti, data, index);
+	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
 
 	// if uval is NULL, set it to NULL
 	// this will never increment the size requirement, hence no checks required
 	if(is_user_value_NULL(uval))
-		return is_nullable_type_info(containee_pos_info.type_info);
+		return is_nullable_type_info(containee_pos_info->type_info);
 
 	// there will already be enough space for the fixed sized containee
-	if(!is_variable_sized_type_info(containee_pos_info.type_info))
+	if(!is_variable_sized_type_info(containee_pos_info->type_info))
 		return 1;
 
 	uint32_t old_container_size = get_size_for_type_info(dti, data);
 	max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - old_container_size);
 
-	const void* containee = get_pointer_to_containee_from_container(dti, data, index);
+	const void* containee = get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
 	int is_old_containee_offset_valid = (containee != NULL);
 	if(containee == NULL)
 		containee = data + old_container_size;
 
-	return can_set_user_value_for_type_info(containee_pos_info.type_info, containee, is_old_containee_offset_valid, max_size_increment_allowed, uval);
+	return can_set_user_value_for_type_info(containee_pos_info->type_info, containee, is_old_containee_offset_valid, max_size_increment_allowed, uval);
 }
 
-static inline int set_user_value_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval)
+static inline int set_user_value_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval, data_positional_info* containee_pos_info)
 {
 	// dti has to be a container type
 	if(!is_container_type_info(dti))
@@ -1233,42 +1236,39 @@ static inline int set_user_value_to_containee_in_container(const data_type_info*
 	// if uval is NULL, set it to NULL
 	// this will never increment the size requirement, hence no checks required
 	if(is_user_value_NULL(uval))
-		return set_containee_to_NULL_in_container(dti, data, index);
+		return set_containee_to_NULL_in_container(dti, data, index, containee_pos_info);
 
 	// now we are sure that uval is not NULL
 
 	// fetch information about containee
-	data_positional_info containee_pos_info = get_data_positional_info_for_containee_of_container(dti, data, index);
+	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
 
-	if(!is_variable_sized_type_info(containee_pos_info.type_info))
+	if(!is_variable_sized_type_info(containee_pos_info->type_info))
 	{
 		// if it has is_valid_bit then set it
-		if(needs_is_valid_bit_in_prefix_bitmap(containee_pos_info.type_info)) // must be a BIT_FIELD or a fixed sized field
-			set_bit(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info.bit_offset_to_is_valid_bit);
+		if(needs_is_valid_bit_in_prefix_bitmap(containee_pos_info->type_info)) // must be a BIT_FIELD or a fixed sized field
+			set_bit(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info->bit_offset_to_is_valid_bit);
 
-		if(containee_pos_info.type_info->type == BIT_FIELD)
+		if(containee_pos_info->type_info->type == BIT_FIELD)
 		{
-			set_bits(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info.bit_offset_in_prefix_bitmap, containee_pos_info.bit_offset_in_prefix_bitmap + containee_pos_info.type_info->bit_field_size - 1, uval->bit_field_value);
+			set_bits(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info->bit_offset_in_prefix_bitmap, containee_pos_info->bit_offset_in_prefix_bitmap + containee_pos_info->type_info->bit_field_size - 1, uval->bit_field_value);
 			return 1;
 		}
 		else
 		{
-			void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index);
-			return set_user_value_for_type_info(containee_pos_info.type_info, containee, 1 /* this attribute is NO-OP here */, max_size_increment_allowed, uval);
+			void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
+			return set_user_value_for_type_info(containee_pos_info->type_info, containee, 1 /* this attribute is NO-OP here */, max_size_increment_allowed, uval);
 		}
 	}
 	else
 	{
 		// first thing we need to do is send the concerned containee to the end of the container
-		move_variable_sized_containee_to_end_of_container(dti, data, index);
-
-		// moving the element changes its position in the container, hence the recalculation
-		containee_pos_info = get_data_positional_info_for_containee_of_container(dti, data, index);
+		move_variable_sized_containee_to_end_of_container(dti, data, index, containee_pos_info);
 
 		uint32_t old_container_size = get_size_for_type_info(dti, data);
 		max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - old_container_size);
 
-		void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index);
+		void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
 		uint32_t old_containee_size = 0;
 		int is_old_containee_offset_valid = (containee != NULL);
 
@@ -1277,18 +1277,18 @@ static inline int set_user_value_to_containee_in_container(const data_type_info*
 		if(containee == NULL)
 			containee = data + old_container_size;
 		else
-			old_containee_size = get_size_for_type_info(containee_pos_info.type_info, containee);
+			old_containee_size = get_size_for_type_info(containee_pos_info->type_info, containee);
 
-		int result = set_user_value_for_type_info(containee_pos_info.type_info, containee, is_old_containee_offset_valid, max_size_increment_allowed, uval);
+		int result = set_user_value_for_type_info(containee_pos_info->type_info, containee, is_old_containee_offset_valid, max_size_increment_allowed, uval);
 
 		// if result was a success, and the old_containee_offset was in-valid i.e 0, then set it
 		if(result && !is_old_containee_offset_valid)
-			write_value_to_page(data + containee_pos_info.byte_offset_to_byte_offset, dti->max_size, old_container_size);
+			write_value_to_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size, old_container_size);
 
 		// if the container has size in prefix then update it
 		if(result && has_size_in_its_prefix_for_container_type_info(dti))
 		{
-			uint32_t new_containee_size = get_size_for_type_info(containee_pos_info.type_info, containee);
+			uint32_t new_containee_size = get_size_for_type_info(containee_pos_info->type_info, containee);
 
 			uint32_t new_container_size = old_container_size - old_containee_size + new_containee_size;
 
@@ -1642,7 +1642,10 @@ static inline int discard_from_container(const data_type_info* dti, void* data, 
 	{
 		// first make the concerning slots NULL
 		for(uint32_t i = 0; i < slots; i++)
-			set_containee_to_NULL_in_container(dti, data, index + i);
+		{
+			data_positional_info pos_info_i = INVALID_DATA_POSITIONAL_INFO;
+			set_containee_to_NULL_in_container(dti, data, index + i, &pos_info_i);
+		}
 
 		// update the old size that we have cached
 		old_size = get_size_for_type_info(dti, data);

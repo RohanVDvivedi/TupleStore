@@ -1253,23 +1253,25 @@ uint64_t hash_data_for_type_info(const data_type_info* dti, const void* data, tu
 
 	for(uint32_t i = 0; i < get_element_count_for_container_type_info(dti, data); i++)
 	{
+		data_positional_info pos_i = INVALID_DATA_POSITIONAL_INFO;
+
 		// if it is a string and the i-th element is a 0
 		// containee of a STRING is UINT_NON_NULLABLE[1], i.e. non-nullable hence we do not need to check
 		if(dti->type == STRING)
 		{
 			user_value uval_i;
-			get_user_value_to_containee_from_container(&uval_i, dti, data, i);
+			get_user_value_to_containee_from_container(&uval_i, dti, data, i, &pos_i);
 			if(uval_i.uint_value == 0)
 				break;
 		}
 
-		hash_containee_in_container(dti, data, i, th);
+		hash_containee_in_container(dti, data, i, th, &pos_i);
 	}
 
 	return th->hash;
 }
 
-uint64_t hash_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, tuple_hasher* th)
+uint64_t hash_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, tuple_hasher* th, data_positional_info* containee_pos_info)
 {
 	if(!is_container_type_info(dti))
 		return th->hash;
@@ -1279,22 +1281,22 @@ uint64_t hash_containee_in_container(const data_type_info* dti, const void* data
 		return th->hash;
 
 	// if it the index-th containee is null, return 0
-	if(is_containee_null_in_container(dti, data, index))
+	if(is_containee_null_in_container(dti, data, index, containee_pos_info))
 		return th->hash;
 
 	// we now know that the containee must exist
-	data_positional_info child_pos = get_data_positional_info_for_containee_of_container(dti, data, index);
-	const void* child_data = get_pointer_to_containee_from_container(dti, data, index);
+	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
+	const void* child_data = get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
 
-	if(child_pos.type_info == BIT_FIELD)
+	if(containee_pos_info->type_info == BIT_FIELD)
 	{
-		for(uint32_t i = 0; i < child_pos.type_info->bit_field_size; i++)
+		for(uint32_t i = 0; i < containee_pos_info->type_info->bit_field_size; i++)
 		{
-			char bit_data = !!get_bit(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), child_pos.bit_offset_in_prefix_bitmap + i);
+			char bit_data = !!get_bit(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info->bit_offset_in_prefix_bitmap + i);
 			tuple_hash_byte(th, bit_data);
 		}
 		return th->hash;
 	}
 	else
-		return hash_data_for_type_info(child_pos.type_info, child_data, th);
+		return hash_data_for_type_info(containee_pos_info->type_info, child_data, th);
 }
