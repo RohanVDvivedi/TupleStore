@@ -1,5 +1,8 @@
 TASKS PICKED
 
+ * make get_data_position_info_for_containee_of_container take a cached value and return that only if it is invalid
+
+
  * future optimization
  * about 400 milliseconds can be shaved off from processing 1 million tuples, if the get_value_size_on_page(uint32_t page_size) is made constant to 4
  * think about instead passing it as parameter or something
