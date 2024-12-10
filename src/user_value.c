@@ -51,9 +51,15 @@ int get_containee_for_user_value(user_value* uval_c, const user_value* uval, con
 		return 1;
 	}
 	else if(dti->type == TUPLE)
-		return get_user_value_to_containee_from_container(uval_c, dti, uval->tuple_value, index);
+	{
+		data_positional_info containee_pos_info = INVALID_DATA_POSITIONAL_INFO;
+		return get_user_value_to_containee_from_container(uval_c, dti, uval->tuple_value, index, &containee_pos_info);
+	}
 	else if(dti->type == ARRAY)
-		return get_user_value_to_containee_from_container(uval_c, dti, uval->array_value, index);
+	{
+		data_positional_info containee_pos_info = INVALID_DATA_POSITIONAL_INFO;
+		return get_user_value_to_containee_from_container(uval_c, dti, uval->array_value, index, &containee_pos_info);
+	}
 
 	// never reaches here
 	return 0;
@@ -248,7 +254,7 @@ void print_user_value(const user_value* uval, const data_type_info* dti)
 					printf(", ");
 				const data_position_info* containee_pos_info = dti->containees + i;
 				user_value child_uval;
-				if(!get_user_value_to_containee_from_container(&child_uval, dti, uval->tuple_value, i))
+				if(!get_user_value_to_containee_from_container(&child_uval, dti, uval->tuple_value, i, (data_positional_info*)(&(containee_pos_info->al))))
 					continue;
 				if(is_variable_sized_type_info(containee_pos_info->al.type_info) && !is_user_value_NULL(&child_uval))
 					printf("[%"PRIu32"]->", read_value_from_page(uval->tuple_value + containee_pos_info->al.byte_offset_to_byte_offset, dti->max_size));
@@ -264,9 +270,10 @@ void print_user_value(const user_value* uval, const data_type_info* dti)
 			{
 				if(i != 0)
 					printf(", ");
-				data_positional_info containee_pos_info = get_data_positional_info_for_containee_of_container(dti, uval->array_value, i);
+				data_positional_info containee_pos_info = INVALID_DATA_POSITIONAL_INFO;
+				get_data_positional_info_for_containee_of_container(dti, uval->array_value, i, &containee_pos_info);
 				user_value child_uval;
-				if(!get_user_value_to_containee_from_container(&child_uval, dti, uval->array_value, i))
+				if(!get_user_value_to_containee_from_container(&child_uval, dti, uval->array_value, i, &containee_pos_info))
 					continue;
 				if(is_variable_sized_type_info(containee_pos_info.type_info) && !is_user_value_NULL(&child_uval))
 					printf("[%"PRIu32"]->", read_value_from_page(uval->tuple_value + containee_pos_info.byte_offset_to_byte_offset, dti->max_size));
