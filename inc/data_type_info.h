@@ -167,7 +167,6 @@ static inline data_type_info* get_data_type_info_for_containee_of_container_with
 // valid only if index < get_element_count_for_container_type_info
 static inline data_type_info* get_data_type_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index);
 static inline data_positional_info get_data_positional_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index); // always prefer to use this over data_position_info
-static inline data_position_info get_data_position_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index);
 
 // finds a containee's index using its field_name
 // if it fails, it will return -1 i.e. UINT32_MAX 
@@ -583,28 +582,6 @@ static inline data_positional_info get_data_positional_info_for_containee_of_con
 			.type_info = containee_type_info,
 		};
 	}
-}
-
-static inline data_position_info get_data_position_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index)
-{
-	// this is not a valid function call for a non container type
-	if(!is_container_type_info(dti))
-		return (data_position_info){};
-
-	// same thing, if the index is out of bounds
-	if(index >= get_element_count_for_container_type_info(dti, data))
-		return (data_position_info){};
-
-	// index is now surely within bounds
-
-	// for a tuple return a precomputed value
-	if(dti->type == TUPLE)
-		return dti->containees[index];
-
-	// case statement for strings, blobs and arrays
-	return (data_position_info) {
-		.al = get_data_positional_info_for_containee_of_container(dti, data, index),
-	};
 }
 
 static inline int is_containee_null_in_container(const data_type_info* dti, const void* data, uint32_t index)
