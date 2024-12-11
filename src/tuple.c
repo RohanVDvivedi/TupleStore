@@ -136,15 +136,16 @@ int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, con
 		if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
 			return 0;
 
-		// if the child nested in middle is null, then we can not set its child
-		if(is_containee_null_in_container(dti, data, pa.positions[0], &containee_pos_info))
-			return 0;
-
 		if(is_variable_sized_type_info(dti))
 			max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - get_size_for_type_info(dti, data));
 
 		const data_type_info* child_dti = get_data_type_info_for_containee_of_container(dti, data, pa.positions[0]);
 		const void* child_data = get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+
+		// if the child nested in middle is null, then we can not set its child
+		if(child_data == NULL)
+			return 0;
+
 		dti = child_dti;
 		data = child_data;
 		pa = NEXT_POSITION(pa);
@@ -183,10 +184,6 @@ static int set_element_in_tuple_INTERNAL(const data_type_info* dti, positional_a
 	if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
 		return 0;
 
-	// if the child nested in middle is null, then we can not set its child
-	if(is_containee_null_in_container(dti, data, pa.positions[0], &containee_pos_info))
-		return 0;
-
 	if(is_variable_sized_type_info(dti))
 		max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - get_size_for_type_info(dti, data));
 
@@ -196,6 +193,10 @@ static int set_element_in_tuple_INTERNAL(const data_type_info* dti, positional_a
 
 	const data_type_info* child_dti = get_data_type_info_for_containee_of_container(dti, data, pa.positions[0]);
 	void* child_data = (void*) get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+
+	// if the child nested in middle is null, then we can not set its child
+	if(child_data == NULL)
+		return 0;
 
 	uint32_t container_old_size = get_size_for_type_info(dti, data);
 	uint32_t child_old_size = get_size_of_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
@@ -271,12 +272,13 @@ uint32_t get_element_count_for_element_from_tuple(const tuple_def* tpl_d, positi
 		if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
 			return 0;
 
-		// if the child nested in middle is null, then we can not get element count of its child
-		if(is_containee_null_in_container(dti, data, pa.positions[0], &containee_pos_info))
-			return 0;
-
 		const data_type_info* child_dti = get_data_type_info_for_containee_of_container(dti, data, pa.positions[0]);
 		void* child_data = (void*) get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+
+		// if the child nested in middle is null, then we can not get element count of its child
+		if(child_data == NULL)
+			return 0;
+
 		dti = child_dti;
 		data = child_data;
 		pa = NEXT_POSITION(pa);
@@ -311,15 +313,16 @@ int can_expand_element_count_for_element_in_tuple(const tuple_def* tpl_d, positi
 		if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
 			return 0;
 
-		// if the child nested in middle is null, then we can not expand its child
-		if(is_containee_null_in_container(dti, data, pa.positions[0], &containee_pos_info))
-			return 0;
-
 		// inner_most_dti is variable element_count, so it is bydefault a variable sized data type
 		max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - get_size_for_type_info(dti, data));
 
 		const data_type_info* child_dti = get_data_type_info_for_containee_of_container(dti, data, pa.positions[0]);
 		const void* child_data = get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+
+		// if the child nested in middle is null, then we can not expand its child
+		if(child_data == NULL)
+			return 0;
+
 		dti = child_dti;
 		data = child_data;
 		pa = NEXT_POSITION(pa);
@@ -345,10 +348,6 @@ int expand_element_count_for_element_in_tuple_INTERNAL(const data_type_info* dti
 	if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
 		return 0;
 
-	// if the child nested in middle is null, then we can not expand its child
-	if(is_containee_null_in_container(dti, data, pa.positions[0], &containee_pos_info))
-		return 0;
-
 	// inner_most_dti is variable element_count, so it is bydefault a variable sized data type
 	max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - get_size_for_type_info(dti, data));
 
@@ -357,6 +356,10 @@ int expand_element_count_for_element_in_tuple_INTERNAL(const data_type_info* dti
 
 	const data_type_info* child_dti = get_data_type_info_for_containee_of_container(dti, data, pa.positions[0]);
 	void* child_data = (void*) get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+
+	// if the child nested in middle is null, then we can not expand its child
+	if(child_data == NULL)
+		return 0;
 
 	uint32_t container_old_size = get_size_for_type_info(dti, data);
 	uint32_t child_old_size = get_size_of_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
@@ -410,14 +413,15 @@ int can_discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positiona
 		if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
 			return 0;
 
-		// if the child nested in middle is null, then we can not discard from its child
-		if(is_containee_null_in_container(dti, data, pa.positions[0], &containee_pos_info))
-			return 0;
-
 		// inner_most_dti is variable element_count, so it is by default a variable sized data type
 
 		const data_type_info* child_dti = get_data_type_info_for_containee_of_container(dti, data, pa.positions[0]);
 		const void* child_data = get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+
+		// if the child nested in middle is null, then we can not discard from its child
+		if(child_data == NULL)
+			return 0;
+
 		dti = child_dti;
 		data = child_data;
 		pa = NEXT_POSITION(pa);
@@ -443,10 +447,6 @@ int discard_elements_from_element_in_tuple_INTERNAL(const data_type_info* dti, p
 	if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
 		return 0;
 
-	// if the child nested in middle is null, then we can not discard from its child
-	if(is_containee_null_in_container(dti, data, pa.positions[0], &containee_pos_info))
-		return 0;
-
 	// inner_most_dti is variable element_count, so it is by default a variable sized data type
 
 	// then move child of current dti to the end
@@ -454,6 +454,10 @@ int discard_elements_from_element_in_tuple_INTERNAL(const data_type_info* dti, p
 
 	const data_type_info* child_dti = get_data_type_info_for_containee_of_container(dti, data, pa.positions[0]);
 	void* child_data = (void*) get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+
+	// if the child nested in middle is null, then we can not discard from its child
+	if(child_data == NULL)
+		return 0;
 
 	uint32_t container_old_size = get_size_for_type_info(dti, data);
 	uint32_t child_old_size = get_size_of_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
