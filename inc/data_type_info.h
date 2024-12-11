@@ -241,6 +241,7 @@ void print_type_info(const data_type_info* dti);
 static inline int is_containee_null_in_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info);
 
 // returns pointer to the value from the container, if the containee is a BIT_FIELD then we return the pointer to the prefix_bitmap where it resides
+// for a NULL value a c compatible NULL is returned, hence you may not need to call is_containee_null_in_container, post this call
 static inline const void* get_pointer_to_containee_from_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info);
 
 // for fixed length elements it is same as dti->size
