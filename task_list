@@ -1,5 +1,7 @@
 TASKS PICKED
 
+ * optimize out multiple reads to offsets, get_pointer and get_user_value can be checked for null value, no need to call is_null_containee_in_container
+
  * future optimization
  * about 400 milliseconds can be shaved off from processing 1 million tuples, if the get_value_size_on_page(uint32_t page_size) is made constant to 4
  * think about instead passing it as parameter or something
