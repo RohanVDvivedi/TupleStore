@@ -34,14 +34,15 @@ int get_value_from_element_from_tuple(user_value* uval, const tuple_def* tpl_d, 
 		if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
 			return 0;
 
-		if(is_containee_null_in_container(dti, data, pa.positions[0], &containee_pos_info))
+		const data_type_info* child_dti = get_data_type_info_for_containee_of_container(dti, data, pa.positions[0]);
+		const void* child_data = get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+
+		if(child_data == NULL)
 		{
 			uval->is_NULL = 1;
 			return 1;
 		}
 
-		const data_type_info* child_dti = get_data_type_info_for_containee_of_container(dti, data, pa.positions[0]);
-		const void* child_data = get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
 		dti = child_dti;
 		data = child_data;
 		pa = NEXT_POSITION(pa);
