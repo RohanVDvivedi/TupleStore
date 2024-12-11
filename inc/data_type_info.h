@@ -771,16 +771,16 @@ static inline int get_user_value_to_containee_from_container(user_value* uval, c
 	if(index >= get_element_count_for_container_type_info(dti, data))
 		return 0;
 
-	// if it is already null return NULL_USER_VALUE
-	if(is_containee_null_in_container(dti, data, index, containee_pos_info))
+	// fetch information about containee
+	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
+	const void* containee = get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
+
+	// if it is null return NULL_USER_VALUE
+	if(containee == NULL)
 	{
 		uval->is_NULL = 1;
 		return 1;
 	}
-
-	// fetch information about containee
-	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
-	const void* containee = get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
 
 	switch(containee_pos_info->type_info->type)
 	{
@@ -805,18 +805,19 @@ static inline int is_variable_sized_containee_at_end_of_container(const data_typ
 	if(index >= get_element_count_for_container_type_info(dti, data))
 		return 0;
 
-	// if it is already null, fail
-	if(is_containee_null_in_container(dti, data, index, containee_pos_info))
-		return 0;
-
 	// fetch information about containee
 	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
 
-	// if this element is not variable sized then fail
+	// if this element is not variable sized then fail, fixed length elements are generally stored inline
 	if(!is_variable_sized_type_info(containee_pos_info->type_info))
 		return 0;
 
 	void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
+
+	// a null containee, even though variable sized can not be at the end of the container
+	if(containee == NULL)
+		return 0;
+
 	uint32_t containee_byte_offset = containee - data;
 	uint32_t containee_size = get_size_for_type_info(containee_pos_info->type_info, containee);
 	uint32_t container_size = get_size_for_type_info(dti, data);
@@ -838,10 +839,6 @@ static inline int move_variable_sized_containee_to_end_of_container(const data_t
 	if(index >= get_element_count_for_container_type_info(dti, data))
 		return 0;
 
-	// if it is already null, fail
-	if(is_containee_null_in_container(dti, data, index, containee_pos_info))
-		return 0;
-
 	// fetch information about containee
 	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
 
@@ -849,14 +846,17 @@ static inline int move_variable_sized_containee_to_end_of_container(const data_t
 	if(!is_variable_sized_type_info(containee_pos_info->type_info))
 		return 0;
 
-	// if the index-th element is already at the end then fail
-	if(is_variable_sized_containee_at_end_of_container(dti, data, index, containee_pos_info))
-		return 1;
-
 	void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
+	if(containee == NULL) // a null conatinee can not be sent to the end of the container
+		return 0;
+
 	uint32_t containee_byte_offset = containee - data;
 	uint32_t containee_size = get_size_for_type_info(containee_pos_info->type_info, containee);
 	uint32_t container_size = get_size_for_type_info(dti, data);
+
+	// the containee is at the end of the container, if this check passes, if so, no need to do anything
+	if(containee_byte_offset + containee_size == container_size)
+		return 0;
 
 	// perform left rotation to psuh the containee at index to the end of the container
 	memory_left_rotate(containee, container_size - containee_byte_offset, containee_size);
