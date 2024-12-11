@@ -254,8 +254,6 @@ static inline int get_user_value_for_type_info(user_value* uval, const data_type
 
 static inline int get_user_value_to_containee_from_container(user_value* uval, const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info);
 
-static inline int is_variable_sized_containee_at_end_of_container(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info);
-
 // this needs to be done for modifying the variable sized element of the container, if its size would change
 // if the above function passes, we do not need to call this function
 static inline int move_variable_sized_containee_to_end_of_container(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info);
@@ -793,40 +791,6 @@ static inline int get_user_value_to_containee_from_container(user_value* uval, c
 		default :
 			return get_user_value_for_type_info(uval, containee_pos_info->type_info, containee);
 	}
-}
-
-static inline int is_variable_sized_containee_at_end_of_container(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info)
-{
-	// dti has to be a container type
-	if(!is_container_type_info(dti))
-		return 0;
-
-	// make sure that index is withint bounds, else fail
-	if(index >= get_element_count_for_container_type_info(dti, data))
-		return 0;
-
-	// fetch information about containee
-	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
-
-	// if this element is not variable sized then fail, fixed length elements are generally stored inline
-	if(!is_variable_sized_type_info(containee_pos_info->type_info))
-		return 0;
-
-	void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
-
-	// a null containee, even though variable sized can not be at the end of the container
-	if(containee == NULL)
-		return 0;
-
-	uint32_t containee_byte_offset = containee - data;
-	uint32_t containee_size = get_size_for_type_info(containee_pos_info->type_info, containee);
-	uint32_t container_size = get_size_for_type_info(dti, data);
-
-	// the containee is at the end of the container
-	if(containee_byte_offset + containee_size == container_size)
-		return 1;
-
-	return 0;
 }
 
 static inline int move_variable_sized_containee_to_end_of_container(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info)
