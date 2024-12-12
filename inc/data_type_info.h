@@ -794,7 +794,8 @@ static inline int get_user_value_for_type_info(user_value* uval, const data_type
 static inline int get_user_value_to_containee_from_container_CONTAINITY_UNSAFE(user_value* uval, const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
 	// fetch information about containee
-	get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
+	// get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
+	// above call is redundant as getting pointer already figures out the containee_pos_info value
 	const void* containee = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 	// if it is null return NULL_USER_VALUE
