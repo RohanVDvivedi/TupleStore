@@ -1260,7 +1260,7 @@ uint64_t hash_data_for_type_info(const data_type_info* dti, const void* data, tu
 		if(dti->type == STRING)
 		{
 			user_value uval_i;
-			get_user_value_to_containee_from_container(&uval_i, dti, data, i, &pos_i);
+			get_user_value_to_containee_from_container_CONTAINITY_UNSAFE(&uval_i, dti, data, i, &pos_i);
 			if(uval_i.uint_value == 0)
 				break;
 		}
@@ -1281,12 +1281,12 @@ uint64_t hash_containee_in_container(const data_type_info* dti, const void* data
 		return th->hash;
 
 	// if it the index-th containee is null, return 0
-	if(is_containee_null_in_container(dti, data, index, containee_pos_info))
+	if(is_containee_null_in_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info))
 		return th->hash;
 
 	// we now know that the containee must exist
-	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
-	const void* child_data = get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
+	get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
+	const void* child_data = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 	if(containee_pos_info->type_info == BIT_FIELD)
 	{
