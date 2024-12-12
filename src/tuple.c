@@ -34,8 +34,8 @@ int get_value_from_element_from_tuple(user_value* uval, const tuple_def* tpl_d, 
 		if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
 			return 0;
 
-		const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
 		const void* child_data = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
+		const data_type_info* child_dti = containee_type_info->type_info;
 
 		if(child_data == NULL)
 		{
@@ -139,8 +139,8 @@ int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, con
 		if(is_variable_sized_type_info(dti))
 			max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - get_size_for_type_info(dti, data));
 
-		const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
 		const void* child_data = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
+		const data_type_info* child_dti = containee_pos_info->type_info;
 
 		// if the child nested in middle is null, then we can not set its child
 		if(child_data == NULL)
@@ -191,8 +191,8 @@ static int set_element_in_tuple_INTERNAL(const data_type_info* dti, positional_a
 	if(is_inner_most_dti_variable_sized)
 		move_variable_sized_containee_to_end_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
-	const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
 	void* child_data = (void*) get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
+	const data_type_info* child_dti = containee_pos_info->type_info;
 
 	// if the child nested in middle is null, then we can not set its child
 	if(child_data == NULL)
@@ -272,8 +272,8 @@ uint32_t get_element_count_for_element_from_tuple(const tuple_def* tpl_d, positi
 		if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
 			return 0;
 
-		const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
-		void* child_data = (void*) get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
+		const void* child_data = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
+		const data_type_info* child_dti = containee_pos_info->type_info;
 
 		// if the child nested in middle is null, then we can not get element count of its child
 		if(child_data == NULL)
@@ -316,8 +316,8 @@ int can_expand_element_count_for_element_in_tuple(const tuple_def* tpl_d, positi
 		// inner_most_dti is variable element_count, so it is bydefault a variable sized data type
 		max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - get_size_for_type_info(dti, data));
 
-		const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
 		const void* child_data = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
+		const data_type_info* child_dti = containee_pos_info->type_info;
 
 		// if the child nested in middle is null, then we can not expand its child
 		if(child_data == NULL)
@@ -354,8 +354,8 @@ int expand_element_count_for_element_in_tuple_INTERNAL(const data_type_info* dti
 	// then move child of current dti to the end
 	move_variable_sized_containee_to_end_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
-	const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
 	void* child_data = (void*) get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
+	const data_type_info* child_dti = containee_pos_info->type_info;
 
 	// if the child nested in middle is null, then we can not expand its child
 	if(child_data == NULL)
@@ -415,8 +415,8 @@ int can_discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positiona
 
 		// inner_most_dti is variable element_count, so it is by default a variable sized data type
 
-		const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
 		const void* child_data = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
+		const data_type_info* child_dti = containee_pos_info->type_info;
 
 		// if the child nested in middle is null, then we can not discard from its child
 		if(child_data == NULL)
@@ -452,8 +452,8 @@ int discard_elements_from_element_in_tuple_INTERNAL(const data_type_info* dti, p
 	// then move child of current dti to the end
 	move_variable_sized_containee_to_end_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
-	const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
 	void* child_data = (void*) get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
+	const data_type_info* child_dti = containee_pos_info->type_info;
 
 	// if the child nested in middle is null, then we can not discard from its child
 	if(child_data == NULL)
