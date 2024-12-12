@@ -1655,7 +1655,7 @@ static inline int discard_from_container(const data_type_info* dti, void* data, 
 		for(uint32_t i = 0; i < slots; i++)
 		{
 			data_positional_info pos_info_i = INVALID_DATA_POSITIONAL_INFO;
-			set_containee_to_NULL_in_container(dti, data, index + i, &pos_info_i);
+			set_containee_to_NULL_in_container_CONTAINITY_UNSAFE(dti, data, index + i, &pos_info_i);
 		}
 
 		// update the old size that we have cached
