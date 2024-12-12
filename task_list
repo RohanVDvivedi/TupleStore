@@ -1,8 +1,7 @@
 TASKS PICKED
 
- * future optimization
- * about 400 milliseconds can be shaved off from processing 1 million tuples, if the get_value_size_on_page(uint32_t page_size) is made constant to 4
- * think about instead passing it as parameter or something
+ * add function to compare user values in a list/array given their same or different dtis for 2 arrays of user values
+ * use this to optimize sorter using caching of user values
 
 1 NEW TYPE TASKS
 
