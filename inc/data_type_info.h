@@ -939,22 +939,14 @@ static inline int is_minimal_data_for_type_info(const data_type_info* dti, const
 	}
 }
 
-static inline int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info)
+static inline int set_containee_to_NULL_in_container_CONTAINITY_UNSAFE(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
-	// dti has to be a container type
-	if(!is_container_type_info(dti))
-		return 0;
-
-	// make sure that index is within bounds, else fail
-	if(index >= get_element_count_for_container_type_info(dti, data))
-		return 0;
-
 	// if it is already null, succeed
-	if(is_containee_null_in_container(dti, data, index, containee_pos_info))
+	if(is_containee_null_in_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info))
 		return 1;
 
 	// fetch information about containee
-	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
+	get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, containee_pos_info);
 
 	// a non-nullable element can never be null
 	if(!is_nullable_type_info(containee_pos_info->type_info))
@@ -965,10 +957,10 @@ static inline int set_containee_to_NULL_in_container(const data_type_info* dti, 
 	else // else it is a variable sized field
 	{
 		uint32_t container_size = get_size_for_type_info(dti, data);
-		uint32_t containee_size = get_size_for_type_info(containee_pos_info->type_info, get_pointer_to_containee_from_container(dti, data, index, containee_pos_info));
+		uint32_t containee_size = get_size_for_type_info(containee_pos_info->type_info, get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info));
 
 		// move containee to the end of the container
-		move_variable_sized_containee_to_end_of_container(dti, data, index, containee_pos_info);
+		move_variable_sized_containee_to_end_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 		// set containee offset to 0
 		write_value_to_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size, 0);
@@ -979,6 +971,19 @@ static inline int set_containee_to_NULL_in_container(const data_type_info* dti, 
 	}
 
 	return 1;
+}
+
+static inline int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info)
+{
+	// dti has to be a container type
+	if(!is_container_type_info(dti))
+		return 0;
+
+	// make sure that index is within bounds, else fail
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return 0;
+
+	return set_containee_to_NULL_in_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 }
 
 static inline int can_set_user_value_for_type_info(const data_type_info* dti, const void* data, int is_valid, uint32_t max_size_increment_allowed, const user_value* uval)
