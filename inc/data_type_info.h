@@ -622,16 +622,8 @@ static inline int get_data_positional_info_for_containee_of_container(const data
 	return get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, cached_return);
 }
 
-static inline int is_containee_null_in_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
+static inline int is_containee_null_in_container_CONTAINITY_UNSAFE(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
-	// dti has to be a container type
-	if(!is_container_type_info(dti))
-		return 1;
-
-	// make sure that index is withint bounds, else it is said to be NULL
-	if(index >= get_element_count_for_container_type_info(dti, data))
-		return 1;
-
 	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
 
 	// a non-nullable element can never be null
@@ -648,6 +640,19 @@ static inline int is_containee_null_in_container(const data_type_info* dti, cons
 		// variable size element is NULL if the byte_offset in the tuple of the containee is 0
 		return read_value_from_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size) == 0;
 	}
+}
+
+static inline int is_containee_null_in_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
+{
+	// dti has to be a container type
+	if(!is_container_type_info(dti))
+		return 1;
+
+	// make sure that index is withint bounds, else it is said to be NULL
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return 1;
+
+	return is_containee_null_in_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 }
 
 static inline const void* get_pointer_to_containee_from_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
