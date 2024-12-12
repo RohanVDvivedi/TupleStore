@@ -35,7 +35,7 @@ int get_value_from_element_from_tuple(user_value* uval, const tuple_def* tpl_d, 
 			return 0;
 
 		const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
-		const void* child_data = get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+		const void* child_data = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
 		if(child_data == NULL)
 		{
@@ -140,7 +140,7 @@ int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, con
 			max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - get_size_for_type_info(dti, data));
 
 		const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
-		const void* child_data = get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+		const void* child_data = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
 		// if the child nested in middle is null, then we can not set its child
 		if(child_data == NULL)
@@ -189,23 +189,23 @@ static int set_element_in_tuple_INTERNAL(const data_type_info* dti, positional_a
 
 	// if the inmer_most_dti to be set is variable sized, then move child of current dti to the end
 	if(is_inner_most_dti_variable_sized)
-		move_variable_sized_containee_to_end_of_container(dti, data, pa.positions[0], &containee_pos_info);
+		move_variable_sized_containee_to_end_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
 	const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
-	void* child_data = (void*) get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+	void* child_data = (void*) get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
 	// if the child nested in middle is null, then we can not set its child
 	if(child_data == NULL)
 		return 0;
 
 	uint32_t container_old_size = get_size_for_type_info(dti, data);
-	uint32_t child_old_size = get_size_of_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+	uint32_t child_old_size = get_size_of_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
 	int result = set_element_in_tuple_INTERNAL(child_dti, NEXT_POSITION(pa), child_data, value, max_size_increment_allowed, is_inner_most_dti_variable_sized);
 
 	if(result && is_inner_most_dti_variable_sized)
 	{
-		uint32_t child_new_size = get_size_of_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+		uint32_t child_new_size = get_size_of_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 		overwrite_size_for_container_type_info_with_size_in_prefix(dti, data, container_old_size - child_old_size + child_new_size);
 	}
 
@@ -273,7 +273,7 @@ uint32_t get_element_count_for_element_from_tuple(const tuple_def* tpl_d, positi
 			return 0;
 
 		const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
-		void* child_data = (void*) get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+		void* child_data = (void*) get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
 		// if the child nested in middle is null, then we can not get element count of its child
 		if(child_data == NULL)
@@ -317,7 +317,7 @@ int can_expand_element_count_for_element_in_tuple(const tuple_def* tpl_d, positi
 		max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - get_size_for_type_info(dti, data));
 
 		const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
-		const void* child_data = get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+		const void* child_data = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
 		// if the child nested in middle is null, then we can not expand its child
 		if(child_data == NULL)
@@ -355,20 +355,20 @@ int expand_element_count_for_element_in_tuple_INTERNAL(const data_type_info* dti
 	move_variable_sized_containee_to_end_of_container(dti, data, pa.positions[0], &containee_pos_info);
 
 	const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
-	void* child_data = (void*) get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+	void* child_data = (void*) get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
 	// if the child nested in middle is null, then we can not expand its child
 	if(child_data == NULL)
 		return 0;
 
 	uint32_t container_old_size = get_size_for_type_info(dti, data);
-	uint32_t child_old_size = get_size_of_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+	uint32_t child_old_size = get_size_of_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
 	int result = expand_element_count_for_element_in_tuple_INTERNAL(child_dti, NEXT_POSITION(pa), child_data, index, slots, max_size_increment_allowed);
 
 	if(result)
 	{
-		uint32_t child_new_size = get_size_of_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+		uint32_t child_new_size = get_size_of_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 		overwrite_size_for_container_type_info_with_size_in_prefix(dti, data, container_old_size - child_old_size + child_new_size);
 	}
 
@@ -416,7 +416,7 @@ int can_discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positiona
 		// inner_most_dti is variable element_count, so it is by default a variable sized data type
 
 		const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
-		const void* child_data = get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+		const void* child_data = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
 		// if the child nested in middle is null, then we can not discard from its child
 		if(child_data == NULL)
@@ -450,23 +450,23 @@ int discard_elements_from_element_in_tuple_INTERNAL(const data_type_info* dti, p
 	// inner_most_dti is variable element_count, so it is by default a variable sized data type
 
 	// then move child of current dti to the end
-	move_variable_sized_containee_to_end_of_container(dti, data, pa.positions[0], &containee_pos_info);
+	move_variable_sized_containee_to_end_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
 	const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
-	void* child_data = (void*) get_pointer_to_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+	void* child_data = (void*) get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
 	// if the child nested in middle is null, then we can not discard from its child
 	if(child_data == NULL)
 		return 0;
 
 	uint32_t container_old_size = get_size_for_type_info(dti, data);
-	uint32_t child_old_size = get_size_of_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+	uint32_t child_old_size = get_size_of_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
 	int result = discard_elements_from_element_in_tuple_INTERNAL(child_dti, NEXT_POSITION(pa), child_data, index, slots);
 
 	if(result)
 	{
-		uint32_t child_new_size = get_size_of_containee_from_container(dti, data, pa.positions[0], &containee_pos_info);
+		uint32_t child_new_size = get_size_of_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 		overwrite_size_for_container_type_info_with_size_in_prefix(dti, data, container_old_size - child_old_size + child_new_size);
 	}
 
