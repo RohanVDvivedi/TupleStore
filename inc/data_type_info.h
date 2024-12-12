@@ -522,6 +522,18 @@ static inline data_type_info* get_data_type_info_for_containee_of_container_with
 	return dti->containee;
 }
 
+static inline data_type_info* get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(const data_type_info* dti, const void* data, uint32_t index)
+{
+	if(dti->type == TUPLE)
+		return dti->containees[index].al.type_info;
+
+	if(dti->type == STRING || dti->type == BLOB)
+		return UINT_NON_NULLABLE[1]; // this must be the containee here, so why not return the default
+
+	// else it has to be an array
+	return dti->containee;
+}
+
 static inline data_type_info* get_data_type_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index)
 {
 	// this is not a valid function call for a non container type
@@ -534,31 +546,14 @@ static inline data_type_info* get_data_type_info_for_containee_of_container(cons
 
 	// index is now surely within bounds
 
-	if(dti->type == TUPLE)
-		return dti->containees[index].al.type_info;
-
-	if(dti->type == STRING || dti->type == BLOB)
-		return UINT_NON_NULLABLE[1]; // this must be the containee here, so why not return the default
-
-	// else it has to be an array
-	return dti->containee;
+	return get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index);
 }
 
-static inline int get_data_positional_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* cached_return)
+static inline int get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* cached_return)
 {
 	// if a prior valid value was returned then no need to do anything further
 	if(!IS_INVALID_DATA_POSITIONAL_INFO(cached_return))
 		return 1;
-
-	// this is not a valid function call for a non container type
-	if(!is_container_type_info(dti))
-		return 0;
-
-	// same thing, if the index is out of bounds
-	if(index >= get_element_count_for_container_type_info(dti, data))
-		return 0;
-
-	// index is now surely within bounds
 
 	// for a tuple return a precomputed value
 	if(dti->type == TUPLE)
@@ -572,7 +567,7 @@ static inline int get_data_positional_info_for_containee_of_container(const data
 	uint32_t prefix_bitmap_offset = get_offset_to_prefix_bitmap_for_container_type_info(dti);
 	uint32_t first_element_offset = prefix_bitmap_offset + get_prefix_bitmap_size_for_container_type_info(dti, data);
 
-	data_type_info* containee_type_info = get_data_type_info_for_containee_of_container(dti, data, index);
+	data_type_info* containee_type_info = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index);
 
 	if(containee_type_info->type == BIT_FIELD)
 	{
@@ -612,6 +607,19 @@ static inline int get_data_positional_info_for_containee_of_container(const data
 		};
 		return 1;
 	}
+}
+
+static inline int get_data_positional_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* cached_return)
+{
+	// this is not a valid function call for a non container type
+	if(!is_container_type_info(dti))
+		return 0;
+
+	// same thing, if the index is out of bounds
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return 0;
+
+	return get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, cached_return);
 }
 
 static inline int is_containee_null_in_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
