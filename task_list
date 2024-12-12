@@ -1,6 +1,8 @@
 TASKS PICKED
 
  * add function to compare user values in a list/array given their same or different dtis for 2 arrays of user values
+  * compare_user_values(dti, uval1, uval2)
+  * compare_user_values(dti[], uval1[], uval2[])
  * use this to optimize sorter using caching of user values
 
 1 NEW TYPE TASKS
