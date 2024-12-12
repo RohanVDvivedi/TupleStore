@@ -657,19 +657,26 @@ static inline int is_containee_null_in_container(const data_type_info* dti, cons
 
 static inline const void* get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
-	// if it is already null return NULL
-	if(is_containee_null_in_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info))
-		return NULL;
-
 	// fetch information about containee
 	get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
+
+	// check for NULL value, if it needs a bit in is_valid bitmap and that bit is 0, then it is NULL
+	if(needs_is_valid_bit_in_prefix_bitmap(containee_pos_info->type_info) &&
+		get_bit(data + get_offset_to_prefix_bitmap_for_container_type_info(dti), containee_pos_info->bit_offset_to_is_valid_bit) == 0)
+			return NULL;
 
 	if(containee_pos_info->type_info->type == BIT_FIELD)
 		return data + get_offset_to_prefix_bitmap_for_container_type_info(dti); // returning the pointer to the completee bitmap if the element is a bitfield
 	else if(!is_variable_sized_type_info(containee_pos_info->type_info))
 		return data + containee_pos_info->byte_offset;
 	else
-		return data + read_value_from_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size);
+	{
+		// figure out actual offset of the variable length field, if it is 0, then the containee is NULL
+		uint32_t actual_byte_offset = read_value_from_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size);
+		if(actual_byte_offset == 0)
+			return NULL;
+		return data + actual_byte_offset;
+	}
 }
 
 static inline const void* get_pointer_to_containee_from_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
