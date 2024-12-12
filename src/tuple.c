@@ -352,7 +352,7 @@ int expand_element_count_for_element_in_tuple_INTERNAL(const data_type_info* dti
 	max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - get_size_for_type_info(dti, data));
 
 	// then move child of current dti to the end
-	move_variable_sized_containee_to_end_of_container(dti, data, pa.positions[0], &containee_pos_info);
+	move_variable_sized_containee_to_end_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
 
 	const data_type_info* child_dti = get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0]);
 	void* child_data = (void*) get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
