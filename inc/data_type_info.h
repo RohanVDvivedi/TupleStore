@@ -624,7 +624,7 @@ static inline int get_data_positional_info_for_containee_of_container(const data
 
 static inline int is_containee_null_in_container_CONTAINITY_UNSAFE(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
-	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
+	get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, containee_pos_info);
 
 	// a non-nullable element can never be null
 	if(!is_nullable_type_info(containee_pos_info->type_info))
@@ -655,6 +655,23 @@ static inline int is_containee_null_in_container(const data_type_info* dti, cons
 	return is_containee_null_in_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 }
 
+static inline const void* get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
+{
+	// if it is already null return NULL
+	if(is_containee_null_in_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info))
+		return NULL;
+
+	// fetch information about containee
+	get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, containee_pos_info);
+
+	if(containee_pos_info->type_info->type == BIT_FIELD)
+		return data + get_offset_to_prefix_bitmap_for_container_type_info(dti); // returning the pointer to the completee bitmap if the element is a bitfield
+	else if(!is_variable_sized_type_info(containee_pos_info->type_info))
+		return data + containee_pos_info->byte_offset;
+	else
+		return data + read_value_from_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size);
+}
+
 static inline const void* get_pointer_to_containee_from_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
 	// dti has to be a container type
@@ -665,19 +682,7 @@ static inline const void* get_pointer_to_containee_from_container(const data_typ
 	if(index >= get_element_count_for_container_type_info(dti, data))
 		return NULL;
 
-	// if it is already null return NULL
-	if(is_containee_null_in_container(dti, data, index, containee_pos_info))
-		return NULL;
-
-	// fetch information about containee
-	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
-
-	if(containee_pos_info->type_info->type == BIT_FIELD)
-		return data + get_offset_to_prefix_bitmap_for_container_type_info(dti); // returning the pointer to the completee bitmap if the element is a bitfield
-	else if(!is_variable_sized_type_info(containee_pos_info->type_info))
-		return data + containee_pos_info->byte_offset;
-	else
-		return data + read_value_from_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size);
+	return get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 }
 
 static inline uint32_t get_size_of_containee_from_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
