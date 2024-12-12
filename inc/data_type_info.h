@@ -113,13 +113,6 @@ struct data_type_info
 
 #include<data_type_info_defaults.h>
 
-/*
-	for all the functions that act on the containee inside the container, take index as input
-	these functions do not check that the dti passed is indeed a container, and that the index is within element_count
-i.e. for every function that takes container (this will be self evident from the function name and by index in its parameter), you yourself must ensure that it is container and that the index is within bounds
-	using the functions is_container_type_info() and get_element_count_for_container_type_info()
-*/
-
 // varibale sized elements are always nullable
 // fixed length elements and bit fields are nullable if is_nullable is set
 static inline int is_nullable_type_info(const data_type_info* dti);
@@ -143,7 +136,7 @@ static inline int overwrite_size_for_container_type_info_with_size_in_prefix(con
 static inline int is_container_type_info(const data_type_info* dti);
 
 // check if variable element_count
-static inline int has_variable_element_count_for_container_type_info(const data_type_info* dti);
+static inline int is_variable_element_count_container_type_info(const data_type_info* dti);
 
 // get element_count
 static inline uint32_t get_element_count_for_container_type_info(const data_type_info* dti, const void* data);
@@ -172,6 +165,13 @@ static inline int has_element_count_in_its_prefix_for_container_type_info(const 
 // for a variable element count array of fixed length elements, it will be equal to element_count * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + (dti->containee.type == BIT_FIELD) ? dti->containee.size_def.bit_field_size : 0)
 static inline uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_info* dti, const void* data);
 #define get_prefix_bitmap_size_for_container_type_info(dti, data) 					(bitmap_size_in_bytes(get_prefix_bitmap_size_in_bits_for_container_type_info(dti, data)))
+
+/*
+	for all the functions that act on the containee inside the container, take index as input
+	these functions do not check that the dti passed is indeed a container, and that the index is within element_count
+i.e. for every function that takes container (this will be self evident from the function name and by index in its parameter), you yourself must ensure that it is container and that the index is within bounds
+	using the functions is_container_type_info() and get_element_count_for_container_type_info()
+*/
 
 // returns NULL, if the index is definitely out of bounds (this check is performed only if it is a fixed element count container), or if you are attempting to index a non-container data_type_info
 // no checks to ensure that index is within bounds is done for variable sized strings, variable sized blobs OR variable element count arrays
@@ -414,7 +414,7 @@ static inline int is_container_type_info(const data_type_info* dti)
 }
 
 // check if variable element_count
-static inline int has_variable_element_count_for_container_type_info(const data_type_info* dti)
+static inline int is_variable_element_count_container_type_info(const data_type_info* dti)
 {
 	// not possible for a non-container
 	if(!is_container_type_info(dti))
@@ -443,7 +443,7 @@ static inline uint32_t get_element_count_for_container_type_info(const data_type
 		return 0;
 
 	// if not variable element_count then read from the type_info
-	if(!has_variable_element_count_for_container_type_info(dti))
+	if(!is_variable_element_count_container_type_info(dti))
 		return dti->element_count;
 
 	// else read from the data
@@ -475,7 +475,7 @@ static inline int has_size_in_its_prefix_for_container_type_info(const data_type
 
 static inline int has_element_count_in_its_prefix_for_container_type_info(const data_type_info* dti)
 {
-	return has_variable_element_count_for_container_type_info(dti);
+	return is_variable_element_count_container_type_info(dti);
 }
 
 static inline uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_info* dti, const void* data)
@@ -507,7 +507,7 @@ static inline data_type_info* get_data_type_info_for_containee_of_container_with
 		return NULL;
 
 	// for fixed element count containers make sure that index is without bounds
-	if(!has_variable_element_count_for_container_type_info(dti) && index >= dti->element_count)
+	if(!is_variable_element_count_container_type_info(dti) && index >= dti->element_count)
 		return NULL;
 
 	// proceed as now the index is probably within bounds
@@ -1285,7 +1285,7 @@ static inline int can_expand_container(const data_type_info* dti, const void* da
 		return 0;
 
 	// it's element_count must be variable
-	if(!has_variable_element_count_for_container_type_info(dti))
+	if(!is_variable_element_count_container_type_info(dti))
 		return 0;
 
 	// make sure that index is within [0, element_count], else fail
@@ -1349,7 +1349,7 @@ static inline int expand_container(const data_type_info* dti, void* data, uint32
 		return 0;
 
 	// it's element_count must be variable
-	if(!has_variable_element_count_for_container_type_info(dti))
+	if(!is_variable_element_count_container_type_info(dti))
 		return 0;
 
 	// make sure that index is within [0, element_count], else fail
@@ -1510,7 +1510,7 @@ static inline int can_discard_from_container(const data_type_info* dti, const vo
 		return 0;
 
 	// it's element_count must be variable
-	if(!has_variable_element_count_for_container_type_info(dti))
+	if(!is_variable_element_count_container_type_info(dti))
 		return 0;
 
 	// make sure that index is within [0, element_count-1], else fail
@@ -1532,7 +1532,7 @@ static inline int discard_from_container(const data_type_info* dti, void* data, 
 		return 0;
 
 	// it's element_count must be variable
-	if(!has_variable_element_count_for_container_type_info(dti))
+	if(!is_variable_element_count_container_type_info(dti))
 		return 0;
 
 	// make sure that index is within [0, element_count-1], else fail

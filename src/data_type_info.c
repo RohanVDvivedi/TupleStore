@@ -287,7 +287,7 @@ uint32_t get_byte_count_for_serialized_type_info(const data_type_info* dti)
 				bytes_consumed += 4;
 			else
 			{
-				if(!has_variable_element_count_for_container_type_info(dti))
+				if(!is_variable_element_count_container_type_info(dti))
 					bytes_consumed += 4;
 
 				bytes_consumed += 4;
@@ -477,7 +477,7 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 			}
 			else
 			{
-				if(!has_variable_element_count_for_container_type_info(dti))
+				if(!is_variable_element_count_container_type_info(dti))
 				{
 					serialized_bytes[0] = 241;
 

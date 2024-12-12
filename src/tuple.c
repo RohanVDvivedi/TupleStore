@@ -290,7 +290,7 @@ uint32_t get_element_count_for_element_from_tuple(const tuple_def* tpl_d, positi
 int can_expand_element_count_for_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed)
 {
 	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
-	if(inner_most_dti == NULL || !has_variable_element_count_for_container_type_info(inner_most_dti))
+	if(inner_most_dti == NULL || !is_variable_element_count_container_type_info(inner_most_dti))
 		return 0;
 
 	const data_type_info* dti = tpl_d->type_info;
@@ -378,7 +378,7 @@ int expand_element_count_for_element_in_tuple_INTERNAL(const data_type_info* dti
 int expand_element_count_for_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed)
 {
 	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
-	if(inner_most_dti == NULL || !has_variable_element_count_for_container_type_info(inner_most_dti))
+	if(inner_most_dti == NULL || !is_variable_element_count_container_type_info(inner_most_dti))
 		return 0;
 
 	const data_type_info* dti = tpl_d->type_info;
@@ -390,7 +390,7 @@ int expand_element_count_for_element_in_tuple(const tuple_def* tpl_d, positional
 int can_discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl, uint32_t index, uint32_t slots)
 {
 	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
-	if(inner_most_dti == NULL || !has_variable_element_count_for_container_type_info(inner_most_dti))
+	if(inner_most_dti == NULL || !is_variable_element_count_container_type_info(inner_most_dti))
 		return 0;
 
 	const data_type_info* dti = tpl_d->type_info;
@@ -476,7 +476,7 @@ int discard_elements_from_element_in_tuple_INTERNAL(const data_type_info* dti, p
 int discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, uint32_t index, uint32_t slots)
 {
 	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
-	if(inner_most_dti == NULL || !has_variable_element_count_for_container_type_info(inner_most_dti))
+	if(inner_most_dti == NULL || !is_variable_element_count_container_type_info(inner_most_dti))
 		return 0;
 
 	const data_type_info* dti = tpl_d->type_info;
