@@ -16,6 +16,7 @@ enum data_type
 	FLOAT	   = 3,
 	LARGE_UINT = 4,
 
+	PRIMITIVE_TYPES_NUMBERING_LAST = 4,
 	// above attributes are always fixed length elements
 
 	STRING     = 5,
@@ -25,6 +26,7 @@ enum data_type
 	// the above 4 types may be fixed or variable length
 	// they will be identified as container types
 };
+#define is_container_data_type(type) ((type) > PRIMITIVE_TYPES_NUMBERING_LAST)
 
 extern char types_as_string[][16];
 
@@ -401,7 +403,7 @@ static inline int overwrite_size_for_container_type_info_with_size_in_prefix(con
 
 static inline int is_container_type_info(const data_type_info* dti)
 {
-	return dti->type == STRING || dti->type == BLOB || dti->type == TUPLE || dti->type == ARRAY;
+	return is_container_data_type(dti->type);
 }
 
 // check if variable element_count
