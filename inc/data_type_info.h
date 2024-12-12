@@ -685,6 +685,25 @@ static inline const void* get_pointer_to_containee_from_container(const data_typ
 	return get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 }
 
+static inline uint32_t get_size_of_containee_from_container_CONTAINITY_UNSAFE(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
+{
+	// fetch information about containee
+	get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, containee_pos_info);
+
+	if(containee_pos_info->type_info->type == BIT_FIELD)
+		return 0;
+	else if(!is_variable_sized_type_info(containee_pos_info->type_info))
+		return dti->size;
+	else
+	{
+		const void* containee = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
+		if(containee == NULL) // a NULL varibale sized element is said to be not containing any space
+			return 0;
+		else
+			return get_size_for_type_info(containee_pos_info->type_info, containee);
+	}
+}
+
 static inline uint32_t get_size_of_containee_from_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
 	// must be a container type info to call this function
@@ -695,21 +714,7 @@ static inline uint32_t get_size_of_containee_from_container(const data_type_info
 	if(index >= get_element_count_for_container_type_info(dti, data))
 		return 0;
 
-	// fetch information about containee
-	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
-
-	if(containee_pos_info->type_info->type == BIT_FIELD)
-		return 0;
-	else if(!is_variable_sized_type_info(containee_pos_info->type_info))
-		return dti->size;
-	else
-	{
-		const void* containee = get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
-		if(containee == NULL) // a NULL varibale sized element is said to be not containing any space
-			return 0;
-		else
-			return get_size_for_type_info(containee_pos_info->type_info, containee);
-	}
+	return get_size_of_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 }
 
 static inline int get_user_value_for_type_info(user_value* uval, const data_type_info* dti, const void* data)
