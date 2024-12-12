@@ -168,9 +168,9 @@ static inline uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(co
 
 /*
 	for all the functions that act on the containee inside the container, take index as input
-	these functions do not check that the dti passed is indeed a container, and that the index is within element_count
-i.e. for every function that takes container (this will be self evident from the function name and by index in its parameter), you yourself must ensure that it is container and that the index is within bounds
-	using the functions is_container_type_info() and get_element_count_for_container_type_info()
+	these functions most of which have a *_CONTAINITY_SAFE version that do not check that the element_count is within bounds
+	you may use their these versions if you are sure that you will not need to make checks like
+	the dti passed being a container and the element_count being within bounds
 */
 
 // returns NULL, if the index is definitely out of bounds (this check is performed only if it is a fixed element count container), or if you are attempting to index a non-container data_type_info
