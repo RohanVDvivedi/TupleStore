@@ -113,6 +113,13 @@ struct data_type_info
 
 #include<data_type_info_defaults.h>
 
+/*
+	for all the functions that act on the containee inside the container, take index as input
+	these functions do not check that the dti passed is indeed a container, and that the index is within element_count
+i.e. for every function that takes container (this will be self evident from the function name and by index in its parameter), you yourself must ensure that it is container and that the index is within bounds
+	using the functions is_container_type_info() and get_element_count_for_container_type_info()
+*/
+
 // varibale sized elements are always nullable
 // fixed length elements and bit fields are nullable if is_nullable is set
 static inline int is_nullable_type_info(const data_type_info* dti);
