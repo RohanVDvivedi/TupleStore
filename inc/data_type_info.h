@@ -1280,11 +1280,7 @@ static inline int set_user_value_to_containee_in_container(const data_type_info*
 
 static inline int can_expand_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed)
 {
-	// dti has to be a container type
-	if(!is_container_type_info(dti))
-		return 0;
-
-	// it's element_count must be variable
+	// it must be variable element count container
 	if(!is_variable_element_count_container_type_info(dti))
 		return 0;
 
@@ -1344,11 +1340,7 @@ static inline int can_expand_container(const data_type_info* dti, const void* da
 
 static inline int expand_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed)
 {
-	// dti has to be a container type
-	if(!is_container_type_info(dti))
-		return 0;
-
-	// it's element_count must be variable
+	// it must be variable element count container
 	if(!is_variable_element_count_container_type_info(dti))
 		return 0;
 
@@ -1505,11 +1497,7 @@ static inline int expand_container(const data_type_info* dti, void* data, uint32
 
 static inline int can_discard_from_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t slots)
 {
-	// dti has to be a container type
-	if(!is_container_type_info(dti))
-		return 0;
-
-	// it's element_count must be variable
+	// it must be variable element count container
 	if(!is_variable_element_count_container_type_info(dti))
 		return 0;
 
@@ -1527,11 +1515,7 @@ static inline int can_discard_from_container(const data_type_info* dti, const vo
 
 static inline int discard_from_container(const data_type_info* dti, void* data, uint32_t index, uint32_t slots)
 {
-	// dti has to be a container type
-	if(!is_container_type_info(dti))
-		return 0;
-
-	// it's element_count must be variable
+	// it must be variable element count container
 	if(!is_variable_element_count_container_type_info(dti))
 		return 0;
 
