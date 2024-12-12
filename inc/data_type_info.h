@@ -830,24 +830,16 @@ static inline int get_user_value_to_containee_from_container(user_value* uval, c
 	return get_user_value_to_containee_from_container_CONTAINITY_UNSAFE(uval, dti, data, index, containee_pos_info);
 }
 
-static inline int move_variable_sized_containee_to_end_of_container(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info)
+static inline int move_variable_sized_containee_to_end_of_container_CONTAINITY_UNSAFE(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
-	// dti has to be a container type
-	if(!is_container_type_info(dti))
-		return 0;
-
-	// make sure that index is withint bounds, else fail
-	if(index >= get_element_count_for_container_type_info(dti, data))
-		return 0;
-
 	// fetch information about containee
-	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
+	get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, containee_pos_info);
 
 	// if this element is not variable sized then fail
 	if(!is_variable_sized_type_info(containee_pos_info->type_info))
 		return 0;
 
-	void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
+	void* containee = (void*) get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 	if(containee == NULL) // a null conatinee can not be sent to the end of the container
 		return 0;
 
@@ -865,7 +857,7 @@ static inline int move_variable_sized_containee_to_end_of_container(const data_t
 	for(uint32_t i = 0; i < get_element_count_for_container_type_info(dti, data); i++)
 	{
 		data_positional_info pos_info_i = INVALID_DATA_POSITIONAL_INFO;
-		get_data_positional_info_for_containee_of_container(dti, data, i, &pos_info_i);
+		get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, i, &pos_info_i);
 
 		// the offsets have to be adjusted but not for the index-th element and not for the fixed sized elements
 		if(i == index || !is_variable_sized_type_info(pos_info_i.type_info))
@@ -881,6 +873,19 @@ static inline int move_variable_sized_containee_to_end_of_container(const data_t
 	// finally update the offset of the index-th element
 	write_value_to_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size, container_size - containee_size);
 	return 1;
+}
+
+static inline int move_variable_sized_containee_to_end_of_container(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info)
+{
+	// dti has to be a container type
+	if(!is_container_type_info(dti))
+		return 0;
+
+	// make sure that index is withint bounds, else fail
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return 0;
+
+	return move_variable_sized_containee_to_end_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 }
 
 static inline uint32_t initialize_minimal_data_for_type_info(const data_type_info* dti, void* data)
