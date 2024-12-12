@@ -549,7 +549,7 @@ static inline data_type_info* get_data_type_info_for_containee_of_container(cons
 	return get_data_type_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index);
 }
 
-static inline int get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* cached_return)
+static inline int get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* cached_return)
 {
 	// if a prior valid value was returned then no need to do anything further
 	if(!IS_INVALID_DATA_POSITIONAL_INFO(cached_return))
@@ -619,12 +619,12 @@ static inline int get_data_positional_info_for_containee_of_container(const data
 	if(index >= get_element_count_for_container_type_info(dti, data))
 		return 0;
 
-	return get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, cached_return);
+	return get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index, cached_return);
 }
 
 static inline int is_containee_null_in_container_CONTAINITY_UNSAFE(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
-	get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, containee_pos_info);
+	get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 	// a non-nullable element can never be null
 	if(!is_nullable_type_info(containee_pos_info->type_info))
@@ -662,7 +662,7 @@ static inline const void* get_pointer_to_containee_from_container_CONTAINITY_UNS
 		return NULL;
 
 	// fetch information about containee
-	get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, containee_pos_info);
+	get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 	if(containee_pos_info->type_info->type == BIT_FIELD)
 		return data + get_offset_to_prefix_bitmap_for_container_type_info(dti); // returning the pointer to the completee bitmap if the element is a bitfield
@@ -688,7 +688,7 @@ static inline const void* get_pointer_to_containee_from_container(const data_typ
 static inline uint32_t get_size_of_containee_from_container_CONTAINITY_UNSAFE(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
 	// fetch information about containee
-	get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, containee_pos_info);
+	get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 	if(containee_pos_info->type_info->type == BIT_FIELD)
 		return 0;
@@ -794,7 +794,7 @@ static inline int get_user_value_for_type_info(user_value* uval, const data_type
 static inline int get_user_value_to_containee_from_container_CONTAINITY_UNSAFE(user_value* uval, const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
 	// fetch information about containee
-	get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, containee_pos_info);
+	get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 	const void* containee = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 	// if it is null return NULL_USER_VALUE
@@ -833,7 +833,7 @@ static inline int get_user_value_to_containee_from_container(user_value* uval, c
 static inline int move_variable_sized_containee_to_end_of_container_CONTAINITY_UNSAFE(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
 	// fetch information about containee
-	get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, containee_pos_info);
+	get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 	// if this element is not variable sized then fail
 	if(!is_variable_sized_type_info(containee_pos_info->type_info))
@@ -857,7 +857,7 @@ static inline int move_variable_sized_containee_to_end_of_container_CONTAINITY_U
 	for(uint32_t i = 0; i < get_element_count_for_container_type_info(dti, data); i++)
 	{
 		data_positional_info pos_info_i = INVALID_DATA_POSITIONAL_INFO;
-		get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, i, &pos_info_i);
+		get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, i, &pos_info_i);
 
 		// the offsets have to be adjusted but not for the index-th element and not for the fixed sized elements
 		if(i == index || !is_variable_sized_type_info(pos_info_i.type_info))
@@ -946,7 +946,7 @@ static inline int set_containee_to_NULL_in_container_CONTAINITY_UNSAFE(const dat
 		return 1;
 
 	// fetch information about containee
-	get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, containee_pos_info);
+	get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 	// a non-nullable element can never be null
 	if(!is_nullable_type_info(containee_pos_info->type_info))
@@ -1210,7 +1210,7 @@ static inline int set_user_value_for_type_info(const data_type_info* dti, void* 
 static inline int can_set_user_value_to_containee_in_container_CONTAINITY_UNSAFE(const data_type_info* dti, const void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval, data_positional_info* containee_pos_info)
 {
 	// fetch information about containee
-	get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, containee_pos_info);
+	get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 	// if uval is NULL, set it to NULL
 	// this will never increment the size requirement, hence no checks required
@@ -1255,7 +1255,7 @@ static inline int set_user_value_to_containee_in_container_CONTAINITY_UNSAFE(con
 	// now we are sure that uval is not NULL
 
 	// fetch information about containee
-	get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, containee_pos_info);
+	get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 	if(!is_variable_sized_type_info(containee_pos_info->type_info))
 	{
