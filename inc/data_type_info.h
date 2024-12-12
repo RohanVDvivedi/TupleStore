@@ -791,19 +791,11 @@ static inline int get_user_value_for_type_info(user_value* uval, const data_type
 	return 1;
 }
 
-static inline int get_user_value_to_containee_from_container(user_value* uval, const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
+static inline int get_user_value_to_containee_from_container_CONTAINITY_UNSAFE(user_value* uval, const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
-	// dti has to be a container type, else we can not index it and so we return OUT_OF_BOUNDS_USER_VALUE
-	if(!is_container_type_info(dti))
-		return 0;
-
-	// make sure that index is within bounds, else it is said to be OUT_OF_BOUNDS_USER_VALUE
-	if(index >= get_element_count_for_container_type_info(dti, data))
-		return 0;
-
 	// fetch information about containee
-	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
-	const void* containee = get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
+	get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, containee_pos_info);
+	const void* containee = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 	// if it is null return NULL_USER_VALUE
 	if(containee == NULL)
@@ -823,6 +815,19 @@ static inline int get_user_value_to_containee_from_container(user_value* uval, c
 		default :
 			return get_user_value_for_type_info(uval, containee_pos_info->type_info, containee);
 	}
+}
+
+static inline int get_user_value_to_containee_from_container(user_value* uval, const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
+{
+	// dti has to be a container type, else we can not index it and so we return OUT_OF_BOUNDS_USER_VALUE
+	if(!is_container_type_info(dti))
+		return 0;
+
+	// make sure that index is within bounds, else it is said to be OUT_OF_BOUNDS_USER_VALUE
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return 0;
+
+	return get_user_value_to_containee_from_container_CONTAINITY_UNSAFE(uval, dti, data, index, containee_pos_info);
 }
 
 static inline int move_variable_sized_containee_to_end_of_container(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info)
