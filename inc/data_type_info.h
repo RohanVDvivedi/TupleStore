@@ -1245,25 +1245,17 @@ static inline int can_set_user_value_to_containee_in_container(const data_type_i
 	return can_set_user_value_to_containee_in_container_CONTAINITY_UNSAFE(dti, data, index, max_size_increment_allowed, uval, containee_pos_info);
 }
 
-static inline int set_user_value_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval, data_positional_info* containee_pos_info)
+static inline int set_user_value_to_containee_in_container_CONTAINITY_UNSAFE(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval, data_positional_info* containee_pos_info)
 {
-	// dti has to be a container type
-	if(!is_container_type_info(dti))
-		return 0;
-
-	// make sure that index is within bounds, else fail
-	if(index >= get_element_count_for_container_type_info(dti, data))
-		return 0;
-
 	// if uval is NULL, set it to NULL
 	// this will never increment the size requirement, hence no checks required
 	if(is_user_value_NULL(uval))
-		return set_containee_to_NULL_in_container(dti, data, index, containee_pos_info);
+		return set_containee_to_NULL_in_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 	// now we are sure that uval is not NULL
 
 	// fetch information about containee
-	get_data_positional_info_for_containee_of_container(dti, data, index, containee_pos_info);
+	get_data_positional_info_for_containee_of_container_CONTAINITY_USAFE(dti, data, index, containee_pos_info);
 
 	if(!is_variable_sized_type_info(containee_pos_info->type_info))
 	{
@@ -1278,19 +1270,19 @@ static inline int set_user_value_to_containee_in_container(const data_type_info*
 		}
 		else
 		{
-			void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
+			void* containee = (void*) get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 			return set_user_value_for_type_info(containee_pos_info->type_info, containee, 1 /* this attribute is NO-OP here */, max_size_increment_allowed, uval);
 		}
 	}
 	else
 	{
 		// first thing we need to do is send the concerned containee to the end of the container
-		move_variable_sized_containee_to_end_of_container(dti, data, index, containee_pos_info);
+		move_variable_sized_containee_to_end_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 		uint32_t old_container_size = get_size_for_type_info(dti, data);
 		max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - old_container_size);
 
-		void* containee = (void*) get_pointer_to_containee_from_container(dti, data, index, containee_pos_info);
+		void* containee = (void*) get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 		uint32_t old_containee_size = 0;
 		int is_old_containee_offset_valid = (containee != NULL);
 
@@ -1319,6 +1311,19 @@ static inline int set_user_value_to_containee_in_container(const data_type_info*
 
 		return result;
 	}
+}
+
+static inline int set_user_value_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval, data_positional_info* containee_pos_info)
+{
+	// dti has to be a container type
+	if(!is_container_type_info(dti))
+		return 0;
+
+	// make sure that index is within bounds, else fail
+	if(index >= get_element_count_for_container_type_info(dti, data))
+		return 0;
+
+	return set_user_value_to_containee_in_container_CONTAINITY_UNSAFE(dti, data, index, max_size_increment_allowed, uval, containee_pos_info);
 }
 
 static inline int can_expand_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed)
