@@ -93,6 +93,10 @@ enum compare_direction
 // returns -2 if they are not comparable OR if one of the element is out if bounds
 int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_accessor* element_ids1, const void* tup2, const tuple_def* tpl_d2, const positional_accessor* element_ids2, const compare_direction* cmp_dir, uint32_t element_count);
 
+int compare_elements_of_tuple2(const void* tup1, const void* tup2, const tuple_def* tpl_d, positional_accessor pa);
+
+int compare_tuples2(const void* tup1, const void* tup2, const tuple_def* tpl_d, const positional_accessor* element_ids, const compare_direction* cmp_dir, uint32_t element_count);
+
 #include<tuple_hasher.h>
 
 // hash function for tuple and for an element inside the tuple at the specified position pa

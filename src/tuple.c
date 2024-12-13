@@ -533,6 +533,45 @@ int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_a
 	return compare;
 }
 
+int compare_elements_of_tuple2(const void* tup1, const void* tup2, const tuple_def* tpl_d, positional_accessor pa)
+{
+	// if the element is not accessible, then fail
+	const data_type_info* dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
+	if(dti == NULL)
+		return -2;
+
+	// get the user value for this element
+	user_value uval1;
+	if(!get_value_from_element_from_tuple(&uval1, tpl_d, pa, tup1))
+		return -2;
+
+	// get the user value for this element
+	user_value uval2;
+	if(!get_value_from_element_from_tuple(&uval2, tpl_d, pa, tup2))
+		return -2;
+
+	// TODO : handle logic for custom compare function
+
+	return compare_user_value2(&uval1, &uval2, dti);
+}
+
+int compare_tuples2(const void* tup1, const void* tup2, const tuple_def* tpl_d, const positional_accessor* element_ids, const compare_direction* cmp_dir, uint32_t element_count)
+{
+	int compare = 0;
+	for(uint32_t i = 0; ((i < element_count) && (compare == 0)); i++)
+	{
+		compare = compare_elements_of_tuple2(tup1, tup2, tpl_d, ((element_ids == NULL) ? STATIC_POSITION(i) : element_ids[i]));
+
+		if(compare == -2) // this implies elements are not comparable
+			return -2;
+
+		// if cmp_dir is not NULL, then compare in default direction of the element
+		if(cmp_dir != NULL)
+			compare = compare * cmp_dir[i];
+	}
+	return compare;
+}
+
 uint64_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, positional_accessor pa, tuple_hasher* th)
 {
 	// if the element is not accessible, then fail
