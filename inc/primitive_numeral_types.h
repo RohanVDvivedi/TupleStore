@@ -12,6 +12,8 @@ int can_compare_primitive_numeral_type_infos(const data_type_info* dti_1, const 
 
 int compare_primitive_numeral_type(const user_value* e1, const data_type_info* dti_1, const user_value* e2, const data_type_info* dti_2);
 
+int compare_primitive_numeral_type2(const user_value* e1, const user_value* e2, const data_type_info* dti);
+
 int can_type_cast_primitive_numeral_type(const data_type_info* dti, const data_type_info* dti_from);
 
 int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, const user_value* e_from, const data_type_info* dti_from);

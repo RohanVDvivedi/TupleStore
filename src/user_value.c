@@ -150,6 +150,74 @@ int compare_user_value(const user_value* uval1, const data_type_info* dti1, cons
 	return compare_user_value_internal(uval1, dti1, uval2, dti2);
 }
 
+// before calling this function the dti1 and dti2 must pass this check : can_compare_user_value(dti1, dti2)
+static int compare_user_value_internal2(const user_value* uval1, const user_value* uval2, const data_type_info* dti)
+{
+	if(is_user_value_NULL(uval1) && is_user_value_NULL(uval2))
+		return 0;
+	else if(is_user_value_NULL(uval1) && !is_user_value_NULL(uval2))
+		return -1;
+	else if(!is_user_value_NULL(uval1) && is_user_value_NULL(uval2))
+		return 1;
+
+	if(is_primitive_numeral_type_info(dti)) // both are primitive types and are comparable
+		return compare_primitive_numeral_type2(uval1, uval2, dti);
+	else if(dti->type == TUPLE) // both are the same tuple types
+	{
+		int cmp = 0;
+		uint32_t element_count = get_element_count_for_user_value(uval1, dti);
+		for(uint32_t i = 0; i < element_count && cmp == 0; i++)
+		{
+			const data_type_info* child_dti = get_data_type_info_for_containee_of_container_without_data(dti, i);
+
+			user_value child_value1;
+			if(!get_containee_for_user_value(&child_value1, uval1, dti, i))
+				return -2;
+
+			user_value child_value2;
+			if(!get_containee_for_user_value(&child_value2, uval2, dti, i))
+				return -2;
+
+			cmp = compare_user_value_internal2(&child_value1, &child_value2, child_dti);
+		}
+		return cmp;
+	}
+	else // they both are a 9-combination of STRING, BLOB and ARRAY of comparable types
+	{
+		int cmp = 0;
+		uint32_t element_count1 = get_element_count_for_user_value(uval1, dti);
+		uint32_t element_count2 = get_element_count_for_user_value(uval2, dti);
+		uint32_t element_count = min(element_count1, element_count2);
+		for(uint32_t i = 0; i < element_count && cmp == 0; i++) // perform comparison over the minimum element count of both the containers
+		{
+			const data_type_info* child_dti = get_data_type_info_for_containee_of_container_without_data(dti, i);
+
+			user_value child_value1;
+			if(!get_containee_for_user_value(&child_value1, uval1, dti, i))
+				return -2;
+
+			user_value child_value2;
+			if(!get_containee_for_user_value(&child_value2, uval2, dti, i))
+				return -2;
+
+			cmp = compare_user_value_internal2(&child_value1, &child_value2, child_dti);
+		}
+		if(cmp == 0 && (element_count1 != element_count2))
+		{
+			if(element_count1 > element_count2)
+				cmp = 1;
+			else
+				cmp = -1;
+		}
+		return cmp;
+	}
+}
+
+int compare_user_value2(const user_value* uval1, const user_value* uval2, const data_type_info* dti)
+{
+	return compare_user_value_internal2(uval1, uval2, dti);
+}
+
 uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tuple_hasher* th)
 {
 	if(is_user_value_NULL(uval)) // no bytes to hash

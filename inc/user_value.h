@@ -67,6 +67,9 @@ int can_compare_user_value(const data_type_info* dti1, const data_type_info* dti
 
 int compare_user_value(const user_value* uval1, const data_type_info* dti1, const user_value* uval2, const data_type_info* dti2);
 
+// this function is added to skip the checks that ensure that the user_values can be compared, so that such checks can be discarded
+int compare_user_value2(const user_value* uval1, const user_value* uval2, const data_type_info* dti);
+
 #include<tuple_hasher.h>
 uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tuple_hasher* th);
 

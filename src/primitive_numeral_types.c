@@ -301,6 +301,39 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 	}
 }
 
+int compare_primitive_numeral_type2(const user_value* e1, const user_value* e2, const data_type_info* dti)
+{
+	if(is_user_value_NULL(e1) && is_user_value_NULL(e2))
+		return 0;
+	else if(is_user_value_NULL(e1) && !is_user_value_NULL(e2))
+		return -1;
+	else if(!is_user_value_NULL(e1) && is_user_value_NULL(e2))
+		return 1;
+
+	switch(dti->type)
+	{
+		case BIT_FIELD :
+			return compare_numbers(e1->bit_field_value, e2->bit_field_value);
+		case UINT :
+			return compare_numbers(e1->uint_value, e2->uint_value);
+		case INT :
+			return compare_numbers(e1->int_value, e2->int_value);
+		case FLOAT :
+		{
+			if(dti->size == sizeof(float))
+				return compare_numbers(e1->float_value, e2->float_value);
+			else if(dti->size == sizeof(double))
+				return compare_numbers(e1->double_value, e2->double_value);
+			else if(dti->size == sizeof(long double))
+				return compare_numbers(e1->long_double_value, e2->long_double_value);
+		}
+		case LARGE_UINT :
+			return compare_uint256(e1->large_uint_value, e2->large_uint_value);
+		default :
+			return -2;
+	}
+}
+
 int can_type_cast_primitive_numeral_type(const data_type_info* dti, const data_type_info* dti_from)
 {
 	return can_compare_primitive_numeral_type_infos(dti, dti_from);
