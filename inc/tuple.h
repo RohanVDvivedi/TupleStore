@@ -97,6 +97,9 @@ int compare_elements_of_tuple2(const void* tup1, const void* tup2, const tuple_d
 
 int compare_tuples2(const void* tup1, const void* tup2, const tuple_def* tpl_d, const positional_accessor* element_ids, const compare_direction* cmp_dir, uint32_t element_count);
 
+// function added just to support external merge sort
+int compare_user_values3(const user_value* uvals1, const user_value* uvals2, const data_type_info* dtis, const compare_direction* cmp_dir, uint32_t element_count);
+
 #include<tuple_hasher.h>
 
 // hash function for tuple and for an element inside the tuple at the specified position pa
