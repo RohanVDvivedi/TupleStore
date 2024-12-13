@@ -518,6 +518,10 @@ int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, positio
 
 int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_accessor* element_ids1, const void* tup2, const tuple_def* tpl_d2, const positional_accessor* element_ids2, const compare_direction* cmp_dir, uint32_t element_count)
 {
+	// edge case when comparing same types
+	if(tpl_d1 == tpl_d2 && element_ids1 == element_ids2)
+		return compare_tuples2(tup1, tup2, tpl_d2, element_ids2, cmp_dir, element_count);
+
 	int compare = 0;
 	for(uint32_t i = 0; ((i < element_count) && (compare == 0)); i++)
 	{
