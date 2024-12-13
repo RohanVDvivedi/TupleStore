@@ -510,7 +510,10 @@ int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, positio
 
 	// TODO : handle logic for custom compare function
 
-	return compare_user_value(&uval1, dti1, &uval2, dti2);
+	if(dti1 == dti2) // there is slight possibility of this to be true, in case of comparision between key entry, index entry and record entry of a bplus tree index
+		return compare_user_value2(&uval1, &uval2, dti2);
+	else
+		return compare_user_value(&uval1, dti1, &uval2, dti2);
 }
 
 int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_accessor* element_ids1, const void* tup2, const tuple_def* tpl_d2, const positional_accessor* element_ids2, const compare_direction* cmp_dir, uint32_t element_count)
