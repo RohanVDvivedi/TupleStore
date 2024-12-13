@@ -576,12 +576,12 @@ int compare_tuples2(const void* tup1, const void* tup2, const tuple_def* tpl_d, 
 	return compare;
 }
 
-int compare_user_values3(const user_value* uvals1, const user_value* uvals2, const data_type_info* dtis, const compare_direction* cmp_dir, uint32_t element_count)
+int compare_user_values3(const user_value* uvals1, const user_value* uvals2, const data_type_info** dtis, const compare_direction* cmp_dir, uint32_t element_count)
 {
 	int compare = 0;
 	for(uint32_t i = 0; ((i < element_count) && (compare == 0)); i++)
 	{
-		compare = compare_user_value2(uvals1 + i, uvals2 + i, dtis + i);
+		compare = compare_user_value2(uvals1 + i, uvals2 + i, dtis[i]);
 
 		if(compare == -2) // this implies elements are not comparable
 			return -2;
