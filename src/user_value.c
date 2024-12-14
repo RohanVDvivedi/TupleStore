@@ -150,7 +150,6 @@ int compare_user_value(const user_value* uval1, const data_type_info* dti1, cons
 	return compare_user_value_internal(uval1, dti1, uval2, dti2);
 }
 
-// before calling this function the dti1 and dti2 must pass this check : can_compare_user_value(dti1, dti2)
 static int compare_user_value_internal2(const user_value* uval1, const user_value* uval2, const data_type_info* dti)
 {
 	if(is_user_value_NULL(uval1) && is_user_value_NULL(uval2))
