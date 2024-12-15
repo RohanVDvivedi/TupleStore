@@ -27,7 +27,7 @@ It only provides primitive utility functions/structures to systematically organi
  * ***Once you have installed from source, you may discard the build by*** `make clean`
 
 ## Using The library
- * add `-ltuplestore -lserint -lcutlery` linker flag, while compiling your application
+ * add `-ltuplestore -lcutlery` linker flag, while compiling your application
  * do not forget to include appropriate public api headers as and when needed. this includes
    * `#include<tuple_def.h>`
    * `#include<tuple.h>`
