@@ -198,15 +198,23 @@ static int set_element_in_tuple_INTERNAL(const data_type_info* dti, positional_a
 	if(child_data == NULL)
 		return 0;
 
-	uint32_t container_old_size = get_size_for_type_info(dti, data);
-	uint32_t child_old_size = get_size_of_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
-
-	int result = set_element_in_tuple_INTERNAL(child_dti, NEXT_POSITION(pa), child_data, value, max_size_increment_allowed, is_inner_most_dti_variable_sized);
-
-	if(result && is_inner_most_dti_variable_sized)
+	int result = 0;
+	if(is_inner_most_dti_variable_sized) // if the inner most dti is variable sized, then parent size needs to be updated
 	{
-		uint32_t child_new_size = get_size_of_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
-		overwrite_size_for_container_type_info_with_size_in_prefix(dti, data, container_old_size - child_old_size + child_new_size);
+		uint32_t container_old_size = get_size_for_type_info(dti, data);
+		uint32_t child_old_size = get_size_of_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
+
+		result = set_element_in_tuple_INTERNAL(child_dti, NEXT_POSITION(pa), child_data, value, max_size_increment_allowed, is_inner_most_dti_variable_sized);
+
+		if(result)
+		{
+			uint32_t child_new_size = get_size_of_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
+			overwrite_size_for_container_type_info_with_size_in_prefix(dti, data, container_old_size - child_old_size + child_new_size);
+		}
+	}
+	else
+	{
+		result = set_element_in_tuple_INTERNAL(child_dti, NEXT_POSITION(pa), child_data, value, max_size_increment_allowed, is_inner_most_dti_variable_sized);
 	}
 
 	return result;
