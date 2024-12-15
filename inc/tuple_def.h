@@ -25,7 +25,7 @@ struct tuple_size_def
 
 	// ------ attributes below this point only used if is_variable_sized = 1 and has_size_in_prefix = 0
 
-	int has_element_count_in_prefix; // -> need to do more work, to know the size if has_size_inprefix = 0, but has_element_count_in_prefix = 1
+	int has_element_count_in_prefix; // -> need to do more work, to know the size if has_size_in_prefix = 0, but has_element_count_in_prefix = 1
 
 	// below attributes are only required when is_variable_sized = 1, has_size_in_prefix = 0, and has_element_count_in_prefix = 1
 	// this also implies that the element_count is variable, but the individual element is fixed size (may or may not be nullable)
