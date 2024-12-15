@@ -497,8 +497,10 @@ int exists_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_
 
 int swap_tuples_slotted_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t i1, uint32_t i2)
 {
+	uint32_t tuple_count_val =  get_tuple_count_slotted_page(page, page_size);
+
 	// index out of bounds
-	if(i1 >= get_tuple_count_slotted_page(page, page_size) || i2 >= get_tuple_count_slotted_page(page, page_size))
+	if(i1 >= tuple_count_val || i2 >= tuple_count_val)
 		return 0;
 
 	if(i1 == i2) // nothing to be done
@@ -507,15 +509,9 @@ int swap_tuples_slotted_page(void* page, uint32_t page_size, const tuple_size_de
 	void* i1th_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, i1);
 	void* i2th_tuple_offset = page + get_offset_to_ith_tuple_offset(page, page_size, i2);
 
-	uint32_t i1th_tuple_offset_val = get_offset_to_ith_tuple(page, page_size, i1);
-	uint32_t i2th_tuple_offset_val = get_offset_to_ith_tuple(page, page_size, i2);
-
-	if(i1th_tuple_offset_val == 0 && i2th_tuple_offset_val == 0)  // both the tuples are tomb stones, nothing to be done
-		return 1;
-
 	// swap tuple offsets
-	write_value_to_page(i1th_tuple_offset, page_size, i2th_tuple_offset_val);
-	write_value_to_page(i2th_tuple_offset, page_size, i1th_tuple_offset_val);
+	// doesn't matter they are NULL or not, the effect is the same
+	swap_values_on_page(i1th_tuple_offset, i2th_tuple_offset, page_size);
 
 	return 1;
 }

@@ -37,4 +37,9 @@ static inline void write_value_to_page(void* value, uint32_t page_size, uint32_t
 	serialize_uint32(value, get_value_size_on_page(page_size), to_write);
 }
 
+static inline void swap_values_on_page(void* value1, void* value2, uint32_t page_size)
+{
+	memory_swap(value1, value2, get_value_size_on_page(page_size));
+}
+
 #endif
