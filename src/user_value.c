@@ -181,6 +181,26 @@ static int compare_user_value_internal2(const user_value* uval1, const user_valu
 		}
 		return cmp;
 	}
+	else if(dti->type == STRING || dti->type == BLOB)
+	{
+		int cmp = 0;
+		uint32_t element_count1 = get_element_count_for_user_value(uval1, dti);
+		uint32_t element_count2 = get_element_count_for_user_value(uval2, dti);
+		uint32_t element_count = min(element_count1, element_count2);
+
+		for(uint32_t i = 0; i < element_count && cmp == 0; i++)
+			cmp = compare_numbers( (*((const unsigned char*)(uval1->string_or_blob_value + i))), (*((const unsigned char*)(uval2->string_or_blob_value + i))) );
+
+		if(cmp == 0 && (element_count1 != element_count2))
+		{
+			if(element_count1 > element_count2)
+				cmp = 1;
+			else
+				cmp = -1;
+		}
+
+		return cmp;
+	}
 	else // they both are a 9-combination of STRING, BLOB and ARRAY of comparable types
 	{
 		int cmp = 0;
