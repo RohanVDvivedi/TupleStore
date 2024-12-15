@@ -46,7 +46,7 @@ static inline void swap_values_on_page(void* value1, void* value2, uint32_t page
 	char* v1 = value1;
 	char* v2 = value2;
 	uint32_t bytes_to_swap = get_value_size_on_page(page_size);
-	for(bytes_to_swap > 0)
+	while(bytes_to_swap > 0)
 	{
 		(*v1) ^= (*v2);
 		(*v2) ^= (*v1);
