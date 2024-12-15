@@ -39,7 +39,22 @@ static inline void write_value_to_page(void* value, uint32_t page_size, uint32_t
 
 static inline void swap_values_on_page(void* value1, void* value2, uint32_t page_size)
 {
-	memory_swap(value1, value2, get_value_size_on_page(page_size));
+	//memory_swap(value1, value2, get_value_size_on_page(page_size));
+
+	// opting for an inline implementation over memory_swap function call
+
+	char* v1 = value1;
+	char* v2 = value2;
+	uint32_t bytes_to_swap = get_value_size_on_page(page_size);
+	for(bytes_to_swap > 0)
+	{
+		(*v1) ^= (*v2);
+		(*v2) ^= (*v1);
+		(*v1) ^= (*v2);
+		v1++;
+		v2++;
+		bytes_to_swap--;
+	}
 }
 
 #endif
