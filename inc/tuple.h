@@ -93,6 +93,10 @@ enum compare_direction
 // returns -2 if they are not comparable OR if one of the element is out if bounds
 int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_accessor* element_ids1, const void* tup2, const tuple_def* tpl_d2, const positional_accessor* element_ids2, const compare_direction* cmp_dir, uint32_t element_count);
 
+int compare_element_with_user_value(const void* tup1, const tuple_def* tpl_d1, positional_accessor pa1, const user_value* uval2, const data_type_info* dti2);
+
+int compare_tuple_with_user_value(const void* tup1, const tuple_def* tpl_d1, const positional_accessor* element_ids1, const user_value* uvals2, data_type_info const * const * dtis2, const compare_direction* cmp_dir, uint32_t element_count);
+
 int compare_elements_of_tuple2(const void* tup1, const void* tup2, const tuple_def* tpl_d, positional_accessor pa);
 
 int compare_tuples2(const void* tup1, const void* tup2, const tuple_def* tpl_d, const positional_accessor* element_ids, const compare_direction* cmp_dir, uint32_t element_count);

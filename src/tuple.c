@@ -545,6 +545,43 @@ int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_a
 	return compare;
 }
 
+int compare_element_with_user_value(const void* tup1, const tuple_def* tpl_d1, positional_accessor pa1, const user_value* uval2, const data_type_info* dti2)
+{
+	// if the element is not accessible, then fail
+	const data_type_info* dti1 = get_type_info_for_element_from_tuple_def(tpl_d1, pa1);
+	if(dti1 == NULL)
+		return -2;
+
+	// get the user value for this element
+	user_value uval1;
+	if(!get_value_from_element_from_tuple(&uval1, tpl_d1, pa1, tup1))
+		return -2;
+
+	// TODO : handle logic for custom compare function
+
+	if(dti1 == dti2) // there is slight possibility of this to be true, in case of comparision between key entry, index entry and record entry of a bplus tree index
+		return compare_user_value2(&uval1, uval2, dti2);
+	else
+		return compare_user_value(&uval1, dti1, uval2, dti2);
+}
+
+int compare_tuple_with_user_value(const void* tup1, const tuple_def* tpl_d1, const positional_accessor* element_ids1, const user_value* uvals2, data_type_info const * const * dtis2, const compare_direction* cmp_dir, uint32_t element_count)
+{
+	int compare = 0;
+	for(uint32_t i = 0; ((i < element_count) && (compare == 0)); i++)
+	{
+		compare = compare_element_with_user_value(tup1, tpl_d1, ((element_ids1 == NULL) ? STATIC_POSITION(i) : element_ids1[i]), uvals2 + i, dtis2[i]);
+
+		if(compare == -2) // this implies elements are not comparable
+			return -2;
+
+		// if cmp_dir is not NULL, then compare in default direction of the element
+		if(cmp_dir != NULL)
+			compare = compare * cmp_dir[i];
+	}
+	return compare;
+}
+
 int compare_elements_of_tuple2(const void* tup1, const void* tup2, const tuple_def* tpl_d, positional_accessor pa)
 {
 	// if the element is not accessible, then fail
