@@ -48,9 +48,10 @@ static inline void swap_values_on_page(void* value1, void* value2, uint32_t page
 	uint32_t bytes_to_swap = get_value_size_on_page(page_size);
 	while(bytes_to_swap > 0)
 	{
-		(*v1) ^= (*v2);
-		(*v2) ^= (*v1);
-		(*v1) ^= (*v2);
+		const char temp = (*v1);
+		(*v1) = (*v2);
+		(*v2) = temp;
+
 		v1++;
 		v2++;
 		bytes_to_swap--;
