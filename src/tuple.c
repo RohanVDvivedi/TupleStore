@@ -339,7 +339,7 @@ int can_expand_element_count_for_element_in_tuple(const tuple_def* tpl_d, positi
 	return 0;
 }
 
-int expand_element_count_for_element_in_tuple_INTERNAL(const data_type_info* dti, positional_accessor pa, void* data, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed)
+static int expand_element_count_for_element_in_tuple_INTERNAL(const data_type_info* dti, positional_accessor pa, void* data, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed)
 {
 	// loop termination cases
 	{
@@ -438,7 +438,7 @@ int can_discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positiona
 	return 0;
 }
 
-int discard_elements_from_element_in_tuple_INTERNAL(const data_type_info* dti, positional_accessor pa, void* data, uint32_t index, uint32_t slots)
+static int discard_elements_from_element_in_tuple_INTERNAL(const data_type_info* dti, positional_accessor pa, void* data, uint32_t index, uint32_t slots)
 {
 	// loop termination cases
 	{
