@@ -256,7 +256,8 @@ int insert_tuple_slotted_page(void* page, uint32_t page_size, const tuple_size_d
 	// get the new tuple count value after the append
 	uint32_t tuple_count_val = get_tuple_count_slotted_page(page, page_size);
 
-	// TODO
+	// right rotate the offsets array at index, by the size of offset, to bring the last offset at the "right" index
+	memory_right_rotate(page + get_offset_to_ith_tuple_offset(page, page_size, index), (tuple_count_val - index) * get_value_size_on_page(page_size), get_value_size_on_page(page_size));
 }
 
 int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple)
