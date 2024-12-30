@@ -173,6 +173,11 @@ int can_append_tuple_fixed_array_page(const void* page, uint32_t page_size, cons
 	return get_tuple_count_fixed_array_page(page, page_size) < get_tuple_capacity(page, page_size, tpl_sz_d);
 }
 
+int insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple)
+{
+	// TODO
+}
+
 int update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple)
 {
 	// check for: index out of bounds

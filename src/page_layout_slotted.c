@@ -239,6 +239,11 @@ int can_append_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 	return get_space_to_be_occupied_by_tuple_slotted_page(page_size, tpl_sz_d, external_tuple) <= get_free_space_slotted_page(page, page_size);
 }
 
+int insert_tuple_slotted_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple)
+{
+	// TODO
+}
+
 int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple)
 {
 	if(!can_update_tuple_slotted_page(page, page_size, tpl_sz_d, index, external_tuple))
