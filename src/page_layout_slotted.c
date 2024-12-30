@@ -254,10 +254,17 @@ int insert_tuple_slotted_page(void* page, uint32_t page_size, const tuple_size_d
 	// so our task now is to bring it to the "right" index, by any means possible
 
 	// get the new tuple count value after the append
+	// all modifications to tuple_count are done, so it can be cached
 	uint32_t tuple_count_val = get_tuple_count_slotted_page(page, page_size);
+
+	// if the external_tuple was to be placed at the last, then return success, immediately
+	if(index == tuple_count_val - 1)
+		return 1;
 
 	// right rotate the offsets array at index, by the size of offset, to bring the last offset at the "right" index
 	memory_right_rotate(page + get_offset_to_ith_tuple_offset(page, page_size, index), (tuple_count_val - index) * get_value_size_on_page(page_size), get_value_size_on_page(page_size));
+
+	return 1;
 }
 
 int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple)

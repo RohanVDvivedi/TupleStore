@@ -188,9 +188,32 @@ int insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_si
 	// so our task now is to bring it to the "right" index, by any means possible
 
 	// get the new tuple count value after the append
+	// all modifications to tuple_count are done, so it can be cached
 	uint32_t tuple_count_val = get_tuple_count_fixed_array_page(page, page_size);
 
-	// TODO
+	// if the external_tuple was to be placed at the last, then return success, immediately
+	if(index == tuple_count_val - 1)
+		return 1;
+
+	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
+
+	{
+		// bit value to be placed at the index location
+		int bit_at_index = get_bit(is_valid, tuple_count_val - 1);
+
+		for(uint32_t i = tuple_count_val - 1; i > index; i--)
+		{
+			uint32_t i_1_bit = get_bit(is_valid, i - 1);
+			i_1_bit ? set_bit(is_valid, i) : reset_bit(is_valid, i);
+		}
+
+		bit_at_index ? set_bit(is_valid, index) : reset_bit(is_valid, index);
+	}
+
+	// right rotate the tuple array at index, by the size of tuple, to bring the last offset at the "right" index
+	memory_right_rotate(page + get_offset_to_ith_tuple(page, page_size, index), (tuple_count_val - index) * tpl_sz_d->size, tpl_sz_d->size);
+
+	return 1;
 }
 
 int update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple)

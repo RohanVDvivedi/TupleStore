@@ -113,24 +113,6 @@ int insert_tuple_on_page(void* page, uint32_t page_size, const tuple_size_def* t
 	return 0;
 }
 
-/*int insert_tuple_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple)
-{
-	// a valid index is, 0 <= index <= tuple_count
-	if(index > get_tuple_count_on_page(page, page_size, tpl_sz_d))
-		return 0;
-
-	// attempt an append and fail, if it fails
-	if(!append_tuple_on_page(page, page_size, tpl_sz_d, external_tuple))
-		return 0;
-
-	// tuple always gets appended at the end of the page, on an append call
-	// so swap it with its previous, until is it not at the right index
-	for(uint32_t external_tuple_index = get_tuple_count_on_page(page, page_size, tpl_sz_d) - 1; external_tuple_index != index; external_tuple_index--)
-		swap_tuples_on_page(page, page_size, tpl_sz_d, external_tuple_index, external_tuple_index - 1);
-
-	return 1;
-}*/
-
 int can_insert_tuple_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple)
 {
 	// a valid index is, 0 <= index <= tuple_count
