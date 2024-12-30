@@ -103,6 +103,18 @@ int can_append_tuple_on_page(const void* page, uint32_t page_size, const tuple_s
 
 int insert_tuple_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple)
 {
+	switch(get_page_layout_type(tpl_sz_d))
+	{
+		case SLOTTED_PAGE_LAYOUT :
+			return insert_tuple_slotted_page(page, page_size, tpl_sz_d, index, external_tuple);
+		case FIXED_ARRAY_PAGE_LAYOUT :
+			return insert_tuple_fixed_array_page(page, page_size, tpl_sz_d, index, external_tuple);
+	}
+	return 0;
+}
+
+/*int insert_tuple_on_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple)
+{
 	// a valid index is, 0 <= index <= tuple_count
 	if(index > get_tuple_count_on_page(page, page_size, tpl_sz_d))
 		return 0;
@@ -117,7 +129,7 @@ int insert_tuple_on_page(void* page, uint32_t page_size, const tuple_size_def* t
 		swap_tuples_on_page(page, page_size, tpl_sz_d, external_tuple_index, external_tuple_index - 1);
 
 	return 1;
-}
+}*/
 
 int can_insert_tuple_on_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple)
 {
