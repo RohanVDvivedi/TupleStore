@@ -17,6 +17,8 @@ int append_tuple_slotted_page(void* page, uint32_t page_size, const tuple_size_d
 
 int can_append_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, const void* external_tuple);
 
+int insert_tuple_slotted_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple);
+
 int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple);
 
 int can_update_tuple_slotted_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple);
