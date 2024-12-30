@@ -241,6 +241,21 @@ int can_append_tuple_slotted_page(const void* page, uint32_t page_size, const tu
 
 int insert_tuple_slotted_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index, const void* external_tuple)
 {
+	// a valid index is, 0 <= index <= tuple_count
+	if(index > get_tuple_count_slotted_page(page, page_size))
+		return 0;
+
+	// attempt an append and fail, if it fails
+	if(!append_tuple_slotted_page(page, page_size, tpl_sz_d, external_tuple))
+		return 0;
+
+	// tuple always gets appended at the end of the page, on an append call
+
+	// so our task now is to bring it to the "right" index, by any means possible
+
+	// get the new tuple count value after the append
+	uint32_t tuple_count_val = get_tuple_count_slotted_page(page, page_size);
+
 	// TODO
 }
 
