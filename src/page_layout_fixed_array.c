@@ -213,7 +213,7 @@ int insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_si
 	}
 
 	// right rotate the tuple array at index, by the size of tuple, to bring the last offset at the "right" index
-	memory_right_rotate(page + get_offset_to_ith_tuple(page, page_size, index), (tuple_count_val - index) * tpl_sz_d->size, tpl_sz_d->size);
+	memory_right_rotate(page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index), (tuple_count_val - index) * tpl_sz_d->size, tpl_sz_d->size);
 
 	return 1;
 }
