@@ -195,14 +195,16 @@ int insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_si
 	if(index == tuple_count_val - 1)
 		return 1;
 
-	char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
-
+	// right rotate the is_valid bitmap by 1 bit at index location
 	{
+		char* is_valid = page + get_offset_to_is_valid_bitmap(page, page_size);
+
 		// bit value to be placed at the index location
 		int bit_at_index = get_bit(is_valid, tuple_count_val - 1);
 
 		for(uint32_t i = tuple_count_val - 1; i > index; i--)
 		{
+			// copy bit from index = i-1, and place i at index = i
 			uint32_t i_1_bit = get_bit(is_valid, i - 1);
 			i_1_bit ? set_bit(is_valid, i) : reset_bit(is_valid, i);
 		}
