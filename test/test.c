@@ -131,6 +131,9 @@ int main()
 	// create tuple_def for the test cases
 	tuple_def* def = get_tuple_definition();
 
+	// --------------- utility call
+	printf("\nmax_tuple_size accomodatable = %"PRIu32" \n", get_maximum_tuple_size_accomodatable_on_page(sizeof(hdr), PAGE_SIZE, def->size_def));
+
 	// ---------------	DECLARE TEMP variables
 
 	// to build intermediate tuples (only 1 at a time)
