@@ -1,5 +1,7 @@
 TASKS PICKED
 
+ * implement get_maximum_tuple_size_for_fixed_array/slotted_page(uint32_t page_header_size, uint32_t page_size) functions
+
 1 NEW TYPE TASKS
 
  *1*
