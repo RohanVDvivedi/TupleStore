@@ -138,6 +138,17 @@ uint32_t get_maximum_tuple_count_slotted_page(uint32_t page_header_size, uint32_
 	return get_space_to_be_allotted_to_all_tuples_slotted_page(page_header_size, page_size) / (get_minimum_tuple_size_using_tuple_size_def(tpl_sz_d) + get_additional_space_overhead_per_tuple_slotted_page(page_size));
 }
 
+uint32_t get_maximum_tuple_size_slotted_page(uint32_t page_header_size, uint32_t page_size)
+{
+	uint32_t total_space_for_only_tuple = get_space_to_be_allotted_to_all_tuples_slotted_page(page_header_size, page_size);
+	uint32_t space_overhead_for_only_tuple = get_additional_space_overhead_per_tuple_slotted_page(page_size);
+
+	if(total_space_for_only_tuple > space_overhead_for_only_tuple)
+		return total_space_for_only_tuple - space_overhead_for_only_tuple;
+
+	return 0;
+}
+
 int init_slotted_page(void* page, uint32_t page_size, uint32_t page_header_size, const tuple_size_def* tpl_sz_d)
 {
 	// the page must be able to accomodate atleast 1 tuple

@@ -90,6 +90,14 @@ uint32_t get_maximum_tuple_count_fixed_array_page(uint32_t page_header_size, uin
 	return tuple_capacity;
 }
 
+uint32_t get_maximum_tuple_size_fixed_array_page(uint32_t page_header_size, uint32_t page_size)
+{
+	uint32_t space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes = page_size - (get_value_size_on_page(page_size) + page_header_size + (get_value_size_on_page(page_size) * 2));
+
+	// (x - 1), is done here to accomodate the is_valid bit in the one byte
+	return space_allotted_to_all_tuples_PLUS_is_valid_bitmap_size_in_bytes - 1;
+}
+
 int init_fixed_array_page(void* page, uint32_t page_size, uint32_t page_header_size, const tuple_size_def* tpl_sz_d)
 {
 	// the page must be able to accomodate atleast 1 tuple
