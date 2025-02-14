@@ -7,6 +7,8 @@ uint32_t get_minimum_page_size_for_fixed_array_page(uint32_t page_header_size, c
 
 uint32_t get_maximum_tuple_count_fixed_array_page(uint32_t page_header_size, uint32_t page_size, const tuple_size_def* tpl_sz_d);
 
+uint32_t get_maximum_tuple_size_fixed_array_page(uint32_t page_header_size, uint32_t page_size);
+
 int init_fixed_array_page(void* page, uint32_t page_size, uint32_t page_header_size, const tuple_size_def* tpl_sz_d);
 
 uint32_t get_tuple_count_fixed_array_page(const void* page, uint32_t page_size);
