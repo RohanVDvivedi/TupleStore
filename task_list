@@ -1,4 +1,6 @@
 TASKS PICKED
+ * calculate by how much can a tuple_def's accessor's attribute can it expand by
+    * if fixed sized return 0
 
 1 NEW TYPE TASKS
 
