@@ -40,6 +40,10 @@ const data_type_info* get_type_info_for_element_from_tuple_def(const tuple_def* 
 int are_all_positions_accessible_for_tuple_def(const tuple_def* tpl_d, const positional_accessor* element_ids, uint32_t element_count);
 int are_all_positions_accessible_for_tuple(const void* tupl, const tuple_def* tpl_d, const positional_accessor* element_ids, uint32_t element_count);
 
+// get maximum size increment that is allowable for an element in the tuple
+// returns 0 for fixed_sized elements, NULL elements and out of bounds indexes
+uint32_t get_max_size_increment_allowed_for_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl);
+
 // tupl must be initialized using init_tuple, before you call this function
 int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl, const user_value* value, uint32_t max_size_increment_allowed);
 

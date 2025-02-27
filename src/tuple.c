@@ -101,6 +101,54 @@ int are_all_positions_accessible_for_tuple(const void* tupl, const tuple_def* tp
 	return 1;
 }
 
+uint32_t get_max_size_increment_allowed_for_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl)
+{
+	// start with maximum possible value
+	uint32_t max_size_increment_allowed = UINT32_MAX;
+
+	const data_type_info* dti = tpl_d->type_info;
+	const void* data = tupl;
+
+	while(1)
+	{
+		// if fixed sized dti then return 0, they can not grab more space, even if they want to
+		// weeds out bit_fields and primitive numeral type infos and fixed sized containers
+		if(!is_variable_sized_type_info(dti))
+			return 0;
+
+		// actual compuatation, since this is a variable sized element for sure, due to the check above
+		// it's dti has max_size attribute set
+		max_size_increment_allowed = min(max_size_increment_allowed, dti->max_size - get_size_for_type_info(dti, data));
+
+		// loop termination cases
+		{
+			// no more nesting, so break out
+			if(IS_SELF(pa))
+				break;
+		}
+
+		data_positional_info containee_pos_info = INVALID_DATA_POSITIONAL_INFO;
+
+		if(!is_container_type_info(dti))
+			return 0;
+
+		if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
+			return 0;
+
+		const void* child_data = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
+		const data_type_info* child_dti = containee_pos_info.type_info;
+
+		if(child_data == NULL)
+			return 0;
+
+		dti = child_dti;
+		data = child_data;
+		pa = NEXT_POSITION(pa);
+	}
+
+	return max_size_increment_allowed;
+}
+
 int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl, const user_value* value, uint32_t max_size_increment_allowed)
 {
 	const data_type_info* dti = tpl_d->type_info;
