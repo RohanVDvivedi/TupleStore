@@ -1,6 +1,47 @@
 TASKS PICKED
  * calculate by how much can a tuple_def's accessor's attribute can it expand by
     * if fixed sized return 0
+    * pseudocode (copied get_value_from_element_from_tuple)
+{
+  uint32_t result = UINT32_MAX;
+  const data_type_info* dti = tpl_d->type_info;
+  const void* data = tupl;
+
+  while(1)
+  {
+    // if fixed sized dti return 0 -> weeds out bit_fields and primitive numeral type infos and fixed sized containers
+
+    // do result = min(result, max_size - current_size);
+
+    // loop termination cases
+    {
+      // result is self
+      if(IS_SELF(pa))
+        break;
+    }
+
+    data_positional_info containee_pos_info = INVALID_DATA_POSITIONAL_INFO;
+
+    if(!is_container_type_info(dti))
+      return 0;
+
+    if(pa.positions[0] >= get_element_count_for_container_type_info(dti, data))
+      return 0;
+
+    const void* child_data = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, pa.positions[0], &containee_pos_info);
+    const data_type_info* child_dti = containee_pos_info.type_info;
+
+    if(child_data == NULL)
+      return 0;
+
+    dti = child_dti;
+    data = child_data;
+    pa = NEXT_POSITION(pa);
+  }
+
+  return result;
+}
+
 
 1 NEW TYPE TASKS
 
