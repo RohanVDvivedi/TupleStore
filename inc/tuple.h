@@ -24,6 +24,14 @@ struct positional_accessor
 #define STATIC_POSITION(...) ((positional_accessor){ .positions_length = sizeof((uint32_t []){ __VA_ARGS__ })/sizeof(uint32_t), .positions = (uint32_t []){ __VA_ARGS__ } })
 // usage STATIC_POSITION(a, b, c, d)
 
+// below is a utility function to append t to pa, this allows someone to access a nexted element in pa, with a relative index of t
+// this function assumes that pa->positions is large enough to accomodate relative position in t
+static inline void append_positions(positional_accessor* pa, positional_accessor t)
+{
+	memory_move(pa->positions + pa->positions_length, t.positions, t.positions_length * sizeof(uint32_t));
+	pa->positions_length += t.positions_length;
+}
+
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ structure and macros to index elements inside a tuple nestedly ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
