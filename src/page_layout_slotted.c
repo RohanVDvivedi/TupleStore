@@ -620,9 +620,9 @@ static int compare_by_offset_descending(const void* a, const void* b)
 }
 
 data_definitions_value_arraylist(tuple_offset_indexed_list, tuple_offset_indexed)
-declarations_value_arraylist(tuple_offset_indexed_list, tuple_offset_indexed)
+declarations_value_arraylist(tuple_offset_indexed_list, tuple_offset_indexed, static inline)
 #define EXPANSION_FACTOR 1.5
-function_definitions_value_arraylist(tuple_offset_indexed_list, tuple_offset_indexed)
+function_definitions_value_arraylist(tuple_offset_indexed_list, tuple_offset_indexed, static inline)
 
 int run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, int* memory_allocation_error)
 {
