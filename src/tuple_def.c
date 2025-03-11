@@ -114,6 +114,7 @@ uint32_t get_tuple_size_from_stream_using_tuple_size_def(const tuple_size_def* t
 	if((*bytes_read) < bytes_to_read)
 		return 0;
 
+	// we have read enough data from the stream to now decipher the tuple that is comming next, and whose part of which is stored in the buffer
 	return get_tuple_size_using_tuple_size_def(tpl_sz_d, buffer);
 }
 
