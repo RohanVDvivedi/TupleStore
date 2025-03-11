@@ -75,7 +75,10 @@ uint32_t get_tuple_size_using_tuple_size_def(const tuple_size_def* tpl_sz_d, con
 
 	// if has size in prefix read that, and return it
 	if(tpl_sz_d->has_size_in_prefix)
-		return read_value_from_page(tupl, tpl_sz_d->max_size);
+	{
+		uint32_t size = read_value_from_page(tupl, tpl_sz_d->max_size);
+		return (size == 0) ? tpl_sz_d->max_size : size; // a variable sized element is never 0 sized (because it is storing size in prefix), it is probably max_size
+	}
 
 	// else read element_count
 	uint32_t element_count = read_value_from_page(tupl, tpl_sz_d->max_size);
