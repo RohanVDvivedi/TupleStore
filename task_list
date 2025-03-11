@@ -1,4 +1,11 @@
 TASKS PICKED
+ * compare strings based on utf8 encoding
+   * built a cutlery util to parse a buffer and produce the first uint32_t utf8 character encoding from it, return 0, if the stored bytes do not represent a utf8 character
+
+ * need a function in tuple_def to get the size of a tuple from reading the prefix of object into a stream
+    api something like uin32_t get_tuple_size_from_stream_using_tuple_def(tuple_def* tpl_d, void* buffer, uint32_t* buffer_size, void* context, uint32_t read_from_stream(void* context_p, void* data, uint32_t data_size));
+    uin32_t get_tuple_size_from_stream_using_tuple_size_def(tuple_def* tpl_d, void* buffer, uint32_t* buffer_size, void* context_p, uint32_t read_from_stream(void* context_p, void* data, uint32_t data_size));
+    here the buffer must atleast be 4 bytes long and buffer_size will be set to the number of bytes read from the stream, no bytes will be read from a fixed length tuple_def
 
 1 NEW TYPE TASKS
 
