@@ -96,6 +96,16 @@ uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
 	return get_tuple_size_using_tuple_size_def(&(tpl_d->size_def), tupl);
 }
 
+uint32_t get_tuple_size_from_stream_using_tuple_size_def(const tuple_size_def* tpl_sz_d, void* buffer, uint32_t* buffer_size, void* context, uint32_t (*read_from_stream)(void* context_p, void* data, uint32_t data_size))
+{
+	// TODO
+}
+
+uint32_t get_tuple_size_from_stream(const tuple_def* tpl_d, void* buffer, uint32_t* buffer_size, void* context, uint32_t (*read_from_stream)(void* context_p, void* data, uint32_t data_size))
+{
+	return get_tuple_size_from_stream_using_tuple_size_def(&(tpl_d->size_def), buffer, buffer_size, context, read_from_stream);
+}
+
 int is_variable_sized_tuple_size_def(const tuple_size_def* tuple_size_d)
 {
 	return tuple_size_d->is_variable_sized;
