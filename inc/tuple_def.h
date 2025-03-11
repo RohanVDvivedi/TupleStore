@@ -58,6 +58,10 @@ int initialize_tuple_size_def(tuple_size_def* tuple_size_d, data_type_info* dti)
 
 uint32_t get_tuple_size_using_tuple_size_def(const tuple_size_def* tpl_sz_d, const void* tupl);
 
+// only minimal data required to decipher the size of the tuple is read from the stream into buffer and the size will be returned
+// the buffer will have to be atleast 4 bytes long in the worst case, and buffer size will contain the bytes read from stream at the end of the function call this could very well be 0
+uint32_t get_tuple_size_from_stream_using_tuple_size_def(const tuple_size_def* tpl_sz_d, void* buffer, uint32_t* buffer_size, void* context, uint32_t (*read_from_stream)(void* context_p, void* data, uint32_t data_size));
+
 int is_variable_sized_tuple_size_def(const tuple_size_def* tuple_size_d);
 
 uint32_t get_minimum_tuple_size_using_tuple_size_def(const tuple_size_def* tuple_size_d);
@@ -81,6 +85,10 @@ void print_tuple_size_def(const tuple_size_def* tuple_size_d);
 int initialize_tuple_def(tuple_def* tuple_d, data_type_info* dti);
 
 uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl);
+
+// only minimal data required to decipher the size of the tuple is read from the stream into buffer and the size will be returned
+// the buffer will have to be atleast 4 bytes long in the worst case, and buffer size will contain the bytes read from stream at the end of the function call this could very well be 0
+uint32_t get_tuple_size_from_stream(const tuple_def* tpl_d, void* buffer, uint32_t* buffer_size, void* context, uint32_t (*read_from_stream)(void* context_p, void* data, uint32_t data_size));
 
 int is_variable_sized_tuple_def(const tuple_def* tuple_d);
 
