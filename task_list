@@ -32,6 +32,9 @@ TASKS PICKED
       }
    }
    * this function can be used to build custom comparators, hash functions, printing and object streaming (to network) functions
+   * a corresponding function to iterate over the complete type
+   void iterate_over_all_element_typs(const tuple_def* tpl_d, void* context_p, int (*operate_on_element_type)(void* context_p, const tuple_def* tpl_d, const positonal_accessor pa, const data_type_info* dti_p));
+   * can be used to validate types for any specific use case
 
  *1*
   * add hash_tables for type_name based type casting, comparing and hashing
