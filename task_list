@@ -5,6 +5,32 @@ TASKS PICKED
   * compare strings based on utf8 encoding
    * need cutlery util for this (dependency yet to be fulfilled)
 
+  * need some way to iterate over all the attributes of the tuple_def
+    * void iterate_over_all_elements(const tuple_def* tpl_d, const void* tupl, void* context_p, int (*operate_on_element)(void* context_p, const tuple_def* tpl_d, const positonal_accessor pa, const data_type_info* dti_p, const user_value* ele));
+      return value of the operate_on_element
+         0 -> exit iteration function                               => call return;
+         1 -> go to uncle    (skip all children and the siblings)   => pop last position and then increment the top, then continue
+         2 -> go to sibling  (skip all the children)                => increment the top, then continue
+         3 -> go to children (go deeper, to the children)           => push 0 only if the top is container, else pop and then increment the top, then continue
+   pseudocode()
+   {
+      pa = SELF;
+      while(1)
+      {
+        if(pa != valid) // due to out of bounds for the element
+          pop(pa);
+          inc_top(pa);
+          continue;
+        res = operate(pa);
+        switch(res)
+          default:
+          EXIT : return;
+          GO_TO_UNCLE : pop(pa); inc_top(pa); continue;
+          GO_TO_SIBLING OR if the current element is NULL : inc_top(pa); continue;
+          GO_TO_CHILDREN : if top(pa) is container and pa has 1 more in capacity; then push(0); else GO_TO_SIBLING; continue;
+      }
+   }
+
  *1*
   * add hash_tables for type_name based type casting, comparing and hashing
     * also support getting min and max values for given types
