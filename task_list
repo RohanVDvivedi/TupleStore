@@ -2,9 +2,6 @@ TASKS PICKED
 
 1 NEW TYPE TASKS
 
-  * compare strings based on utf8 encoding
-   * need cutlery util for this (dependency yet to be fulfilled)
-
   * need some way to iterate over all the attributes of the tuple_def
     * void iterate_over_all_elements(const tuple_def* tpl_d, const void* tupl, void* context_p, int (*operate_on_element)(void* context_p, const tuple_def* tpl_d, const positonal_accessor pa, const data_type_info* dti_p, const user_value* ele));
     * and a corresponding dti (instead of tpl_d counterpart)
