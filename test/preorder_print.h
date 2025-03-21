@@ -49,8 +49,13 @@ void print_pre_order_ly(const tuple_def* tpl_d, const void* tupl, const position
 		}
 		else if(skip_all_children) // just processed the candidate and want to skip all its children
 		{
-			point_to_next_sibling_position(&absolute_position);
-			continue;
+			if(absolute_position.positions_length > base_position.positions_length)
+			{
+				point_to_next_sibling_position(&absolute_position);
+				continue;
+			}
+			else
+				break;
 		}
 
 		// default way to go next
@@ -61,8 +66,13 @@ void print_pre_order_ly(const tuple_def* tpl_d, const void* tupl, const position
 		}
 		else
 		{
-			point_to_next_sibling_position(&absolute_position);
-			continue;
+			if(absolute_position.positions_length > base_position.positions_length)
+			{
+				point_to_next_sibling_position(&absolute_position);
+				continue;
+			}
+			else
+				break;
 		}
 	}
 
