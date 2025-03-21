@@ -614,6 +614,14 @@ int main()
 					set_element_in_tuple(&def, STATIC_POSITION(i, j, k), data, &(user_value){.int_value = -1}, UINT32_MAX);
 					print_tuple(data, &def);
 					printf("\n");
+
+					{
+						if(i == 2 && j == 2 && k == 2)
+						{
+							print_pre_order_ly(&def, data, STATIC_POSITION(2), 5);
+						}
+					}
+
 				}
 				discard_elements_from_element_in_tuple(&def, STATIC_POSITION(i, j), data, 0, 4);
 				print_tuple(data, &def);
