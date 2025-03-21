@@ -101,13 +101,13 @@ static inline int point_to_next_uncle_position(positional_accessor* pa) // logic
 			if(point_to_next_uncle_position(relative_position)) continue;
 			else break;
 		else if(skip_all_children) // just processed the candidate and want to skip all its children
-			point_to_next_sibling_position(relative_position)) continue;
+			point_to_next_sibling_position(relative_position) continue;
 
 		// default way to go next
 		if(
 			(relative_position.positions_length < max_relative_depth) && (dti is container type) && (user value is not null)
 		) point_to_first_child_position(pa) continue;
-		else point_to_next_sibling_position(relative_position)) continue;
+		else point_to_next_sibling_position(relative_position) continue;
 	}
 */
 
