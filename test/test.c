@@ -7,6 +7,8 @@
 
 #include<test_serde_for_type_info.h>
 
+#include<preorder_print.h>
+
 // comment the below macro to test the SLOTTED_PAGE_LAYOUT
 //#define TEST_FIXED_ARRAY_PAGE_LAYOUT
 #define VAR_STRING_SIZE_SPECIFICER_SIZE 2

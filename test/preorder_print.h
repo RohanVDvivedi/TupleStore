@@ -8,7 +8,7 @@
 void print_pre_order_ly(const tuple_def* tpl_d, const void* tupl, const positional_accessor base_position, uint32_t max_relative_depth)
 {
 	uint32_t max_absolute_depth = base_position.positions_length + max_relative_depth;
-	positional_accessor absolute_position = {.positions = malloc(uint32_t) * max_absolute_depth, .positions_length = 0};
+	positional_accessor absolute_position = {.positions = malloc(sizeof(uint32_t) * max_absolute_depth), .positions_length = 0};
 
 	append_positions(&absolute_position, base_position);
 
@@ -20,7 +20,7 @@ void print_pre_order_ly(const tuple_def* tpl_d, const void* tupl, const position
 
 		if(!valid)
 		{
-			if((absolute_position.positions_length >= base_position.positions_length + 2) && point_to_next_uncle_position(absolute_position))
+			if((absolute_position.positions_length >= base_position.positions_length + 2) && point_to_next_uncle_position(&absolute_position))
 				continue;
 			else
 				break;
@@ -40,27 +40,29 @@ void print_pre_order_ly(const tuple_def* tpl_d, const void* tupl, const position
 			break;
 		else if(skip_all_remaining_siblings) // just processed the candidate and want to skip all its siblings
 		{
-			if((absolute_position.positions_length >= base_position.positions_length + 2) && point_to_next_uncle_position(absolute_position))
+			if((absolute_position.positions_length >= base_position.positions_length + 2) && point_to_next_uncle_position(&absolute_position))
 				continue;
 			else
 				break;
 		}
 		else if(skip_all_children) // just processed the candidate and want to skip all its children
 		{
-			point_to_next_sibling_position(relative_position);
+			point_to_next_sibling_position(&absolute_position);
 			continue;
 		}
 
 		// default way to go next
 		if((absolute_position.positions_length < max_absolute_depth) && is_container_type_info(dti) && !is_user_value_NULL(&uval))
 		{
-			point_to_first_child_position(pa)
+			point_to_first_child_position(&absolute_position);
 			continue;
 		}
 		else
 		{
-			point_to_next_sibling_position(relative_position)
+			point_to_next_sibling_position(&absolute_position);
 			continue;
 		}
 	}
+
+	free(absolute_position.positions);
 }
