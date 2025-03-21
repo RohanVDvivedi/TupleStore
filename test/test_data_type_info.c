@@ -7,6 +7,8 @@
 
 #include<test_serde_for_type_info.h>
 
+#include<preorder_print.h>
+
 int set_user_value_to_containee_in_container_WRAPPER(const data_type_info* dti, void* tuple, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval)
 {
 	data_positional_info temp = INVALID_DATA_POSITIONAL_INFO;
