@@ -66,6 +66,46 @@ static inline int point_to_uncle_position(positional_accessor* pa) // logically 
 	return 1;
 }
 
+/*
+	pseudocode to iterate over all elements or types, from the base position, in pre-order traversal, using the above positional accessor functions
+
+	inputs
+	tpl_d => tuple_def
+	tupl => tuple (only if you need to iterate over the elements)
+	base => input position to start from
+	max_relative_depth => maximum depth to explicitly stop at
+
+	relative_position = SELF with max capacity set to max_relative_depth
+
+	while(1)
+	{
+		absolute_position = base + relative_position
+
+		get dti for absolute position using get_value_from_element_from_tuple
+		get user_value for absolute position using get_type_info_for_element_from_tuple_def
+
+		if invalid absolute_position OR (if you are iterating over types and the parent of dti is an array)
+			if(point_to_uncle_position(relative_position)) continue;
+			else break;
+
+		// analyze dti and user_value
+
+		if(found_result) // you found what you wanted, then just break out
+			break;
+		else if(skip_all_children) // just processed the candidate and want to skip all its children
+			point_to_next_sibling_position(relative_position)) continue;
+		else if(skip_all_remaining_siblings) // just processed the candidate and want to skip all its siblings
+			if(point_to_uncle_position(relative_position)) continue;
+			else break;
+
+		// default way to go next
+		if(
+			(relative_position.positions_length < max_relative_depth) && (dti is container type) && (user value is not null)
+		) point_to_first_child_position(pa) continue;
+		else point_to_next_sibling_position(relative_position)) continue;
+	}
+*/
+
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ structure and macros to index elements inside a tuple nestedly ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
