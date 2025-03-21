@@ -57,7 +57,7 @@ static inline void point_to_first_child_position(positional_accessor* pa) // poi
 	point_to_i_th_child_position(pa, 0);
 }
 
-static inline int point_to_uncle_position(positional_accessor* pa) // logically => point_to_parent_position + point_to_next_sibling_position
+static inline int point_to_next_uncle_position(positional_accessor* pa) // logically => point_to_parent_position + point_to_next_sibling_position
 {
 	if(pa->positions_length <= 1) // SELF and SELF's children do not have uncles
 		return 0;
@@ -85,7 +85,7 @@ static inline int point_to_uncle_position(positional_accessor* pa) // logically 
 		get user_value for absolute position using get_type_info_for_element_from_tuple_def
 
 		if invalid absolute_position OR (if you are iterating over types and the parent of dti is an array)
-			if(point_to_uncle_position(relative_position)) continue;
+			if(point_to_next_uncle_position(relative_position)) continue;
 			else break;
 
 		// analyze dti and user_value
@@ -95,7 +95,7 @@ static inline int point_to_uncle_position(positional_accessor* pa) // logically 
 		else if(skip_all_children) // just processed the candidate and want to skip all its children
 			point_to_next_sibling_position(relative_position)) continue;
 		else if(skip_all_remaining_siblings) // just processed the candidate and want to skip all its siblings
-			if(point_to_uncle_position(relative_position)) continue;
+			if(point_to_next_uncle_position(relative_position)) continue;
 			else break;
 
 		// default way to go next
