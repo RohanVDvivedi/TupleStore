@@ -69,45 +69,63 @@ static inline int point_to_next_uncle_position(positional_accessor* pa) // logic
 /*
 	pseudocode to iterate over all elements or types, from the base position, in pre-order traversal, using the above positional accessor functions
 
-	inputs
-	tpl_d => tuple_def
-	tupl => tuple (only if you need to iterate over the elements)
-	base => input position to start from
-	max_relative_depth => maximum depth to explicitly stop at
-
-	relative_position = SELF with max capacity set to max_relative_depth
-
-	while(1)
+	void your_function(const tuple_def* tpl_d, const void* tupl, const positional_accessor base_position, uint32_t max_relative_depth)
 	{
-		absolute_position = base + relative_position
+		uint32_t max_absolute_depth = base_position.positions_length + max_relative_depth;
+		positional_accessor absolute_position = {.positions = malloc(sizeof(uint32_t) * max_absolute_depth), .positions_length = 0};
 
-		get dti for absolute position using get_value_from_element_from_tuple
-		get user_value for absolute position using get_type_info_for_element_from_tuple_def
+		append_positions(&absolute_position, base_position);
 
-		if invalid absolute_position OR (if you are iterating over types and the parent of dti is an array)
-			if(point_to_next_uncle_position(relative_position)) continue;
-			else break;
+		while(1)
+		{
+			user_value uval;
+			int valid = get_value_from_element_from_tuple(&uval, tpl_d, absolute_position, tupl);
+			const data_type_info* dti = get_type_info_for_element_from_tuple_def(tpl_d, absolute_position);
 
-		// set any one of the following after analyzing the current element/type
-		int found_result = 0;
-		int skip_all_remaining_siblings = 0;
-		int skip_all_children = 0;
+			if((!valid) || (if you are iterating over types and the parent of dti is an array) )
+			{
+				if((absolute_position.positions_length >= base_position.positions_length + 2) && point_to_next_uncle_position(&absolute_position))
+					continue;
+				else
+					break;
+			}
 
-		// analyze dti and user_value
+			// set any one of the following after analyzing the current element/type
+			int found_result = 0;
+			int skip_all_remaining_siblings = 0;
+			int skip_all_children = 0;
 
-		if(found_result) // you found what you wanted, then just break out
-			break;
-		else if(skip_all_remaining_siblings) // just processed the candidate and want to skip all its siblings
-			if(point_to_next_uncle_position(relative_position)) continue;
-			else break;
-		else if(skip_all_children) // just processed the candidate and want to skip all its children
-			point_to_next_sibling_position(relative_position) continue;
+			// analyze dti and user_value
 
-		// default way to go next
-		if(
-			(relative_position.positions_length < max_relative_depth) && (dti is container type) && (user value is not null)
-		) point_to_first_child_position(pa) continue;
-		else point_to_next_sibling_position(relative_position) continue;
+			if(found_result) // you found what you wanted, then just break out
+				break;
+			else if(skip_all_remaining_siblings) // just processed the candidate and want to skip all its siblings
+			{
+				if((absolute_position.positions_length >= base_position.positions_length + 2) && point_to_next_uncle_position(&absolute_position))
+					continue;
+				else
+					break;
+			}
+			else if(skip_all_children) // just processed the candidate and want to skip all its children
+			{
+				point_to_next_sibling_position(&absolute_position);
+				continue;
+			}
+
+			// default way to go next
+			if((absolute_position.positions_length < max_absolute_depth) && is_container_type_info(dti) && !is_user_value_NULL(&uval))
+			{
+				point_to_first_child_position(&absolute_position);
+				continue;
+			}
+			else
+			{
+				point_to_next_sibling_position(&absolute_position);
+				continue;
+			}
+		}
+
+		free(absolute_position.positions);
 	}
 */
 
