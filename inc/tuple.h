@@ -108,8 +108,13 @@ static inline int point_to_next_uncle_position(positional_accessor* pa) // logic
 			}
 			else if(skip_all_children) // just processed the candidate and want to skip all its children
 			{
-				point_to_next_sibling_position(&absolute_position);
-				continue;
+				if(absolute_position.positions_length > base_position.positions_length)
+				{
+					point_to_next_sibling_position(&absolute_position);
+					continue;
+				}
+				else
+					break;
 			}
 
 			// default way to go next
@@ -120,8 +125,13 @@ static inline int point_to_next_uncle_position(positional_accessor* pa) // logic
 			}
 			else
 			{
-				point_to_next_sibling_position(&absolute_position);
-				continue;
+				if(absolute_position.positions_length > base_position.positions_length)
+				{
+					point_to_next_sibling_position(&absolute_position);
+					continue;
+				}
+				else
+					break;
 			}
 		}
 
