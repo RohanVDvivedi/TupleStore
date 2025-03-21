@@ -88,15 +88,20 @@ static inline int point_to_next_uncle_position(positional_accessor* pa) // logic
 			if(point_to_next_uncle_position(relative_position)) continue;
 			else break;
 
+		// set any one of the following after analyzing the current element/type
+		int found_result = 0;
+		int skip_all_remaining_siblings = 0;
+		int skip_all_children = 0;
+
 		// analyze dti and user_value
 
 		if(found_result) // you found what you wanted, then just break out
 			break;
-		else if(skip_all_children) // just processed the candidate and want to skip all its children
-			point_to_next_sibling_position(relative_position)) continue;
 		else if(skip_all_remaining_siblings) // just processed the candidate and want to skip all its siblings
 			if(point_to_next_uncle_position(relative_position)) continue;
 			else break;
+		else if(skip_all_children) // just processed the candidate and want to skip all its children
+			point_to_next_sibling_position(relative_position)) continue;
 
 		// default way to go next
 		if(
