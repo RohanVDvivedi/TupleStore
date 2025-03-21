@@ -620,7 +620,11 @@ int main()
 					{
 						if(i == 2 && j == 2 && k == 2)
 						{
+							print_pre_order_ly(&def, data, STATIC_POSITION(2, 1), 5);
+							print_pre_order_ly(&def, data, STATIC_POSITION(2, 2), 5);
+							print_pre_order_ly(&def, data, STATIC_POSITION(2, 3), 5);
 							print_pre_order_ly(&def, data, STATIC_POSITION(2), 5);
+							print_pre_order_ly(&def, data, SELF, 5);
 						}
 					}
 
