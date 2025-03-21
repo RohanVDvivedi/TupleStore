@@ -1,5 +1,12 @@
 TASKS PICKED
 
+ * build positional_accessor functions
+   int point_to_parent_position(positional_accessor* pa); // pops last element from the pa
+   int point_to_next_sibling_position(positional_accessor* pa); // increments the last position
+   int point_to_i_th_child_position(positional_accessor* pa, uint32_t i); // pushes i onto the pa
+   int point_to_first_child_position(positional_accessor* pa); // point_to_i_th_child(0)
+   int point_to_uncle_position(positional_accessor* pa); // point_to_parent + point_to_next_sibling
+
 1 NEW TYPE TASKS
 
   * need some way to iterate over all the attributes of the tuple_def
