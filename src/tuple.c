@@ -1,5 +1,9 @@
 #include<tuple.h>
 
+// (*below macro is for internl use only)
+// it initializes a new positional accessor that will make you point to the next position you need to extract next
+#define NEXT_POSITION(pa) ((positional_accessor){.positions_length = pa.positions_length - 1, .positions = pa.positions + 1}) 	// build a positional accessor for the next nested object (* for internal use only)
+
 void init_tuple(const tuple_def* tpl_d, void* tupl)
 {
 	initialize_minimal_data_for_type_info(tpl_d->type_info, tupl);

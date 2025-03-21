@@ -20,7 +20,6 @@ struct positional_accessor
 // utiities for positional accessors
 #define SELF ((positional_accessor){.positions_length = 0, .positions = NULL})													// point to self
 #define IS_SELF(pa) (pa.positions_length == 0)																					// check if points to self
-#define NEXT_POSITION(pa) ((positional_accessor){.positions_length = pa.positions_length - 1, .positions = pa.positions + 1}) 	// build a positional accessor for the next nested object
 #define STATIC_POSITION(...) ((positional_accessor){ .positions_length = sizeof((uint32_t []){ __VA_ARGS__ })/sizeof(uint32_t), .positions = (uint32_t []){ __VA_ARGS__ } })
 // usage STATIC_POSITION(a, b, c, d)
 
@@ -30,6 +29,37 @@ static inline void append_positions(positional_accessor* pa, positional_accessor
 {
 	memory_move(pa->positions + pa->positions_length, t.positions, t.positions_length * sizeof(uint32_t));
 	pa->positions_length += t.positions_length;
+}
+
+static inline int point_to_parent_position(positional_accessor* pa) // pops child most element from the pa
+{
+	if(IS_SELF((*pa)))
+		return 0;
+	pa->positions_length--;
+	return 1;
+}
+
+static inline int point_to_next_sibling_position(positional_accessor* pa) // increments the last position
+{
+	if(IS_SELF((*pa)))
+		return 0;
+	pa->positions[pa->positions_length-1]++;
+	return 1;
+}
+
+static inline void point_to_i_th_child_position(positional_accessor* pa, uint32_t i) // pushes i onto the pa
+{
+	append_positions(pa, STATIC_POSITION(i));
+}
+
+static inline void point_to_first_child_position(positional_accessor* pa) // point_to_i_th_child_position(0)
+{
+	point_to_i_th_child_position(pa, 0);
+}
+
+static inline int point_to_uncle_position(positional_accessor* pa) // point_to_parent_position + point_to_next_sibling_position
+{
+	return point_to_parent_position(pa) && point_to_next_sibling_position(pa);
 }
 
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ structure and macros to index elements inside a tuple nestedly ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
