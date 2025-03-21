@@ -57,9 +57,13 @@ static inline void point_to_first_child_position(positional_accessor* pa) // poi
 	point_to_i_th_child_position(pa, 0);
 }
 
-static inline int point_to_uncle_position(positional_accessor* pa) // point_to_parent_position + point_to_next_sibling_position
+static inline int point_to_uncle_position(positional_accessor* pa) // logically => point_to_parent_position + point_to_next_sibling_position
 {
-	return point_to_parent_position(pa) && point_to_next_sibling_position(pa);
+	if(pa->positions_length <= 1) // SELF and SELF's children do not have uncles
+		return 0;
+	pa->positions_length--; // point_to_parent_position
+	pa->positions[pa->positions_length-1]++; // point_to_next_sibling_position
+	return 1;
 }
 
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ structure and macros to index elements inside a tuple nestedly ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
