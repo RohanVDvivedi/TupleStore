@@ -160,6 +160,8 @@ int main()
 	res = append_tuple_on_page(page, PAGE_SIZE, &(def->size_def), tuple_cache);
 	printf("Append : %d\n\n\n", res);
 
+	print_pre_order_ly(def, tuple_cache, SELF, 10);
+
 	// ---------------	INSERT
 
 	r = &(row){-12, 12, "Rohan is bad", 51.2};
