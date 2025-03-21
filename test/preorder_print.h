@@ -36,6 +36,8 @@ void print_pre_order_ly(const tuple_def* tpl_d, const void* tupl, const position
 		print_user_value(&uval, dti);
 		printf("\n");
 
+		skip_all_children = (dti->type == STRING);
+
 		if(found_result) // you found what you wanted, then just break out
 			break;
 		else if(skip_all_remaining_siblings) // just processed the candidate and want to skip all its siblings
