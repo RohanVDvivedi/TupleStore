@@ -82,7 +82,7 @@ static inline int point_to_next_uncle_position(positional_accessor* pa) // logic
 			int valid = get_value_from_element_from_tuple(&uval, tpl_d, absolute_position, tupl);
 			const data_type_info* dti = get_type_info_for_element_from_tuple_def(tpl_d, absolute_position);
 
-			if((!valid) || (if you are iterating over types and the parent of dti is an array) )
+			if((!valid) || (if you are iterating over types and the parent of dti is an array and the absolute_position is at the child == 1) )
 			{
 				if((absolute_position.positions_length >= base_position.positions_length + 2) && point_to_next_uncle_position(&absolute_position))
 					continue;
