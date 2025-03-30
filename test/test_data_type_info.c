@@ -1,5 +1,5 @@
-#include<data_type_info.h>
-#include<tuple.h>
+#include<tuplestore/data_type_info.h>
+#include<tuplestore/tuple.h>
 
 #include<stdio.h>
 #include<stdlib.h>

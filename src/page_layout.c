@@ -1,12 +1,12 @@
-#include<page_layout.h>
+#include<tuplestore/page_layout.h>
 
-#include<tuple.h>
+#include<tuplestore/tuple.h>
 
-#include<page_layout_slotted.h>
-#include<page_layout_fixed_array.h>
-#include<page_layout_util.h>
+#include<tuplestore/page_layout_slotted.h>
+#include<tuplestore/page_layout_fixed_array.h>
+#include<tuplestore/page_layout_util.h>
 
-#include<cutlery_stds.h>
+#include<cutlery/cutlery_stds.h>
 
 // get page_layout to use for the given tuple definition
 page_layout get_page_layout_type(const tuple_size_def* tpl_sz_d)

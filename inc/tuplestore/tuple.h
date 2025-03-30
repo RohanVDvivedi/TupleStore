@@ -1,7 +1,7 @@
 #ifndef TUPLE_H
 #define TUPLE_H
 
-#include<tuple_def.h>
+#include<tuplestore/tuple_def.h>
 
 // ------------------------------ structure and macros to index elements inside a tuple nestedly ----------------------------------------
 
@@ -223,7 +223,7 @@ int compare_tuples2(const void* tup1, const void* tup2, const tuple_def* tpl_d, 
 // function added just to support external merge sort
 int compare_user_values3(const user_value* uvals1, const user_value* uvals2, data_type_info const * const * dtis, const compare_direction* cmp_dir, uint32_t element_count);
 
-#include<tuple_hasher.h>
+#include<tuplestore/tuple_hasher.h>
 
 // hash function for tuple and for an element inside the tuple at the specified position pa
 uint64_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, positional_accessor pa, tuple_hasher* th);

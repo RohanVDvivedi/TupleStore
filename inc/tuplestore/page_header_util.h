@@ -1,7 +1,7 @@
 #ifndef PAGE_HEADER_UTIL_H
 #define PAGE_HEADER_UTIL_H
 
-#include<page_layout_util.h>
+#include<tuplestore/page_layout_util.h>
 
 static inline uint32_t get_page_header_size_INLINE(const void* page, uint32_t page_size)
 {

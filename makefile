@@ -7,7 +7,7 @@ DOWNLOAD_DIR:=/usr/local
 # we may download all the public headers
 
 # list of public api headers (only these headers will be installed)
-PUBLIC_HEADERS:=page_layout.h page_layout_unaltered.h page_layout_enum.h tuple.h tuple_def.h user_value.h data_type_info.h data_type_info_defaults.h primitive_numeral_types.h tuple_hasher.h
+PUBLIC_HEADERS:=page_layout.h page_layout_util.h page_layout_unaltered.h page_layout_enum.h tuple.h tuple_def.h user_value.h data_type_info.h data_type_info_defaults.h primitive_numeral_types.h tuple_hasher.h float_accesses.h
 # the library, which we will create
 LIBRARY:=lib${PROJECT_NAME}.a
 # the binary, which will use the created library
@@ -77,22 +77,20 @@ clean :
 # INSTALLING and UNINSTALLING system wide
 # -----------------------------------------------------
 
-PUBLIC_HEADERS_TO_INSTALL=$(patsubst %.h, ${INC_DIR}/%.h, ${PUBLIC_HEADERS})
+PUBLIC_HEADERS_TO_INSTALL=$(patsubst %.h, ${INC_DIR}/${PROJECT_NAME}/%.h, ${PUBLIC_HEADERS})
 
 # install the library, from this directory to user environment path
 # you must uninstall current installation before making a new installation
 install : uninstall all
-	${MK} ${DOWNLOAD_DIR}/include
-	${CP} ${PUBLIC_HEADERS_TO_INSTALL} ${DOWNLOAD_DIR}/include
+	${MK} ${DOWNLOAD_DIR}/include/${PROJECT_NAME}
+	${CP} ${PUBLIC_HEADERS_TO_INSTALL} ${DOWNLOAD_DIR}/include/${PROJECT_NAME}
 	${MK} ${DOWNLOAD_DIR}/lib
 	${CP} ${LIB_DIR}/${LIBRARY} ${DOWNLOAD_DIR}/lib
 	#${MK} ${DOWNLOAD_DIR}/bin
 	#${CP} ${BIN_DIR}/${BINARY} ${DOWNLOAD_DIR}/bin
 
-PUBLIC_HEADERS_TO_UNINSTALL=$(patsubst %.h, ${DOWNLOAD_DIR}/include/%.h, ${PUBLIC_HEADERS})
-
 # removes what was installed
 uninstall : 
-	${RM} ${PUBLIC_HEADERS_TO_UNINSTALL}
+	${RM} -r ${DOWNLOAD_DIR}/include/${PROJECT_NAME}
 	${RM} ${DOWNLOAD_DIR}/lib/${LIBRARY}
 	#${RM} ${DOWNLOAD_DIR}/bin/${BINARY}

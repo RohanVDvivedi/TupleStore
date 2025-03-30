@@ -1,11 +1,11 @@
-#include<data_type_info.h>
-#include<page_layout_util.h>
+#include<tuplestore/data_type_info.h>
+#include<tuplestore/page_layout_util.h>
 
-#include<serial_int.h>
-#include<large_uints.h>
-#include<float_accesses.h>
+#include<serint/serial_int.h>
+#include<serint/large_uints.h>
+#include<tuplestore/float_accesses.h>
 
-#include<bitmap.h>
+#include<cutlery/bitmap.h>
 
 #include<string.h>
 #include<stdio.h>

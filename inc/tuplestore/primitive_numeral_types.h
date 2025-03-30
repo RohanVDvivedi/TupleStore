@@ -1,8 +1,8 @@
 #ifndef PRIMITIVE_NUMERAL_TYPES_H
 #define PRIMITIVE_NUMERAL_TYPES_H
 
-#include<data_type_info.h>
-#include<user_value.h>
+#include<tuplestore/data_type_info.h>
+#include<tuplestore/user_value.h>
 
 int is_primitive_numeral_type_info(const data_type_info* dti);
 

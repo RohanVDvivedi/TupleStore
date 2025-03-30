@@ -1,9 +1,9 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#include<tuple.h>
-#include<tuple_def.h>
-#include<user_value.h>
+#include<tuplestore/tuple.h>
+#include<tuplestore/tuple_def.h>
+#include<tuplestore/user_value.h>
 
 void print_pre_order_ly(const tuple_def* tpl_d, const void* tupl, const positional_accessor base_position, uint32_t max_relative_depth)
 {

@@ -1,5 +1,5 @@
-#include<data_type_info.h>
-#include<data_type_info_defaults.h>
+#include<tuplestore/data_type_info.h>
+#include<tuplestore/data_type_info_defaults.h>
 
 data_type_info* BIT_FIELD_NULLABLE[65] = {
 	NULL,

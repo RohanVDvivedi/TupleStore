@@ -5,8 +5,8 @@
   The below declarations of the functions are one ones, then do not modify the contents of the page
 */
 
-#include<tuple_def.h>
-#include<page_layout_enum.h>
+#include<tuplestore/tuple_def.h>
+#include<tuplestore/page_layout_enum.h>
 
 
 // get the page layout that will be used by the functions below,

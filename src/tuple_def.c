@@ -1,8 +1,8 @@
-#include<tuple_def.h>
+#include<tuplestore/tuple_def.h>
 
-#include<bitmap.h>
+#include<cutlery/bitmap.h>
 
-#include<page_layout_util.h>
+#include<tuplestore/page_layout_util.h>
 
 int initialize_tuple_size_def(tuple_size_def* tuple_size_d, data_type_info* dti)
 {

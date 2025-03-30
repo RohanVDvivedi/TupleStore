@@ -3,7 +3,7 @@
 
 #include<stdint.h>
 
-#include<large_uints.h>
+#include<serint/large_uints.h>
 
 // user passes the parameters for assignement using this union
 
@@ -57,7 +57,7 @@ static inline int is_user_value_NULL(const user_value* uval)
 	return (uval == NULL) || (uval->is_NULL);
 }
 
-#include<data_type_info.h>
+#include<tuplestore/data_type_info.h>
 
 // only a valid function calls for container_type_info -> STRING, BLOB, TUPLE and ARRAY
 uint32_t get_element_count_for_user_value(const user_value* uval, const data_type_info* dti);
@@ -70,7 +70,7 @@ int compare_user_value(const user_value* uval1, const data_type_info* dti1, cons
 // this function is added to skip the checks that ensure that the user_values can be compared, so that such checks can be discarded
 int compare_user_value2(const user_value* uval1, const user_value* uval2, const data_type_info* dti);
 
-#include<tuple_hasher.h>
+#include<tuplestore/tuple_hasher.h>
 uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tuple_hasher* th);
 
 void print_user_value(const user_value* uval, const data_type_info* dti);

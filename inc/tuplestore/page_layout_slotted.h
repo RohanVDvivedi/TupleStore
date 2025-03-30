@@ -1,7 +1,7 @@
 #ifndef PAGE_LAYOUT_SLOTTED_H
 #define PAGE_LAYOUT_SLOTTED_H
 
-#include<tuple.h>
+#include<tuplestore/tuple.h>
 
 uint32_t get_minimum_page_size_for_slotted_page(uint32_t page_header_size, const tuple_size_def* tpl_sz_d, uint32_t tuple_count);
 

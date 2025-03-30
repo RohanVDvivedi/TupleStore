@@ -1,14 +1,14 @@
-#include<page_layout_fixed_array.h>
+#include<tuplestore/page_layout_fixed_array.h>
 
 #include<stdint.h>
 #include<stdlib.h>
 
-#include<bitmap.h>
+#include<cutlery/bitmap.h>
 
-#include<page_header.h>
-#include<page_layout_util.h>
+#include<tuplestore/page_header.h>
+#include<tuplestore/page_layout_util.h>
 
-#include<cutlery_stds.h>
+#include<cutlery/cutlery_stds.h>
 
 /*
 ** tuple capacity for a fixed array page can be pre-calculated

@@ -2,8 +2,8 @@
 #include<stdlib.h>
 #include<string.h>
 
-#include<tuple.h>
-#include<page_layout.h>
+#include<tuplestore/tuple.h>
+#include<tuplestore/page_layout.h>
 
 #include<test_serde_for_type_info.h>
 

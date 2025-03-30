@@ -1,8 +1,8 @@
-#include<primitive_numeral_types.h>
+#include<tuplestore/primitive_numeral_types.h>
 
-#include<serial_int.h>
-#include<float_accesses.h>
-#include<bitmap.h>
+#include<serint/serial_int.h>
+#include<tuplestore/float_accesses.h>
+#include<cutlery/bitmap.h>
 
 int is_primitive_numeral_type_info(const data_type_info* dti)
 {

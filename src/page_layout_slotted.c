@@ -1,16 +1,16 @@
-#include<page_layout_slotted.h>
+#include<tuplestore/page_layout_slotted.h>
 
-#include<cutlery_math.h> // used for defragmentation
-#include<value_arraylist.h> // used for defragmentation
+#include<cutlery/cutlery_math.h> // used for defragmentation
+#include<cutlery/value_arraylist.h> // used for defragmentation
 
 #include<stdlib.h>
 
-#include<page_header.h>
-#include<page_layout_util.h>
+#include<tuplestore/page_header.h>
+#include<tuplestore/page_layout_util.h>
 
-#include<serial_int.h>
+#include<serint/serial_int.h>
 
-#include<cutlery_stds.h>
+#include<cutlery/cutlery_stds.h>
 
 /*
 ** 		offset calculation functions

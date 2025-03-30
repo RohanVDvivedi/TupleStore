@@ -111,7 +111,7 @@ struct data_type_info
 // macro to calculate sizeof tuple data_type_info
 #define sizeof_tuple_data_type_info(element_count) (sizeof(data_type_info) + sizeof(data_position_info) * (element_count))
 
-#include<data_type_info_defaults.h>
+#include<tuplestore/data_type_info_defaults.h>
 
 // varibale sized elements are always nullable
 // fixed length elements and bit fields are nullable if is_nullable is set
@@ -230,7 +230,7 @@ void print_type_info(const data_type_info* dti);
 **		array3 			1 									1 									1 							1 							1
 */
 
-#include<user_value.h>
+#include<tuplestore/user_value.h>
 
 /*
 	primitive types like BIT_FIELD, UINT, INT, FLOAT, LARGE_UINT, STRING, BLOB, can be compared and set with each other without regard to their size or their variability of their size
@@ -321,13 +321,13 @@ void print_data_for_data_type_info(const data_type_info* dti, const void* data);
 
 
 
-#include<primitive_numeral_types.h>
+#include<tuplestore/primitive_numeral_types.h>
 
 // comparision utility
 
 // hashing utility
 
-#include<tuple_hasher.h>
+#include<tuplestore/tuple_hasher.h>
 
 // does not work for BIT_FIELD
 // non containers are hashed directly, containers are hashed element by element, and XORed together
@@ -339,13 +339,13 @@ uint64_t hash_containee_in_container(const data_type_info* dti, const void* data
 
 // static inline implementation
 
-#include<page_layout_util.h>
+#include<tuplestore/page_layout_util.h>
 
-#include<serial_int.h>
-#include<large_uints.h>
-#include<float_accesses.h>
+#include<serint/serial_int.h>
+#include<serint/large_uints.h>
+#include<tuplestore/float_accesses.h>
 
-#include<bitmap.h>
+#include<cutlery/bitmap.h>
 
 #include<string.h>
 #include<stdio.h>

@@ -25,7 +25,7 @@ static inline uint32_t get_value_size_on_page(uint32_t page_size)
 	return 4 - (page_size <= (UINT32_C(1) << 24)) - (page_size <= (UINT32_C(1) << 16)) - (page_size <= (UINT32_C(1) << 8));
 }
 
-#include<serial_int.h>
+#include<serint/serial_int.h>
 
 static inline uint32_t read_value_from_page(const void* value, uint32_t page_size)
 {

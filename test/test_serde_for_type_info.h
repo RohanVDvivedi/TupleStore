@@ -1,4 +1,4 @@
-#include<data_type_info.h>
+#include<tuplestore/data_type_info.h>
 #include<stdlib.h>
 #include<stdio.h>
 

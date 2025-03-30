@@ -1,8 +1,8 @@
 #ifndef PAGE_LAYOUT_H
 #define PAGE_LAYOUT_H
 
-#include<tuple.h>
-#include<page_layout_enum.h>
+#include<tuplestore/tuple.h>
+#include<tuplestore/page_layout_enum.h>
 
 // get the page layout that will be used by the functions below,
 // for storing the tuple definition given in the parameter

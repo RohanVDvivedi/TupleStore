@@ -1,8 +1,8 @@
 #ifndef TUPLE_DEF_H
 #define TUPLE_DEF_H
 
-#include<data_type_info.h>
-#include<user_value.h>
+#include<tuplestore/data_type_info.h>
+#include<tuplestore/user_value.h>
 
 typedef struct tuple_size_def tuple_size_def;
 struct tuple_size_def

@@ -1,8 +1,8 @@
-#include<user_value.h>
+#include<tuplestore/user_value.h>
 
-#include<primitive_numeral_types.h>
+#include<tuplestore/primitive_numeral_types.h>
 
-#include<cutlery_stds.h>
+#include<cutlery/cutlery_stds.h>
 
 user_value const * const NULL_USER_VALUE = &((const user_value){.is_NULL = 1,});
 
@@ -278,7 +278,7 @@ uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tupl
 	}
 }
 
-#include<page_layout_util.h>
+#include<tuplestore/page_layout_util.h>
 
 void print_user_value(const user_value* uval, const data_type_info* dti)
 {
