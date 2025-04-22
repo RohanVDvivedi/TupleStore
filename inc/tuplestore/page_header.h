@@ -43,5 +43,5 @@ void* get_end_of_page_header(void* page, uint32_t page_size);
 **		char page_header[ page_header_size ];
 **	}
 **
-**	here N can be 8, 16 or 32
+**	here N can be 8, 16, 24 or 32
 */
