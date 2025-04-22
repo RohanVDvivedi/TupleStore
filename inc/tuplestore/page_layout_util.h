@@ -4,12 +4,22 @@
 #include<stdint.h>
 #include<inttypes.h>
 
-// here we assume that you only store offsets on the page, hence the value size is calculated accordingly, (see source file for more information on implementation)
-// like if your page_size is 256 then you only need to store offsets that are in range 0 - 255 all of which fit in 8 bits
-// you will probably also store size/element count and alike metadata information, so your offsets and sizes will mostly always fit these value
-// an offset of 256 will be outside the page, so if you need to store that then set it to 0, and then while reading it, return it as page_size in a uint32_t
-// when your size is 256, then you must be storing size only for a variable length data, this data because it stores size in prefix will never be 0 bytes, hence use 0 for page_size value of any sizes that you may encounter
-// This optimization is done to save off 1 byte worth of information of the offsets, sizes and element_counts, and computers generally tend to give us data pages that are almost always powers of 2.
+/*
+** Here we assume that you only store offsets on the page, hence the value size is calculated accordingly, (THERE IS NO OFF-BY-ONE ERROR, HERE)
+**
+** Lets say, if your page_size is 256 then you only need to store offsets that are in range 0 - 255 all of which fit in 8 bits
+**
+** page header is at offset 0 and it along with its size in the prefix (page_header_size excludes itself) will always occupy non-zero bytes
+** hence offsets on the page can never be 0
+** This allows 0 to be used for NULLs in tuple offsets (and other offsets) and 0 is used as PAGE_SIZE for the end_of_free_space pointer
+**
+** for tuples that are on the page, the non-zero total bytes of page_header, precludes any tuple or its attributes to ever be PAGE_SIZE number of bytes in size
+** for offsets of variable size elements, we will just set them to 0, to represent NULLs
+**
+** This optimization (as explained above) is done to shave off 1 byte worth of information from sizes and element_counts on pages of powers of 256.
+*/
+
+// core functions that calculates the value of sizes, offsets and indices of elements on the page or inside tuples
 static inline uint32_t get_value_size_on_page(uint32_t page_size)
 {
 	/*if(page_size <= (UINT32_C(1) << 8))
