@@ -28,7 +28,7 @@ enum data_type
 };
 #define is_container_data_type(type) ((type) > PRIMITIVE_TYPES_NUMBERING_LAST)
 
-extern char types_as_string[][16];
+extern char const * const types_as_string[];
 
 typedef struct data_type_info data_type_info;
 

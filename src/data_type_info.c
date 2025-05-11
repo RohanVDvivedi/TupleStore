@@ -10,7 +10,7 @@
 #include<string.h>
 #include<stdio.h>
 
-char types_as_string[][16] = {
+char const * const types_as_string[] = {
 								"BIT_FIELD",
 								"UINT",
 								"INT",
