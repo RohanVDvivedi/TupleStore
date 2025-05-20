@@ -11,15 +11,15 @@
 #include<stdio.h>
 
 char const * const types_as_string[] = {
-								"BIT_FIELD",
-								"UINT",
-								"INT",
-								"FLOAT",
-								"LARGE_UINT",
-								"STRING",
-								"BLOB",
-								"TUPLE",
-								"ARRAY",
+								[BIT_FIELD]  = "BIT_FIELD",
+								[UINT]       = "UINT",
+								[INT]        = "INT",
+								[FLOAT]      = "FLOAT",
+								[LARGE_UINT] = "LARGE_UINT",
+								[STRING]     = "STRING",
+								[BLOB]       = "BLOB",
+								[TUPLE]      = "TUPLE",
+								[ARRAY]      = "ARRAY",
 							};
 
 uint32_t find_containee_using_field_name_in_tuple_type_info(const data_type_info* dti, const char* field_name)
