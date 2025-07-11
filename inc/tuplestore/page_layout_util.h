@@ -19,6 +19,12 @@
 ** This optimization (as explained above) is done to shave off 1 byte worth of information from sizes and element_counts on pages of powers of 256.
 */
 
+#include<serint/serial_int.h>
+
+// the below function assumes that there are 8 bits in a byte, hence this check
+// also serial_int.h too enforces this
+fail_build_on((CHAR_BIT != 8))
+
 // core functions that calculates the value of sizes, offsets and indices of elements on the page or inside tuples
 static inline uint32_t get_value_size_on_page(uint32_t page_size)
 {
@@ -34,8 +40,6 @@ static inline uint32_t get_value_size_on_page(uint32_t page_size)
 	// using the line below
 	return 4 - (page_size <= (UINT32_C(1) << 24)) - (page_size <= (UINT32_C(1) << 16)) - (page_size <= (UINT32_C(1) << 8));
 }
-
-#include<serint/serial_int.h>
 
 static inline uint32_t read_value_from_page(const void* value, uint32_t page_size)
 {
