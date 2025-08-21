@@ -1,5 +1,7 @@
 TASKS PICKED
 
+* find out values for all multiplications and additions and ensure what maximum number can be placed on the page_size for no number to overflow a 32-bit unsigned integer, and add this number as a hard limit for the page_size ad maximum_tuple_size in README file
+
 1 NEW TYPE TASKS
 
  *1*
