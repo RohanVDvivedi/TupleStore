@@ -86,7 +86,7 @@ uint32_t get_tuple_size_using_tuple_size_def(const tuple_size_def* tpl_sz_d, con
 	// it has element_count in its prefix but not its size
 
 	if(tpl_sz_d->is_containee_bit_field)
-		return get_value_size_on_page(tpl_sz_d->max_size) + bitmap_size_in_bytes(((uint64_t)element_count) * ((uint64_t)(tpl_sz_d->does_containee_need_is_valid_bit_in_prefix + tpl_sz_d->containee_bit_field_size))); // 64-bit typecasts needed here because some uint32_t * max 65, could give us uint32_t overflows, unlike the case below
+		return get_value_size_on_page(tpl_sz_d->max_size) + bitmap_size_in_bytes(element_count * (tpl_sz_d->does_containee_need_is_valid_bit_in_prefix + tpl_sz_d->containee_bit_field_size));
 	else
 		return get_value_size_on_page(tpl_sz_d->max_size) + bitmap_size_in_bytes(element_count * tpl_sz_d->does_containee_need_is_valid_bit_in_prefix) + (element_count * tpl_sz_d->containee_size);
 }
