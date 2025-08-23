@@ -33,6 +33,7 @@ const void* get_page_header_ua(const void* page, uint32_t page_size);
 // INITIALIZATION and BASIC FUNCTIONS
 
 // this is the smallest sized page that is required to store a tuple_count number of tuples, each having a given tuple definition
+// this is an overflow unsafe function, please besure to limit tuple_count to range [0, (2GB / min_tuple_size)], 1 or 2 would be still an ideal candidate for most use cases
 uint32_t get_minimum_page_size(uint32_t page_header_size, const tuple_size_def* tpl_sz_d, uint32_t tuple_count);
 
 // returns maximum tuple_count possible on a page
