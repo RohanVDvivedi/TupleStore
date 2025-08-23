@@ -17,7 +17,7 @@ Project Limits :
   * page_header_size :   [0, page_size-32]
  TUPLE_DEF LIMITS :
   * max_size :           [1, 2GB) (no data_type_info can have max_size if set more than 2GB)
-  * element_count :      [0, 63M] (no more than 63,000,000 elements per tuple or array or string or blob)
+  * element_count :      [0, 63M] (no more than 63,000,000 elements (yes, 1st level elements, not bytes) per tuple or array or string or blob)
 
 ## Setup instructions
 **Install dependencies :**
