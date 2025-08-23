@@ -104,7 +104,8 @@ int finalize_type_info(data_type_info* dti)
 		case TUPLE :
 		{
 			// you can never finalize a TUPLE type with no elements
-			if(dti->element_count == 0)
+			// you can also not have tuples with more than 33 million elements in them
+			if(dti->element_count == 0 || dti->element_count > (33 * 1000 * 1000))
 				return 0;
 
 			// initialize the attributes
