@@ -18,7 +18,7 @@ Project Limits :
   * max_size (for a tuple/data) : [1, 2GB) (no data_type_info can have max_size set more than 2GB)
 
 Overflow prone functions :
-  * get_minimum_page_size() -> limit tuple_count passed
+  * get_minimum_page_size() -> limit tuple_count that you pass as parameter
   * finalize_tuple_def() -> limit max size of element and maximum number of elements, so as the number does not cross 2GB for tuples and arrays
   * expand_element_count_for_element_in_tuple() and can_expand_element_count_for_element_in_tuple() -> accumulate all the elements you want to insert in memory and ensure that their (sum of sizes + 4 * count) does not cross 2GB and and only then attempt to expand the container, else their may be overflow
 
