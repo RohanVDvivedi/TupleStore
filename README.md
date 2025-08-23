@@ -9,11 +9,12 @@ Started as a project to be used for managing page layout in a database storage e
 
 To reiterate : This project only provides primitive utility functions/structures to systematically organize your data in tuples of runtime-defined datatypes in a specific (slotted page or fixed array page) model for a block-storage-memory consisting of pages of predefined fixed size.
 
-Note:: The TupleStore API deals with only 32 bit unsigned integers for most cases (sizes, offsets and indices). This imposes a hard limit of 4GB on the page size. But remember uint32_t can overflow, and adding overflow checks in TupleStore for every mathematical operation is a performance killer. So I want you, the users to back calculate, in a way similar to the following (shown below).
- * Lets say you want to support 3,000,000,000 byte page sizes (possibly 4GB) to be on safe side, to avoid overflows.
- * This could possibly allow you to build tuples with 54000 columns each with about 54000 bytes.
- * So impose a limit on 54000 columns with no column storing any more than 54000 inline bytes, inside your database.
- * and you are good to go, no overflows will be encountered whatsoever.
+Note:: The TupleStore API deals with only 32 bit unsigned integers for most cases (sizes, offsets and indices). This imposes a hard limit of 4GB on the page size. But remember uint32_t can overflow, and adding overflow checks in TupleStore for every mathematical operation is a performance killer.
+
+Project Limits:
+ * page_size :                 [128, 2GB)
+ * page_header_size :          [0, page_size-32]
+ * max_tuple_size :            [1, 2GB)
 
 ## Setup instructions
 **Install dependencies :**
