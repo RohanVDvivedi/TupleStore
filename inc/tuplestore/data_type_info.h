@@ -1340,6 +1340,10 @@ static inline int can_expand_container(const data_type_info* dti, const void* da
 	if(!is_variable_element_count_container_type_info(dti))
 		return 0;
 
+	// new slots when indexed must not overflow our uint32_t indexes
+	if(will_unsigned_sum_overflow(uint32_t, slots, get_element_count_for_container_type_info(dti, data)))
+		return 0;
+
 	// make sure that index is within [0, element_count], else fail
 	if(index > get_element_count_for_container_type_info(dti, data))
 		return 0;
@@ -1398,6 +1402,10 @@ static inline int expand_container(const data_type_info* dti, void* data, uint32
 {
 	// it must be variable element count container
 	if(!is_variable_element_count_container_type_info(dti))
+		return 0;
+
+	// new slots when indexed must not overflow our uint32_t indexes
+	if(will_unsigned_sum_overflow(uint32_t, slots, get_element_count_for_container_type_info(dti, data)))
 		return 0;
 
 	// make sure that index is within [0, element_count], else fail
