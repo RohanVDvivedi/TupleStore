@@ -13,9 +13,9 @@ Note:: The TupleStore API deals with only 32 bit unsigned integers for most case
 
 Project Limits :
  PAGE_LAYOUT LIMITS :
-  * page_size :                   [128, 2GB)
-  * page_header_size :            [0, page_size-32]
-  * max_size (for a tuple/data) : [1, 2GB) (no data_type_info can have max_size set more than 2GB)
+  * page_size :              [128, 2GB-128]
+  * page_header_size :       [0, page_size-32]
+  * max_size (for a tuple) : [1, 2GB-128] (or any of it's data_type_info)
 
 Overflow prone functions :
   * get_minimum_page_size() -> limit tuple_count that you pass as parameter
