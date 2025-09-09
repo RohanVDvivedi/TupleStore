@@ -6,3 +6,6 @@ TASKS PICKED
   * add hash_tables for type_name based type casting, comparing and hashing
     * also support getting min and max values for given types
     * as soon as you implement type based comparators for the tuple store, the suffix truncation in bplus tree will break so fix that soon after that
+
+ *2*
+  * integrate int256 into the project as a LARGE_INT, very similar to uint256, after int256 is implemented in serint
