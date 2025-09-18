@@ -253,18 +253,22 @@ static uint32_t get_byte_count_for_serialized_type_name(const char* type_name)
 
 uint32_t get_byte_count_for_serialized_type_info(const data_type_info* dti)
 {
-	uint32_t bytes_consumed = 1;
+	uint32_t bytes_consumed = 1; // 1 for always the type
 
 	switch(dti->type)
 	{
+		case FLOAT :
+		{
+			bytes_consumed += (get_byte_count_for_serialized_type_name(dti->type_name)); // 1 for the size is not needed
+			break;
+		}
 		case BIT_FIELD :
 		case UINT :
 		case INT :
-		case FLOAT :
 		case LARGE_UINT :
 		case LARGE_INT :
 		{
-			bytes_consumed += get_byte_count_for_serialized_type_name(dti->type_name);
+			bytes_consumed += (1 + get_byte_count_for_serialized_type_name(dti->type_name)); // 1 for the size
 			break;
 		}
 		case STRING :
@@ -326,16 +330,17 @@ static uint32_t serialize_type_name(const char* type_name, unsigned char* holder
 uint32_t serialize_type_info(const data_type_info* dti, void* data)
 {
 	unsigned char* serialized_bytes = data;
-	uint32_t bytes_consumed = 1;
+	uint32_t bytes_consumed = 0;
 
 	switch(dti->type)
 	{
 		case BIT_FIELD :
 		{
 			if(is_nullable_type_info(dti))
-				serialized_bytes[0] = 0 + dti->bit_field_size - 1;
+				serialized_bytes[bytes_consumed++] = 0 ;
 			else
-				serialized_bytes[0] = 64 + dti->bit_field_size - 1;
+				serialized_bytes[bytes_consumed++] = 1;
+			serialized_bytes[bytes_consumed++] = dti->bit_field_size;
 
 			bytes_consumed += serialize_type_name(dti->type_name, serialized_bytes + bytes_consumed);
 
@@ -344,9 +349,10 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 		case UINT :
 		{
 			if(is_nullable_type_info(dti))
-				serialized_bytes[0] = 128 + dti->size - 1;
+				serialized_bytes[bytes_consumed++] = 2;
 			else
-				serialized_bytes[0] = 136 + dti->size - 1;
+				serialized_bytes[bytes_consumed++] = 3;
+			serialized_bytes[bytes_consumed++] = dti->size;
 
 			bytes_consumed += serialize_type_name(dti->type_name, serialized_bytes + bytes_consumed);
 
@@ -355,9 +361,10 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 		case INT :
 		{
 			if(is_nullable_type_info(dti))
-				serialized_bytes[0] = 144 + dti->size - 1;
+				serialized_bytes[bytes_consumed++] = 4;
 			else
-				serialized_bytes[0] = 152 + dti->size - 1;
+				serialized_bytes[bytes_consumed++] = 5;
+			serialized_bytes[bytes_consumed++] = dti->size;
 
 			bytes_consumed += serialize_type_name(dti->type_name, serialized_bytes + bytes_consumed);
 
@@ -368,20 +375,20 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 			if(is_nullable_type_info(dti))
 			{
 				if(dti->size == sizeof(float))
-					serialized_bytes[0] = 160;
+					serialized_bytes[bytes_consumed++] = 6;
 				else if(dti->size == sizeof(double))
-					serialized_bytes[0] = 161;
+					serialized_bytes[bytes_consumed++] = 7;
 				else
-					serialized_bytes[0] = 162;
+					serialized_bytes[bytes_consumed++] = 8;
 			}
 			else
 			{
 				if(dti->size == sizeof(float))
-					serialized_bytes[0] = 163;
+					serialized_bytes[bytes_consumed++] = 9;
 				else if(dti->size == sizeof(double))
-					serialized_bytes[0] = 164;
+					serialized_bytes[bytes_consumed++] = 10;
 				else
-					serialized_bytes[0] = 165;
+					serialized_bytes[bytes_consumed++] = 11;
 			}
 
 			bytes_consumed += serialize_type_name(dti->type_name, serialized_bytes + bytes_consumed);
@@ -391,9 +398,22 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 		case LARGE_UINT :
 		{
 			if(is_nullable_type_info(dti))
-				serialized_bytes[0] = 166 + dti->size - 1;
+				serialized_bytes[bytes_consumed++] = 12;
 			else
-				serialized_bytes[0] = 198 + dti->size - 1;
+				serialized_bytes[bytes_consumed++] = 13;
+			serialized_bytes[bytes_consumed++] = dti->size;
+
+			bytes_consumed += serialize_type_name(dti->type_name, serialized_bytes + bytes_consumed);
+
+			break;
+		}
+		case LARGE_INT :
+		{
+			if(is_nullable_type_info(dti))
+				serialized_bytes[bytes_consumed++] = 14;
+			else
+				serialized_bytes[bytes_consumed++] = 15;
+			serialized_bytes[bytes_consumed++] = dti->size;
 
 			bytes_consumed += serialize_type_name(dti->type_name, serialized_bytes + bytes_consumed);
 
@@ -404,15 +424,15 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 			if(!is_variable_sized_type_info(dti))
 			{
 				if(is_nullable_type_info(dti))
-					serialized_bytes[0] = 230;
+					serialized_bytes[bytes_consumed++] = 120;
 				else
-					serialized_bytes[0] = 231;
+					serialized_bytes[bytes_consumed++] = 121;
 
 				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->element_count); bytes_consumed += 4;
 			}
 			else
 			{
-				serialized_bytes[0] = 232;
+				serialized_bytes[bytes_consumed++] = 122;
 
 				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->max_size); bytes_consumed += 4;
 			}
@@ -426,15 +446,15 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 			if(!is_variable_sized_type_info(dti))
 			{
 				if(is_nullable_type_info(dti))
-					serialized_bytes[0] = 233;
+					serialized_bytes[bytes_consumed++] = 123;
 				else
-					serialized_bytes[0] = 234;
+					serialized_bytes[bytes_consumed++] = 124;
 
 				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->element_count); bytes_consumed += 4;
 			}
 			else
 			{
-				serialized_bytes[0] = 235;
+				serialized_bytes[bytes_consumed++] = 125;
 
 				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->max_size); bytes_consumed += 4;
 			}
@@ -448,15 +468,15 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 			if(!is_variable_sized_type_info(dti))
 			{
 				if(is_nullable_type_info(dti))
-					serialized_bytes[0] = 236;
+					serialized_bytes[bytes_consumed++] = 126;
 				else
-					serialized_bytes[0] = 237;
+					serialized_bytes[bytes_consumed++] = 127;
 
 				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->element_count); bytes_consumed += 4;
 			}
 			else
 			{
-				serialized_bytes[0] = 238;
+				serialized_bytes[bytes_consumed++] = 128;
 
 				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->element_count); bytes_consumed += 4;
 
@@ -479,9 +499,9 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 			if(!is_variable_sized_type_info(dti)) // fixed sized array implies fixed element count and containing fixed sized containee
 			{
 				if(is_nullable_type_info(dti))
-					serialized_bytes[0] = 239;
+					serialized_bytes[bytes_consumed++] = 129;
 				else
-					serialized_bytes[0] = 240;
+					serialized_bytes[bytes_consumed++] = 130;
 
 				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->element_count); bytes_consumed += 4;
 			}
@@ -489,13 +509,13 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 			{
 				if(!is_variable_element_count_container_type_info(dti))
 				{
-					serialized_bytes[0] = 241;
+					serialized_bytes[bytes_consumed++] = 131;
 
 					serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->element_count); bytes_consumed += 4;
 				}
 				else
 				{
-					serialized_bytes[0] = 242;
+					serialized_bytes[bytes_consumed++] = 132;
 				}
 
 				serialize_uint32(serialized_bytes + bytes_consumed, 4, dti->max_size); bytes_consumed += 4;
@@ -545,9 +565,10 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 	const unsigned char* serialized_bytes = data;
 	uint32_t bytes_consumed = 1;
 
-	if(serialized_bytes[0] <= 63)
+	if(data_size >= 2 && serialized_bytes[0] == 0)
 	{
-		uint32_t size = serialized_bytes[0] + 1;
+		uint32_t size = serialized_bytes[1];
+		bytes_consumed += 2;
 
 		data_type_info dti = define_bit_field_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
@@ -569,9 +590,10 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 127)
+	else if(data_size >= 2 && serialized_bytes[0] == 1)
 	{
-		uint32_t size = serialized_bytes[0] - 63;
+		uint32_t size = serialized_bytes[1];
+		bytes_consumed += 2;
 
 		data_type_info dti = define_bit_field_non_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
@@ -593,9 +615,10 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 135)
+	else if(data_size >= 2 && serialized_bytes[0] == 2)
 	{
-		uint32_t size = serialized_bytes[0] - 127;
+		uint32_t size = serialized_bytes[1];
+		bytes_consumed += 2;
 
 		data_type_info dti = define_uint_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
@@ -617,9 +640,10 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 143)
+	else if(data_size >= 2 && serialized_bytes[0] == 3)
 	{
-		uint32_t size = serialized_bytes[0] - 135;
+		uint32_t size = serialized_bytes[1];
+		bytes_consumed += 2;
 
 		data_type_info dti = define_uint_non_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
@@ -641,9 +665,10 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 151)
+	else if(data_size >= 2 && serialized_bytes[0] == 4)
 	{
-		uint32_t size = serialized_bytes[0] - 143;
+		uint32_t size = serialized_bytes[1];
+		bytes_consumed += 2;
 
 		data_type_info dti = define_int_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
@@ -665,9 +690,10 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 159)
+	else if(data_size >= 2 && serialized_bytes[0] == 5)
 	{
-		uint32_t size = serialized_bytes[0] - 151;
+		uint32_t size = serialized_bytes[1];
+		bytes_consumed += 2;
 
 		data_type_info dti = define_int_non_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
@@ -689,9 +715,10 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 162)
+	else if(data_size >= 1 && serialized_bytes[0] <= 8)
 	{
-		uint32_t type_no = serialized_bytes[0] - 159;
+		uint32_t type_no = serialized_bytes[0] - 5;
+		bytes_consumed += 1;
 
 		data_type_info dti = {};
 		if(type_no == 1)
@@ -723,9 +750,10 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 165)
+	else if(data_size >= 1 && serialized_bytes[0] <= 11)
 	{
-		uint32_t type_no = serialized_bytes[0] - 162;
+		uint32_t type_no = serialized_bytes[0] - 8;
+		bytes_consumed += 1;
 
 		data_type_info dti = {};
 		if(type_no == 1)
@@ -757,9 +785,10 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 197)
+	else if(data_size >= 2 && serialized_bytes[0] == 12)
 	{
-		uint32_t size = serialized_bytes[0] - 165;
+		uint32_t size = serialized_bytes[1];
+		bytes_consumed += 2;
 
 		data_type_info dti = define_large_uint_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
@@ -781,9 +810,10 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 229)
+	else if(data_size >= 2 && serialized_bytes[0] == 13)
 	{
-		uint32_t size = serialized_bytes[0] - 197;
+		uint32_t size = serialized_bytes[1];
+		bytes_consumed += 2;
 
 		data_type_info dti = define_large_uint_non_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
@@ -805,13 +835,64 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 232) // STRING
+	else if(data_size >= 2 && serialized_bytes[0] == 14)
+	{
+		uint32_t size = serialized_bytes[1];
+		bytes_consumed += 2;
+
+		data_type_info dti = define_large_int_nullable_type("", size);
+		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		if(type_name_length == UINT32_MAX)
+			return NULL;
+		else
+			bytes_consumed += type_name_length;
+
+		if(are_identical_type_info(&dti, LARGE_INT_NULLABLE[size]))
+			return LARGE_UINT_NULLABLE[size];
+
+		data_type_info* dti_p = malloc(sizeof(data_type_info));
+		if(dti_p == NULL)
+		{
+			(*allocation_error) = 1;
+			return NULL;
+		}
+		(*dti_p) = dti;
+		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
+		return dti_p;
+	}
+	else if(data_size >= 2 && serialized_bytes[0] == 15)
+	{
+		uint32_t size = serialized_bytes[1];
+		bytes_consumed += 2;
+
+		data_type_info dti = define_large_int_non_nullable_type("", size);
+		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
+		if(type_name_length == UINT32_MAX)
+			return NULL;
+		else
+			bytes_consumed += type_name_length;
+
+		if(are_identical_type_info(&dti, LARGE_INT_NON_NULLABLE[size]))
+			return LARGE_UINT_NON_NULLABLE[size];
+
+		data_type_info* dti_p = malloc(sizeof(data_type_info));
+		if(dti_p == NULL)
+		{
+			(*allocation_error) = 1;
+			return NULL;
+		}
+		(*dti_p) = dti;
+		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
+		return dti_p;
+	}
+	else if(serialized_bytes[0] <= 122) // STRING
 	{
 		data_type_info dti = {};
+		bytes_consumed++;
 
-		if(serialized_bytes[0] <= 231)
+		if(serialized_bytes[0] <= 121)
 		{
-			int is_nullable = (serialized_bytes[0] == 230);
+			int is_nullable = (serialized_bytes[0] == 120);
 
 			if(bytes_consumed + 4 > data_size)
 				return NULL;
@@ -843,13 +924,14 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 235) // BLOB
+	else if(serialized_bytes[0] <= 125) // BLOB
 	{
 		data_type_info dti = {};
+		bytes_consumed++;
 
-		if(serialized_bytes[0] <= 234)
+		if(serialized_bytes[0] <= 124)
 		{
-			int is_nullable = (serialized_bytes[0] == 233);
+			int is_nullable = (serialized_bytes[0] == 123);
 
 			if(bytes_consumed + 4 > data_size)
 				return NULL;
@@ -881,13 +963,14 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 238) // TUPLE
+	else if(serialized_bytes[0] <= 128) // TUPLE
 	{
 		data_type_info* dti_p = NULL;
+		bytes_consumed++;
 
-		if(serialized_bytes[0] <= 237)
+		if(serialized_bytes[0] <= 127)
 		{
-			int is_nullable = (serialized_bytes[0] == 236);
+			int is_nullable = (serialized_bytes[0] == 126);
 
 			if(bytes_consumed + 4 > data_size)
 				return NULL;
@@ -961,13 +1044,14 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 242) // ARRAY
+	else if(serialized_bytes[0] <= 132) // ARRAY
 	{
 		data_type_info dti = {};
+		bytes_consumed++;
 
-		if(serialized_bytes[0] <= 240)
+		if(serialized_bytes[0] <= 130)
 		{
-			int is_nullable = (serialized_bytes[0] == 239);
+			int is_nullable = (serialized_bytes[0] == 129);
 
 			if(bytes_consumed + 4 > data_size)
 				return NULL;
@@ -975,7 +1059,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 
 			dti = get_fixed_element_count_array_type("", element_count, 0, is_nullable, NULL);
 		}
-		else if(serialized_bytes[0] <= 241)
+		else if(serialized_bytes[0] <= 131)
 		{
 			if(bytes_consumed + 4 > data_size)
 				return NULL;
@@ -987,7 +1071,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 
 			dti = get_fixed_element_count_array_type("", element_count, max_size, 1, NULL);
 		}
-		else // 242
+		else // 132
 		{
 			if(bytes_consumed + 4 > data_size)
 				return NULL;
