@@ -31,6 +31,10 @@ extern data_type_info* LARGE_UINT_NULLABLE[33];
 
 extern data_type_info* LARGE_UINT_NON_NULLABLE[33];
 
+extern data_type_info* LARGE_INT_NULLABLE[33];
+
+extern data_type_info* LARGE_INT_NON_NULLABLE[33];
+
 /*
 	This header and the corresponding source file provides default data_type_info and a default values to further initialize them
 */
@@ -140,6 +144,28 @@ extern data_type_info* LARGE_UINT_NON_NULLABLE[33];
 	.is_finalized = 0, \
 	.type_name = _type_name, \
 	.type = LARGE_UINT, \
+	.is_nullable = 0, \
+	.is_variable_sized = 0, \
+	.size = _size, \
+})
+
+#define define_large_int_nullable_type(_type_name, _size) \
+((data_type_info){ \
+	.is_static = 1, \
+	.is_finalized = 0, \
+	.type_name = _type_name, \
+	.type = LARGE_INT, \
+	.is_nullable = 1, \
+	.is_variable_sized = 0, \
+	.size = _size, \
+})
+
+#define define_large_int_non_nullable_type(_type_name, _size) \
+((data_type_info){ \
+	.is_static = 1, \
+	.is_finalized = 0, \
+	.type_name = _type_name, \
+	.type = LARGE_INT, \
 	.is_nullable = 0, \
 	.is_variable_sized = 0, \
 	.size = _size, \

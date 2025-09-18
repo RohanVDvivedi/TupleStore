@@ -14,15 +14,17 @@ enum data_type
 	UINT	   = 1,
 	INT 	   = 2,
 	FLOAT	   = 3,
-	LARGE_UINT = 4,
 
-	PRIMITIVE_TYPES_NUMBERING_LAST = 4,
+	LARGE_UINT = 4,
+	LARGE_INT  = 5,
+
+	PRIMITIVE_TYPES_NUMBERING_LAST = 5,
 	// above attributes are always fixed length elements
 
-	STRING     = 5,
-	BLOB       = 6,
-	TUPLE      = 7,
-	ARRAY      = 8,
+	STRING     = 6,
+	BLOB       = 7,
+	TUPLE      = 8,
+	ARRAY      = 9,
 	// the above 4 types may be fixed or variable length
 	// they will be identified as container types
 };
