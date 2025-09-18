@@ -23,6 +23,7 @@ struct user_value
 		double double_value;
 		long double long_double_value;
 		uint256 large_uint_value;
+		uint256 large_int_value;
 		struct
 		{
 			const void* string_value;

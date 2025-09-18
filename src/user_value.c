@@ -319,6 +319,11 @@ void print_user_value(const user_value* uval, const data_type_info* dti)
 			print_uint256(uval->large_uint_value);
 			break;
 		}
+		case LARGE_INT :
+		{
+			print_int256(uval->large_int_value);
+			break;
+		}
 		case STRING :
 		{
 			printf("\"%.*s\"", uval->string_size, ((const char*)(uval->string_value)));
