@@ -13,6 +13,7 @@ int is_primitive_numeral_type_info(const data_type_info* dti)
 		case INT :
 		case FLOAT :
 		case LARGE_UINT :
+		case LARGE_INT :
 			return 1;
 		default :
 			return 0;
@@ -32,6 +33,7 @@ int can_compare_primitive_numeral_type_infos(const data_type_info* dti_1, const 
 				case INT :
 				case FLOAT :
 				case LARGE_UINT :
+				case LARGE_INT :
 					return 1;
 				default :
 					return 0;
@@ -46,6 +48,7 @@ int can_compare_primitive_numeral_type_infos(const data_type_info* dti_1, const 
 				case INT :
 				case FLOAT :
 				case LARGE_UINT :
+				case LARGE_INT :
 					return 1;
 				default :
 					return 0;
@@ -60,6 +63,7 @@ int can_compare_primitive_numeral_type_infos(const data_type_info* dti_1, const 
 				case INT :
 				case FLOAT :
 				case LARGE_UINT :
+				case LARGE_INT :
 					return 1;
 				default :
 					return 0;
@@ -86,6 +90,21 @@ int can_compare_primitive_numeral_type_infos(const data_type_info* dti_1, const 
 				case UINT :
 				case INT :
 				case LARGE_UINT :
+				case LARGE_INT :
+					return 1;
+				default :
+					return 0;
+			}
+		}
+		case LARGE_INT :
+		{
+			switch(dti_2->type)
+			{
+				case BIT_FIELD :
+				case UINT :
+				case INT :
+				case LARGE_UINT :
+				case LARGE_INT :
 					return 1;
 				default :
 					return 0;
@@ -134,6 +153,8 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 				}
 				case LARGE_UINT :
 					return compare_uint256(get_uint256(e1->bit_field_value), e2->large_uint_value);
+				case LARGE_INT :
+					return -compare_int256_uint256(e2->large_int_value, get_uint256(e1->bit_field_value));
 				default :
 					return -2;
 			}
@@ -161,6 +182,8 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 				}
 				case LARGE_UINT :
 					return compare_uint256(get_uint256(e1->uint_value), e2->large_uint_value);
+				case LARGE_INT :
+					return -compare_int256_uint256(e2->large_int_value, get_uint256(e1->uint_value));
 				default :
 					return -2;
 			}
@@ -187,11 +210,9 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 						return -2;
 				}
 				case LARGE_UINT :
-				{
-					if(e1->int_value < 0)
-						return -1;
-					return compare_uint256(get_uint256(e1->int_value), e2->large_uint_value);
-				}
+					return compare_int256_uint256(get_int256(e1->int_value), e2->large_uint_value);
+				case LARGE_INT :
+					return compare_int256(get_int256(e1->int_value), e2->large_int_value);
 				default :
 					return -2;
 			}
@@ -285,13 +306,29 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 				case UINT :
 					return compare_uint256(e1->large_uint_value, get_uint256(e2->uint_value));
 				case INT :
-				{
-					if(e2->int_value < 0)
-						return 1;
-					return compare_uint256(e1->large_uint_value, get_uint256(e2->int_value));
-				}
+					return -compare_int256_uint256(get_int256(e2->int_value), e1->large_uint_value);
 				case LARGE_UINT :
 					return compare_uint256(e1->large_uint_value, e2->large_uint_value);
+				case LARGE_INT :
+					return -compare_int256_uint256(e2->large_int_value, e1->large_uint_value);
+				default :
+					return -2;
+			}
+		}
+		case LARGE_INT :
+		{
+			switch(dti_2->type)
+			{
+				case BIT_FIELD :
+					return compare_int256_uint256(e1->large_int_value, get_uint256(e2->bit_field_value));
+				case UINT :
+					return compare_int256_uint256(e1->large_int_value, get_uint256(e2->uint_value));
+				case INT :
+					return compare_int256(e1->large_int_value, get_int256(e2->int_value));
+				case LARGE_UINT :
+					return compare_int256_uint256(e1->large_int_value, e2->large_uint_value);
+				case LARGE_INT :
+					return compare_int256(e2->large_int_value, e1->large_int_value);
 				default :
 					return -2;
 			}
@@ -329,6 +366,8 @@ int compare_primitive_numeral_type2(const user_value* e1, const user_value* e2, 
 		}
 		case LARGE_UINT :
 			return compare_uint256(e1->large_uint_value, e2->large_uint_value);
+		case LARGE_INT :
+			return compare_int256(e1->large_int_value, e2->large_int_value);
 		default :
 			return -2;
 	}
@@ -402,6 +441,11 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 					e->bit_field_value = e_from->large_uint_value.limbs[0];
 					return 1;
 				}
+				case LARGE_INT :
+				{
+					e->bit_field_value = e_from->large_int_value.raw_uint_value.limbs[0];
+					return 1;
+				}
 				default :
 					return 0;
 			}
@@ -450,6 +494,11 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 					e->uint_value = e_from->large_uint_value.limbs[0];
 					return 1;
 				}
+				case LARGE_INT :
+				{
+					e->uint_value = e_from->large_int_value.raw_uint_value.limbs[0];
+					return 1;
+				}
 				default :
 					return 0;
 			}
@@ -496,6 +545,11 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 				case LARGE_UINT :
 				{
 					e->int_value = e_from->large_uint_value.limbs[0];
+					return 1;
+				}
+				case LARGE_INT :
+				{
+					e->int_value = e_from->large_int_value.raw_uint_value.limbs[0];
 					return 1;
 				}
 				default :
@@ -652,15 +706,50 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 				}
 				case INT :
 				{
-					if(e_from->int_value < 0) // given integer is negative so result = (0 - (-integer))
-						sub_uint256(&(e->large_uint_value), get_0_uint256(), get_uint256(-(e_from->int_value)));
-					else
-						e->large_uint_value = get_uint256(e_from->int_value);
+					e->large_uint_value = get_int256(e_from->int_value).raw_uint_value;
 					return 1;
 				}
 				case LARGE_UINT :
 				{
 					e->large_uint_value = e_from->large_uint_value;
+					return 1;
+				}
+				case LARGE_INT :
+				{
+					e->large_uint_value = e_from->large_int_value.raw_uint_value;
+					return 1;
+				}
+				default :
+					return 0;
+			}
+		}
+		case LARGE_INT :
+		{
+			switch(dti_from->type)
+			{
+				case BIT_FIELD :
+				{
+					e->large_int_value = (int256){get_uint256(e_from->bit_field_value)};
+					return 1;
+				}
+				case UINT :
+				{
+					e->large_int_value = (int256){get_uint256(e_from->uint_value)};
+					return 1;
+				}
+				case INT :
+				{
+					e->large_int_value = get_int256(e_from->int_value);
+					return 1;
+				}
+				case LARGE_UINT :
+				{
+					e->large_int_value = (int256){e_from->large_uint_value};
+					return 1;
+				}
+				case LARGE_INT :
+				{
+					e->large_int_value = e_from->large_int_value;
 					return 1;
 				}
 				default :
@@ -693,6 +782,8 @@ user_value get_MIN_value_for_primitive_numeral_type_info(const data_type_info* d
 		}
 		case LARGE_UINT :
 			return (user_value){.large_uint_value = get_min_uint256()};
+		case LARGE_INT :
+			return (user_value){.large_int_value = bitwise_not_int256(get_bitmask_lower_n_bits_set_int256((dti->size * CHAR_BIT) - 1))};
 		case BIT_FIELD :
 			return (user_value){.bit_field_value = 0};
 		default :
@@ -721,6 +812,8 @@ user_value get_MAX_value_for_primitive_numeral_type_info(const data_type_info* d
 		}
 		case LARGE_UINT : // returns a uint256, with least significant (dti->size * CHAR_BIT) bits set to 1
 			return (user_value){.large_uint_value = get_bitmask_lower_n_bits_set_uint256(dti->size * CHAR_BIT)};
+		case LARGE_INT :
+			return (user_value){.large_int_value = get_bitmask_lower_n_bits_set_int256((dti->size * CHAR_BIT) - 1)};
 		case BIT_FIELD :
 			return (user_value){.bit_field_value = ((dti->bit_field_size == 64) ? UINT64_MAX : ((UINT64_C(1) << dti->bit_field_size) - 1))};
 		default :
