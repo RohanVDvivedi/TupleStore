@@ -337,7 +337,7 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 		case BIT_FIELD :
 		{
 			if(is_nullable_type_info(dti))
-				serialized_bytes[bytes_consumed++] = 0 ;
+				serialized_bytes[bytes_consumed++] = 0;
 			else
 				serialized_bytes[bytes_consumed++] = 1;
 			serialized_bytes[bytes_consumed++] = dti->bit_field_size;
