@@ -16,6 +16,7 @@ char const * const types_as_string[] = {
 								[INT]        = "INT",
 								[FLOAT]      = "FLOAT",
 								[LARGE_UINT] = "LARGE_UINT",
+								[LARGE_INT] = "LARGE_INT",
 								[STRING]     = "STRING",
 								[BLOB]       = "BLOB",
 								[TUPLE]      = "TUPLE",
@@ -75,6 +76,14 @@ int finalize_type_info(data_type_info* dti)
 		case LARGE_UINT :
 		{
 			if(dti->size < 1 || get_max_bytes_uint256() < dti->size)
+				return 0;
+			dti->is_variable_sized = 0;
+			break;
+		}
+
+		case LARGE_INT :
+		{
+			if(dti->size < 1 || get_max_bytes_int256() < dti->size)
 				return 0;
 			dti->is_variable_sized = 0;
 			break;
@@ -253,6 +262,7 @@ uint32_t get_byte_count_for_serialized_type_info(const data_type_info* dti)
 		case INT :
 		case FLOAT :
 		case LARGE_UINT :
+		case LARGE_INT :
 		{
 			bytes_consumed += get_byte_count_for_serialized_type_name(dti->type_name);
 			break;
@@ -1023,6 +1033,7 @@ void destroy_non_static_type_info_recursively(data_type_info* dti)
 		case INT :
 		case FLOAT :
 		case LARGE_UINT :
+		case LARGE_INT :
 		{
 			free(dti);
 			return;
@@ -1099,6 +1110,7 @@ int are_identical_type_info(const data_type_info* dti1, const data_type_info* dt
 		case INT :
 		case FLOAT :
 		case LARGE_UINT :
+		case LARGE_INT :
 		case STRING :
 		case BLOB :
 		default :
