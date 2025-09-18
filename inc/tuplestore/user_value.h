@@ -4,6 +4,7 @@
 #include<stdint.h>
 
 #include<serint/large_uints.h>
+#include<serint/large_ints.h>
 
 // user passes the parameters for assignement using this union
 
@@ -23,7 +24,7 @@ struct user_value
 		double double_value;
 		long double long_double_value;
 		uint256 large_uint_value;
-		uint256 large_int_value;
+		int256 large_int_value;
 		struct
 		{
 			const void* string_value;
