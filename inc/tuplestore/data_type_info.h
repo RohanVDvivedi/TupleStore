@@ -235,7 +235,7 @@ void print_type_info(const data_type_info* dti);
 #include<tuplestore/user_value.h>
 
 /*
-	primitive types like BIT_FIELD, UINT, INT, FLOAT, LARGE_UINT, STRING, BLOB, can be compared and set with each other without regard to their size or their variability of their size
+	primitive types like BIT_FIELD, UINT, INT, FLOAT, LARGE_UINT, LARGE_INT, STRING, BLOB, can be compared and set with each other without regard to their size or their variability of their size
 	i.e. a UINT of size 1 can be set with a uservalue pointing to UINT of size 3, this might result in soem data loss but it is assumes that you know what you are doing
 		similarly, if you data_type_info-s have type = STRING, then they can be set even if they both have different fixed sizes, OR 1 being variable sized and another being fixed size, there can be data loss here
 
@@ -345,6 +345,7 @@ uint64_t hash_containee_in_container(const data_type_info* dti, const void* data
 
 #include<serint/serial_int.h>
 #include<serint/large_uints.h>
+#include<serint/large_ints.h>
 #include<tuplestore/float_accesses.h>
 
 #include<cutlery/bitmap.h>
@@ -763,6 +764,12 @@ static inline int get_user_value_for_type_info(user_value* uval, const data_type
 			uval->large_uint_value = deserialize_uint256(data, dti->size);
 			break;
 		}
+		case LARGE_INT :
+		{
+			uval->is_NULL = 0;
+			uval->large_int_value = deserialize_int256(data, dti->size);
+			break;
+		}
 		case STRING :
 		{
 			uval->is_NULL = 0;
@@ -1094,6 +1101,11 @@ static inline int set_user_value_for_type_info(const data_type_info* dti, void* 
 			case LARGE_UINT :
 			{
 				serialize_uint256(data, dti->size, uval->large_uint_value);
+				return 1;
+			}
+			case LARGE_INT :
+			{
+				serialize_int256(data, dti->size, uval->large_int_value);
 				return 1;
 			}
 			case STRING :
