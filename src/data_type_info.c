@@ -563,7 +563,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		return NULL;
 
 	const unsigned char* serialized_bytes = data;
-	uint32_t bytes_consumed = 1;
+	uint32_t bytes_consumed = 0;
 
 	if(data_size >= 2 && serialized_bytes[0] == 0)
 	{
