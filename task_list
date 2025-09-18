@@ -1,8 +1,11 @@
 TASKS PICKED
 
  *2*
-  * integrate int256 into the project as a LARGE_INT, very similar to uint256, after int256 is implemented in serint
-  * now large_uint and large_int are comparable to double and float by converting them into doubles, this is not exact and could be error prone but this is the best we can do
+  * LARGE_INT
+    * thorough review for primitive_numeral_types.c, data_type_info.h, data_type_info.c, data_type_info_defaults.h, data_type_info_defaults.c, user_value.c and user_value.h
+    * check diff and review
+    * test
+    * merge to master
 
 1 NEW TYPE TASKS
 
@@ -10,3 +13,6 @@ TASKS PICKED
   * add hash_tables for type_name based type casting, comparing and hashing
     * also support getting min and max values for given types
     * as soon as you implement type based comparators for the tuple store, the suffix truncation in bplus tree will break so fix that soon after that
+
+ * now large_uint and large_int are comparable to double and float by converting them into doubles, this is not exact and could be error prone but this is the best we can do
+ * discard can compare and can typecast functions to always return 1 for all primitive numeral types
