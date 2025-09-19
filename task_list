@@ -3,8 +3,6 @@ TASKS PICKED
  *2*
   * LARGE_INT
     * thorough review for primitive_numeral_types.c, data_type_info.h, data_type_info.c, data_type_info_defaults.h, data_type_info_defaults.c, user_value.c and user_value.h
-    * test local test cases again, against old results
-    * test tupleindexer test cases with basic setup (tests mainly comparison and hashing)
     * test with new large_int containing test cases
     * merge to master
 
