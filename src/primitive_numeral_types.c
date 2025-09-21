@@ -763,6 +763,10 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 
 user_value get_MIN_value_for_primitive_numeral_type_info(const data_type_info* dti)
 {
+	// NULL is always the least value you can imagine
+	if(is_nullable_type_info(dti))
+		return (*NULL_USER_VALUE);
+
 	switch(dti->type)
 	{
 		case UINT :
