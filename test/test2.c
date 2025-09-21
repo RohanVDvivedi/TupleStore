@@ -194,6 +194,45 @@ int main()
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
 	print_tuple(my_tuple, def);
 
+	printf("\n\nprinting some mins and maxs\n\n");
+
+	user_value uval;
+	#define print_min_and_max(type) \
+	printf("for " #type " : "); \
+	uval = get_MIN_value_for_primitive_numeral_type_info(type);print_user_value(&uval, type); \
+	printf(" "); uval = get_MAX_value_for_primitive_numeral_type_info(type);print_user_value(&uval, type); \
+	printf("\n\n");
+
+	print_min_and_max(BIT_FIELD_NULLABLE[3]);
+	print_min_and_max(BIT_FIELD_NON_NULLABLE[3]);
+
+	print_min_and_max(BIT_FIELD_NULLABLE[64]);
+	print_min_and_max(BIT_FIELD_NON_NULLABLE[64]);
+
+	print_min_and_max(INT_NULLABLE[3]);
+	print_min_and_max(INT_NON_NULLABLE[3]);
+
+	print_min_and_max(INT_NULLABLE[8]);
+	print_min_and_max(INT_NON_NULLABLE[8]);
+
+	print_min_and_max(UINT_NULLABLE[3]);
+	print_min_and_max(UINT_NON_NULLABLE[3]);
+
+	print_min_and_max(UINT_NULLABLE[8]);
+	print_min_and_max(UINT_NON_NULLABLE[8]);
+
+	print_min_and_max(LARGE_INT_NULLABLE[3]);
+	print_min_and_max(LARGE_INT_NON_NULLABLE[3]);
+
+	print_min_and_max(LARGE_INT_NULLABLE[32]);
+	print_min_and_max(LARGE_INT_NON_NULLABLE[32]);
+
+	print_min_and_max(LARGE_UINT_NULLABLE[3]);
+	print_min_and_max(LARGE_UINT_NON_NULLABLE[3]);
+
+	print_min_and_max(LARGE_UINT_NULLABLE[32]);
+	print_min_and_max(LARGE_UINT_NON_NULLABLE[32]);
+
 	// delete tuple_def
 
 	return 0;
