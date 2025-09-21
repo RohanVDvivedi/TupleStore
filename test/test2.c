@@ -221,6 +221,9 @@ int main()
 	print_min_and_max(UINT_NULLABLE[8]);
 	print_min_and_max(UINT_NON_NULLABLE[8]);
 
+	print_min_and_max(FLOAT_double_NULLABLE);
+	print_min_and_max(FLOAT_double_NON_NULLABLE);
+
 	print_min_and_max(LARGE_INT_NULLABLE[3]);
 	print_min_and_max(LARGE_INT_NON_NULLABLE[3]);
 
