@@ -1,6 +1,5 @@
 TASKS PICKED
 
- * retest all current tests
  * add a function to test clone
  * refactor all downstream delete calls
  * review
