@@ -1035,7 +1035,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			{
 				// destroy all children of dti_p
 				for(uint32_t j = 0; j < i; j++)
-					destroy_non_static_type_info_recursively(dti_p->containees[j].al.type_info);
+					destroy_type_info_recursively(dti_p->containees[j].al.type_info, NULL);
 				free(dti_p);
 				return NULL;
 			}
@@ -1094,7 +1094,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		{
 			(*allocation_error) = 1;
 			// destroy containee
-			destroy_non_static_type_info_recursively(dti.containee);
+			destroy_type_info_recursively(dti.containee, NULL);
 			return NULL;
 		}
 		(*dti_p) = dti;
@@ -1105,10 +1105,14 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		return NULL;
 }
 
-void destroy_non_static_type_info_recursively(data_type_info* dti)
+void destroy_type_info_recursively(data_type_info* dti, const static_type_info_callback* stic_p)
 {
 	if(dti->is_static)
+	{
+		if(stic_p != NULL) // we encountered a static type info, so we need to make the callback
+			stic_p->callback(stic_p->callback, dti);
 		return;
+	}
 
 	switch(dti->type)
 	{
@@ -1126,14 +1130,14 @@ void destroy_non_static_type_info_recursively(data_type_info* dti)
 		case BLOB :
 		case ARRAY :
 		{
-			destroy_non_static_type_info_recursively(dti->containee);
+			destroy_type_info_recursively(dti->containee, stic_p);
 			free(dti);
 			return;
 		}
 		case TUPLE :
 		{
 			for(uint32_t i = 0; i < dti->element_count; i++)
-				destroy_non_static_type_info_recursively(dti->containees[i].al.type_info);
+				destroy_type_info_recursively(dti->containees[i].al.type_info, stic_p);
 			free(dti);
 			return;
 		}

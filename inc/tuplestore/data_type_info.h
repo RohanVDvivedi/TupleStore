@@ -208,7 +208,7 @@ typedef struct static_type_info_callback static_type_info_callback;
 struct static_type_info_callback
 {
 	void* context;
-	void callback(void* context, const data_type_info* dti);
+	void (*callback)(void* context, const data_type_info* dti);
 };
 
 // destroys data_type_info recursively
