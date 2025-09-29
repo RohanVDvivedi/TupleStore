@@ -1,9 +1,10 @@
 TASKS PICKED
 
- * clone for dtis, handle returning same pointer when static, and calling the callback also
  * retest all current tests
  * add a function to test clone
  * refactor all downstream delete calls
+ * review
+ * merge
 
 1 NEW TYPE TASKS
 
