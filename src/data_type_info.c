@@ -1144,6 +1144,83 @@ void destroy_type_info_recursively(data_type_info* dti, const static_type_info_c
 	}
 }
 
+data_type_info* clone_type_info_recursively(const data_type_info* dti, int* allocation_error, const static_type_info_callback* stic_p, const static_type_info_callback* on_destroy_p)
+{
+	// if it is static return that itself
+	if(dti->is_static)
+	{
+		if(stic_p != NULL) // we encountered a static type info, so we need to make the callback
+			stic_p->callback(stic_p->callback, dti);
+		return ((data_type_info*)(dti));
+	}
+
+	switch(dti->type)
+	{
+		case BIT_FIELD :
+		case UINT :
+		case INT :
+		case FLOAT :
+		case LARGE_UINT :
+		case LARGE_INT :
+		{
+			data_type_info* res = malloc(sizeof(data_type_info));
+			if(res == NULL)
+			{
+				(*allocation_error) = 1;
+				return NULL;
+			}
+			(*res) = (*dti);
+			return res;
+		}
+		case STRING :
+		case BLOB :
+		case ARRAY :
+		{
+			data_type_info* res = malloc(sizeof(data_type_info));
+			if(res == NULL)
+			{
+				(*allocation_error) = 1;
+				return NULL;
+			}
+			(*res) = (*dti);
+			res->containee = clone_type_info_recursively(dti->containee, allocation_error, stic_p, on_destroy_p);
+			if(*allocation_error)
+			{
+				free(res);
+				return NULL;
+			}
+			return res;
+		}
+		case TUPLE :
+		{
+			data_type_info* res = malloc(sizeof_tuple_data_type_info(dti->element_count));
+			if(res == NULL)
+			{
+				(*allocation_error) = 1;
+				return NULL;
+			}
+			memory_move(res, dti, sizeof_tuple_data_type_info(dti->element_count));
+
+			for(uint32_t i = 0; i < dti->element_count; i++)
+			{
+				res->containees[i].al.type_info = clone_type_info_recursively(dti->containees[i].al.type_info, allocation_error, stic_p, on_destroy_p);
+				if(*allocation_error)
+				{
+					for(uint32_t j = 0; j < i; j++)
+						destroy_type_info_recursively(dti->containees[j].al.type_info, on_destroy_p);
+					free(res);
+					return NULL;
+				}
+			}
+
+			return res;
+		}
+	}
+
+	// never reach here
+	return NULL;
+}
+
 int are_identical_type_info(const data_type_info* dti1, const data_type_info* dti2)
 {
 	// if either of dti1 or dti2 is not finalized, we fail
