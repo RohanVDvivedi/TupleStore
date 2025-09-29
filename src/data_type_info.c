@@ -1110,7 +1110,7 @@ void destroy_type_info_recursively(data_type_info* dti, const static_type_info_c
 	if(dti->is_static)
 	{
 		if(stic_p != NULL) // we encountered a static type info, so we need to make the callback
-			stic_p->callback(stic_p->callback, dti);
+			stic_p->callback(stic_p->context, dti);
 		return;
 	}
 
@@ -1150,7 +1150,7 @@ data_type_info* clone_type_info_recursively(const data_type_info* dti, int* allo
 	if(dti->is_static)
 	{
 		if(stic_p != NULL) // we encountered a static type info, so we need to make the callback
-			stic_p->callback(stic_p->callback, dti);
+			stic_p->callback(stic_p->context, dti);
 		return ((data_type_info*)(dti));
 	}
 
