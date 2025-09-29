@@ -213,11 +213,11 @@ struct static_type_info_callback
 
 // destroys data_type_info recursively
 // on static dtis it calls callback, instead, right before unlinking it from parent
-void destroy_type_info_recursively(data_type_info* dti, static_type_info_callback stic);
+void destroy_type_info_recursively(data_type_info* dti, const static_type_info_callback* stic_p);
 
 // clones data_type_info recursively
 // on static dtis it calls callback, instead, right before linking it with another new parent
-data_type_info* clone_type_info_recursively(const data_type_info* dti, static_type_info_callback stic);
+data_type_info* clone_type_info_recursively(const data_type_info* dti, const static_type_info_callback* stic_p);
 
 // returns 1, if the 2 data_type_info are logically identical
 int are_identical_type_info(const data_type_info* dti1, const data_type_info* dti2);
