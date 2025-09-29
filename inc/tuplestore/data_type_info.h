@@ -203,9 +203,21 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 // for the return value of this function you may destroy all nodes recursively except the ones marked is_static = 1
 // after deserialize_type_info returns success, you still need to call finalize_type_info on the output to make it any usefull
 
-// destroys all non-static (is_static = 0) data_type_info recursively
-// it is a candidate function to destroy the output of deserialize_type_info
-void destroy_non_static_type_info_recursively(data_type_info* dti);
+// this is the callback that gets called by the destroy and clone function below, that can be further used to manage reference counts of the statically-managed/shared data_type_infos
+typedef struct static_type_info_callback static_type_info_callback;
+struct static_type_info_callback
+{
+	void* context;
+	void callback(void* context, const data_type_info* dti);
+};
+
+// destroys data_type_info recursively
+// on static dtis it calls callback, instead, right before unlinking it from parent
+void destroy_type_info_recursively(data_type_info* dti, static_type_info_callback stic);
+
+// clones data_type_info recursively
+// on static dtis it calls callback, instead, right before linking it with another new parent
+data_type_info* clone_type_info_recursively(const data_type_info* dti, static_type_info_callback stic);
 
 // returns 1, if the 2 data_type_info are logically identical
 int are_identical_type_info(const data_type_info* dti1, const data_type_info* dti2);
