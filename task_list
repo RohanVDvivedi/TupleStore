@@ -1,8 +1,8 @@
 TASKS PICKED
 
- * clone for dtis, handle returning same pointer when static
  * pass call back when deleting soemthing attempts to delete something with is_static is true, this must be with call back context
  * refactor downstream apis when deleting the dtis, all libraries, grep the users of this library
+ * clone for dtis, handle returning same pointer when static, and calling the callback also
 
 1 NEW TYPE TASKS
 
