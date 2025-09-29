@@ -45,7 +45,7 @@ void test_serde_for_type_info(const data_type_info* dti)
 
 	printf("is serialization and deserialization produce identical dtis = %d\n", are_identical_type_info(dti, dti2));
 
-	destroy_non_static_type_info_recursively(dti2);
+	destroy_type_info_recursively(dti2, NULL);
 	free(bytes);
 	printf("\n\n");
 }
