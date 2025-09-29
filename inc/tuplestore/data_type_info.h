@@ -68,7 +68,7 @@ struct data_type_info
 {
 	int is_static; // -> if set this object is not to be freed, set for default types and custom types from extensions
 
-	// if is_static flag is set, then the dti will not be deleted/freed by the destroy_non_static_type_info_recursively
+	// if is_static flag is set, then the dti will not be deleted/freed by the destroy_type_info_recursively
 	// and instead for such a data_type_info, a callback will be called, you may use this function to reference count such data_type_infos (where is_static is set)
 
 	int is_finalized; // -> tuple and array data_types can only be used if this is set, else call finalize on this type and get success
