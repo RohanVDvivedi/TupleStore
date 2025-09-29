@@ -6,6 +6,7 @@
 #include<string.h>
 
 #include<test_serde_for_type_info.h>
+#include<test_clone_for_type_info.h>
 
 #include<preorder_print.h>
 
@@ -40,6 +41,7 @@ int main()
 		print_type_info(tuple_type_info);printf("\n");
 
 		test_serde_for_type_info(tuple_type_info);
+		test_clone_for_type_info(tuple_type_info);
 
 		char tuple[256];
 		initialize_minimal_data_for_type_info(tuple_type_info, tuple);
@@ -179,6 +181,7 @@ int main()
 		print_type_info(array_type_info);printf("\n");
 
 		test_serde_for_type_info(array_type_info);
+		test_clone_for_type_info(array_type_info);
 
 		char array[4096];
 		initialize_minimal_data_for_type_info(array_type_info, array);
@@ -239,6 +242,7 @@ int main()
 		print_type_info(array_type_info);printf("\n");
 
 		test_serde_for_type_info(array_type_info);
+		test_clone_for_type_info(array_type_info);
 
 		char array[4096];
 		initialize_minimal_data_for_type_info(array_type_info, array);
@@ -309,6 +313,7 @@ int main()
 		print_type_info(array_type_info);printf("\n");
 
 		test_serde_for_type_info(array_type_info);
+		test_clone_for_type_info(array_type_info);
 
 		char array[4096];
 		initialize_minimal_data_for_type_info(array_type_info, array);
@@ -341,6 +346,7 @@ int main()
 		print_type_info(array_type_info);printf("\n");
 
 		test_serde_for_type_info(array_type_info);
+		test_clone_for_type_info(array_type_info);
 
 		char array[4096];
 		initialize_minimal_data_for_type_info(array_type_info, array);
@@ -383,6 +389,7 @@ int main()
 		print_type_info(array_type_info);printf("\n");
 
 		test_serde_for_type_info(array_type_info);
+		test_clone_for_type_info(array_type_info);
 
 		char array[4096];
 		initialize_minimal_data_for_type_info(array_type_info, array);
@@ -426,6 +433,7 @@ int main()
 		print_type_info(array_type_info);printf("\n");
 
 		test_serde_for_type_info(array_type_info);
+		test_clone_for_type_info(array_type_info);
 
 		char array[4096];
 		initialize_minimal_data_for_type_info(array_type_info, array);
@@ -486,6 +494,7 @@ int main()
 		print_type_info(&s4);printf("\n");
 
 		test_serde_for_type_info(&s4);
+		test_clone_for_type_info(&s4);
 
 		char s[4096];
 		set_user_value_for_type_info(&s4, s, 0, 300, &(user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
@@ -527,7 +536,9 @@ int main()
 		finalize_type_info(&arr);
 
 		test_serde_for_type_info(&str);
+		test_clone_for_type_info(&str);
 		test_serde_for_type_info(&arr);
+		test_clone_for_type_info(&arr);
 
 		char string[4096];
 		char array[4096];
@@ -563,6 +574,7 @@ int main()
 		initialize_tuple_def(&def, &arr0);
 
 		test_serde_for_type_info(&arr0);
+		test_clone_for_type_info(&arr0);
 
 		char data[4096];
 		init_tuple(&def, data);
@@ -656,6 +668,7 @@ int main()
 		initialize_tuple_def(&def, &arr0);
 
 		test_serde_for_type_info(&arr0);
+		test_clone_for_type_info(&arr0);
 
 		char data[4096];
 		init_tuple(&def, data);

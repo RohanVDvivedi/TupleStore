@@ -6,6 +6,7 @@
 #include<tuplestore/page_layout.h>
 
 #include<test_serde_for_type_info.h>
+#include<test_clone_for_type_info.h>
 
 #include<preorder_print.h>
 
@@ -83,6 +84,7 @@ tuple_def* get_tuple_definition()
 	}
 
 	test_serde_for_type_info(tuple_type_info);
+	test_clone_for_type_info(tuple_type_info);
 
 	print_tuple_def(&tuple_definition);
 	printf("\n\n");

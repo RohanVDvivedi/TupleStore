@@ -6,6 +6,7 @@
 #include<tuplestore/page_layout.h>
 
 #include<test_serde_for_type_info.h>
+#include<test_clone_for_type_info.h>
 
 #define MAX_TUPLE_SIZE 4096
 char my_tuple[MAX_TUPLE_SIZE];
@@ -63,6 +64,7 @@ tuple_def* get_tuple_definition()
 	printf("\n\n");
 
 	test_serde_for_type_info(tuple_type_info);
+	test_clone_for_type_info(tuple_type_info);
 
 	return &tuple_definition;
 }
