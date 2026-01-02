@@ -1,11 +1,11 @@
 TASKS PICKED
 
+ * make large_uint and large_int convertible to and fro double/float and long double
+ * make large_uint and large_int comparable to double/float and long double
+
 1 NEW TYPE TASKS
 
  *1*
   * add hash_tables for type_name based type casting, comparing and hashing
     * also support getting min and max values for given types
     * as soon as you implement type based comparators for the tuple store, the suffix truncation in bplus tree will break so fix that soon after that
-
- * now large_uint and large_int are comparable to double and float by converting them into doubles, this is not exact and could be error prone but this is the best we can do
- * discard can compare and can typecast functions to always return 1 for all primitive numeral types
