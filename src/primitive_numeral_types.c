@@ -146,8 +146,6 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 						return compare_numbers(e1->bit_field_value, e2->float_value);
 					else if(dti_2->size == sizeof(double))
 						return compare_numbers(e1->bit_field_value, e2->double_value);
-					else if(dti_2->size == sizeof(long double))
-						return compare_numbers(e1->bit_field_value, e2->long_double_value);
 					else
 						return -2;
 				}
@@ -175,8 +173,6 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 						return compare_numbers(e1->uint_value, e2->float_value);
 					else if(dti_2->size == sizeof(double))
 						return compare_numbers(e1->uint_value, e2->double_value);
-					else if(dti_2->size == sizeof(long double))
-						return compare_numbers(e1->uint_value, e2->long_double_value);
 					else
 						return -2;
 				}
@@ -204,8 +200,6 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 						return compare_numbers(e1->int_value, e2->float_value);
 					else if(dti_2->size == sizeof(double))
 						return compare_numbers(e1->int_value, e2->double_value);
-					else if(dti_2->size == sizeof(long double))
-						return compare_numbers(e1->int_value, e2->long_double_value);
 					else
 						return -2;
 				}
@@ -235,8 +229,6 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 							return compare_numbers(e1->float_value, e2->float_value);
 						else if(dti_2->size == sizeof(double))
 							return compare_numbers(e1->float_value, e2->double_value);
-						else if(dti_2->size == sizeof(long double))
-							return compare_numbers(e1->float_value, e2->long_double_value);
 						else
 							return -2;
 					}
@@ -260,33 +252,6 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 							return compare_numbers(e1->double_value, e2->float_value);
 						else if(dti_2->size == sizeof(double))
 							return compare_numbers(e1->double_value, e2->double_value);
-						else if(dti_2->size == sizeof(long double))
-							return compare_numbers(e1->double_value, e2->long_double_value);
-						else
-							return -2;
-					}
-					default :
-						return -2;
-				}
-			}
-			else if(dti_1->size == sizeof(long double))
-			{
-				switch(dti_2->type)
-				{
-					case BIT_FIELD :
-						return compare_numbers(e1->long_double_value, e2->bit_field_value);
-					case UINT :
-						return compare_numbers(e1->long_double_value, e2->uint_value);
-					case INT :
-						return compare_numbers(e1->long_double_value, e2->int_value);
-					case FLOAT :
-					{
-						if(dti_2->size == sizeof(float))
-							return compare_numbers(e1->long_double_value, e2->float_value);
-						else if(dti_2->size == sizeof(double))
-							return compare_numbers(e1->long_double_value, e2->double_value);
-						else if(dti_2->size == sizeof(long double))
-							return compare_numbers(e1->long_double_value, e2->long_double_value);
 						else
 							return -2;
 					}
@@ -361,8 +326,6 @@ int compare_primitive_numeral_type2(const user_value* e1, const user_value* e2, 
 				return compare_numbers(e1->float_value, e2->float_value);
 			else if(dti->size == sizeof(double))
 				return compare_numbers(e1->double_value, e2->double_value);
-			else if(dti->size == sizeof(long double))
-				return compare_numbers(e1->long_double_value, e2->long_double_value);
 		}
 		case LARGE_UINT :
 			return compare_uint256(e1->large_uint_value, e2->large_uint_value);
@@ -420,11 +383,6 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 						e->bit_field_value = e_from->double_value;
 						return 1;
 					}
-					else if(dti_from->size == sizeof(long double))
-					{
-						e->bit_field_value = e_from->long_double_value;
-						return 1;
-					}
 					else
 						return 0;
 				}
@@ -473,11 +431,6 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 						e->uint_value = e_from->double_value;
 						return 1;
 					}
-					else if(dti_from->size == sizeof(long double))
-					{
-						e->uint_value = e_from->long_double_value;
-						return 1;
-					}
 					else
 						return 0;
 				}
@@ -524,11 +477,6 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 					else if(dti_from->size == sizeof(double))
 					{
 						e->int_value = e_from->double_value;
-						return 1;
-					}
-					else if(dti_from->size == sizeof(long double))
-					{
-						e->int_value = e_from->long_double_value;
 						return 1;
 					}
 					else
@@ -581,11 +529,6 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 							e->float_value = e_from->double_value;
 							return 1;
 						}
-						else if(dti_from->size == sizeof(long double))
-						{
-							e->float_value = e_from->long_double_value;
-							return 1;
-						}
 						else
 							return 0;
 					}
@@ -622,54 +565,6 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 						else if(dti_from->size == sizeof(double))
 						{
 							e->double_value = e_from->double_value;
-							return 1;
-						}
-						else if(dti_from->size == sizeof(long double))
-						{
-							e->double_value = e_from->long_double_value;
-							return 1;
-						}
-						else
-							return 0;
-					}
-					default :
-						return 0;
-				}
-			}
-			else if(dti->size == sizeof(long double))
-			{
-				switch(dti_from->type)
-				{
-					case BIT_FIELD :
-					{
-						e->long_double_value = e_from->bit_field_value;
-						return 1;
-					}
-					case UINT :
-					{
-						e->long_double_value = e_from->uint_value;
-						return 1;
-					}
-					case INT :
-					{
-						e->long_double_value = e_from->int_value;
-						return 1;
-					}
-					case FLOAT :
-					{
-						if(dti_from->size == sizeof(float))
-						{
-							e->long_double_value = e_from->float_value;
-							return 1;
-						}
-						else if(dti_from->size == sizeof(double))
-						{
-							e->long_double_value = e_from->double_value;
-							return 1;
-						}
-						else if(dti_from->size == sizeof(long double))
-						{
-							e->long_double_value = e_from->long_double_value;
 							return 1;
 						}
 						else
@@ -771,8 +666,6 @@ user_value get_MIN_value_for_primitive_numeral_type_info(const data_type_info* d
 				return (user_value){.float_value = get_FLOAT_MIN()};
 			else if(dti->size == sizeof(double))
 				return (user_value){.double_value = get_DOUBLE_MIN()};
-			else if(dti->size == sizeof(long double))
-				return (user_value){.long_double_value = get_LONG_DOUBLE_MIN()};
 			else
 				return (*NULL_USER_VALUE);
 		}
@@ -801,8 +694,6 @@ user_value get_MAX_value_for_primitive_numeral_type_info(const data_type_info* d
 				return (user_value){.float_value = get_FLOAT_MAX()};
 			else if(dti->size == sizeof(double))
 				return (user_value){.double_value = get_DOUBLE_MAX()};
-			else if(dti->size == sizeof(long double))
-				return (user_value){.long_double_value = get_LONG_DOUBLE_MAX()};
 			else
 				return (*NULL_USER_VALUE);
 		}
