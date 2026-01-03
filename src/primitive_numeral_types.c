@@ -727,16 +727,16 @@ user_value get_MIN_value_for_primitive_numeral_type_info(const data_type_info* d
 		case FLOAT :
 		{
 			if(dti->size == sizeof(float))
-				return (user_value){.float_value = get_FLOAT_MIN()};
+				return (user_value){.float_value = get_FLOAT_MIN()}; // this is -infinity
 			else if(dti->size == sizeof(double))
-				return (user_value){.double_value = get_DOUBLE_MIN()};
+				return (user_value){.double_value = get_DOUBLE_MIN()}; // this is -infinity
 			else
 				return (*NULL_USER_VALUE);
 		}
 		case LARGE_UINT :
-			return (user_value){.large_uint_value = get_min_uint256()};
+			return (user_value){.large_uint_value = get_min_uint256()}; // always a 0
 		case LARGE_INT :
-			return (user_value){.large_int_value = bitwise_not_int256(get_bitmask_lower_n_bits_set_int256((dti->size * CHAR_BIT) - 1))};
+			return (user_value){.large_int_value = bitwise_not_int256(get_bitmask_lower_n_bits_set_int256((dti->size * CHAR_BIT) - 1))}; // only the msb set to 1
 		case BIT_FIELD :
 			return (user_value){.bit_field_value = 0};
 		default :
@@ -763,9 +763,9 @@ user_value get_MAX_value_for_primitive_numeral_type_info(const data_type_info* d
 				return (*NULL_USER_VALUE);
 		}
 		case LARGE_UINT : // returns a uint256, with least significant (dti->size * CHAR_BIT) bits set to 1
-			return (user_value){.large_uint_value = get_bitmask_lower_n_bits_set_uint256(dti->size * CHAR_BIT)};
+			return (user_value){.large_uint_value = get_bitmask_lower_n_bits_set_uint256(dti->size * CHAR_BIT)}; // all relevant bits set to 1
 		case LARGE_INT :
-			return (user_value){.large_int_value = get_bitmask_lower_n_bits_set_int256((dti->size * CHAR_BIT) - 1)};
+			return (user_value){.large_int_value = get_bitmask_lower_n_bits_set_int256((dti->size * CHAR_BIT) - 1)}; // all (except msb signbit) set to 1
 		case BIT_FIELD :
 			return (user_value){.bit_field_value = ((dti->bit_field_size == 64) ? UINT64_MAX : ((UINT64_C(1) << dti->bit_field_size) - 1))};
 		default :
