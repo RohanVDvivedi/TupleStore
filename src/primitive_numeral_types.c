@@ -754,10 +754,11 @@ user_value get_MAX_value_for_primitive_numeral_type_info(const data_type_info* d
 			return (user_value){.int_value = get_INT64_MAX(dti->size)};
 		case FLOAT :
 		{
+			/* since NAN are not comparable to anything, but we want a total order, we place them after the +infinity */
 			if(dti->size == sizeof(float))
-				return (user_value){.float_value = get_FLOAT_MAX()};
+				return (user_value){.float_value = NAN;//get_FLOAT_MAX()};
 			else if(dti->size == sizeof(double))
-				return (user_value){.double_value = get_DOUBLE_MAX()};
+				return (user_value){.double_value = NAN;//get_DOUBLE_MAX()};
 			else
 				return (*NULL_USER_VALUE);
 		}
