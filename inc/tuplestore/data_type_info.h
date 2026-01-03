@@ -770,8 +770,6 @@ static inline int get_user_value_for_type_info(user_value* uval, const data_type
 				uval->float_value = deserialize_float(data);
 			else if(dti->size == sizeof(double))
 				uval->double_value = deserialize_double(data);
-			else if(dti->size == sizeof(long double))
-				uval->long_double_value = deserialize_long_double(data);
 			break;
 		}
 		case LARGE_UINT :
@@ -1110,8 +1108,6 @@ static inline int set_user_value_for_type_info(const data_type_info* dti, void* 
 					serialize_float(data, uval->float_value);
 				else if(dti->size == sizeof(double))
 					serialize_double(data, uval->double_value);
-				else if(dti->size == sizeof(long double))
-					serialize_long_double(data, uval->long_double_value);
 				return 1;
 			}
 			case LARGE_UINT :
