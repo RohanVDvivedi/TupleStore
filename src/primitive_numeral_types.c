@@ -358,7 +358,7 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 				case LARGE_UINT :
 					return compare_int256_uint256(e1->large_int_value, e2->large_uint_value);
 				case LARGE_INT :
-					return compare_int256(e2->large_int_value, e1->large_int_value);
+					return compare_int256(e1->large_int_value, e2->large_int_value);
 				default :
 					return -2;
 			}
