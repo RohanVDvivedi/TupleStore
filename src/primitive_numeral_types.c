@@ -197,6 +197,20 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 						else
 							return -2;
 					}
+					case LARGE_UINT :
+					{
+						/* NAN is the greatest, even greater than +infinity */
+						if(isnan(e1->float_value))
+							return 1;
+						return -compare_uint256_double(e2->large_uint_value, e1->float_value);
+					}
+					case LARGE_INT :
+					{
+						/* NAN is the greatest, even greater than +infinity */
+						if(isnan(e1->float_value))
+							return 1;
+						return -compare_int256_double(e2->large_int_value, e1->float_value);
+					}
 					default :
 						return -2;
 				}
@@ -253,6 +267,20 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 						}
 						else
 							return -2;
+					}
+					case LARGE_UINT :
+					{
+						/* NAN is the greatest, even greater than +infinity */
+						if(isnan(e1->double_value))
+							return 1;
+						return -compare_uint256_double(e2->large_uint_value, e1->double_value);
+					}
+					case LARGE_INT :
+					{
+						/* NAN is the greatest, even greater than +infinity */
+						if(isnan(e1->double_value))
+							return 1;
+						return -compare_int256_double(e2->large_int_value, e1->double_value);
 					}
 					default :
 						return -2;
