@@ -36,17 +36,27 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 			switch(dti_2->type)
 			{
 				case BIT_FIELD :
-					return compare_numbers(e1->bit_field_value, e2->bit_field_value);
+					return compare_numbers(e1->bit_field_value, e2->bit_field_value); // both are uint64_t so this is allowed
 				case UINT :
-					return compare_numbers(e1->bit_field_value, e2->uint_value);
+					return compare_numbers(e1->bit_field_value, e2->uint_value); // both are uint64_t so this is allowed
 				case INT :
-					return compare_numbers(e1->bit_field_value, e2->int_value);
+					return -compare_intb64_uintb64(get_intb64(e2->int_value), get_uintb64(e1->bit_field_value));
 				case FLOAT :
 				{
 					if(dti_2->size == sizeof(float))
-						return compare_numbers(e1->bit_field_value, e2->float_value);
+					{
+						/* NAN is always the greatest */
+						if(isnan(e2->float_value))
+							return -1;
+						return compare_uintb64_double(get_uintb64(e1->bit_field_value), e2->float_value);
+					}
 					else if(dti_2->size == sizeof(double))
-						return compare_numbers(e1->bit_field_value, e2->double_value);
+					{
+						/* NAN is always the greatest */
+						if(isnan(e2->double_value))
+							return -1;
+						return compare_uintb64_double(get_uintb64(e1->bit_field_value), e2->double_value);
+					}
 					else
 						return -2;
 				}
@@ -63,17 +73,27 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 			switch(dti_2->type)
 			{
 				case BIT_FIELD :
-					return compare_numbers(e1->uint_value, e2->bit_field_value);
+					return compare_numbers(e1->uint_value, e2->bit_field_value); // both are uint64_t so this is allowed
 				case UINT :
-					return compare_numbers(e1->uint_value, e2->uint_value);
+					return compare_numbers(e1->uint_value, e2->uint_value); // both are uint64_t so this is allowed
 				case INT :
-					return compare_numbers(e1->uint_value, e2->int_value);
+					return -compare_intb64_uintb64(get_intb64(e2->int_value), get_uintb64(e1->uint_value));
 				case FLOAT :
 				{
 					if(dti_2->size == sizeof(float))
-						return compare_numbers(e1->uint_value, e2->float_value);
+					{
+						/* NAN is always the greatest */
+						if(isnan(e2->float_value))
+							return -1;
+						return compare_uintb64_double(get_uintb64(e1->uint_value), e2->float_value);
+					}
 					else if(dti_2->size == sizeof(double))
-						return compare_numbers(e1->uint_value, e2->double_value);
+					{
+						/* NAN is always the greatest */
+						if(isnan(e2->double_value))
+							return -1;
+						return compare_uintb64_double(get_uintb64(e1->uint_value), e2->double_value);
+					}
 					else
 						return -2;
 				}
@@ -90,17 +110,27 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 			switch(dti_2->type)
 			{
 				case BIT_FIELD :
-					return compare_numbers(e1->int_value, e2->bit_field_value);
+					return compare_intb64_uintb64(get_intb64(e1->int_value), get_uintb64(e2->bit_field_value));
 				case UINT :
-					return compare_numbers(e1->int_value, e2->uint_value);
+					return compare_intb64_uintb64(get_intb64(e1->int_value), get_uintb64(e2->uint_value));
 				case INT :
-					return compare_numbers(e1->int_value, e2->int_value);
+					return compare_numbers(e1->int_value, e2->int_value); // both are int64_t so this is allowed
 				case FLOAT :
 				{
 					if(dti_2->size == sizeof(float))
-						return compare_numbers(e1->int_value, e2->float_value);
+					{
+						/* NAN is always the greatest */
+						if(isnan(e2->float_value))
+							return -1;
+						return compare_intb64_double(get_intb64(e1->int_value), e2->float_value);
+					}
 					else if(dti_2->size == sizeof(double))
-						return compare_numbers(e1->int_value, e2->double_value);
+					{
+						/* NAN is always the greatest */
+						if(isnan(e2->double_value))
+							return -1;
+						return compare_intb64_double(get_intb64(e1->int_value), e2->double_value);
+					}
 					else
 						return -2;
 				}
