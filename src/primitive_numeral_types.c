@@ -373,16 +373,8 @@ int compare_primitive_numeral_type2(const user_value* e1, const user_value* e2, 
 	}
 }
 
-int can_type_cast_primitive_numeral_type(const data_type_info* dti, const data_type_info* dti_from)
-{
-	return can_compare_primitive_numeral_type_infos(dti, dti_from);
-}
-
 int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, const user_value* e_from, const data_type_info* dti_from)
 {
-	if(!can_type_cast_primitive_numeral_type(dti, dti_from))
-		return 0;
-
 	// if e_from is NULL, return 
 	if(is_user_value_NULL(e_from))
 	{

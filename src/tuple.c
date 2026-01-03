@@ -298,10 +298,11 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, positional_accessor 
 
 	if(are_identical_type_info(dti, dti_in)) // if both are logically identical types, no type casting required
 		return set_element_in_tuple(tpl_d, pa, tupl, &uval_in, max_size_increment_allowed);
-	else if(is_primitive_numeral_type_info(dti) && is_primitive_numeral_type_info(dti_in) && can_type_cast_primitive_numeral_type(dti, dti_in)) // primitive numeral type info's are aften internally type castable
+	else if(is_primitive_numeral_type_info(dti) && is_primitive_numeral_type_info(dti_in)) // primitive numeral type info's are aften internally type castable
 	{
 		user_value uval_in_settable = {};
-		type_cast_primitive_numeral_type(&uval_in_settable, dti, &uval_in, dti_in);
+		if(!type_cast_primitive_numeral_type(&uval_in_settable, dti, &uval_in, dti_in))
+			return 0;
 		return set_element_in_tuple(tpl_d, pa, tupl, &uval_in_settable, max_size_increment_allowed);
 	}
 	else if((dti->type == STRING || dti->type == BLOB) && (dti_in->type == STRING || dti_in->type == BLOB)) // STRING and BLOB values of different sized are internally type castable
