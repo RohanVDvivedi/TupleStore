@@ -1,6 +1,5 @@
 TASKS PICKED
 
- * make large_uint and large_int convertible to and fro double/float and long double
  * make large_uint and large_int comparable to double/float and long double
  * convert all compparison of double/float/long double to exact comparison with uint64_ts
  * convert all uint64_t and int64_t comparison to uint64b and int64b type comparisons
