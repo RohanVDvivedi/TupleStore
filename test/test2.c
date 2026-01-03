@@ -179,6 +179,19 @@ int main()
 							((compare_direction[]){ASC}), 1);
 	printf("cmp = %d\n", cmp);
 
+	set_element_in_tuple(def, STATIC_POSITION(3), my_tuple, &((user_value){.int_value = -3}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(6), my_tuple, &((user_value){.uint_value = 3}), UINT32_MAX);
+
+	// print the tuple
+	printf("\nBuilt tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
+	print_tuple(my_tuple, def);
+
+	cmp = compare_tuples(
+							my_tuple, def, ((positional_accessor[]){STATIC_POSITION(3)}),
+							my_tuple, def, ((positional_accessor[]){STATIC_POSITION(6)}),
+							((compare_direction[]){ASC}), 1);
+	printf("cmp = %d\n", cmp);
+
 	// set them all to non nulls
 	printf("\nsetting all attributes to NULLs\n");
 	set_element_in_tuple(def, STATIC_POSITION(0), my_tuple, NULL_USER_VALUE, 0);
