@@ -550,6 +550,16 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 						else
 							return 0;
 					}
+					case LARGE_UINT :
+					{
+						e->float_value = convert_to_double_uint256(e_from->large_uint_value);
+						return 1;
+					}
+					case LARGE_INT :
+					{
+						e->float_value = convert_to_double_int256(e_from->large_int_value);
+						return 1;
+					}
 					default :
 						return 0;
 				}
@@ -587,6 +597,16 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 						}
 						else
 							return 0;
+					}
+					case LARGE_UINT :
+					{
+						e->double_value = convert_to_double_uint256(e_from->large_uint_value);
+						return 1;
+					}
+					case LARGE_INT :
+					{
+						e->double_value = convert_to_double_int256(e_from->large_int_value);
+						return 1;
 					}
 					default :
 						return 0;
