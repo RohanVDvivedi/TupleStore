@@ -8,8 +8,6 @@ int is_primitive_numeral_type_info(const data_type_info* dti);
 
 // before calling any of the below functions, you must ensure that the called dti-s are primitive_numeral_type_infos
 
-int can_compare_primitive_numeral_type_infos(const data_type_info* dti_1, const data_type_info* dti_2);
-
 int compare_primitive_numeral_type(const user_value* e1, const data_type_info* dti_1, const user_value* e2, const data_type_info* dti_2);
 
 int compare_primitive_numeral_type2(const user_value* e1, const user_value* e2, const data_type_info* dti);
