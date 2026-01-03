@@ -271,6 +271,25 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 					return compare_uint256(e1->large_uint_value, get_uint256(e2->uint_value));
 				case INT :
 					return -compare_int256_uint256(get_int256(e2->int_value), e1->large_uint_value);
+				case FLOAT :
+				{
+					if(dti_2->size == sizeof(float))
+					{
+						/* NAN is always the greatest */
+						if(isnan(e2->float_value))
+							return -1;
+						return compare_uint256_double(e1->large_uint_value, e2->float_value);
+					}
+					else if(dti_2->size == sizeof(double))
+					{
+						/* NAN is always the greatest */
+						if(isnan(e2->double_value))
+							return -1;
+						return compare_uint256_double(e1->large_uint_value, e2->double_value);
+					}
+					else
+						return -2;
+				}
 				case LARGE_UINT :
 					return compare_uint256(e1->large_uint_value, e2->large_uint_value);
 				case LARGE_INT :
@@ -289,6 +308,25 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 					return compare_int256_uint256(e1->large_int_value, get_uint256(e2->uint_value));
 				case INT :
 					return compare_int256(e1->large_int_value, get_int256(e2->int_value));
+				case FLOAT :
+				{
+					if(dti_2->size == sizeof(float))
+					{
+						/* NAN is always the greatest */
+						if(isnan(e2->float_value))
+							return -1;
+						return compare_int256_double(e1->large_int_value, e2->float_value);
+					}
+					else if(dti_2->size == sizeof(double))
+					{
+						/* NAN is always the greatest */
+						if(isnan(e2->double_value))
+							return -1;
+						return compare_int256_double(e1->large_int_value, e2->double_value);
+					}
+					else
+						return -2;
+				}
 				case LARGE_UINT :
 					return compare_int256_uint256(e1->large_int_value, e2->large_uint_value);
 				case LARGE_INT :
