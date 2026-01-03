@@ -375,12 +375,18 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 				{
 					if(dti_from->size == sizeof(float))
 					{
-						e->bit_field_value = e_from->float_value;
+						uintb64 temp;
+						if(!convert_from_double_uintb64(&temp, e_from->float_value))
+							return 0;
+						e->bit_field_value = temp.limbs[0];
 						return 1;
 					}
 					else if(dti_from->size == sizeof(double))
 					{
-						e->bit_field_value = e_from->double_value;
+						uintb64 temp;
+						if(!convert_from_double_uintb64(&temp, e_from->double_value))
+							return 0;
+						e->bit_field_value = temp.limbs[0];
 						return 1;
 					}
 					else
@@ -423,12 +429,18 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 				{
 					if(dti_from->size == sizeof(float))
 					{
-						e->uint_value = e_from->float_value;
+						uintb64 temp;
+						if(!convert_from_double_uintb64(&temp, e_from->float_value))
+							return 0;
+						e->bit_field_value = temp.limbs[0];
 						return 1;
 					}
 					else if(dti_from->size == sizeof(double))
 					{
-						e->uint_value = e_from->double_value;
+						uintb64 temp;
+						if(!convert_from_double_uintb64(&temp, e_from->double_value))
+							return 0;
+						e->bit_field_value = temp.limbs[0];
 						return 1;
 					}
 					else
@@ -471,12 +483,18 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 				{
 					if(dti_from->size == sizeof(float))
 					{
-						e->int_value = e_from->float_value;
+						intb64 temp;
+						if(!convert_from_double_intb64(&temp, e_from->float_value))
+							return 0;
+						e->bit_field_value = temp.raw_uint_value.limbs[0];
 						return 1;
 					}
 					else if(dti_from->size == sizeof(double))
 					{
-						e->int_value = e_from->double_value;
+						intb64 temp;
+						if(!convert_from_double_intb64(&temp, e_from->double_value))
+							return 0;
+						e->bit_field_value = temp.raw_uint_value.limbs[0];
 						return 1;
 					}
 					else
