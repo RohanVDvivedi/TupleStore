@@ -59,22 +59,22 @@ static inline void serialize_double(void* data, double x)
 
 static inline float get_FLOAT_MIN()
 {
-	return -1.0f/0.0f;
+	return -INFINITY;
 }
 
 static inline double get_DOUBLE_MIN()
 {
-	return -1.0/0.0;
+	return -INFINITY;
 }
 
 static inline float get_FLOAT_MAX()
 {
-	return 1.0f/0.0f;
+	return INFINITY;
 }
 
 static inline double get_DOUBLE_MAX()
 {
-	return 1.0/0.0;
+	return INFINITY;
 }
 
 #endif
