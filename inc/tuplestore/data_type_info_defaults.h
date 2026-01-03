@@ -13,8 +13,6 @@ extern data_type_info* INT_NULLABLE[9];
 
 extern data_type_info* INT_NON_NULLABLE[9];
 
-typedef long double long_double;
-
 #define declare_float_nullable_type(size_for) \
 extern data_type_info* FLOAT_ ## size_for ## _NULLABLE;
 declare_float_nullable_type(float)

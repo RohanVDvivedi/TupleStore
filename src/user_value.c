@@ -310,8 +310,6 @@ void print_user_value(const user_value* uval, const data_type_info* dti)
 				printf("%f", uval->float_value);
 			else if(dti->size == sizeof(double))
 				printf("%lf", uval->double_value);
-			else if(dti->size == sizeof(long double))
-				printf("%Lf", uval->long_double_value);
 			break;
 		}
 		case LARGE_UINT :

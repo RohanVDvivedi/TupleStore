@@ -22,7 +22,6 @@ struct user_value
 		int64_t int_value;
 		float float_value;
 		double double_value;
-		long double long_double_value;
 		uint256 large_uint_value;
 		int256 large_int_value;
 		struct
