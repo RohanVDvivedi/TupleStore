@@ -46,7 +46,7 @@ tuple_def* get_tuple_definition()
 	tuple_type_info->containees[6].al.type_info = UINT_NULLABLE[5];
 
 	strcpy(tuple_type_info->containees[7].field_name, "col_7");
-	tuple_type_info->containees[7].al.type_info = FLOAT_long_double_NULLABLE;
+	tuple_type_info->containees[7].al.type_info = FLOAT_double_NULLABLE;
 
 	strcpy(tuple_type_info->containees[8].field_name, "col_8");
 	tuple_type_info->containees[8].al.type_info = LARGE_UINT_NULLABLE[12];
@@ -92,7 +92,7 @@ int main()
 	set_element_in_tuple(def, STATIC_POSITION(4), my_tuple, &((user_value){.bit_field_value = 500}), UINT32_MAX);
 	set_element_in_tuple(def, STATIC_POSITION(5), my_tuple, &string_user_value("Dvivedi"), UINT32_MAX);
 	set_element_in_tuple(def, STATIC_POSITION(6), my_tuple, &((user_value){.uint_value = 29}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(7), my_tuple, &((user_value){.long_double_value = 2900}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(7), my_tuple, &((user_value){.double_value = 2900}), UINT32_MAX);
 	set_element_in_tuple(def, STATIC_POSITION(8), my_tuple, &((user_value){.large_uint_value = get_uint256(0x45)}), UINT32_MAX);
 	set_element_in_tuple(def, STATIC_POSITION(9), my_tuple, &((user_value){.large_int_value = get_int256(-545)}), UINT32_MAX);
 
@@ -109,7 +109,7 @@ int main()
 	set_element_in_tuple(def, STATIC_POSITION(4), my_tuple, &((user_value){.bit_field_value = 250}), UINT32_MAX);
 	set_element_in_tuple(def, STATIC_POSITION(5), my_tuple, &string_user_value("V Dvivedi"), UINT32_MAX);
 	set_element_in_tuple(def, STATIC_POSITION(6), my_tuple, &((user_value){.uint_value = 3000}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(7), my_tuple, &((user_value){.long_double_value = 295.2966}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(7), my_tuple, &((user_value){.double_value = 295.2966}), UINT32_MAX);
 	set_element_in_tuple(def, STATIC_POSITION(8), my_tuple, &((user_value){.large_uint_value = get_uint256(0x99)}), UINT32_MAX);
 	set_element_in_tuple(def, STATIC_POSITION(9), my_tuple, &((user_value){.large_int_value = get_int256(99099)}), UINT32_MAX);
 
