@@ -67,7 +67,7 @@ int finalize_type_info(data_type_info* dti)
 
 		case FLOAT :
 		{
-			if((dti->size != sizeof(float)) && (dti->size != sizeof(double)) && (dti->size != sizeof(long double)))
+			if((dti->size != sizeof(float)) && (dti->size != sizeof(double)))
 				return 0;
 			dti->is_variable_sized = 0;
 			break;
@@ -378,8 +378,8 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 					serialized_bytes[bytes_consumed++] = 6;
 				else if(dti->size == sizeof(double))
 					serialized_bytes[bytes_consumed++] = 7;
-				else
-					serialized_bytes[bytes_consumed++] = 8;
+				//else // left for extended float type for future
+					//serialized_bytes[bytes_consumed++] = 8;
 			}
 			else
 			{
@@ -387,8 +387,8 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 					serialized_bytes[bytes_consumed++] = 9;
 				else if(dti->size == sizeof(double))
 					serialized_bytes[bytes_consumed++] = 10;
-				else
-					serialized_bytes[bytes_consumed++] = 11;
+				//else // left for extended float type for future
+					//serialized_bytes[bytes_consumed++] = 11;
 			}
 
 			bytes_consumed += serialize_type_name(dti->type_name, serialized_bytes + bytes_consumed);
@@ -725,8 +725,8 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			dti = define_float_nullable_type("", float);
 		else if(type_no == 2)
 			dti = define_float_nullable_type("", double);
-		else if(type_no == 3)
-			dti = define_float_nullable_type("", long_double);
+		//else if(type_no == 3) // left for extended float type for future
+			//dti = define_float_nullable_type("", long_double);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
 		if(type_name_length == UINT32_MAX)
 			return NULL;
@@ -737,8 +737,8 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			return FLOAT_float_NULLABLE;
 		else if(are_identical_type_info(&dti, FLOAT_double_NULLABLE))
 			return FLOAT_double_NULLABLE;
-		else if(are_identical_type_info(&dti, FLOAT_long_double_NULLABLE))
-			return FLOAT_long_double_NULLABLE;
+		//else if(are_identical_type_info(&dti, FLOAT_long_double_NULLABLE))
+			//return FLOAT_long_double_NULLABLE;
 
 		data_type_info* dti_p = malloc(sizeof(data_type_info));
 		if(dti_p == NULL)
@@ -760,8 +760,8 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			dti = define_float_non_nullable_type("", float);
 		else if(type_no == 2)
 			dti = define_float_non_nullable_type("", double);
-		else if(type_no == 3)
-			dti = define_float_non_nullable_type("", long_double);
+		//else if(type_no == 3) // left for extended float type for future
+			//dti = define_float_non_nullable_type("", long_double);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
 		if(type_name_length == UINT32_MAX)
 			return NULL;
@@ -772,8 +772,8 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			return FLOAT_float_NULLABLE;
 		else if(are_identical_type_info(&dti, FLOAT_double_NULLABLE))
 			return FLOAT_double_NULLABLE;
-		else if(are_identical_type_info(&dti, FLOAT_long_double_NULLABLE))
-			return FLOAT_long_double_NULLABLE;
+		//else if(are_identical_type_info(&dti, FLOAT_long_double_NULLABLE))
+			//return FLOAT_long_double_NULLABLE;
 
 		data_type_info* dti_p = malloc(sizeof(data_type_info));
 		if(dti_p == NULL)
