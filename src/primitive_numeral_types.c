@@ -323,9 +323,29 @@ int compare_primitive_numeral_type2(const user_value* e1, const user_value* e2, 
 		case FLOAT :
 		{
 			if(dti->size == sizeof(float))
-				return compare_numbers(e1->float_value, e2->float_value);
+			{
+				// ensure that NAN is the greatest (greater than even +infinity) and compares equals to itself
+				if(isnan(e1->float_value) && isnan(e2->float_value))
+					return 0;
+				else if(isnan(e1->float_value))
+					return 1;
+				else if(isnan(e2->float_value))
+					return -1;
+				else
+					return compare_numbers(e1->float_value, e2->float_value);
+			}
 			else if(dti->size == sizeof(double))
-				return compare_numbers(e1->double_value, e2->double_value);
+			{
+				// ensure that NAN is the greatest (greater than even +infinity) and compares equals to itself
+				if(isnan(e1->double_value) && isnan(e2->double_value))
+					return 0;
+				else if(isnan(e1->double_value))
+					return 1;
+				else if(isnan(e2->double_value))
+					return -1;
+				else
+					return compare_numbers(e1->double_value, e2->double_value);
+			}
 		}
 		case LARGE_UINT :
 			return compare_uint256(e1->large_uint_value, e2->large_uint_value);
@@ -756,9 +776,9 @@ user_value get_MAX_value_for_primitive_numeral_type_info(const data_type_info* d
 		{
 			/* since NAN are not comparable to anything, but we want a total order, we place them after the +infinity */
 			if(dti->size == sizeof(float))
-				return (user_value){.float_value = NAN;//get_FLOAT_MAX()};
+				return (user_value){.float_value = NAN};// must not return get_FLOAT_MAX()
 			else if(dti->size == sizeof(double))
-				return (user_value){.double_value = NAN;//get_DOUBLE_MAX()};
+				return (user_value){.double_value = NAN};// must not return get_DOUBLE_MAX()
 			else
 				return (*NULL_USER_VALUE);
 		}
