@@ -187,11 +187,9 @@ data_type_info* INT_NON_NULLABLE[9] = {
 
 data_type_info* FLOAT_float_NULLABLE = &define_float_nullable_type("", float);
 data_type_info* FLOAT_double_NULLABLE = &define_float_nullable_type("", double);
-data_type_info* FLOAT_long_double_NULLABLE = &define_float_nullable_type("", long_double);
 
 data_type_info* FLOAT_float_NON_NULLABLE = &define_float_non_nullable_type("", float);
 data_type_info* FLOAT_double_NON_NULLABLE = &define_float_non_nullable_type("", double);
-data_type_info* FLOAT_long_double_NON_NULLABLE = &define_float_non_nullable_type("", long_double);
 
 data_type_info* LARGE_UINT_NULLABLE[33] = {
 	NULL,

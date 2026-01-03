@@ -19,13 +19,11 @@ typedef long double long_double;
 extern data_type_info* FLOAT_ ## size_for ## _NULLABLE;
 declare_float_nullable_type(float)
 declare_float_nullable_type(double)
-declare_float_nullable_type(long_double)
 
 #define declare_float_non_nullable_type(size_for) \
 extern data_type_info* FLOAT_ ## size_for ## _NON_NULLABLE;
 declare_float_non_nullable_type(float)
 declare_float_non_nullable_type(double)
-declare_float_non_nullable_type(long_double)
 
 extern data_type_info* LARGE_UINT_NULLABLE[33];
 
