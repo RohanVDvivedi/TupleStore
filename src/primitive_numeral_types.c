@@ -634,6 +634,19 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 					e->large_uint_value = get_int256(e_from->int_value).raw_uint_value;
 					return 1;
 				}
+				case FLOAT :
+				{
+					if(dti_from->size == sizeof(float))
+					{
+						return convert_from_double_uint256(&(e->large_uint_value), e_from->float_value);
+					}
+					else if(dti_from->size == sizeof(double))
+					{
+						return convert_from_double_uint256(&(e->large_uint_value), e_from->double_value);
+					}
+					else
+						return 0;
+				}
 				case LARGE_UINT :
 				{
 					e->large_uint_value = e_from->large_uint_value;
@@ -666,6 +679,19 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 				{
 					e->large_int_value = get_int256(e_from->int_value);
 					return 1;
+				}
+				case FLOAT :
+				{
+					if(dti_from->size == sizeof(float))
+					{
+						return convert_from_double_int256(&(e->large_int_value), e_from->float_value);
+					}
+					else if(dti_from->size == sizeof(double))
+					{
+						return convert_from_double_int256(&(e->large_int_value), e_from->double_value);
+					}
+					else
+						return 0;
 				}
 				case LARGE_UINT :
 				{
