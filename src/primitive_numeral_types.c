@@ -411,6 +411,8 @@ int compare_primitive_numeral_type2(const user_value* e1, const user_value* e2, 
 				else
 					return compare_numbers(e1->double_value, e2->double_value);
 			}
+			else
+				return -2;
 		}
 		case LARGE_UINT :
 			return compare_uint256(e1->large_uint_value, e2->large_uint_value);
