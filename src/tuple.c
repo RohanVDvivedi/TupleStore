@@ -305,8 +305,8 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, positional_accessor 
 			return 0;
 		return set_element_in_tuple(tpl_d, pa, tupl, &uval_in_settable, max_size_increment_allowed);
 	}
-	else if((dti->type == STRING || dti->type == BLOB) && (dti_in->type == STRING || dti_in->type == BLOB)) // STRING and BLOB values of different sized are internally type castable
-		return set_element_in_tuple(tpl_d, pa, tupl, &uval_in, max_size_increment_allowed); // string_value, blob_value and string_or_blob_value are interchangeable
+	else if((dti->type == STRING || dti->type == BINARY) && (dti_in->type == STRING || dti_in->type == BINARY)) // STRING and BINARY values of different sized are internally type castable
+		return set_element_in_tuple(tpl_d, pa, tupl, &uval_in, max_size_increment_allowed); // string_value, binary_value and string_or_binary_value are interchangeable
 	else
 		return 0;
 }

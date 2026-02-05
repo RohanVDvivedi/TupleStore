@@ -180,12 +180,12 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.containee = UINT_NON_NULLABLE[1], \
 })
 
-#define get_fixed_length_blob_type(_type_name, _size, _is_nullable) \
+#define get_fixed_length_binary_type(_type_name, _size, _is_nullable) \
 ((data_type_info){ \
 	.is_static = 0, \
 	.is_finalized = 0, \
 	.type_name = _type_name, \
-	.type = BLOB, \
+	.type = BINARY, \
 	.is_nullable = _is_nullable, \
 	.size = _size, \
 	.has_variable_element_count = 0, \
@@ -204,12 +204,12 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.containee = UINT_NON_NULLABLE[1], \
 })
 
-#define get_variable_length_blob_type(_type_name, _max_size) \
+#define get_variable_length_binary_type(_type_name, _max_size) \
 ((data_type_info){ \
 	.is_static = 0, \
 	.is_finalized = 0, \
 	.type_name = _type_name, \
-	.type = BLOB, \
+	.type = BINARY, \
 	.max_size = _max_size, \
 	.has_variable_element_count = 1, \
 	.containee = UINT_NON_NULLABLE[1], \

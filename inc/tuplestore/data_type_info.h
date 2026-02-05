@@ -22,7 +22,7 @@ enum data_type
 	// above attributes are always fixed length elements
 
 	STRING     = 6,
-	BLOB       = 7,
+	BINARY     = 7,
 	TUPLE      = 8,
 	ARRAY      = 9,
 	// the above 4 types may be fixed or variable length
@@ -79,7 +79,7 @@ struct data_type_info
 
 	int is_nullable; // -> only for fixed length elements, variable length elements are always nullable by setting their corresponding offset to 0
 
-	int is_variable_sized; // -> possibly set only for STRING, BLOB, TUPLE or ARRAY
+	int is_variable_sized; // -> possibly set only for STRING, BINARY, TUPLE or ARRAY
 	// -> must be set if you are setting has_variable_element_count
 	// -> gets derieved anyway, by the finalize function for container type hence not necessary to be set
 
@@ -97,18 +97,18 @@ struct data_type_info
 	uint32_t max_size; // -> for variable length elements, necessary to calculate bytes required to be allocated for offsets, sizes and counts
 	// max_size may never be more than the page_size of the system
 
-	int has_variable_element_count; // -> always 0 for a TUPLE, could be 1 for an ARRAY, and also true for variable sie strings and blobs
-	// must be set for variable sized string and blob
+	int has_variable_element_count; // -> always 0 for a TUPLE, could be 1 for an ARRAY, and also true for variable sie strings and binarys
+	// must be set for variable sized string and binary
 
 	uint32_t element_count; // -> to be used for TUPLE or ARRAY types only, and only when has_variable_element_count == 0
-	// for fixed length string and blob, this must equal size
+	// for fixed length string and binary, this must equal size
 
 	uint32_t prefix_bitmap_size_in_bits; // -> number of bits in the prefix bitmap, valid only for tuples and fixed element count array
-	// must be set to 0s for STRING and BLOB types
+	// must be set to 0s for STRING and BINARY types
 	// -> gets derieved anyway, by the finalize function for container types hence not necessary to be set
 
 	data_type_info* containee;	// -> to be used for ARRAY only
-	// for string and blob types the containee is always a UINT_1_NON_NULL i.e. non-nullable UINT of size 1 byte
+	// for string and binary types the containee is always a UINT_1_NON_NULL i.e. non-nullable UINT of size 1 byte
 
 	data_position_info containees[];	// -> to be used for TUPLE only, total element_count number of them
 	// -> these data_position_infos get derieved anyway, by the finalize function hence not necessary to be set
@@ -138,7 +138,7 @@ static inline uint32_t get_size_for_type_info(const data_type_info* dti, const v
 // this call must exist only in this library and must not exist in the user code
 static inline int overwrite_size_for_container_type_info_with_size_in_prefix(const data_type_info* dti, void* data, uint32_t new_size);
 
-// true only for string, blob, tuple and array
+// true only for string, binary, tuple and array
 static inline int is_container_type_info(const data_type_info* dti);
 
 // check if variable element_count
@@ -147,9 +147,9 @@ static inline int is_variable_element_count_container_type_info(const data_type_
 // get element_count
 static inline uint32_t get_element_count_for_container_type_info(const data_type_info* dti, const void* data);
 
-// false for string and blob
+// false for string and binary
 // true for variable sized tuples and arrays of variable sized elements
-// false also for variable element count array of fixed sized elements i.e. includes var sized strings and blobs
+// false also for variable element count array of fixed sized elements i.e. includes var sized strings and binarys
 // this size will be total of the complete size of the data, including the size required for storing the size
 static inline int has_size_in_its_prefix_for_container_type_info(const data_type_info* dti);
 
@@ -180,10 +180,10 @@ static inline uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(co
 */
 
 // returns NULL, if the index is definitely out of bounds (this check is performed only if it is a fixed element count container), or if you are attempting to index a non-container data_type_info
-// no checks to ensure that index is within bounds is done for variable sized strings, variable sized blobs OR variable element count arrays
+// no checks to ensure that index is within bounds is done for variable sized strings, variable sized binarys OR variable element count arrays
 static inline data_type_info* get_data_type_info_for_containee_of_container_without_data(const data_type_info* dti, uint32_t index);
 
-// valid for string, blob, tuple and array (generated on the fly for an array, string or blob)
+// valid for string, binary, tuple and array (generated on the fly for an array, string or binary)
 // valid only if index < get_element_count_for_container_type_info
 static inline data_type_info* get_data_type_info_for_containee_of_container(const data_type_info* dti, const void* data, uint32_t index);
 // below function is evaluated only if the passed cached_return is INVALID_DATA_POSITION_INFO, else it is a NO-OP
@@ -229,10 +229,10 @@ void print_type_info(const data_type_info* dti);
 /*
 **	tuple format
 **
-**	variable size string/blob are just variable element count arrays of non-nullable uint8s
+**	variable size string/binary are just variable element count arrays of non-nullable uint8s
 **
-**	size -> for containers with variable sized elements (this will include variable sized tuples, but will not include variable sized strings and blobs)
-**	element_count -> for containers with variable element count (this will never include tuples, but will include variable sized strings and blobs)
+**	size -> for containers with variable sized elements (this will include variable sized tuples, but will not include variable sized strings and binarys)
+**	element_count -> for containers with variable element count (this will never include tuples, but will include variable sized strings and binarys)
 **	prefix_bitmap -> 1 bit for each of the field of the container that passes needs_is_valid_bit_in_prefix_bitmap(), and required bits for the BIT_FIELD elements
 **	data_section -> fixed length elements stored in place, and offsets to the variable sized elements, which is followed by the actual contents of the variable sized elements
 */
@@ -241,7 +241,7 @@ void print_type_info(const data_type_info* dti);
 **		type 			variable sized element 				variable element count 				variable sized 				size in prefix 				element count in prefix
 **
 **		tuple 			0/1 								0									0/1 						0/1 						0
-**		string/blob 	0 									0/1 								0/1 						0 							0/1
+**		string/binary 	0 									0/1 								0/1 						0 							0/1
 **		array0			0 									0 									0 	 						0 							0
 **		array1 			0 									1 									1 							0 							1
 **		array2 			1 									0 									1 							1 							0
@@ -251,7 +251,7 @@ void print_type_info(const data_type_info* dti);
 #include<tuplestore/user_value.h>
 
 /*
-	primitive types like BIT_FIELD, UINT, INT, FLOAT, LARGE_UINT, LARGE_INT, STRING, BLOB, can be compared and set with each other without regard to their size or their variability of their size
+	primitive types like BIT_FIELD, UINT, INT, FLOAT, LARGE_UINT, LARGE_INT, STRING, BINARY, can be compared and set with each other without regard to their size or their variability of their size
 	i.e. a UINT of size 1 can be set with a uservalue pointing to UINT of size 3, this might result in soem data loss but it is assumes that you know what you are doing
 		similarly, if you data_type_info-s have type = STRING, then they can be set even if they both have different fixed sizes, OR 1 being variable sized and another being fixed size, there can be data loss here
 
@@ -261,7 +261,7 @@ void print_type_info(const data_type_info* dti);
 */
 
 /*
-	For all the functions below that take data_positional_info* containee_pos_info, this parameter is the cached prior copy of the accessible element inside the container (array or tuple or string or blob)
+	For all the functions below that take data_positional_info* containee_pos_info, this parameter is the cached prior copy of the accessible element inside the container (array or tuple or string or binary)
 	if you do not have ithis information prior to making this call pass a pointer to a local variable that is set to INVALID_DATA_POSITIONAL_INFO
 */
 
@@ -402,7 +402,7 @@ static inline uint32_t get_size_for_type_info(const data_type_info* dti, const v
 	uint32_t element_count = read_value_from_page(data + get_offset_to_prefix_element_count_for_container_type_info(dti), dti->max_size);
 
 	// now we know for sure that this is variable sized container, but without size in its prefix
-	// so this must be a container precisely : variable sized string, variable sized blob or array of variable element count but of fixed length type
+	// so this must be a container precisely : variable sized string, variable sized binary or array of variable element count but of fixed length type
 	// all in all we know the element_count and that each element is fixed sized element
 	
 	if(dti->containee->type == BIT_FIELD)
@@ -447,11 +447,11 @@ static inline int is_variable_element_count_container_type_info(const data_type_
 	if(dti->type == TUPLE)
 		return 0;
 
-	// a variable sized string or blob is always variable element count container
-	if(dti->type == STRING || dti->type == BLOB)
+	// a variable sized string or binary is always variable element count container
+	if(dti->type == STRING || dti->type == BINARY)
 		return 1;
 
-	// this leaves us with variable sized strings, blobs and arrays with either variable element count or containing variable sized elements
+	// this leaves us with variable sized strings, bbinarys and arrays with either variable element count or containing variable sized elements
 	return dti->has_variable_element_count;
 }
 
@@ -483,9 +483,9 @@ static inline int has_size_in_its_prefix_for_container_type_info(const data_type
 	if(dti->type == TUPLE)
 		return 1;
 
-	// not required for a variable sized string or blob
+	// not required for a variable sized string or binary
 	// we are already storing element_count for them
-	if(dti->type == STRING || dti->type == BLOB)
+	if(dti->type == STRING || dti->type == BINARY)
 		return 0;
 
 	// for an array we need to store the total size only if the individual elements that it contains is variable sized
@@ -507,8 +507,8 @@ static inline uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(co
 	if(dti->type == TUPLE)
 		return dti->prefix_bitmap_size_in_bits;
 
-	// no prefix bitmap necessary for STRING and BLOB
-	if(dti->type == STRING || dti->type == BLOB)
+	// no prefix bitmap necessary for STRING and BINARY
+	if(dti->type == STRING || dti->type == BINARY)
 		return 0;
 
 	// this must now be an array
@@ -534,7 +534,7 @@ static inline data_type_info* get_data_type_info_for_containee_of_container_with
 	if(dti->type == TUPLE)
 		return dti->containees[index].al.type_info;
 
-	if(dti->type == STRING || dti->type == BLOB)
+	if(dti->type == STRING || dti->type == BINARY)
 		return UINT_NON_NULLABLE[1]; // this must be the containee here, so why not return the default
 
 	// else it has to be an array
@@ -546,7 +546,7 @@ static inline data_type_info* get_data_type_info_for_containee_of_container_CONT
 	if(dti->type == TUPLE)
 		return dti->containees[index].al.type_info;
 
-	if(dti->type == STRING || dti->type == BLOB)
+	if(dti->type == STRING || dti->type == BINARY)
 		return UINT_NON_NULLABLE[1]; // this must be the containee here, so why not return the default
 
 	// else it has to be an array
@@ -581,7 +581,7 @@ static inline int get_data_positional_info_for_containee_of_container_CONTAINITY
 		return 1;
 	}
 
-	// case statement for strings, blobs and arrays
+	// case statement for strings, binarys and arrays
 
 	uint32_t prefix_bitmap_offset = get_offset_to_prefix_bitmap_for_container_type_info(dti);
 	uint32_t first_element_offset = prefix_bitmap_offset + get_prefix_bitmap_size_for_container_type_info(dti, data);
@@ -795,13 +795,13 @@ static inline int get_user_value_for_type_info(user_value* uval, const data_type
 			uval->string_size = strnlen(uval->string_value, uval->string_size);
 			break;
 		}
-		case BLOB :
+		case BINARY :
 		{
 			uval->is_NULL = 0;
-			// grab pointer to the first byte, and the element_count of the blob, since it is inherently an array of non-nullable fixed length elements, they are placed sequential after the first byte
+			// grab pointer to the first byte, and the element_count of the binary, since it is inherently an array of non-nullable fixed length elements, they are placed sequential after the first byte
 			// and the first byte is right where the prefix ends, there is not prefix_bitmap, so we can use its offset as index to first possible byte
-			uval->blob_value = data + get_offset_to_prefix_bitmap_for_container_type_info(dti);
-			uval->blob_size = get_element_count_for_container_type_info(dti, data);
+			uval->binary_value = data + get_offset_to_prefix_bitmap_for_container_type_info(dti);
+			uval->binary_size = get_element_count_for_container_type_info(dti, data);
 			break;
 		}
 		case TUPLE :
@@ -1045,10 +1045,10 @@ static inline int can_set_user_value_for_type_info(const data_type_info* dti, co
 				return 0;
 			return 1;
 		}
-		case BLOB :
+		case BINARY :
 		{
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval->blob_size;
+			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval->binary_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
@@ -1135,13 +1135,13 @@ static inline int set_user_value_for_type_info(const data_type_info* dti, void* 
 					memory_set(data + uval_t.string_size, 0, dti->size - uval_t.string_size);
 				return 1;
 			}
-			case BLOB :
+			case BINARY :
 			{
 				user_value uval_t = *uval;
 
-				uval_t.blob_size = min(uval_t.blob_size, dti->size);
+				uval_t.binary_size = min(uval_t.binary_size, dti->size);
 				// copy contents to data
-				memory_move(data, uval_t.blob_value, uval_t.blob_size);
+				memory_move(data, uval_t.binary_value, uval_t.binary_size);
 				return 1;
 			}
 			case TUPLE :
@@ -1191,17 +1191,17 @@ static inline int set_user_value_for_type_info(const data_type_info* dti, void* 
 			memory_move(data + get_value_size_on_page(dti->max_size), uval_t.string_value, uval_t.string_size);
 			return 1;
 		}
-		case BLOB :
+		case BINARY :
 		{
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval->blob_size;
+			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval->binary_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
 
 			// write element count and copy contents to data
-			write_value_to_page(data, dti->max_size, uval->blob_size);
-			memory_move(data + get_value_size_on_page(dti->max_size), uval->blob_value, uval->blob_size);
+			write_value_to_page(data, dti->max_size, uval->binary_size);
+			memory_move(data + get_value_size_on_page(dti->max_size), uval->binary_value, uval->binary_size);
 			return 1;
 		}
 		case TUPLE :
@@ -1378,7 +1378,7 @@ static inline int can_expand_container(const data_type_info* dti, const void* da
 	if(slots == 0)
 		return 1;
 
-	// since it is an array, string or a blob of variable element count
+	// since it is an array, string or a binary of variable element count
 	// it's containee is bound to be fixed
 	data_type_info* containee_type_info = dti->containee;
 
@@ -1442,7 +1442,7 @@ static inline int expand_container(const data_type_info* dti, void* data, uint32
 	if(slots == 0)
 		return 1;
 
-	// since it is an array, string or a blob of variable element count
+	// since it is an array, string or a binary of variable element count
 	// it's containee is bound to be fixed
 	data_type_info* containee_type_info = dti->containee;
 
@@ -1621,7 +1621,7 @@ static inline int discard_from_container(const data_type_info* dti, void* data, 
 	if(slots == 0)
 		return 1;
 
-	// since it is an array, string or a blob of variable element count
+	// since it is an array, string or a binary of variable element count
 	// it's containee is bound to be fixed
 	data_type_info* containee_type_info = dti->containee;
 

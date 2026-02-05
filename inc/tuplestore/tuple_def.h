@@ -29,7 +29,7 @@ struct tuple_size_def
 
 	// below attributes are only required when is_variable_sized = 1, has_size_in_prefix = 0, and has_element_count_in_prefix = 1
 	// this also implies that the element_count is variable, but the individual element is fixed size (may or may not be nullable)
-	// this is the case with variable size string, variable sized blob, and variable element count arrays of fixed sized elements
+	// this is the case with variable size string, variable sized binary, and variable element count arrays of fixed sized elements
 	int does_containee_need_is_valid_bit_in_prefix;
 	int is_containee_bit_field; // -> can either be a bitfield or not
 	union

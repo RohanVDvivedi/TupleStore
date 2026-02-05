@@ -19,8 +19,8 @@ uint32_t get_element_count_for_user_value(const user_value* uval, const data_typ
 
 	if(dti->type == STRING)
 		return uval->string_size;
-	else if(dti->type == BLOB)
-		return uval->blob_size;
+	else if(dti->type == BINARY)
+		return uval->binary_size;
 	else if(dti->type == TUPLE)
 		return get_element_count_for_container_type_info(dti, uval->tuple_value);
 	else if(dti->type == ARRAY)
@@ -44,10 +44,10 @@ int get_containee_for_user_value(user_value* uval_c, const user_value* uval, con
 	if(index >= get_element_count_for_user_value(uval, dti))
 		return 0;
 
-	if(dti->type == STRING || dti->type == BLOB)
+	if(dti->type == STRING || dti->type == BINARY)
 	{
 		uval_c->is_NULL = 0;
-		uval_c->uint_value = (((const unsigned char *)(uval->string_or_blob_value))[index] & UINT64_C(0xff));
+		uval_c->uint_value = (((const unsigned char *)(uval->string_or_binary_value))[index] & UINT64_C(0xff));
 		return 1;
 	}
 	else if(dti->type == TUPLE)
@@ -71,7 +71,7 @@ int can_compare_user_value(const data_type_info* dti1, const data_type_info* dti
 		return 1;
 	else if(is_primitive_numeral_type_info(dti1) && is_primitive_numeral_type_info(dti2)) // both are primitive numeral types
 		return 1;
-	else if((dti1->type == STRING || dti1->type == BLOB || dti1->type == ARRAY) && (dti2->type == STRING || dti2->type == BLOB || dti2->type == ARRAY)) // STRING, BLOB and ARRAY are internally comparable, if their containee types are comparable
+	else if((dti1->type == STRING || dti1->type == BINARY || dti1->type == ARRAY) && (dti2->type == STRING || dti2->type == BINARY || dti2->type == ARRAY)) // STRING, BINARY and ARRAY are internally comparable, if their containee types are comparable
 		return can_compare_user_value(dti1->containee, dti2->containee);
 	else
 		return 0;
@@ -109,7 +109,7 @@ static int compare_user_value_internal(const user_value* uval1, const data_type_
 		}
 		return cmp;
 	}
-	else // they both are a 9-combination of STRING, BLOB and ARRAY of comparable types
+	else // they both are a 9-combination of STRING, BINARY and ARRAY of comparable types
 	{
 		int cmp = 0;
 		uint32_t element_count1 = get_element_count_for_user_value(uval1, dti1);
@@ -181,7 +181,7 @@ static int compare_user_value_internal2(const user_value* uval1, const user_valu
 		}
 		return cmp;
 	}
-	else if(dti->type == STRING || dti->type == BLOB)
+	else if(dti->type == STRING || dti->type == BINARY)
 	{
 		int cmp = 0;
 		uint32_t element_count1 = get_element_count_for_user_value(uval1, dti);
@@ -189,7 +189,7 @@ static int compare_user_value_internal2(const user_value* uval1, const user_valu
 		uint32_t element_count = min(element_count1, element_count2);
 
 		for(uint32_t i = 0; i < element_count && cmp == 0; i++)
-			cmp = compare_numbers( (*((const unsigned char*)(uval1->string_or_blob_value + i))), (*((const unsigned char*)(uval2->string_or_blob_value + i))) );
+			cmp = compare_numbers( (*((const unsigned char*)(uval1->string_or_binary_value + i))), (*((const unsigned char*)(uval2->string_or_binary_value + i))) );
 
 		if(cmp == 0 && (element_count1 != element_count2))
 		{
@@ -201,7 +201,7 @@ static int compare_user_value_internal2(const user_value* uval1, const user_valu
 
 		return cmp;
 	}
-	else // they both are a 9-combination of STRING, BLOB and ARRAY of comparable types
+	else // they both are a 9-combination of STRING, BINARY and ARRAY of comparable types
 	{
 		int cmp = 0;
 		uint32_t element_count1 = get_element_count_for_user_value(uval1, dti);
@@ -260,9 +260,9 @@ uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tupl
 
 		return tuple_hash_bytes(th, (const uint8_t*)serialized_value, get_size_for_type_info(dti ,serialized_value));
 	}
-	else if(dti->type == STRING || dti->type == BLOB)
+	else if(dti->type == STRING || dti->type == BINARY)
 	{
-		return tuple_hash_bytes(th, uval->string_or_blob_value, uval->string_or_blob_size);
+		return tuple_hash_bytes(th, uval->string_or_binary_value, uval->string_or_binary_size);
 	}
 	else
 	{
@@ -327,11 +327,11 @@ void print_user_value(const user_value* uval, const data_type_info* dti)
 			printf("\"%.*s\"", uval->string_size, ((const char*)(uval->string_value)));
 			break;
 		}
-		case BLOB :
+		case BINARY :
 		{
-			printf("BLOB<%"PRIu32">[", uval->blob_size);
-			for(uint32_t i = 0; i < uval->blob_size; i++)
-				printf(" 0x%2"PRIx8, ((const uint8_t*)(uval->blob_value))[i]);
+			printf("BINARY<%"PRIu32">[", uval->binary_size);
+			for(uint32_t i = 0; i < uval->binary_size; i++)
+				printf(" 0x%2"PRIx8, ((const uint8_t*)(uval->binary_value))[i]);
 			printf("]");
 			break;
 		}

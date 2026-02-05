@@ -5,7 +5,7 @@
 
 // ------------------------------ structure and macros to index elements inside a tuple nestedly ----------------------------------------
 
-// used to access conatiner data type info's nestedly like TUPLE, ARRAY, STRING and BLOB only
+// used to access conatiner data type info's nestedly like TUPLE, ARRAY, STRING and BINARY only
 // stores the complete path to access the object
 typedef struct positional_accessor positional_accessor;
 struct positional_accessor
@@ -82,7 +82,7 @@ static inline int point_to_next_uncle_position(positional_accessor* pa) // logic
 			int valid = get_value_from_element_from_tuple(&uval, tpl_d, absolute_position, tupl);
 			const data_type_info* dti = get_type_info_for_element_from_tuple_def(tpl_d, absolute_position);
 
-			if((!valid) || (if you are iterating over types and the parent of dti is an array/string/blob and the absolute_position is at the child == 1) )
+			if((!valid) || (if you are iterating over types and the parent of dti is an array/string/binary and the absolute_position is at the child == 1) )
 			{
 				if((absolute_position.positions_length >= base_position.positions_length + 2) && point_to_next_uncle_position(&absolute_position))
 					continue;
@@ -167,10 +167,10 @@ int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* t
 
 // tupl must be initialized using init_tuple, before you call this function
 // does type casting internally for primitive numeral types, if possible then settable
-// strings and blobs are also internally type castable, and hence settable
+// strings and binarys are also internally type castable, and hence settable
 // if they are tuples their dti-s must match to be settable
 // arrays are not assignable using this function
-// while workin with STRING, BLOB, TUPLE and ARRAY types you must ensure that you are workin with 2 separate tuples, because their user_values point to data in tupl_in
+// while workin with STRING, BINARY, TUPLE and ARRAY types you must ensure that you are workin with 2 separate tuples, because their user_values point to data in tupl_in
 int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const tuple_def* tpl_d_in, positional_accessor pa_in, const void* tupl_in, uint32_t max_size_increment_allowed);
 
 uint32_t get_element_count_for_element_from_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl);

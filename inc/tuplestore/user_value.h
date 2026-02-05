@@ -31,15 +31,15 @@ struct user_value
 		};
 		struct
 		{
-			const void* blob_value;
-			uint32_t blob_size;
+			const void* binary_value;
+			uint32_t binary_size;
 		};
 		struct
 		{
-			const void* string_or_blob_value;
-			uint32_t string_or_blob_size;
+			const void* string_or_binary_value;
+			uint32_t string_or_binary_size;
 		};
-		// above 3 structs to access string and blob values must be identical, and can be used interchangeably
+		// above 3 structs to access string and binary values must be identical, and can be used interchangeably
 		const void* tuple_value;
 		const void* array_value;
 	};
@@ -48,7 +48,7 @@ struct user_value
 extern user_value const * const NULL_USER_VALUE;
 
 extern user_value const * const ZERO_USER_VALUE;
-extern user_value const * const EMPTY_USER_VALUE; // same value as ZERO_USER_VALUE, but generally used for conatiners like STRING, BLOB, TUPLE and ARRAY; tuple_value and array_value here are NULLs but they are considered as if this pointer points to their most minimally initialized value
+extern user_value const * const EMPTY_USER_VALUE; // same value as ZERO_USER_VALUE, but generally used for conatiners like STRING, BINARY, TUPLE and ARRAY; tuple_value and array_value here are NULLs but they are considered as if this pointer points to their most minimally initialized value
 // EMPTY_USER_VALUE can only be used for setting TUPLE and ARRAY types to their empty initialized forms using set_user_value_* and can_set_user_value_* functions in data_type_info.h and set_element_in_tuple and can_set_element_in_tuple functions in tuple.h
 // you must never pass them to hash and compare functions below
 // ZERO_USER_VALUE and EMPTY_USER_VALUE must not be passed to any function except the ones that are used for setting the attribute or initializing the data
@@ -60,7 +60,7 @@ static inline int is_user_value_NULL(const user_value* uval)
 
 #include<tuplestore/data_type_info.h>
 
-// only a valid function calls for container_type_info -> STRING, BLOB, TUPLE and ARRAY
+// only a valid function calls for container_type_info -> STRING, BINARY, TUPLE and ARRAY
 uint32_t get_element_count_for_user_value(const user_value* uval, const data_type_info* dti);
 int get_containee_for_user_value(user_value* uval_c, const user_value* uval, const data_type_info* dti, uint32_t index);
 

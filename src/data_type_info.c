@@ -16,9 +16,9 @@ char const * const types_as_string[] = {
 								[INT]        = "INT",
 								[FLOAT]      = "FLOAT",
 								[LARGE_UINT] = "LARGE_UINT",
-								[LARGE_INT] = "LARGE_INT",
+								[LARGE_INT]  = "LARGE_INT",
 								[STRING]     = "STRING",
-								[BLOB]       = "BLOB",
+								[BINARY]     = "BINARY",
 								[TUPLE]      = "TUPLE",
 								[ARRAY]      = "ARRAY",
 							};
@@ -90,7 +90,7 @@ int finalize_type_info(data_type_info* dti)
 		}
 
 		case STRING :
-		case BLOB :
+		case BINARY :
 		{
 			dti->containee = UINT_NON_NULLABLE[1];
 			if(!finalize_type_info(dti->containee))
@@ -101,7 +101,7 @@ int finalize_type_info(data_type_info* dti)
 			dti->prefix_bitmap_size_in_bits = 0; // will always be zero here
 			if(dti->is_variable_sized)
 			{
-				dti->min_size = get_value_size_on_page(dti->max_size); // an empty string or blob
+				dti->min_size = get_value_size_on_page(dti->max_size); // an empty string or binary
 				if(dti->min_size > dti->max_size)
 					return 0;
 			}
@@ -272,7 +272,7 @@ uint32_t get_byte_count_for_serialized_type_info(const data_type_info* dti)
 			break;
 		}
 		case STRING :
-		case BLOB :
+		case BINARY :
 		{
 			bytes_consumed += 4;
 			bytes_consumed += get_byte_count_for_serialized_type_name(dti->type_name);
@@ -441,7 +441,7 @@ uint32_t serialize_type_info(const data_type_info* dti, void* data)
 
 			break;
 		}
-		case BLOB :
+		case BINARY :
 		{
 			if(!is_variable_sized_type_info(dti))
 			{
@@ -924,7 +924,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 125) // BLOB
+	else if(serialized_bytes[0] <= 125) // BINARY
 	{
 		data_type_info dti = {};
 		bytes_consumed++;
@@ -937,7 +937,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 				return NULL;
 			uint32_t element_count = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
 
-			dti = get_fixed_length_blob_type("", element_count, is_nullable);
+			dti = get_fixed_length_binary_type("", element_count, is_nullable);
 		}
 		else
 		{
@@ -945,7 +945,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 				return NULL;
 			uint32_t max_size = deserialize_uint32(serialized_bytes + bytes_consumed, 4); bytes_consumed += 4;
 
-			dti = get_variable_length_blob_type("", max_size);
+			dti = get_variable_length_binary_type("", max_size);
 		}
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
 		if(type_name_length == UINT32_MAX)
@@ -1127,7 +1127,7 @@ void destroy_type_info_recursively(data_type_info* dti, const static_type_info_c
 			return;
 		}
 		case STRING :
-		case BLOB :
+		case BINARY :
 		case ARRAY :
 		{
 			destroy_type_info_recursively(dti->containee, stic_p);
@@ -1173,7 +1173,7 @@ data_type_info* clone_type_info_recursively(const data_type_info* dti, int* allo
 			return res;
 		}
 		case STRING :
-		case BLOB :
+		case BINARY :
 		case ARRAY :
 		{
 			data_type_info* res = malloc(sizeof(data_type_info));
@@ -1277,7 +1277,7 @@ int are_identical_type_info(const data_type_info* dti1, const data_type_info* dt
 		case LARGE_UINT :
 		case LARGE_INT :
 		case STRING :
-		case BLOB :
+		case BINARY :
 		default :
 			return 1;
 

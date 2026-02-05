@@ -40,7 +40,7 @@ int initialize_tuple_size_def(tuple_size_def* tuple_size_d, data_type_info* dti)
 		return 1;
 
 	// else we need to populate the containee type info
-	// it is either a variable sized string, variable sized blob OR variable element_count array of fixed sized elements
+	// it is either a variable sized string, variable sized binary OR variable element_count array of fixed sized elements
 	// either way the containee is fixed sized	
 
 	data_type_info* containee_type_info = dti->containee;
