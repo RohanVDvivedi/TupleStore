@@ -1,6 +1,5 @@
 TASKS PICKED
 
-* convert BLOB type's name to BINARY
 * convert user_value to datum
 
 
