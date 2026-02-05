@@ -3,7 +3,7 @@
 
 #include<tuplestore/tuple.h>
 #include<tuplestore/tuple_def.h>
-#include<tuplestore/user_value.h>
+#include<tuplestore/datum.h>
 
 void print_pre_order_ly(const tuple_def* tpl_d, const void* tupl, const positional_accessor base_position, uint32_t max_relative_depth)
 {
@@ -14,7 +14,7 @@ void print_pre_order_ly(const tuple_def* tpl_d, const void* tupl, const position
 
 	while(1)
 	{
-		user_value uval;
+		datum uval;
 		int valid = get_value_from_element_from_tuple(&uval, tpl_d, absolute_position, tupl);
 		const data_type_info* dti = get_type_info_for_element_from_tuple_def(tpl_d, absolute_position);
 
@@ -31,9 +31,9 @@ void print_pre_order_ly(const tuple_def* tpl_d, const void* tupl, const position
 		int skip_all_remaining_siblings = 0;
 		int skip_all_children = 0;
 
-		// analyze dti and user_value
+		// analyze dti and datum
 		printf(" = > ");
-		print_user_value(&uval, dti);
+		print_datum(&uval, dti);
 		printf("\n");
 
 		skip_all_children = (dti->type == STRING);
@@ -59,7 +59,7 @@ void print_pre_order_ly(const tuple_def* tpl_d, const void* tupl, const position
 		}
 
 		// default way to go next
-		if((absolute_position.positions_length < max_absolute_depth) && is_container_type_info(dti) && !is_user_value_NULL(&uval))
+		if((absolute_position.positions_length < max_absolute_depth) && is_container_type_info(dti) && !is_datum_NULL(&uval))
 		{
 			point_to_first_child_position(&absolute_position);
 			continue;

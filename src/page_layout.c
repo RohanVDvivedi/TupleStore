@@ -245,7 +245,7 @@ const void* get_nth_tuple_on_page(const void* page, uint32_t page_size, const tu
 	return 0;
 }
 
-int set_element_in_tuple_in_place_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, positional_accessor element_index, const user_value* value)
+int set_element_in_tuple_in_place_on_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, positional_accessor element_index, const datum* value)
 {
 	switch(get_page_layout_type(&(tpl_d->size_def)))
 	{

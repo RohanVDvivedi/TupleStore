@@ -571,7 +571,7 @@ const void* get_nth_tuple_slotted_page(const void* page, uint32_t page_size, con
 	return page + ith_tuple_offset_val;
 }
 
-int set_element_in_tuple_in_place_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, positional_accessor element_index, const user_value* value)
+int set_element_in_tuple_in_place_slotted_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, positional_accessor element_index, const datum* value)
 {
 	void* tuple_concerned = (void*) get_nth_tuple_slotted_page(page, page_size, &(tpl_d->size_def), tuple_index);
 

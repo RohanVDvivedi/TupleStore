@@ -10,10 +10,10 @@
 
 #include<preorder_print.h>
 
-int set_user_value_to_containee_in_container_WRAPPER(const data_type_info* dti, void* tuple, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval)
+int set_datum_to_containee_in_container_WRAPPER(const data_type_info* dti, void* tuple, uint32_t index, uint32_t max_size_increment_allowed, const datum* uval)
 {
 	data_positional_info temp = INVALID_DATA_POSITIONAL_INFO;
-	return set_user_value_to_containee_in_container(dti, tuple, index, max_size_increment_allowed, uval, &temp);
+	return set_datum_to_containee_in_container(dti, tuple, index, max_size_increment_allowed, uval, &temp);
 }
 
 int main()
@@ -48,20 +48,20 @@ int main()
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d\n", is_minimal_data_for_type_info(tuple_type_info, tuple));
 
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 0, 0, &(user_value){.uint_value = 5});
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 1, 0, &(user_value){.bit_field_value = 0x6});
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 0, 0, &(datum){.uint_value = 5});
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 1, 0, &(datum){.bit_field_value = 0x6});
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d\n", is_minimal_data_for_type_info(tuple_type_info, tuple));
 
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 2, 100, &(user_value){.string_value = "Devashree Dvivedi", .string_size = strlen("Devashree Dvivedi")});
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 2, 100, &(datum){.string_value = "Devashree Dvivedi", .string_size = strlen("Devashree Dvivedi")});
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d\n", is_minimal_data_for_type_info(tuple_type_info, tuple));
 
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 3, 0, &(user_value){.string_value = "ABC", .string_size = strlen("ABC")});
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 4, 0, &(user_value){.string_value = "DEF", .string_size = strlen("DEF")});
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 5, 300, &(user_value){.string_value = "Rupa Dvivedi", .string_size = strlen("Rupa Dvivedi")});
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 6, 0, &(user_value){.double_value = -5});
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 7, 0, &(user_value){.bit_field_value = 0x36});
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 3, 0, &(datum){.string_value = "ABC", .string_size = strlen("ABC")});
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 4, 0, &(datum){.string_value = "DEF", .string_size = strlen("DEF")});
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 5, 300, &(datum){.string_value = "Rupa Dvivedi", .string_size = strlen("Rupa Dvivedi")});
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 6, 0, &(datum){.double_value = -5});
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 7, 0, &(datum){.bit_field_value = 0x36});
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
 
@@ -72,57 +72,57 @@ int main()
 		printf("is 3rd element minimal = %d\n", e3 == NULL ? 0 : is_minimal_data_for_type_info(&s1, e3));
 		printf("is 4th element minimal = %d\n", e4 == NULL ? 0 : is_minimal_data_for_type_info(&s2, e4));
 
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 0, 0, &(user_value){.uint_value = 99});
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 1, 0, &(user_value){.bit_field_value = 0x25});
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 2, 100, &(user_value){.string_value = "Manan Joshi", .string_size = strlen("Manan Joshi")});
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 0, 0, &(datum){.uint_value = 99});
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 1, 0, &(datum){.bit_field_value = 0x25});
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 2, 100, &(datum){.string_value = "Manan Joshi", .string_size = strlen("Manan Joshi")});
 
 		print_data_for_data_type_info(tuple_type_info, tuple);
 		{
-			user_value uval;
-			get_user_value_for_type_info(&uval, tuple_type_info, tuple);
+			datum uval;
+			get_datum_for_type_info(&uval, tuple_type_info, tuple);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, tuple_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, tuple_type_info, FNV_64_TUPLE_HASHER),
+				hash_datum(&uval, tuple_type_info, FNV_64_TUPLE_HASHER),
 				hash_tuple(tuple, tpl_d, NULL, FNV_64_TUPLE_HASHER, tuple_type_info->element_count),
 				hash_tuple(tuple, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 3, 0, &(user_value){.string_value = "GHIJK", .string_size = strlen("GHIJK")});
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 4, 0, &(user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 5, 300, &(user_value){.string_value = "Vipulkumar DvivediXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX44444444444444444444444444444444444111111111111111111111111111111111111111111111111111111110", .string_size = strlen("Vipulkumar DvivediXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX44444444444444444444444444444444444111111111111111111111111111111111111111111111111111111110")});
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 6, 0, &(user_value){.double_value = 55});
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 7, 0, &(user_value){.bit_field_value = 0x25});
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 3, 0, &(datum){.string_value = "GHIJK", .string_size = strlen("GHIJK")});
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 4, 0, &(datum){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 5, 300, &(datum){.string_value = "Vipulkumar DvivediXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX44444444444444444444444444444444444111111111111111111111111111111111111111111111111111111110", .string_size = strlen("Vipulkumar DvivediXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX44444444444444444444444444444444444111111111111111111111111111111111111111111111111111111110")});
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 6, 0, &(datum){.double_value = 55});
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 7, 0, &(datum){.bit_field_value = 0x25});
 
 		print_data_for_data_type_info(tuple_type_info, tuple);
 		{
-			user_value uval;
-			get_user_value_for_type_info(&uval, tuple_type_info, tuple);
+			datum uval;
+			get_datum_for_type_info(&uval, tuple_type_info, tuple);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, tuple_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, tuple_type_info, FNV_64_TUPLE_HASHER),
+				hash_datum(&uval, tuple_type_info, FNV_64_TUPLE_HASHER),
 				hash_tuple(tuple, tpl_d, NULL, FNV_64_TUPLE_HASHER, tuple_type_info->element_count),
 				hash_tuple(tuple, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 0, 0, EMPTY_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 1, 0, EMPTY_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 2, 0, EMPTY_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 3, 0, EMPTY_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 4, 0, EMPTY_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 5, 0, EMPTY_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 6, 0, EMPTY_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 7, 0, EMPTY_USER_VALUE);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 0, 0, EMPTY_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 1, 0, EMPTY_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 2, 0, EMPTY_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 3, 0, EMPTY_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 4, 0, EMPTY_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 5, 0, EMPTY_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 6, 0, EMPTY_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 7, 0, EMPTY_DATUM);
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d", is_minimal_data_for_type_info(tuple_type_info, tuple));
 		{
-			user_value uval;
-			get_user_value_for_type_info(&uval, tuple_type_info, tuple);
+			datum uval;
+			get_datum_for_type_info(&uval, tuple_type_info, tuple);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, tuple_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, tuple_type_info, FNV_64_TUPLE_HASHER),
+				hash_datum(&uval, tuple_type_info, FNV_64_TUPLE_HASHER),
 				hash_tuple(tuple, tpl_d, NULL, FNV_64_TUPLE_HASHER, tuple_type_info->element_count),
 				hash_tuple(tuple, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
@@ -134,23 +134,23 @@ int main()
 		printf("is 3rd element minimal = %d\n", e3 == NULL ? 0 : is_minimal_data_for_type_info(&s1, e3));
 		printf("is 4th element minimal = %d\n", e4 == NULL ? 0 : is_minimal_data_for_type_info(&s2, e4));
 
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 0, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 1, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 2, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 3, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 4, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 5, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 6, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 7, 0, NULL_USER_VALUE);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 0, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 1, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 2, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 3, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 4, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 5, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 6, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 7, 0, NULL_DATUM);
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d", is_minimal_data_for_type_info(tuple_type_info, tuple));
 		{
-			user_value uval;
-			get_user_value_for_type_info(&uval, tuple_type_info, tuple);
+			datum uval;
+			get_datum_for_type_info(&uval, tuple_type_info, tuple);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, tuple_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, tuple_type_info, FNV_64_TUPLE_HASHER),
+				hash_datum(&uval, tuple_type_info, FNV_64_TUPLE_HASHER),
 				hash_tuple(tuple, tpl_d, NULL, FNV_64_TUPLE_HASHER, tuple_type_info->element_count),
 				hash_tuple(tuple, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
@@ -162,14 +162,14 @@ int main()
 		printf("is 3rd element minimal = %d\n", e3 == NULL ? 0 : is_minimal_data_for_type_info(&s1, e3));
 		printf("is 4th element minimal = %d\n", e4 == NULL ? 0 : is_minimal_data_for_type_info(&s2, e4));
 
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 0, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 1, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 2, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 3, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 4, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 5, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 6, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 7, 0, NULL_USER_VALUE);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 0, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 1, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 2, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 3, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 4, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 5, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 6, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(tuple_type_info, tuple, 7, 0, NULL_DATUM);
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("\n");
 	}
@@ -188,49 +188,49 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 0, 0, &(user_value){.bit_field_value = 0x1});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 1, 0, &(user_value){.bit_field_value = 0x2});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 2, 0, &(user_value){.bit_field_value = 0x3});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 0, 0, &(datum){.bit_field_value = 0x1});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 1, 0, &(datum){.bit_field_value = 0x2});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 2, 0, &(datum){.bit_field_value = 0x3});
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			user_value uval;
-			get_user_value_for_type_info(&uval, array_type_info, array);
+			datum uval;
+			get_datum_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_datum(&uval, array_type_info, FNV_64_TUPLE_HASHER),
 				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 0, 0, &(user_value){.bit_field_value = 0x4});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 1, 0, &(user_value){.bit_field_value = 0x5});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 2, 0, &(user_value){.bit_field_value = 0x6});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 0, 0, &(datum){.bit_field_value = 0x4});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 1, 0, &(datum){.bit_field_value = 0x5});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 2, 0, &(datum){.bit_field_value = 0x6});
 
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			user_value uval;
-			get_user_value_for_type_info(&uval, array_type_info, array);
+			datum uval;
+			get_datum_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_datum(&uval, array_type_info, FNV_64_TUPLE_HASHER),
 				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 0, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 1, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 2, 0, NULL_USER_VALUE);
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 0, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 1, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 2, 0, NULL_DATUM);
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			user_value uval;
-			get_user_value_for_type_info(&uval, array_type_info, array);
+			datum uval;
+			get_datum_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_datum(&uval, array_type_info, FNV_64_TUPLE_HASHER),
 				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 	}
@@ -249,58 +249,58 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			user_value uval;
-			get_user_value_for_type_info(&uval, array_type_info, array);
+			datum uval;
+			get_datum_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_datum(&uval, array_type_info, FNV_64_TUPLE_HASHER),
 				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 0, 0, &(user_value){.large_uint_value = get_uint256(12)});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 1, 0, &(user_value){.large_uint_value = get_uint256(13)});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 2, 0, &(user_value){.large_uint_value = get_uint256(14)});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 0, 0, &(datum){.large_uint_value = get_uint256(12)});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 1, 0, &(datum){.large_uint_value = get_uint256(13)});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 2, 0, &(datum){.large_uint_value = get_uint256(14)});
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			user_value uval;
-			get_user_value_for_type_info(&uval, array_type_info, array);
+			datum uval;
+			get_datum_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_datum(&uval, array_type_info, FNV_64_TUPLE_HASHER),
 				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 0, 0, &(user_value){.large_uint_value = get_uint256(15)});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 1, 0, &(user_value){.large_uint_value = get_uint256(16)});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 2, 0, &(user_value){.large_uint_value = get_uint256(17)});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 0, 0, &(datum){.large_uint_value = get_uint256(15)});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 1, 0, &(datum){.large_uint_value = get_uint256(16)});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 2, 0, &(datum){.large_uint_value = get_uint256(17)});
 
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			user_value uval;
-			get_user_value_for_type_info(&uval, array_type_info, array);
+			datum uval;
+			get_datum_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_datum(&uval, array_type_info, FNV_64_TUPLE_HASHER),
 				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 0, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 1, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 2, 0, NULL_USER_VALUE);
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 0, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 1, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 2, 0, NULL_DATUM);
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			user_value uval;
-			get_user_value_for_type_info(&uval, array_type_info, array);
+			datum uval;
+			get_datum_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_datum(&uval, array_type_info, FNV_64_TUPLE_HASHER),
 				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 	}
@@ -320,21 +320,21 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 0, 50, &(user_value){.string_value = "Devashree Dvivedi", .string_size = strlen("Devashree Dvivedi")});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 1, 50, &(user_value){.string_value = "Rupa Joshi", .string_size = strlen("Rupa Joshi")});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 2, 50, &(user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 0, 50, &(datum){.string_value = "Devashree Dvivedi", .string_size = strlen("Devashree Dvivedi")});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 1, 50, &(datum){.string_value = "Rupa Joshi", .string_size = strlen("Rupa Joshi")});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 2, 50, &(datum){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 1, 50, &(user_value){.string_value = "Rupa Dvivedi", .string_size = strlen("Rupa Dvivedi")});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 2, 50, &(user_value){.string_value = "Rohan Vipulkumar Dvivedi", .string_size = strlen("Rohan Vipulkumar Dvivedi")});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 0, 50, &(user_value){.string_value = "Devashree Joshi", .string_size = strlen("Devashree Joshi")});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 1, 50, &(datum){.string_value = "Rupa Dvivedi", .string_size = strlen("Rupa Dvivedi")});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 2, 50, &(datum){.string_value = "Rohan Vipulkumar Dvivedi", .string_size = strlen("Rohan Vipulkumar Dvivedi")});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 0, 50, &(datum){.string_value = "Devashree Joshi", .string_size = strlen("Devashree Joshi")});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 0, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 1, 0, NULL_USER_VALUE);
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 2, 0, NULL_USER_VALUE);
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 0, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 1, 0, NULL_DATUM);
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 2, 0, NULL_DATUM);
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 	}
@@ -361,10 +361,10 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 0, 50, &(user_value){.bit_field_value = 0x12});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 1, 50, &(user_value){.bit_field_value = 0x16});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 2, 50, &(user_value){.bit_field_value = 0x04});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 4, 50, &(user_value){.bit_field_value = 0x15});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 0, 50, &(datum){.bit_field_value = 0x12});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 1, 50, &(datum){.bit_field_value = 0x16});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 2, 50, &(datum){.bit_field_value = 0x04});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 4, 50, &(datum){.bit_field_value = 0x15});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
@@ -372,8 +372,8 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 2, 50, &(user_value){.bit_field_value = 0x15});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 4, 50, &(user_value){.bit_field_value = 0x08});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 2, 50, &(datum){.bit_field_value = 0x15});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 4, 50, &(datum){.bit_field_value = 0x08});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
@@ -404,10 +404,10 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 0, 50, &(user_value){.uint_value = 12});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 1, 50, &(user_value){.uint_value = 13});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 2, 50, &(user_value){.uint_value = 14});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 4, 50, &(user_value){.uint_value = 15});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 0, 50, &(datum){.uint_value = 12});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 1, 50, &(datum){.uint_value = 13});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 2, 50, &(datum){.uint_value = 14});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 4, 50, &(datum){.uint_value = 15});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
@@ -415,8 +415,8 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 2, 50, &(user_value){.uint_value = 16});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 4, 50, &(user_value){.uint_value = 17});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 2, 50, &(datum){.uint_value = 16});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 4, 50, &(datum){.uint_value = 17});
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
@@ -448,19 +448,19 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 0, 50, &(user_value){.string_value = "Rupa Dvivedi", .string_size = strlen("Rupa Dvivedi")});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 1, 50, &(user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 2, 50, &(user_value){.string_value = "Devashree Joshi", .string_size = strlen("Devashree Joshi")});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 4, 50, &(user_value){.string_value = "Vipulkumar Dvivedi", .string_size = strlen("Vipulkumar Dvivedi")});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 0, 50, &(datum){.string_value = "Rupa Dvivedi", .string_size = strlen("Rupa Dvivedi")});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 1, 50, &(datum){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 2, 50, &(datum){.string_value = "Devashree Joshi", .string_size = strlen("Devashree Joshi")});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 4, 50, &(datum){.string_value = "Vipulkumar Dvivedi", .string_size = strlen("Vipulkumar Dvivedi")});
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			user_value uval;
-			get_user_value_for_type_info(&uval, array_type_info, array);
+			datum uval;
+			get_datum_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_datum(&uval, array_type_info, FNV_64_TUPLE_HASHER),
 				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
@@ -468,17 +468,17 @@ int main()
 
 		print_data_for_data_type_info(array_type_info, array);printf("\n");
 
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 2, 50, &(user_value){.string_value = "Manan Joshi", .string_size = strlen("Manan Joshi")});
-		set_user_value_to_containee_in_container_WRAPPER(array_type_info, array, 4, 50, &(user_value){.string_value = "Avyaan Joshi", .string_size = strlen("Avyaan Joshi")});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 2, 50, &(datum){.string_value = "Manan Joshi", .string_size = strlen("Manan Joshi")});
+		set_datum_to_containee_in_container_WRAPPER(array_type_info, array, 4, 50, &(datum){.string_value = "Avyaan Joshi", .string_size = strlen("Avyaan Joshi")});
 
 		print_data_for_data_type_info(array_type_info, array);
 		{
-			user_value uval;
-			get_user_value_for_type_info(&uval, array_type_info, array);
+			datum uval;
+			get_datum_for_type_info(&uval, array_type_info, array);
 			tuple_def* tpl_d = &(tuple_def){};
 			initialize_tuple_def(tpl_d, array_type_info);
 			printf("    hashes = %"PRIu64" = %"PRIu64"\n",
-				hash_user_value(&uval, array_type_info, FNV_64_TUPLE_HASHER),
+				hash_datum(&uval, array_type_info, FNV_64_TUPLE_HASHER),
 				hash_tuple(array, tpl_d, &SELF, FNV_64_TUPLE_HASHER, 1));
 		}
 
@@ -497,7 +497,7 @@ int main()
 		test_clone_for_type_info(&s4);
 
 		char s[4096];
-		set_user_value_for_type_info(&s4, s, 0, 300, &(user_value){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
+		set_datum_for_type_info(&s4, s, 0, 300, &(datum){.string_value = "Rohan Dvivedi", .string_size = strlen("Rohan Dvivedi")});
 
 		print_data_for_data_type_info(&s4, s);printf("\n");
 
@@ -507,7 +507,7 @@ int main()
 
 		char* to_add = "Vipulkumar ";
 		for(char* c = to_add; (*c) != 0; c++)
-			set_user_value_to_containee_in_container_WRAPPER(&s4, s, 6 + (c - to_add), 300, &(user_value){.uint_value = (*c)});
+			set_datum_to_containee_in_container_WRAPPER(&s4, s, 6 + (c - to_add), 300, &(datum){.uint_value = (*c)});
 
 		print_data_for_data_type_info(&s4, s);printf("\n");
 
@@ -515,11 +515,11 @@ int main()
 
 		print_data_for_data_type_info(&s4, s);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&s4, s));
 
-		set_user_value_for_type_info(&s4, s, 0, 300, EMPTY_USER_VALUE);
+		set_datum_for_type_info(&s4, s, 0, 300, EMPTY_DATUM);
 
 		print_data_for_data_type_info(&s4, s);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&s4, s));
 
-		int setting_to_null = set_user_value_for_type_info(&s4, s, 0, 300, NULL_USER_VALUE);
+		int setting_to_null = set_datum_for_type_info(&s4, s, 0, 300, NULL_DATUM);
 
 		printf("tried setting to null, result = %d\n", setting_to_null);
 
@@ -543,23 +543,23 @@ int main()
 		char string[4096];
 		char array[4096];
 
-		set_user_value_for_type_info(&str, string, 0, 300, &(user_value){.string_value = "ABC", .string_size = 3});
+		set_datum_for_type_info(&str, string, 0, 300, &(datum){.string_value = "ABC", .string_size = 3});
 
-		set_user_value_for_type_info(&arr, array, 0, 300, EMPTY_USER_VALUE);
+		set_datum_for_type_info(&arr, array, 0, 300, EMPTY_DATUM);
 		expand_container(&arr, array, 0, 4, 300);
-		set_user_value_to_containee_in_container_WRAPPER(&arr, array, 0, 0, &(user_value){.int_value = 'A'});
-		set_user_value_to_containee_in_container_WRAPPER(&arr, array, 1, 0, &(user_value){.int_value = 'B'});
-		set_user_value_to_containee_in_container_WRAPPER(&arr, array, 2, 0, &(user_value){.int_value = 'C'});
+		set_datum_to_containee_in_container_WRAPPER(&arr, array, 0, 0, &(datum){.int_value = 'A'});
+		set_datum_to_containee_in_container_WRAPPER(&arr, array, 1, 0, &(datum){.int_value = 'B'});
+		set_datum_to_containee_in_container_WRAPPER(&arr, array, 2, 0, &(datum){.int_value = 'C'});
 
-		user_value string_uval;
-		get_user_value_for_type_info(&string_uval, &str, string);
-		user_value array_uval;
-		get_user_value_for_type_info(&array_uval, &arr, array);
+		datum string_uval;
+		get_datum_for_type_info(&string_uval, &str, string);
+		datum array_uval;
+		get_datum_for_type_info(&array_uval, &arr, array);
 
-		print_user_value(&string_uval, &str); printf("\n");
-		print_user_value(&array_uval, &arr); printf("\n");
+		print_datum(&string_uval, &str); printf("\n");
+		print_datum(&array_uval, &arr); printf("\n");
 
-		printf("cmp(string, array) = %d\n", compare_user_value(&string_uval, &str, &array_uval, &arr));
+		printf("cmp(string, array) = %d\n", compare_datum(&string_uval, &str, &array_uval, &arr));
 	}
 	printf("\n\n");
 
@@ -583,17 +583,17 @@ int main()
 		expand_element_count_for_element_in_tuple(&def, SELF, data, 0, 4, UINT32_MAX);
 		for(int i = 0; i < 4; i++)
 		{
-			set_element_in_tuple(&def, STATIC_POSITION(i), data, EMPTY_USER_VALUE, UINT32_MAX);
+			set_element_in_tuple(&def, STATIC_POSITION(i), data, EMPTY_DATUM, UINT32_MAX);
 
 			expand_element_count_for_element_in_tuple(&def, STATIC_POSITION(i), data, 0, 4, UINT32_MAX);
 			for(int j = 0; j < 4; j++)
 			{
-				set_element_in_tuple(&def, STATIC_POSITION(i, j), data, EMPTY_USER_VALUE, UINT32_MAX);
+				set_element_in_tuple(&def, STATIC_POSITION(i, j), data, EMPTY_DATUM, UINT32_MAX);
 
 				expand_element_count_for_element_in_tuple(&def, STATIC_POSITION(i, j), data, 0, 4, UINT32_MAX);
 				for(int k = 0; k < 4; k++)
 				{
-					set_element_in_tuple(&def, STATIC_POSITION(i, j, k), data, &(user_value){.int_value = (i * 4 * 4 + j * 4 + k)}, UINT32_MAX);
+					set_element_in_tuple(&def, STATIC_POSITION(i, j, k), data, &(datum){.int_value = (i * 4 * 4 + j * 4 + k)}, UINT32_MAX);
 				}
 			}
 		}
@@ -605,14 +605,14 @@ int main()
 
 
 		printf("\n");
-		printf("setting nested variable sized element to EMPTY_USER_VALUE : : \n");
-		set_element_in_tuple(&def, STATIC_POSITION(2, 1), data, EMPTY_USER_VALUE, UINT32_MAX);
+		printf("setting nested variable sized element to EMPTY_DATUM : : \n");
+		set_element_in_tuple(&def, STATIC_POSITION(2, 1), data, EMPTY_DATUM, UINT32_MAX);
 		print_tuple(data, &def);
 		printf("\n");
 
 		printf("\n");
-		printf("setting nested variable sized element to NULL_USER_VALUE : : \n");
-		set_element_in_tuple(&def, STATIC_POSITION(2, 1), data, NULL_USER_VALUE, UINT32_MAX);
+		printf("setting nested variable sized element to NULL_DATUM : : \n");
+		set_element_in_tuple(&def, STATIC_POSITION(2, 1), data, NULL_DATUM, UINT32_MAX);
 		print_tuple(data, &def);
 		printf("\n");
 
@@ -625,7 +625,7 @@ int main()
 			{
 				for(int k = 0; k < 4; k++)
 				{
-					set_element_in_tuple(&def, STATIC_POSITION(i, j, k), data, &(user_value){.int_value = -1}, UINT32_MAX);
+					set_element_in_tuple(&def, STATIC_POSITION(i, j, k), data, &(datum){.int_value = -1}, UINT32_MAX);
 					print_tuple(data, &def);
 					printf("\n");
 
@@ -676,13 +676,13 @@ int main()
 
 		for(int i = 0; i < 4; i++)
 		{
-			set_element_in_tuple(&def, STATIC_POSITION(i), data, EMPTY_USER_VALUE, UINT32_MAX);
+			set_element_in_tuple(&def, STATIC_POSITION(i), data, EMPTY_DATUM, UINT32_MAX);
 			for(int j = 0; j < 4; j++)
 			{
-				set_element_in_tuple(&def, STATIC_POSITION(i, j), data, EMPTY_USER_VALUE, UINT32_MAX);
+				set_element_in_tuple(&def, STATIC_POSITION(i, j), data, EMPTY_DATUM, UINT32_MAX);
 				for(int k = 0; k < 4; k++)
 				{
-					set_element_in_tuple(&def, STATIC_POSITION(i, j, k), data, &(user_value){.int_value = (i * 4 * 4 + j * 4 + k)}, UINT32_MAX);
+					set_element_in_tuple(&def, STATIC_POSITION(i, j, k), data, &(datum){.int_value = (i * 4 * 4 + j * 4 + k)}, UINT32_MAX);
 				}
 			}
 		}
@@ -694,14 +694,14 @@ int main()
 
 
 		printf("\n");
-		printf("setting nested variable sized element to EMPTY_USER_VALUE : : \n");
-		set_element_in_tuple(&def, STATIC_POSITION(2, 1), data, EMPTY_USER_VALUE, UINT32_MAX);
+		printf("setting nested variable sized element to EMPTY_DATUM : : \n");
+		set_element_in_tuple(&def, STATIC_POSITION(2, 1), data, EMPTY_DATUM, UINT32_MAX);
 		print_tuple(data, &def);
 		printf("\n");
 
 		printf("\n");
-		printf("setting nested variable sized element to NULL_USER_VALUE : : \n");
-		set_element_in_tuple(&def, STATIC_POSITION(2, 1), data, NULL_USER_VALUE, UINT32_MAX);
+		printf("setting nested variable sized element to NULL_DATUM : : \n");
+		set_element_in_tuple(&def, STATIC_POSITION(2, 1), data, NULL_DATUM, UINT32_MAX);
 		print_tuple(data, &def);
 		printf("\n");
 
@@ -714,7 +714,7 @@ int main()
 			{
 				for(int k = 0; k < 4; k++)
 				{
-					set_element_in_tuple(&def, STATIC_POSITION(i, j, k), data, &(user_value){.int_value = 0}, UINT32_MAX);
+					set_element_in_tuple(&def, STATIC_POSITION(i, j, k), data, &(datum){.int_value = 0}, UINT32_MAX);
 					print_tuple(data, &def);
 					printf("\n");
 				}
@@ -725,21 +725,21 @@ int main()
 		print_tuple(data, &def);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&arr0, data));
 
 		printf("\nsetting all to NULL and checking if it is minimal\n");
-		set_element_in_tuple(&def, STATIC_POSITION(0), data, NULL_USER_VALUE, UINT32_MAX);
-		set_element_in_tuple(&def, STATIC_POSITION(1), data, NULL_USER_VALUE, UINT32_MAX);
-		set_element_in_tuple(&def, STATIC_POSITION(2), data, NULL_USER_VALUE, UINT32_MAX);
-		set_element_in_tuple(&def, STATIC_POSITION(3), data, NULL_USER_VALUE, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(0), data, NULL_DATUM, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(1), data, NULL_DATUM, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(2), data, NULL_DATUM, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(3), data, NULL_DATUM, UINT32_MAX);
 		print_tuple(data, &def);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&arr0, data));
 
 		printf("\nsetting all to EMPTY then NULL and checking if it is minimal\n");
-		set_element_in_tuple(&def, STATIC_POSITION(0), data, EMPTY_USER_VALUE, UINT32_MAX);
-		set_element_in_tuple(&def, STATIC_POSITION(1), data, EMPTY_USER_VALUE, UINT32_MAX);
-		set_element_in_tuple(&def, STATIC_POSITION(2), data, EMPTY_USER_VALUE, UINT32_MAX);
-		set_element_in_tuple(&def, STATIC_POSITION(3), data, EMPTY_USER_VALUE, UINT32_MAX);
-		set_element_in_tuple(&def, STATIC_POSITION(0), data, NULL_USER_VALUE, UINT32_MAX);
-		set_element_in_tuple(&def, STATIC_POSITION(1), data, NULL_USER_VALUE, UINT32_MAX);
-		set_element_in_tuple(&def, STATIC_POSITION(2), data, NULL_USER_VALUE, UINT32_MAX);
-		set_element_in_tuple(&def, STATIC_POSITION(3), data, NULL_USER_VALUE, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(0), data, EMPTY_DATUM, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(1), data, EMPTY_DATUM, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(2), data, EMPTY_DATUM, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(3), data, EMPTY_DATUM, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(0), data, NULL_DATUM, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(1), data, NULL_DATUM, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(2), data, NULL_DATUM, UINT32_MAX);
+		set_element_in_tuple(&def, STATIC_POSITION(3), data, NULL_DATUM, UINT32_MAX);
 		print_tuple(data, &def);printf("    is minimal = %d\n", is_minimal_data_for_type_info(&arr0, data));
 	}
 	printf("\n\n");

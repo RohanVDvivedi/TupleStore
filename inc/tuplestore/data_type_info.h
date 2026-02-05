@@ -248,16 +248,16 @@ void print_type_info(const data_type_info* dti);
 **		array3 			1 									1 									1 							1 							1
 */
 
-#include<tuplestore/user_value.h>
+#include<tuplestore/datum.h>
 
 /*
 	primitive types like BIT_FIELD, UINT, INT, FLOAT, LARGE_UINT, LARGE_INT, STRING, BINARY, can be compared and set with each other without regard to their size or their variability of their size
 	i.e. a UINT of size 1 can be set with a uservalue pointing to UINT of size 3, this might result in soem data loss but it is assumes that you know what you are doing
 		similarly, if you data_type_info-s have type = STRING, then they can be set even if they both have different fixed sizes, OR 1 being variable sized and another being fixed size, there can be data loss here
 
-	for TUPLE and ARRAY we always assume that the data_type_info of the user_value is exactly same as that of data, even if they are variable sized, then even their max_size must not be different
+	for TUPLE and ARRAY we always assume that the data_type_info of the datum is exactly same as that of data, even if they are variable sized, then even their max_size must not be different
 	i.e. if they are variable sized their max_size also can not be different, neither can they have different containee/s
-	TUPLE and ARRAY types are literally copied from their user_values
+	TUPLE and ARRAY types are literally copied from their datums
 */
 
 /*
@@ -277,9 +277,9 @@ static inline const void* get_pointer_to_containee_from_container(const data_typ
 static inline uint32_t get_size_of_containee_from_container(const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info);
 
 // returns NULL by default for BIT_FIELD types, as bit_fields must exist inside a container
-static inline int get_user_value_for_type_info(user_value* uval, const data_type_info* dti, const void* data);
+static inline int get_datum_for_type_info(datum* uval, const data_type_info* dti, const void* data);
 
-static inline int get_user_value_to_containee_from_container(user_value* uval, const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info);
+static inline int get_datum_to_containee_from_container(datum* uval, const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info);
 
 // this needs to be done for modifying the variable sized element of the container, if its size would change
 // if the above function passes, we do not need to call this function
@@ -288,11 +288,11 @@ static inline int move_variable_sized_containee_to_end_of_container(const data_t
 // initializes the 0-ed out data with minimum size for this element
 // this is a NO-OP for bitfield elements
 // returns the size of the data
-// it is equivalent to set_user_value_for_type_info(dti, data, 0, dti->min_size, EMPTY_USER_VALUE);
+// it is equivalent to set_datum_for_type_info(dti, data, 0, dti->min_size, EMPTY_DATUM);
 static inline uint32_t initialize_minimal_data_for_type_info(const data_type_info* dti, void* data);
 
-// returns true, if the data is minimal initialized or set to EMPTY_USER_VALUE
-// if this function returns 1, this implies data is equivalent to EMPTY_USER_VALUE
+// returns true, if the data is minimal initialized or set to EMPTY_DATUM
+// if this function returns 1, this implies data is equivalent to EMPTY_DATUM
 static inline int is_minimal_data_for_type_info(const data_type_info* dti, const void* data);
 
 static inline int set_containee_to_NULL_in_container(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info);
@@ -300,20 +300,20 @@ static inline int set_containee_to_NULL_in_container(const data_type_info* dti, 
 // data here is assumed to contain garbage
 // max_size_increment_allowed is never a problem for fixed length elements
 // if is_valid bit is set, then the data is valid valud with data_type_info
-static inline int can_set_user_value_for_type_info(const data_type_info* dti, const void* data, int is_valid, uint32_t max_size_increment_allowed, const user_value* uval);
+static inline int can_set_datum_for_type_info(const data_type_info* dti, const void* data, int is_valid, uint32_t max_size_increment_allowed, const datum* uval);
 
 // returns 0, if the max_size_increment is violated OR the dti is BIT_FIELD type OR uval is NULL
 // max_size_increment_allowed is never a problem for fixed length elements
 // if is_valid bit is set, then the data is valid valud with data_type_info
-static inline int set_user_value_for_type_info(const data_type_info* dti, void* data, int is_valid, uint32_t max_size_increment_allowed, const user_value* uval);
+static inline int set_datum_for_type_info(const data_type_info* dti, void* data, int is_valid, uint32_t max_size_increment_allowed, const datum* uval);
 
 // returns 0, if the max_size_increment is violated OR uval is NULL and the element is non-NULLABLE
 // max_size_increment_allowed is never a problem for fixed length elements
-static inline int can_set_user_value_to_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval, data_positional_info* containee_pos_info);
+static inline int can_set_datum_to_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t max_size_increment_allowed, const datum* uval, data_positional_info* containee_pos_info);
 
 // returns 0, if the max_size_increment is violated OR uval is NULL and the element is non-NULLABLE
 // max_size_increment_allowed is never a problem for fixed length elements
-static inline int set_user_value_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval, data_positional_info* containee_pos_info);
+static inline int set_datum_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, const datum* uval, data_positional_info* containee_pos_info);
 
 // returns 0, if the max_size_increment is violated OR if index is not within 0 and element_count
 // check to see if the below function will succeed
@@ -743,7 +743,7 @@ static inline uint32_t get_size_of_containee_from_container(const data_type_info
 	return get_size_of_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 }
 
-static inline int get_user_value_for_type_info(user_value* uval, const data_type_info* dti, const void* data)
+static inline int get_datum_for_type_info(datum* uval, const data_type_info* dti, const void* data)
 {
 	switch(dti->type)
 	{
@@ -821,14 +821,14 @@ static inline int get_user_value_for_type_info(user_value* uval, const data_type
 	return 1;
 }
 
-static inline int get_user_value_to_containee_from_container_CONTAINITY_UNSAFE(user_value* uval, const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
+static inline int get_datum_to_containee_from_container_CONTAINITY_UNSAFE(datum* uval, const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
 	// fetch information about containee
 	// get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 	// above call is redundant as getting pointer already figures out the containee_pos_info value
 	const void* containee = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
-	// if it is null return NULL_USER_VALUE
+	// if it is null return NULL_DATUM
 	if(containee == NULL)
 	{
 		uval->is_NULL = 1;
@@ -844,21 +844,21 @@ static inline int get_user_value_to_containee_from_container_CONTAINITY_UNSAFE(u
 			return 1;
 		}
 		default :
-			return get_user_value_for_type_info(uval, containee_pos_info->type_info, containee);
+			return get_datum_for_type_info(uval, containee_pos_info->type_info, containee);
 	}
 }
 
-static inline int get_user_value_to_containee_from_container(user_value* uval, const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
+static inline int get_datum_to_containee_from_container(datum* uval, const data_type_info* dti, const void* data, uint32_t index, data_positional_info* containee_pos_info)
 {
-	// dti has to be a container type, else we can not index it and so we return OUT_OF_BOUNDS_USER_VALUE
+	// dti has to be a container type, else we can not index it and so we return OUT_OF_BOUNDS_DATUM
 	if(!is_container_type_info(dti))
 		return 0;
 
-	// make sure that index is within bounds, else it is said to be OUT_OF_BOUNDS_USER_VALUE
+	// make sure that index is within bounds, else it is said to be OUT_OF_BOUNDS_DATUM
 	if(index >= get_element_count_for_container_type_info(dti, data))
 		return 0;
 
-	return get_user_value_to_containee_from_container_CONTAINITY_UNSAFE(uval, dti, data, index, containee_pos_info);
+	return get_datum_to_containee_from_container_CONTAINITY_UNSAFE(uval, dti, data, index, containee_pos_info);
 }
 
 static inline int move_variable_sized_containee_to_end_of_container_CONTAINITY_UNSAFE(const data_type_info* dti, void* data, uint32_t index, data_positional_info* containee_pos_info)
@@ -1017,9 +1017,9 @@ static inline int set_containee_to_NULL_in_container(const data_type_info* dti, 
 	return set_containee_to_NULL_in_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 }
 
-static inline int can_set_user_value_for_type_info(const data_type_info* dti, const void* data, int is_valid, uint32_t max_size_increment_allowed, const user_value* uval)
+static inline int can_set_datum_for_type_info(const data_type_info* dti, const void* data, int is_valid, uint32_t max_size_increment_allowed, const datum* uval)
 {
-	if(is_user_value_NULL(uval))
+	if(is_datum_NULL(uval))
 		return 0;
 
 	if(dti->type == BIT_FIELD)
@@ -1033,7 +1033,7 @@ static inline int can_set_user_value_for_type_info(const data_type_info* dti, co
 	{
 		case STRING :
 		{
-			user_value uval_t = *uval;
+			datum uval_t = *uval;
 
 			// limit the string length
 			uval_t.string_size = strnlen(uval_t.string_value, uval_t.string_size);
@@ -1057,7 +1057,7 @@ static inline int can_set_user_value_for_type_info(const data_type_info* dti, co
 		case TUPLE :
 		{
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = (uval == EMPTY_USER_VALUE) ? dti->min_size : get_size_for_type_info(dti, uval->tuple_value);
+			uint32_t new_size = (uval == EMPTY_DATUM) ? dti->min_size : get_size_for_type_info(dti, uval->tuple_value);
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
@@ -1066,7 +1066,7 @@ static inline int can_set_user_value_for_type_info(const data_type_info* dti, co
 		case ARRAY :
 		{
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = (uval == EMPTY_USER_VALUE) ? dti->min_size : get_size_for_type_info(dti, uval->array_value);
+			uint32_t new_size = (uval == EMPTY_DATUM) ? dti->min_size : get_size_for_type_info(dti, uval->array_value);
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
@@ -1079,9 +1079,9 @@ static inline int can_set_user_value_for_type_info(const data_type_info* dti, co
 	}
 }
 
-static inline int set_user_value_for_type_info(const data_type_info* dti, void* data, int is_valid, uint32_t max_size_increment_allowed, const user_value* uval)
+static inline int set_datum_for_type_info(const data_type_info* dti, void* data, int is_valid, uint32_t max_size_increment_allowed, const datum* uval)
 {
-	if(is_user_value_NULL(uval))
+	if(is_datum_NULL(uval))
 		return 0;
 
 	if(dti->type == BIT_FIELD)
@@ -1122,7 +1122,7 @@ static inline int set_user_value_for_type_info(const data_type_info* dti, void* 
 			}
 			case STRING :
 			{
-				user_value uval_t = *uval;
+				datum uval_t = *uval;
 
 				// limit the string length
 				uval_t.string_size = strnlen(uval_t.string_value, uval_t.string_size);
@@ -1137,7 +1137,7 @@ static inline int set_user_value_for_type_info(const data_type_info* dti, void* 
 			}
 			case BINARY :
 			{
-				user_value uval_t = *uval;
+				datum uval_t = *uval;
 
 				uval_t.binary_size = min(uval_t.binary_size, dti->size);
 				// copy contents to data
@@ -1147,7 +1147,7 @@ static inline int set_user_value_for_type_info(const data_type_info* dti, void* 
 			case TUPLE :
 			{
 				// copy contents to data
-				if(uval != EMPTY_USER_VALUE) // if user provided this pointer, then the tuple_value is NULL, hence we need to initialize a minimal tuple at this position
+				if(uval != EMPTY_DATUM) // if user provided this pointer, then the tuple_value is NULL, hence we need to initialize a minimal tuple at this position
 					memory_move(data, uval->tuple_value, dti->size);
 				else
 					initialize_minimal_data_for_type_info(dti, data);
@@ -1156,7 +1156,7 @@ static inline int set_user_value_for_type_info(const data_type_info* dti, void* 
 			case ARRAY :
 			{
 				// copy contents to data
-				if(uval != EMPTY_USER_VALUE) // if user provided this pointer, then the array_value is NULL, hence we need to initialize a minimal tuple at this position
+				if(uval != EMPTY_DATUM) // if user provided this pointer, then the array_value is NULL, hence we need to initialize a minimal tuple at this position
 					memory_move(data, uval->array_value, dti->size);
 				else
 					initialize_minimal_data_for_type_info(dti, data);
@@ -1175,7 +1175,7 @@ static inline int set_user_value_for_type_info(const data_type_info* dti, void* 
 	{
 		case STRING :
 		{
-			user_value uval_t = *uval;
+			datum uval_t = *uval;
 
 			// limit the string length
 			uval_t.string_size = strnlen(uval_t.string_value, uval_t.string_size);
@@ -1207,13 +1207,13 @@ static inline int set_user_value_for_type_info(const data_type_info* dti, void* 
 		case TUPLE :
 		{
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = (uval == EMPTY_USER_VALUE) ? dti->min_size : get_size_for_type_info(dti, uval->tuple_value);
+			uint32_t new_size = (uval == EMPTY_DATUM) ? dti->min_size : get_size_for_type_info(dti, uval->tuple_value);
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
 
 			// copy contents to data
-			if(uval != EMPTY_USER_VALUE)
+			if(uval != EMPTY_DATUM)
 				memory_move(data, uval->tuple_value, dti->size);
 			else
 				initialize_minimal_data_for_type_info(dti, data);
@@ -1222,13 +1222,13 @@ static inline int set_user_value_for_type_info(const data_type_info* dti, void* 
 		case ARRAY :
 		{
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = (uval == EMPTY_USER_VALUE) ? dti->min_size : get_size_for_type_info(dti, uval->array_value);
+			uint32_t new_size = (uval == EMPTY_DATUM) ? dti->min_size : get_size_for_type_info(dti, uval->array_value);
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
 
 			// copy contents to data
-			if(uval != EMPTY_USER_VALUE)
+			if(uval != EMPTY_DATUM)
 				memory_move(data, uval->array_value, dti->size);
 			else
 				initialize_minimal_data_for_type_info(dti, data);
@@ -1241,14 +1241,14 @@ static inline int set_user_value_for_type_info(const data_type_info* dti, void* 
 	}
 }
 
-static inline int can_set_user_value_to_containee_in_container_CONTAINITY_UNSAFE(const data_type_info* dti, const void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval, data_positional_info* containee_pos_info)
+static inline int can_set_datum_to_containee_in_container_CONTAINITY_UNSAFE(const data_type_info* dti, const void* data, uint32_t index, uint32_t max_size_increment_allowed, const datum* uval, data_positional_info* containee_pos_info)
 {
 	// fetch information about containee
 	get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 	// if uval is NULL, set it to NULL
 	// this will never increment the size requirement, hence no checks required
-	if(is_user_value_NULL(uval))
+	if(is_datum_NULL(uval))
 		return is_nullable_type_info(containee_pos_info->type_info);
 
 	// there will already be enough space for the fixed sized containee
@@ -1263,10 +1263,10 @@ static inline int can_set_user_value_to_containee_in_container_CONTAINITY_UNSAFE
 	if(containee == NULL)
 		containee = data + old_container_size;
 
-	return can_set_user_value_for_type_info(containee_pos_info->type_info, containee, is_old_containee_offset_valid, max_size_increment_allowed, uval);
+	return can_set_datum_for_type_info(containee_pos_info->type_info, containee, is_old_containee_offset_valid, max_size_increment_allowed, uval);
 }
 
-static inline int can_set_user_value_to_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval, data_positional_info* containee_pos_info)
+static inline int can_set_datum_to_containee_in_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t max_size_increment_allowed, const datum* uval, data_positional_info* containee_pos_info)
 {
 	// dti has to be a container type
 	if(!is_container_type_info(dti))
@@ -1276,14 +1276,14 @@ static inline int can_set_user_value_to_containee_in_container(const data_type_i
 	if(index >= get_element_count_for_container_type_info(dti, data))
 		return 0;
 
-	return can_set_user_value_to_containee_in_container_CONTAINITY_UNSAFE(dti, data, index, max_size_increment_allowed, uval, containee_pos_info);
+	return can_set_datum_to_containee_in_container_CONTAINITY_UNSAFE(dti, data, index, max_size_increment_allowed, uval, containee_pos_info);
 }
 
-static inline int set_user_value_to_containee_in_container_CONTAINITY_UNSAFE(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval, data_positional_info* containee_pos_info)
+static inline int set_datum_to_containee_in_container_CONTAINITY_UNSAFE(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, const datum* uval, data_positional_info* containee_pos_info)
 {
 	// if uval is NULL, set it to NULL
 	// this will never increment the size requirement, hence no checks required
-	if(is_user_value_NULL(uval))
+	if(is_datum_NULL(uval))
 		return set_containee_to_NULL_in_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 	// now we are sure that uval is not NULL
@@ -1305,7 +1305,7 @@ static inline int set_user_value_to_containee_in_container_CONTAINITY_UNSAFE(con
 		else
 		{
 			void* containee = (void*) get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
-			return set_user_value_for_type_info(containee_pos_info->type_info, containee, 1 /* this attribute is NO-OP here */, max_size_increment_allowed, uval);
+			return set_datum_for_type_info(containee_pos_info->type_info, containee, 1 /* this attribute is NO-OP here */, max_size_increment_allowed, uval);
 		}
 	}
 	else
@@ -1327,7 +1327,7 @@ static inline int set_user_value_to_containee_in_container_CONTAINITY_UNSAFE(con
 		else
 			old_containee_size = get_size_for_type_info(containee_pos_info->type_info, containee);
 
-		int result = set_user_value_for_type_info(containee_pos_info->type_info, containee, is_old_containee_offset_valid, max_size_increment_allowed, uval);
+		int result = set_datum_for_type_info(containee_pos_info->type_info, containee, is_old_containee_offset_valid, max_size_increment_allowed, uval);
 
 		// if result was a success, and the old_containee_offset was in-valid i.e 0, then set it
 		if(result && !is_old_containee_offset_valid)
@@ -1347,7 +1347,7 @@ static inline int set_user_value_to_containee_in_container_CONTAINITY_UNSAFE(con
 	}
 }
 
-static inline int set_user_value_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, const user_value* uval, data_positional_info* containee_pos_info)
+static inline int set_datum_to_containee_in_container(const data_type_info* dti, void* data, uint32_t index, uint32_t max_size_increment_allowed, const datum* uval, data_positional_info* containee_pos_info)
 {
 	// dti has to be a container type
 	if(!is_container_type_info(dti))
@@ -1357,7 +1357,7 @@ static inline int set_user_value_to_containee_in_container(const data_type_info*
 	if(index >= get_element_count_for_container_type_info(dti, data))
 		return 0;
 
-	return set_user_value_to_containee_in_container_CONTAINITY_UNSAFE(dti, data, index, max_size_increment_allowed, uval, containee_pos_info);
+	return set_datum_to_containee_in_container_CONTAINITY_UNSAFE(dti, data, index, max_size_increment_allowed, uval, containee_pos_info);
 }
 
 static inline int can_expand_container(const data_type_info* dti, const void* data, uint32_t index, uint32_t slots, uint32_t max_size_increment_allowed)

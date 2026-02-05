@@ -1,20 +1,20 @@
-#include<tuplestore/user_value.h>
+#include<tuplestore/datum.h>
 
 #include<tuplestore/primitive_numeral_types.h>
 
 #include<cutlery/cutlery_stds.h>
 
-user_value const * const NULL_USER_VALUE = &((const user_value){.is_NULL = 1,});
+datum const * const NULL_DATUM = &((const datum){.is_NULL = 1,});
 
-user_value const * const ZERO_USER_VALUE = &((const user_value){.is_NULL = 0,});
-user_value const * const EMPTY_USER_VALUE = ZERO_USER_VALUE;
+datum const * const ZERO_DATUM = &((const datum){.is_NULL = 0,});
+datum const * const EMPTY_DATUM = ZERO_DATUM;
 
-uint32_t get_element_count_for_user_value(const user_value* uval, const data_type_info* dti)
+uint32_t get_element_count_for_datum(const datum* uval, const data_type_info* dti)
 {
 	if(!is_container_type_info(dti))
 		return 0;
 
-	if(is_user_value_NULL(uval))
+	if(is_datum_NULL(uval))
 		return 0;
 
 	if(dti->type == STRING)
@@ -30,18 +30,18 @@ uint32_t get_element_count_for_user_value(const user_value* uval, const data_typ
 	return 0;
 }
 
-int get_containee_for_user_value(user_value* uval_c, const user_value* uval, const data_type_info* dti, uint32_t index)
+int get_containee_for_datum(datum* uval_c, const datum* uval, const data_type_info* dti, uint32_t index)
 {
 	if(!is_container_type_info(dti))
 		return 0;
 
-	if(is_user_value_NULL(uval))
+	if(is_datum_NULL(uval))
 	{
 		uval_c->is_NULL = 1;
 		return 1;
 	}
 
-	if(index >= get_element_count_for_user_value(uval, dti))
+	if(index >= get_element_count_for_datum(uval, dti))
 		return 0;
 
 	if(dti->type == STRING || dti->type == BINARY)
@@ -53,38 +53,38 @@ int get_containee_for_user_value(user_value* uval_c, const user_value* uval, con
 	else if(dti->type == TUPLE)
 	{
 		data_positional_info containee_pos_info = INVALID_DATA_POSITIONAL_INFO;
-		return get_user_value_to_containee_from_container(uval_c, dti, uval->tuple_value, index, &containee_pos_info);
+		return get_datum_to_containee_from_container(uval_c, dti, uval->tuple_value, index, &containee_pos_info);
 	}
 	else if(dti->type == ARRAY)
 	{
 		data_positional_info containee_pos_info = INVALID_DATA_POSITIONAL_INFO;
-		return get_user_value_to_containee_from_container(uval_c, dti, uval->array_value, index, &containee_pos_info);
+		return get_datum_to_containee_from_container(uval_c, dti, uval->array_value, index, &containee_pos_info);
 	}
 
 	// never reaches here
 	return 0;
 }
 
-int can_compare_user_value(const data_type_info* dti1, const data_type_info* dti2)
+int can_compare_datum(const data_type_info* dti1, const data_type_info* dti2)
 {
 	if(are_identical_type_info(dti1, dti2)) // logically same exact types, this is essential for TUPLE and ARRAY types
 		return 1;
 	else if(is_primitive_numeral_type_info(dti1) && is_primitive_numeral_type_info(dti2)) // both are primitive numeral types
 		return 1;
 	else if((dti1->type == STRING || dti1->type == BINARY || dti1->type == ARRAY) && (dti2->type == STRING || dti2->type == BINARY || dti2->type == ARRAY)) // STRING, BINARY and ARRAY are internally comparable, if their containee types are comparable
-		return can_compare_user_value(dti1->containee, dti2->containee);
+		return can_compare_datum(dti1->containee, dti2->containee);
 	else
 		return 0;
 }
 
-// before calling this function the dti1 and dti2 must pass this check : can_compare_user_value(dti1, dti2)
-static int compare_user_value_internal(const user_value* uval1, const data_type_info* dti1, const user_value* uval2, const data_type_info* dti2)
+// before calling this function the dti1 and dti2 must pass this check : can_compare_datum(dti1, dti2)
+static int compare_datum_internal(const datum* uval1, const data_type_info* dti1, const datum* uval2, const data_type_info* dti2)
 {
-	if(is_user_value_NULL(uval1) && is_user_value_NULL(uval2))
+	if(is_datum_NULL(uval1) && is_datum_NULL(uval2))
 		return 0;
-	else if(is_user_value_NULL(uval1) && !is_user_value_NULL(uval2))
+	else if(is_datum_NULL(uval1) && !is_datum_NULL(uval2))
 		return -1;
-	else if(!is_user_value_NULL(uval1) && is_user_value_NULL(uval2))
+	else if(!is_datum_NULL(uval1) && is_datum_NULL(uval2))
 		return 1;
 
 	if(is_primitive_numeral_type_info(dti1)) // both are primitive types and are comparable
@@ -92,42 +92,42 @@ static int compare_user_value_internal(const user_value* uval1, const data_type_
 	else if(dti1->type == TUPLE) // both are the same tuple types
 	{
 		int cmp = 0;
-		uint32_t element_count = get_element_count_for_user_value(uval1, dti1);
+		uint32_t element_count = get_element_count_for_datum(uval1, dti1);
 		for(uint32_t i = 0; i < element_count && cmp == 0; i++)
 		{
 			const data_type_info* child_dti1 = get_data_type_info_for_containee_of_container_without_data(dti1, i);
-			user_value child_value1;
-			if(!get_containee_for_user_value(&child_value1, uval1, dti1, i))
+			datum child_value1;
+			if(!get_containee_for_datum(&child_value1, uval1, dti1, i))
 				return -2;
 
 			const data_type_info* child_dti2 = get_data_type_info_for_containee_of_container_without_data(dti2, i);
-			user_value child_value2;
-			if(!get_containee_for_user_value(&child_value2, uval2, dti2, i))
+			datum child_value2;
+			if(!get_containee_for_datum(&child_value2, uval2, dti2, i))
 				return -2;
 
-			cmp = compare_user_value_internal(&child_value1, child_dti1, &child_value2, child_dti2);
+			cmp = compare_datum_internal(&child_value1, child_dti1, &child_value2, child_dti2);
 		}
 		return cmp;
 	}
 	else // they both are a 9-combination of STRING, BINARY and ARRAY of comparable types
 	{
 		int cmp = 0;
-		uint32_t element_count1 = get_element_count_for_user_value(uval1, dti1);
-		uint32_t element_count2 = get_element_count_for_user_value(uval2, dti2);
+		uint32_t element_count1 = get_element_count_for_datum(uval1, dti1);
+		uint32_t element_count2 = get_element_count_for_datum(uval2, dti2);
 		uint32_t element_count = min(element_count1, element_count2);
 		for(uint32_t i = 0; i < element_count && cmp == 0; i++) // perform comparison over the minimum element count of both the containers
 		{
 			const data_type_info* child_dti1 = get_data_type_info_for_containee_of_container_without_data(dti1, i);
-			user_value child_value1;
-			if(!get_containee_for_user_value(&child_value1, uval1, dti1, i))
+			datum child_value1;
+			if(!get_containee_for_datum(&child_value1, uval1, dti1, i))
 				return -2;
 
 			const data_type_info* child_dti2 = get_data_type_info_for_containee_of_container_without_data(dti2, i);
-			user_value child_value2;
-			if(!get_containee_for_user_value(&child_value2, uval2, dti2, i))
+			datum child_value2;
+			if(!get_containee_for_datum(&child_value2, uval2, dti2, i))
 				return -2;
 
-			cmp = compare_user_value_internal(&child_value1, child_dti1, &child_value2, child_dti2);
+			cmp = compare_datum_internal(&child_value1, child_dti1, &child_value2, child_dti2);
 		}
 		if(cmp == 0 && (element_count1 != element_count2))
 		{
@@ -140,23 +140,23 @@ static int compare_user_value_internal(const user_value* uval1, const data_type_
 	}
 }
 
-int compare_user_value(const user_value* uval1, const data_type_info* dti1, const user_value* uval2, const data_type_info* dti2)
+int compare_datum(const datum* uval1, const data_type_info* dti1, const datum* uval2, const data_type_info* dti2)
 {
 	// first check that the element types attempted to be compared are comparable types
 	// it can be recursive fro nested arrays 
-	if(!can_compare_user_value(dti1, dti2))
+	if(!can_compare_datum(dti1, dti2))
 		return -2;
 
-	return compare_user_value_internal(uval1, dti1, uval2, dti2);
+	return compare_datum_internal(uval1, dti1, uval2, dti2);
 }
 
-static int compare_user_value_internal2(const user_value* uval1, const user_value* uval2, const data_type_info* dti)
+static int compare_datum_internal2(const datum* uval1, const datum* uval2, const data_type_info* dti)
 {
-	if(is_user_value_NULL(uval1) && is_user_value_NULL(uval2))
+	if(is_datum_NULL(uval1) && is_datum_NULL(uval2))
 		return 0;
-	else if(is_user_value_NULL(uval1) && !is_user_value_NULL(uval2))
+	else if(is_datum_NULL(uval1) && !is_datum_NULL(uval2))
 		return -1;
-	else if(!is_user_value_NULL(uval1) && is_user_value_NULL(uval2))
+	else if(!is_datum_NULL(uval1) && is_datum_NULL(uval2))
 		return 1;
 
 	if(is_primitive_numeral_type_info(dti)) // both are primitive types and are comparable
@@ -164,28 +164,28 @@ static int compare_user_value_internal2(const user_value* uval1, const user_valu
 	else if(dti->type == TUPLE) // both are the same tuple types
 	{
 		int cmp = 0;
-		uint32_t element_count = get_element_count_for_user_value(uval1, dti);
+		uint32_t element_count = get_element_count_for_datum(uval1, dti);
 		for(uint32_t i = 0; i < element_count && cmp == 0; i++)
 		{
 			const data_type_info* child_dti = get_data_type_info_for_containee_of_container_without_data(dti, i);
 
-			user_value child_value1;
-			if(!get_containee_for_user_value(&child_value1, uval1, dti, i))
+			datum child_value1;
+			if(!get_containee_for_datum(&child_value1, uval1, dti, i))
 				return -2;
 
-			user_value child_value2;
-			if(!get_containee_for_user_value(&child_value2, uval2, dti, i))
+			datum child_value2;
+			if(!get_containee_for_datum(&child_value2, uval2, dti, i))
 				return -2;
 
-			cmp = compare_user_value_internal2(&child_value1, &child_value2, child_dti);
+			cmp = compare_datum_internal2(&child_value1, &child_value2, child_dti);
 		}
 		return cmp;
 	}
 	else if(dti->type == STRING || dti->type == BINARY)
 	{
 		int cmp = 0;
-		uint32_t element_count1 = get_element_count_for_user_value(uval1, dti);
-		uint32_t element_count2 = get_element_count_for_user_value(uval2, dti);
+		uint32_t element_count1 = get_element_count_for_datum(uval1, dti);
+		uint32_t element_count2 = get_element_count_for_datum(uval2, dti);
 		uint32_t element_count = min(element_count1, element_count2);
 
 		for(uint32_t i = 0; i < element_count && cmp == 0; i++)
@@ -204,22 +204,22 @@ static int compare_user_value_internal2(const user_value* uval1, const user_valu
 	else // they both are a 9-combination of STRING, BINARY and ARRAY of comparable types
 	{
 		int cmp = 0;
-		uint32_t element_count1 = get_element_count_for_user_value(uval1, dti);
-		uint32_t element_count2 = get_element_count_for_user_value(uval2, dti);
+		uint32_t element_count1 = get_element_count_for_datum(uval1, dti);
+		uint32_t element_count2 = get_element_count_for_datum(uval2, dti);
 		uint32_t element_count = min(element_count1, element_count2);
 		for(uint32_t i = 0; i < element_count && cmp == 0; i++) // perform comparison over the minimum element count of both the containers
 		{
 			const data_type_info* child_dti = get_data_type_info_for_containee_of_container_without_data(dti, i);
 
-			user_value child_value1;
-			if(!get_containee_for_user_value(&child_value1, uval1, dti, i))
+			datum child_value1;
+			if(!get_containee_for_datum(&child_value1, uval1, dti, i))
 				return -2;
 
-			user_value child_value2;
-			if(!get_containee_for_user_value(&child_value2, uval2, dti, i))
+			datum child_value2;
+			if(!get_containee_for_datum(&child_value2, uval2, dti, i))
 				return -2;
 
-			cmp = compare_user_value_internal2(&child_value1, &child_value2, child_dti);
+			cmp = compare_datum_internal2(&child_value1, &child_value2, child_dti);
 		}
 		if(cmp == 0 && (element_count1 != element_count2))
 		{
@@ -232,14 +232,14 @@ static int compare_user_value_internal2(const user_value* uval1, const user_valu
 	}
 }
 
-int compare_user_value2(const user_value* uval1, const user_value* uval2, const data_type_info* dti)
+int compare_datum2(const datum* uval1, const datum* uval2, const data_type_info* dti)
 {
-	return compare_user_value_internal2(uval1, uval2, dti);
+	return compare_datum_internal2(uval1, uval2, dti);
 }
 
-uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tuple_hasher* th)
+uint64_t hash_datum(const datum* uval, const data_type_info* dti, tuple_hasher* th)
 {
-	if(is_user_value_NULL(uval)) // no bytes to hash
+	if(is_datum_NULL(uval)) // no bytes to hash
 		return th->hash;
 
 	if(dti->type == BIT_FIELD)
@@ -254,9 +254,9 @@ uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tupl
 	else if(!is_container_type_info(dti)) // case for UINT, INT, FLOAT and LARGE_UINT
 	{
 		// has to be fixed size
-		char serialized_value[sizeof(user_value)];
+		char serialized_value[sizeof(datum)];
 
-		set_user_value_for_type_info(dti, serialized_value, 0, 0 /* has to be fixed sized, hence this parameter is never used*/, uval);
+		set_datum_for_type_info(dti, serialized_value, 0, 0 /* has to be fixed sized, hence this parameter is never used*/, uval);
 
 		return tuple_hash_bytes(th, (const uint8_t*)serialized_value, get_size_for_type_info(dti ,serialized_value));
 	}
@@ -266,13 +266,13 @@ uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tupl
 	}
 	else
 	{
-		for(uint32_t i = 0; i < get_element_count_for_user_value(uval, dti); i++)
+		for(uint32_t i = 0; i < get_element_count_for_datum(uval, dti); i++)
 		{
 			const data_type_info* child_dti = get_data_type_info_for_containee_of_container_without_data(dti, i);
-			user_value child_value;
-			if(!get_containee_for_user_value(&child_value, uval, dti, i))
+			datum child_value;
+			if(!get_containee_for_datum(&child_value, uval, dti, i))
 				continue;
-			hash_user_value(&child_value, child_dti, th);
+			hash_datum(&child_value, child_dti, th);
 		}
 		return th->hash;
 	}
@@ -280,9 +280,9 @@ uint64_t hash_user_value(const user_value* uval, const data_type_info* dti, tupl
 
 #include<tuplestore/page_layout_util.h>
 
-void print_user_value(const user_value* uval, const data_type_info* dti)
+void print_datum(const datum* uval, const data_type_info* dti)
 {
-	if(is_user_value_NULL(uval))
+	if(is_datum_NULL(uval))
 	{
 		printf("NULL");
 		return;
@@ -343,12 +343,12 @@ void print_user_value(const user_value* uval, const data_type_info* dti)
 				if(i != 0)
 					printf(", ");
 				const data_position_info* containee_pos_info = dti->containees + i;
-				user_value child_uval;
-				if(!get_user_value_to_containee_from_container_CONTAINITY_UNSAFE(&child_uval, dti, uval->tuple_value, i, (data_positional_info*)(&(containee_pos_info->al))))
+				datum child_uval;
+				if(!get_datum_to_containee_from_container_CONTAINITY_UNSAFE(&child_uval, dti, uval->tuple_value, i, (data_positional_info*)(&(containee_pos_info->al))))
 					continue;
-				if(is_variable_sized_type_info(containee_pos_info->al.type_info) && !is_user_value_NULL(&child_uval))
+				if(is_variable_sized_type_info(containee_pos_info->al.type_info) && !is_datum_NULL(&child_uval))
 					printf("[%"PRIu32"]->", read_value_from_page(uval->tuple_value + containee_pos_info->al.byte_offset_to_byte_offset, dti->max_size));
-				print_user_value(&child_uval, containee_pos_info->al.type_info);
+				print_datum(&child_uval, containee_pos_info->al.type_info);
 			}
 			printf(")");
 			break;
@@ -362,12 +362,12 @@ void print_user_value(const user_value* uval, const data_type_info* dti)
 					printf(", ");
 				data_positional_info containee_pos_info = INVALID_DATA_POSITIONAL_INFO;
 				get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, uval->array_value, i, &containee_pos_info);
-				user_value child_uval;
-				if(!get_user_value_to_containee_from_container_CONTAINITY_UNSAFE(&child_uval, dti, uval->array_value, i, &containee_pos_info))
+				datum child_uval;
+				if(!get_datum_to_containee_from_container_CONTAINITY_UNSAFE(&child_uval, dti, uval->array_value, i, &containee_pos_info))
 					continue;
-				if(is_variable_sized_type_info(containee_pos_info.type_info) && !is_user_value_NULL(&child_uval))
+				if(is_variable_sized_type_info(containee_pos_info.type_info) && !is_datum_NULL(&child_uval))
 					printf("[%"PRIu32"]->", read_value_from_page(uval->tuple_value + containee_pos_info.byte_offset_to_byte_offset, dti->max_size));
-				print_user_value(&child_uval, containee_pos_info.type_info);
+				print_datum(&child_uval, containee_pos_info.type_info);
 			}
 			printf("]");
 			break;

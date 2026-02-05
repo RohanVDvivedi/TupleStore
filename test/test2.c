@@ -69,7 +69,7 @@ tuple_def* get_tuple_definition()
 	return &tuple_definition;
 }
 
-#define string_user_value(s) ((user_value){.string_value = s, .string_size = strlen(s)})
+#define string_datum(s) ((datum){.string_value = s, .string_size = strlen(s)})
 
 int main()
 {
@@ -85,16 +85,16 @@ int main()
 
 	// set them all to non nulls
 	printf("\nsetting all attributes to non NULLs\n");
-	set_element_in_tuple(def, STATIC_POSITION(0), my_tuple, &((user_value){.bit_field_value = 29}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(1), my_tuple, &((user_value){.large_uint_value = get_uint256(0x29)}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(2), my_tuple, &string_user_value("Rohan"), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(3), my_tuple, &((user_value){.int_value = -29}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(4), my_tuple, &((user_value){.bit_field_value = 500}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(5), my_tuple, &string_user_value("Dvivedi"), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(6), my_tuple, &((user_value){.uint_value = 29}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(7), my_tuple, &((user_value){.double_value = 2900}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(8), my_tuple, &((user_value){.large_uint_value = get_uint256(0x45)}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(9), my_tuple, &((user_value){.large_int_value = get_int256(-545)}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(0), my_tuple, &((datum){.bit_field_value = 29}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(1), my_tuple, &((datum){.large_uint_value = get_uint256(0x29)}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(2), my_tuple, &string_datum("Rohan"), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(3), my_tuple, &((datum){.int_value = -29}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(4), my_tuple, &((datum){.bit_field_value = 500}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(5), my_tuple, &string_datum("Dvivedi"), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(6), my_tuple, &((datum){.uint_value = 29}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(7), my_tuple, &((datum){.double_value = 2900}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(8), my_tuple, &((datum){.large_uint_value = get_uint256(0x45)}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(9), my_tuple, &((datum){.large_int_value = get_int256(-545)}), UINT32_MAX);
 
 	// print the tuple
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
@@ -102,16 +102,16 @@ int main()
 
 	// set them all to non nulls
 	printf("\nsetting all attributes to different non NULLs\n");
-	set_element_in_tuple(def, STATIC_POSITION(0), my_tuple, &((user_value){.bit_field_value = 30}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(1), my_tuple, &((user_value){.large_uint_value = get_uint256(0x10)}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(2), my_tuple, &string_user_value("Rohan V"), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(3), my_tuple, &((user_value){.int_value = 30}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(4), my_tuple, &((user_value){.bit_field_value = 250}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(5), my_tuple, &string_user_value("V Dvivedi"), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(6), my_tuple, &((user_value){.uint_value = 3000}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(7), my_tuple, &((user_value){.double_value = 295.2966}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(8), my_tuple, &((user_value){.large_uint_value = get_uint256(0x99)}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(9), my_tuple, &((user_value){.large_int_value = get_int256(99099)}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(0), my_tuple, &((datum){.bit_field_value = 30}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(1), my_tuple, &((datum){.large_uint_value = get_uint256(0x10)}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(2), my_tuple, &string_datum("Rohan V"), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(3), my_tuple, &((datum){.int_value = 30}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(4), my_tuple, &((datum){.bit_field_value = 250}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(5), my_tuple, &string_datum("V Dvivedi"), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(6), my_tuple, &((datum){.uint_value = 3000}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(7), my_tuple, &((datum){.double_value = 295.2966}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(8), my_tuple, &((datum){.large_uint_value = get_uint256(0x99)}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(9), my_tuple, &((datum){.large_int_value = get_int256(99099)}), UINT32_MAX);
 
 	// print the tuple
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
@@ -165,7 +165,7 @@ int main()
 							((compare_direction[]){ASC}), 1);
 	printf("cmp = %d\n", cmp);
 
-	set_element_in_tuple(def, STATIC_POSITION(9), my_tuple, &((user_value){.large_int_value = get_int256(-99099)}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(9), my_tuple, &((datum){.large_int_value = get_int256(-99099)}), UINT32_MAX);
 
 	cmp = compare_tuples(
 							my_tuple, def, ((positional_accessor[]){STATIC_POSITION(8)}),
@@ -179,8 +179,8 @@ int main()
 							((compare_direction[]){ASC}), 1);
 	printf("cmp = %d\n", cmp);
 
-	set_element_in_tuple(def, STATIC_POSITION(3), my_tuple, &((user_value){.int_value = -3}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(6), my_tuple, &((user_value){.uint_value = 3}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(3), my_tuple, &((datum){.int_value = -3}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(6), my_tuple, &((datum){.uint_value = 3}), UINT32_MAX);
 
 	// print the tuple
 	printf("\nBuilt tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
@@ -192,7 +192,7 @@ int main()
 							((compare_direction[]){ASC}), 1);
 	printf("cmp = %d\n", cmp);
 
-	set_element_in_tuple(def, STATIC_POSITION(7), my_tuple, &((user_value){.double_value = NAN}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(7), my_tuple, &((datum){.double_value = NAN}), UINT32_MAX);
 
 	// print the tuple
 	printf("\nBuilt tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
@@ -212,16 +212,16 @@ int main()
 
 	// set them all to non nulls
 	printf("\nsetting all attributes to NULLs\n");
-	set_element_in_tuple(def, STATIC_POSITION(0), my_tuple, NULL_USER_VALUE, 0);
-	set_element_in_tuple(def, STATIC_POSITION(1), my_tuple, NULL_USER_VALUE, 0);
-	set_element_in_tuple(def, STATIC_POSITION(2), my_tuple, NULL_USER_VALUE, 0);
-	set_element_in_tuple(def, STATIC_POSITION(3), my_tuple, NULL_USER_VALUE, 0);
-	set_element_in_tuple(def, STATIC_POSITION(4), my_tuple, NULL_USER_VALUE, 0);
-	set_element_in_tuple(def, STATIC_POSITION(5), my_tuple, NULL_USER_VALUE, 0);
-	set_element_in_tuple(def, STATIC_POSITION(6), my_tuple, NULL_USER_VALUE, 0);
-	set_element_in_tuple(def, STATIC_POSITION(7), my_tuple, NULL_USER_VALUE, 0);
-	set_element_in_tuple(def, STATIC_POSITION(8), my_tuple, NULL_USER_VALUE, 0);
-	set_element_in_tuple(def, STATIC_POSITION(9), my_tuple, NULL_USER_VALUE, 0);
+	set_element_in_tuple(def, STATIC_POSITION(0), my_tuple, NULL_DATUM, 0);
+	set_element_in_tuple(def, STATIC_POSITION(1), my_tuple, NULL_DATUM, 0);
+	set_element_in_tuple(def, STATIC_POSITION(2), my_tuple, NULL_DATUM, 0);
+	set_element_in_tuple(def, STATIC_POSITION(3), my_tuple, NULL_DATUM, 0);
+	set_element_in_tuple(def, STATIC_POSITION(4), my_tuple, NULL_DATUM, 0);
+	set_element_in_tuple(def, STATIC_POSITION(5), my_tuple, NULL_DATUM, 0);
+	set_element_in_tuple(def, STATIC_POSITION(6), my_tuple, NULL_DATUM, 0);
+	set_element_in_tuple(def, STATIC_POSITION(7), my_tuple, NULL_DATUM, 0);
+	set_element_in_tuple(def, STATIC_POSITION(8), my_tuple, NULL_DATUM, 0);
+	set_element_in_tuple(def, STATIC_POSITION(9), my_tuple, NULL_DATUM, 0);
 
 	// print the tuple
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, my_tuple));
@@ -229,11 +229,11 @@ int main()
 
 	printf("\n\nprinting some mins and maxs\n\n");
 
-	user_value uval;
+	datum uval;
 	#define print_min_and_max(type) \
 	printf("for " #type " : "); \
-	uval = get_MIN_value_for_primitive_numeral_type_info(type);print_user_value(&uval, type); \
-	printf(" "); uval = get_MAX_value_for_primitive_numeral_type_info(type);print_user_value(&uval, type); \
+	uval = get_MIN_value_for_primitive_numeral_type_info(type);print_datum(&uval, type); \
+	printf(" "); uval = get_MAX_value_for_primitive_numeral_type_info(type);print_datum(&uval, type); \
 	printf("\n\n");
 
 	print_min_and_max(BIT_FIELD_NULLABLE[3]);

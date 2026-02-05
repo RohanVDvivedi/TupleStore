@@ -78,7 +78,7 @@ static inline int point_to_next_uncle_position(positional_accessor* pa) // logic
 
 		while(1)
 		{
-			user_value uval;
+			datum uval;
 			int valid = get_value_from_element_from_tuple(&uval, tpl_d, absolute_position, tupl);
 			const data_type_info* dti = get_type_info_for_element_from_tuple_def(tpl_d, absolute_position);
 
@@ -95,7 +95,7 @@ static inline int point_to_next_uncle_position(positional_accessor* pa) // logic
 			int skip_all_remaining_siblings = 0;
 			int skip_all_children = 0;
 
-			// analyze dti and user_value
+			// analyze dti and datum
 
 			if(found_result) // you found what you wanted, then just break out
 				break;
@@ -118,7 +118,7 @@ static inline int point_to_next_uncle_position(positional_accessor* pa) // logic
 			}
 
 			// default way to go next
-			if((absolute_position.positions_length < max_absolute_depth) && is_container_type_info(dti) && !is_user_value_NULL(&uval))
+			if((absolute_position.positions_length < max_absolute_depth) && is_container_type_info(dti) && !is_datum_NULL(&uval))
 			{
 				point_to_first_child_position(&absolute_position);
 				continue;
@@ -146,7 +146,7 @@ static inline int point_to_next_uncle_position(positional_accessor* pa) // logic
 
 void init_tuple(const tuple_def* tpl_d, void* tupl);
 
-int get_value_from_element_from_tuple(user_value* uval, const tuple_def* tpl_d, positional_accessor pa, const void* tupl);
+int get_value_from_element_from_tuple(datum* uval, const tuple_def* tpl_d, positional_accessor pa, const void* tupl);
 
 const data_type_info* get_type_info_for_element_from_tuple_def(const tuple_def* tpl_d, positional_accessor pa);
 
@@ -160,17 +160,17 @@ int are_all_positions_accessible_for_tuple(const void* tupl, const tuple_def* tp
 uint32_t get_max_size_increment_allowed_for_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl);
 
 // tupl must be initialized using init_tuple, before you call this function
-int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl, const user_value* value, uint32_t max_size_increment_allowed);
+int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl, const datum* value, uint32_t max_size_increment_allowed);
 
 // tupl must be initialized using init_tuple, before you call this function
-int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const user_value* value, uint32_t max_size_increment_allowed);
+int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const datum* value, uint32_t max_size_increment_allowed);
 
 // tupl must be initialized using init_tuple, before you call this function
 // does type casting internally for primitive numeral types, if possible then settable
 // strings and binarys are also internally type castable, and hence settable
 // if they are tuples their dti-s must match to be settable
 // arrays are not assignable using this function
-// while workin with STRING, BINARY, TUPLE and ARRAY types you must ensure that you are workin with 2 separate tuples, because their user_values point to data in tupl_in
+// while workin with STRING, BINARY, TUPLE and ARRAY types you must ensure that you are workin with 2 separate tuples, because their datums point to data in tupl_in
 int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const tuple_def* tpl_d_in, positional_accessor pa_in, const void* tupl_in, uint32_t max_size_increment_allowed);
 
 uint32_t get_element_count_for_element_from_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl);
@@ -212,16 +212,16 @@ enum compare_direction
 // returns -2 if they are not comparable OR if one of the element is out if bounds
 int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_accessor* element_ids1, const void* tup2, const tuple_def* tpl_d2, const positional_accessor* element_ids2, const compare_direction* cmp_dir, uint32_t element_count);
 
-int compare_element_with_user_value(const void* tup1, const tuple_def* tpl_d1, positional_accessor pa1, const user_value* uval2, const data_type_info* dti2);
+int compare_element_with_datum(const void* tup1, const tuple_def* tpl_d1, positional_accessor pa1, const datum* uval2, const data_type_info* dti2);
 
-int compare_tuple_with_user_value(const void* tup1, const tuple_def* tpl_d1, const positional_accessor* element_ids1, const user_value* uvals2, data_type_info const * const * dtis2, const compare_direction* cmp_dir, uint32_t element_count);
+int compare_tuple_with_datum(const void* tup1, const tuple_def* tpl_d1, const positional_accessor* element_ids1, const datum* uvals2, data_type_info const * const * dtis2, const compare_direction* cmp_dir, uint32_t element_count);
 
 int compare_elements_of_tuple2(const void* tup1, const void* tup2, const tuple_def* tpl_d, positional_accessor pa);
 
 int compare_tuples2(const void* tup1, const void* tup2, const tuple_def* tpl_d, const positional_accessor* element_ids, const compare_direction* cmp_dir, uint32_t element_count);
 
 // function added just to support external merge sort
-int compare_user_values3(const user_value* uvals1, const user_value* uvals2, data_type_info const * const * dtis, const compare_direction* cmp_dir, uint32_t element_count);
+int compare_datums3(const datum* uvals1, const datum* uvals2, data_type_info const * const * dtis, const compare_direction* cmp_dir, uint32_t element_count);
 
 #include<tuplestore/tuple_hasher.h>
 

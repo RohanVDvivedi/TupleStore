@@ -37,7 +37,7 @@ int swap_tuples_fixed_array_page(void* page, uint32_t page_size, const tuple_siz
 
 const void* get_nth_tuple_fixed_array_page(const void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, uint32_t index);
 
-int set_element_in_tuple_in_place_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, positional_accessor element_index, const user_value* value);
+int set_element_in_tuple_in_place_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, positional_accessor element_index, const datum* value);
 
 int run_page_compaction_fixed_array_page(void* page, uint32_t page_size, const tuple_size_def* tpl_sz_d, int* memory_allocation_error);
 

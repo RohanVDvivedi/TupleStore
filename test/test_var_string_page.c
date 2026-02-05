@@ -42,7 +42,7 @@ tuple_def* get_tuple_definition()
 	return &tuple_definition;
 }
 
-#define user_Value_for(st_str) (user_value){.string_value = st_str, .string_size = sizeof(st_str) - 1}
+#define datum_for(st_str) (datum){.string_value = st_str, .string_size = sizeof(st_str) - 1}
 
 int main()
 {
@@ -67,28 +67,28 @@ int main()
 	// ---------------	INSERT
 
 	init_tuple(def, tuple_cache);
-	set_element_in_tuple(def, SELF, tuple_cache, &user_Value_for("Rohan Dvivedi"), UINT32_MAX);
+	set_element_in_tuple(def, SELF, tuple_cache, &datum_for("Rohan Dvivedi"), UINT32_MAX);
 	res = append_tuple_on_page(page, PAGE_SIZE, &(def->size_def), tuple_cache);
 	printf("Append : %d\n\n\n", res);
 
 	// ---------------	INSERT
 
 	init_tuple(def, tuple_cache);
-	set_element_in_tuple(def, SELF, tuple_cache, &user_Value_for("Rupa Dvivedi"), UINT32_MAX);
+	set_element_in_tuple(def, SELF, tuple_cache, &datum_for("Rupa Dvivedi"), UINT32_MAX);
 	res = append_tuple_on_page(page, PAGE_SIZE, &(def->size_def), tuple_cache);
 	printf("Append : %d\n\n\n", res);
 
 	// ---------------`INSERT
 
 	init_tuple(def, tuple_cache);
-	set_element_in_tuple(def, SELF, tuple_cache, &user_Value_for("Devashree Dvivedi"), UINT32_MAX);
+	set_element_in_tuple(def, SELF, tuple_cache, &datum_for("Devashree Dvivedi"), UINT32_MAX);
 	res = append_tuple_on_page(page, PAGE_SIZE, &(def->size_def), tuple_cache);
 	printf("Append : %d\n\n\n", res);
 
 	// ---------------	INSERT
 
 	init_tuple(def, tuple_cache);
-	set_element_in_tuple(def, SELF, tuple_cache, &user_Value_for("Vipulkumar Dvivedi"), UINT32_MAX);
+	set_element_in_tuple(def, SELF, tuple_cache, &datum_for("Vipulkumar Dvivedi"), UINT32_MAX);
 	res = append_tuple_on_page(page, PAGE_SIZE, &(def->size_def), tuple_cache);
 	printf("Append : %d\n\n\n", res);
 
@@ -100,7 +100,7 @@ int main()
 	// ---------------	UPDATE
 	
 	init_tuple(def, tuple_cache);
-	set_element_in_tuple(def, SELF, tuple_cache, &user_Value_for("Devashree Joshi"), UINT32_MAX);
+	set_element_in_tuple(def, SELF, tuple_cache, &datum_for("Devashree Joshi"), UINT32_MAX);
 	res = update_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 2, tuple_cache);
 	printf("Update(2) : %d\n\n\n", res);
 
@@ -112,7 +112,7 @@ int main()
 	// ---------------	UPDATE
 	
 	init_tuple(def, tuple_cache);
-	set_element_in_tuple(def, SELF, tuple_cache, &user_Value_for("Devashree Manan Joshi"), UINT32_MAX);
+	set_element_in_tuple(def, SELF, tuple_cache, &datum_for("Devashree Manan Joshi"), UINT32_MAX);
 	res = update_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 2, tuple_cache);
 	printf("Update(2) : %d\n\n\n", res);
 
@@ -124,7 +124,7 @@ int main()
 	// ---------------	UPDATE
 	
 	init_tuple(def, tuple_cache);
-	set_element_in_tuple(def, SELF, tuple_cache, &user_Value_for("Rohan Vipulkumar Dvivedi"), UINT32_MAX);
+	set_element_in_tuple(def, SELF, tuple_cache, &datum_for("Rohan Vipulkumar Dvivedi"), UINT32_MAX);
 	res = update_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 0, tuple_cache);
 	printf("Update(0) : %d\n\n\n", res);
 
@@ -136,7 +136,7 @@ int main()
 	// ---------------	UPDATE
 	
 	init_tuple(def, tuple_cache);
-	set_element_in_tuple(def, SELF, tuple_cache, &user_Value_for("Rupa Vipulkumar Dvivedi"), UINT32_MAX);
+	set_element_in_tuple(def, SELF, tuple_cache, &datum_for("Rupa Vipulkumar Dvivedi"), UINT32_MAX);
 	res = update_tuple_on_page(page, PAGE_SIZE, &(def->size_def), 1, tuple_cache);
 	printf("Update(1) : %d\n\n\n", res);
 

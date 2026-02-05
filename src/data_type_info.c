@@ -1414,9 +1414,9 @@ void print_type_info(const data_type_info* dti)
 
 void print_data_for_data_type_info(const data_type_info* dti, const void* data)
 {
-	user_value uval;
-	get_user_value_for_type_info(&uval, dti, data);
-	print_user_value(&uval, dti);
+	datum uval;
+	get_datum_for_type_info(&uval, dti, data);
+	print_datum(&uval, dti);
 }
 
 uint64_t hash_data_for_type_info(const data_type_info* dti, const void* data, tuple_hasher* th)
@@ -1436,8 +1436,8 @@ uint64_t hash_data_for_type_info(const data_type_info* dti, const void* data, tu
 		// containee of a STRING is UINT_NON_NULLABLE[1], i.e. non-nullable hence we do not need to check
 		if(dti->type == STRING)
 		{
-			user_value uval_i;
-			get_user_value_to_containee_from_container_CONTAINITY_UNSAFE(&uval_i, dti, data, i, &pos_i);
+			datum uval_i;
+			get_datum_to_containee_from_container_CONTAINITY_UNSAFE(&uval_i, dti, data, i, &pos_i);
 			if(uval_i.uint_value == 0)
 				break;
 		}

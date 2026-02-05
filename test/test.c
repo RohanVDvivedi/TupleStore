@@ -109,11 +109,11 @@ void build_tuple_from_row_struct(const tuple_def* def, void* tuple, const row* r
 
 	init_tuple(def, tuple);
 
-	set_element_in_tuple(def, STATIC_POSITION(column_no++), tuple, &((user_value){.int_value = r->c0}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(column_no++), tuple, &((user_value){.uint_value = r->c1}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(column_no++), tuple, (r->c2 == NULL) ? NULL : &((user_value){.string_value = r->c2, .string_size = strlen(r->c2)}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(column_no++), tuple, &((user_value){.double_value = r->c3}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(column_no++), tuple, (r->c4 == NULL) ? NULL : &((user_value){.string_value = r->c4, .string_size = strlen(r->c4)}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(column_no++), tuple, &((datum){.int_value = r->c0}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(column_no++), tuple, &((datum){.uint_value = r->c1}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(column_no++), tuple, (r->c2 == NULL) ? NULL : &((datum){.string_value = r->c2, .string_size = strlen(r->c2)}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(column_no++), tuple, &((datum){.double_value = r->c3}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(column_no++), tuple, (r->c4 == NULL) ? NULL : &((datum){.string_value = r->c4, .string_size = strlen(r->c4)}), UINT32_MAX);
 	
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 	print_tuple(tuple, def);
@@ -296,7 +296,7 @@ int main()
 	// --------------- UPDATE INPLACE
 
 	printf("updating inplace at tuple_index 1 and element_index 2\n");
-	res = set_element_in_tuple_in_place_on_page(page, PAGE_SIZE, def, 1, STATIC_POSITION(2), &((user_value){.string_value = "Rohan is bad boy", .string_size = strlen("Rohan is bad boy")}));
+	res = set_element_in_tuple_in_place_on_page(page, PAGE_SIZE, def, 1, STATIC_POSITION(2), &((datum){.string_value = "Rohan is bad boy", .string_size = strlen("Rohan is bad boy")}));
 	printf("This update must fail on variable_sized tuple_def : %d\n", res);
 
 	// ---------------	PRINT PAGE
@@ -307,7 +307,7 @@ int main()
 	// --------------- UPDATE INPLACE
 
 	printf("updating inplace at tuple_index 1 and element_index 2\n");
-	res = set_element_in_tuple_in_place_on_page(page, PAGE_SIZE, def, 1, STATIC_POSITION(2), &((user_value){.string_value = "Rohan is dad", .string_size = strlen("Rohan is dad")}));
+	res = set_element_in_tuple_in_place_on_page(page, PAGE_SIZE, def, 1, STATIC_POSITION(2), &((datum){.string_value = "Rohan is dad", .string_size = strlen("Rohan is dad")}));
 	printf("This update must not fail : %d\n", res);
 
 	// ---------------	PRINT PAGE
@@ -803,7 +803,7 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 	{
 		int64_t c0 = 123;
 
-		set_element_in_tuple(def, STATIC_POSITION(0), tuple, &((user_value){.int_value = c0}), UINT32_MAX);
+		set_element_in_tuple(def, STATIC_POSITION(0), tuple, &((datum){.int_value = c0}), UINT32_MAX);
 
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 		print_tuple(tuple, def);
@@ -811,7 +811,7 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 
 		c0 = 456;
 
-		set_element_in_tuple(def, STATIC_POSITION(0), tuple, &((user_value){.int_value = c0}), UINT32_MAX);
+		set_element_in_tuple(def, STATIC_POSITION(0), tuple, &((datum){.int_value = c0}), UINT32_MAX);
 
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 		print_tuple(tuple, def);
@@ -831,8 +831,8 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 	}
 
 #ifndef TEST_FIXED_ARRAY_PAGE_LAYOUT
-	set_element_in_tuple(def, STATIC_POSITION(2), tuple, &((user_value){.string_value = "Rohan", .string_size = strlen("Rohan")}), UINT32_MAX);
-	set_element_in_tuple(def, STATIC_POSITION(4), tuple, &((user_value){.string_value = "Dvivedi", .string_size = strlen("Dvivedi")}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(2), tuple, &((datum){.string_value = "Rohan", .string_size = strlen("Rohan")}), UINT32_MAX);
+	set_element_in_tuple(def, STATIC_POSITION(4), tuple, &((datum){.string_value = "Dvivedi", .string_size = strlen("Dvivedi")}), UINT32_MAX);
 
 	printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 	print_tuple(tuple, def);
@@ -847,7 +847,7 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 
 		char* c2 = "Hello";
 
-		set_element_in_tuple(def, STATIC_POSITION(2), tuple, &((user_value){.string_value = c2, .string_size = strlen(c2)}), UINT32_MAX);
+		set_element_in_tuple(def, STATIC_POSITION(2), tuple, &((datum){.string_value = c2, .string_size = strlen(c2)}), UINT32_MAX);
 
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 		print_tuple(tuple, def);
@@ -855,7 +855,7 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 
 		c2 = "World";
 
-		set_element_in_tuple(def, STATIC_POSITION(4), tuple, &((user_value){.string_value = c2, .string_size = strlen(c2)}), UINT32_MAX);
+		set_element_in_tuple(def, STATIC_POSITION(4), tuple, &((datum){.string_value = c2, .string_size = strlen(c2)}), UINT32_MAX);
 
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
 		print_tuple(tuple, def);
@@ -880,7 +880,7 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 		char test_string[4096];
 		for(int i = 0; i < 4096; i++)
 				test_string[i] = 'A';
-		int res = set_element_in_tuple(def, STATIC_POSITION(2), tuple, &((user_value){.string_value = test_string, .string_size = PAGE_SIZE - get_tuple_size(def, tuple) - VAR_STRING_SIZE_SPECIFICER_SIZE + 5}), UINT32_MAX);
+		int res = set_element_in_tuple(def, STATIC_POSITION(2), tuple, &((datum){.string_value = test_string, .string_size = PAGE_SIZE - get_tuple_size(def, tuple) - VAR_STRING_SIZE_SPECIFICER_SIZE + 5}), UINT32_MAX);
 
 		printf("%d = failed to make tuple size cross max_size\n", res);
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));
@@ -889,7 +889,7 @@ void test_updates_inserts_inside_tuple(const tuple_def* def, void* tuple)
 	}
 
 	{
-		int res = set_element_in_tuple(def, STATIC_POSITION(2), tuple, &((user_value){.string_value = "Mr. Rohan Vipulkumar Dvivedi", .string_size = strlen("Mr. Rohan Vipulkumar Dvivedi")}), UINT32_MAX);
+		int res = set_element_in_tuple(def, STATIC_POSITION(2), tuple, &((datum){.string_value = "Mr. Rohan Vipulkumar Dvivedi", .string_size = strlen("Mr. Rohan Vipulkumar Dvivedi")}), UINT32_MAX);
 
 		printf("%d = success to update a value to column 2\n", res);
 		printf("Built tuple : size(%u)\n\t", get_tuple_size(def, tuple));

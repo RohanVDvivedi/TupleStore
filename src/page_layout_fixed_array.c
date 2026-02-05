@@ -415,7 +415,7 @@ const void* get_nth_tuple_fixed_array_page(const void* page, uint32_t page_size,
 	return page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index);
 }
 
-int set_element_in_tuple_in_place_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, positional_accessor element_index, const user_value* value)
+int set_element_in_tuple_in_place_fixed_array_page(void* page, uint32_t page_size, const tuple_def* tpl_d, uint32_t tuple_index, positional_accessor element_index, const datum* value)
 {
 	// fetch the tuple from the page
 	void* tuple_concerned = (void*) get_nth_tuple_fixed_array_page(page, page_size, &(tpl_d->size_def), tuple_index);

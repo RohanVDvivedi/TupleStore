@@ -2,7 +2,7 @@
 #define TUPLE_DEF_H
 
 #include<tuplestore/data_type_info.h>
-#include<tuplestore/user_value.h>
+#include<tuplestore/datum.h>
 
 typedef struct tuple_size_def tuple_size_def;
 struct tuple_size_def

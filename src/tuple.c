@@ -9,7 +9,7 @@ void init_tuple(const tuple_def* tpl_d, void* tupl)
 	initialize_minimal_data_for_type_info(tpl_d->type_info, tupl);
 }
 
-int get_value_from_element_from_tuple(user_value* uval, const tuple_def* tpl_d, positional_accessor pa, const void* tupl)
+int get_value_from_element_from_tuple(datum* uval, const tuple_def* tpl_d, positional_accessor pa, const void* tupl)
 {
 	const data_type_info* dti = tpl_d->type_info;
 	const void* data = tupl;
@@ -20,13 +20,13 @@ int get_value_from_element_from_tuple(user_value* uval, const tuple_def* tpl_d, 
 		{
 			// result is self
 			if(IS_SELF(pa))
-				return get_user_value_for_type_info(uval, dti, data);
+				return get_datum_for_type_info(uval, dti, data);
 
 			// result is self's some child
 			if(pa.positions_length == 1)
 			{
 				data_positional_info containee_pos_info = INVALID_DATA_POSITIONAL_INFO;
-				return get_user_value_to_containee_from_container(uval, dti, data, pa.positions[0], &containee_pos_info);
+				return get_datum_to_containee_from_container(uval, dti, data, pa.positions[0], &containee_pos_info);
 			}
 		}
 
@@ -97,7 +97,7 @@ int are_all_positions_accessible_for_tuple(const void* tupl, const tuple_def* tp
 {
 	for(uint32_t i = 0; i < element_count; i++)
 	{
-		user_value key;
+		datum key;
 		if(!get_value_from_element_from_tuple(&key, tpl_d, ((element_ids == NULL) ? STATIC_POSITION(i) : element_ids[i]), tupl))
 			return 0;
 	}
@@ -153,7 +153,7 @@ uint32_t get_max_size_increment_allowed_for_element_in_tuple(const tuple_def* tp
 	return max_size_increment_allowed;
 }
 
-int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl, const user_value* value, uint32_t max_size_increment_allowed)
+int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, const void* tupl, const datum* value, uint32_t max_size_increment_allowed)
 {
 	const data_type_info* dti = tpl_d->type_info;
 	const void* data = tupl;
@@ -166,17 +166,17 @@ int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, con
 			if(IS_SELF(pa))
 			{
 				// null is to be set into the container containing this element
-				if(is_user_value_NULL(value))
+				if(is_datum_NULL(value))
 					return 0;
 
-				return can_set_user_value_for_type_info(dti, data, 1, max_size_increment_allowed, value);
+				return can_set_datum_for_type_info(dti, data, 1, max_size_increment_allowed, value);
 			}
 
 			// result is self's some child
 			if(pa.positions_length == 1)
 			{
 				data_positional_info containee_pos_info = INVALID_DATA_POSITIONAL_INFO;
-				return can_set_user_value_to_containee_in_container(dti, data, pa.positions[0], max_size_increment_allowed, value, &containee_pos_info);
+				return can_set_datum_to_containee_in_container(dti, data, pa.positions[0], max_size_increment_allowed, value, &containee_pos_info);
 			}
 		}
 
@@ -206,7 +206,7 @@ int can_set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, con
 	return 0;
 }
 
-static int set_element_in_tuple_INTERNAL(const data_type_info* dti, positional_accessor pa, void* data, const user_value* value, uint32_t max_size_increment_allowed, int is_inner_most_dti_variable_sized)
+static int set_element_in_tuple_INTERNAL(const data_type_info* dti, positional_accessor pa, void* data, const datum* value, uint32_t max_size_increment_allowed, int is_inner_most_dti_variable_sized)
 {
 	// recursion termination cases
 	{
@@ -214,17 +214,17 @@ static int set_element_in_tuple_INTERNAL(const data_type_info* dti, positional_a
 		if(IS_SELF(pa))
 		{
 			// null is to be set into the container containing this element
-			if(is_user_value_NULL(value))
+			if(is_datum_NULL(value))
 				return 0;
 
-			return set_user_value_for_type_info(dti, data, 1, max_size_increment_allowed, value);
+			return set_datum_for_type_info(dti, data, 1, max_size_increment_allowed, value);
 		}
 
 		// result is self's some child
 		if(pa.positions_length == 1)
 		{
 			data_positional_info containee_pos_info = INVALID_DATA_POSITIONAL_INFO;
-			return set_user_value_to_containee_in_container(dti, data, pa.positions[0], max_size_increment_allowed, value, &containee_pos_info);
+			return set_datum_to_containee_in_container(dti, data, pa.positions[0], max_size_increment_allowed, value, &containee_pos_info);
 		}
 	}
 
@@ -272,7 +272,7 @@ static int set_element_in_tuple_INTERNAL(const data_type_info* dti, positional_a
 	return result;
 }
 
-int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const user_value* value, uint32_t max_size_increment_allowed)
+int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const datum* value, uint32_t max_size_increment_allowed)
 {
 	const data_type_info* inner_most_dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
 	if(inner_most_dti == NULL)
@@ -286,7 +286,7 @@ int set_element_in_tuple(const tuple_def* tpl_d, positional_accessor pa, void* t
 
 int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, positional_accessor pa, void* tupl, const tuple_def* tpl_d_in, positional_accessor pa_in, const void* tupl_in, uint32_t max_size_increment_allowed)
 {
-	user_value uval_in;
+	datum uval_in;
 	if(!get_value_from_element_from_tuple(&uval_in, tpl_d_in, pa_in, tupl_in))
 		return 0;
 	const data_type_info* dti_in = get_type_info_for_element_from_tuple_def(tpl_d_in, pa_in);
@@ -300,7 +300,7 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, positional_accessor 
 		return set_element_in_tuple(tpl_d, pa, tupl, &uval_in, max_size_increment_allowed);
 	else if(is_primitive_numeral_type_info(dti) && is_primitive_numeral_type_info(dti_in)) // primitive numeral type info's are aften internally type castable
 	{
-		user_value uval_in_settable = {};
+		datum uval_in_settable = {};
 		if(!type_cast_primitive_numeral_type(&uval_in_settable, dti, &uval_in, dti_in))
 			return 0;
 		return set_element_in_tuple(tpl_d, pa, tupl, &uval_in_settable, max_size_increment_allowed);
@@ -560,21 +560,21 @@ int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, positio
 		return -2;
 
 	// get the user value for this element
-	user_value uval1;
+	datum uval1;
 	if(!get_value_from_element_from_tuple(&uval1, tpl_d1, pa1, tup1))
 		return -2;
 
 	// get the user value for this element
-	user_value uval2;
+	datum uval2;
 	if(!get_value_from_element_from_tuple(&uval2, tpl_d2, pa2, tup2))
 		return -2;
 
 	// TODO : handle logic for custom compare function
 
 	if(dti1 == dti2) // there is slight possibility of this to be true, in case of comparision between key entry, index entry and record entry of a bplus tree index
-		return compare_user_value2(&uval1, &uval2, dti2);
+		return compare_datum2(&uval1, &uval2, dti2);
 	else
-		return compare_user_value(&uval1, dti1, &uval2, dti2);
+		return compare_datum(&uval1, dti1, &uval2, dti2);
 }
 
 int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_accessor* element_ids1, const void* tup2, const tuple_def* tpl_d2, const positional_accessor* element_ids2, const compare_direction* cmp_dir, uint32_t element_count)
@@ -598,7 +598,7 @@ int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_a
 	return compare;
 }
 
-int compare_element_with_user_value(const void* tup1, const tuple_def* tpl_d1, positional_accessor pa1, const user_value* uval2, const data_type_info* dti2)
+int compare_element_with_datum(const void* tup1, const tuple_def* tpl_d1, positional_accessor pa1, const datum* uval2, const data_type_info* dti2)
 {
 	// if the element is not accessible, then fail
 	const data_type_info* dti1 = get_type_info_for_element_from_tuple_def(tpl_d1, pa1);
@@ -606,24 +606,24 @@ int compare_element_with_user_value(const void* tup1, const tuple_def* tpl_d1, p
 		return -2;
 
 	// get the user value for this element
-	user_value uval1;
+	datum uval1;
 	if(!get_value_from_element_from_tuple(&uval1, tpl_d1, pa1, tup1))
 		return -2;
 
 	// TODO : handle logic for custom compare function
 
 	if(dti1 == dti2) // there is slight possibility of this to be true, in case of comparision between key entry, index entry and record entry of a bplus tree index
-		return compare_user_value2(&uval1, uval2, dti2);
+		return compare_datum2(&uval1, uval2, dti2);
 	else
-		return compare_user_value(&uval1, dti1, uval2, dti2);
+		return compare_datum(&uval1, dti1, uval2, dti2);
 }
 
-int compare_tuple_with_user_value(const void* tup1, const tuple_def* tpl_d1, const positional_accessor* element_ids1, const user_value* uvals2, data_type_info const * const * dtis2, const compare_direction* cmp_dir, uint32_t element_count)
+int compare_tuple_with_datum(const void* tup1, const tuple_def* tpl_d1, const positional_accessor* element_ids1, const datum* uvals2, data_type_info const * const * dtis2, const compare_direction* cmp_dir, uint32_t element_count)
 {
 	int compare = 0;
 	for(uint32_t i = 0; ((i < element_count) && (compare == 0)); i++)
 	{
-		compare = compare_element_with_user_value(tup1, tpl_d1, ((element_ids1 == NULL) ? STATIC_POSITION(i) : element_ids1[i]), uvals2 + i, dtis2[i]);
+		compare = compare_element_with_datum(tup1, tpl_d1, ((element_ids1 == NULL) ? STATIC_POSITION(i) : element_ids1[i]), uvals2 + i, dtis2[i]);
 
 		if(compare == -2) // this implies elements are not comparable
 			return -2;
@@ -643,18 +643,18 @@ int compare_elements_of_tuple2(const void* tup1, const void* tup2, const tuple_d
 		return -2;
 
 	// get the user value for this element
-	user_value uval1;
+	datum uval1;
 	if(!get_value_from_element_from_tuple(&uval1, tpl_d, pa, tup1))
 		return -2;
 
 	// get the user value for this element
-	user_value uval2;
+	datum uval2;
 	if(!get_value_from_element_from_tuple(&uval2, tpl_d, pa, tup2))
 		return -2;
 
 	// TODO : handle logic for custom compare function
 
-	return compare_user_value2(&uval1, &uval2, dti);
+	return compare_datum2(&uval1, &uval2, dti);
 }
 
 int compare_tuples2(const void* tup1, const void* tup2, const tuple_def* tpl_d, const positional_accessor* element_ids, const compare_direction* cmp_dir, uint32_t element_count)
@@ -674,12 +674,12 @@ int compare_tuples2(const void* tup1, const void* tup2, const tuple_def* tpl_d, 
 	return compare;
 }
 
-int compare_user_values3(const user_value* uvals1, const user_value* uvals2, data_type_info const * const * dtis, const compare_direction* cmp_dir, uint32_t element_count)
+int compare_datums3(const datum* uvals1, const datum* uvals2, data_type_info const * const * dtis, const compare_direction* cmp_dir, uint32_t element_count)
 {
 	int compare = 0;
 	for(uint32_t i = 0; ((i < element_count) && (compare == 0)); i++)
 	{
-		compare = compare_user_value2(uvals1 + i, uvals2 + i, dtis[i]);
+		compare = compare_datum2(uvals1 + i, uvals2 + i, dtis[i]);
 
 		if(compare == -2) // this implies elements are not comparable
 			return -2;
@@ -699,11 +699,11 @@ uint64_t hash_element_within_tuple(const void* tup, const tuple_def* tpl_d, posi
 		return th->hash;
 
 	// get the user value for this element
-	user_value uval;
+	datum uval;
 	if(!get_value_from_element_from_tuple(&uval, tpl_d, pa, tup))
 		return th->hash;
 
-	return hash_user_value(&uval, dti, th);
+	return hash_datum(&uval, dti, th);
 }
 
 uint64_t hash_tuple(const void* tup, const tuple_def* tpl_d, const positional_accessor* element_ids, tuple_hasher* th, uint32_t element_count)

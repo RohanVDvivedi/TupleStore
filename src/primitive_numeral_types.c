@@ -20,13 +20,13 @@ int is_primitive_numeral_type_info(const data_type_info* dti)
 	}
 }
 
-int compare_primitive_numeral_type(const user_value* e1, const data_type_info* dti_1, const user_value* e2, const data_type_info* dti_2)
+int compare_primitive_numeral_type(const datum* e1, const data_type_info* dti_1, const datum* e2, const data_type_info* dti_2)
 {
-	if(is_user_value_NULL(e1) && is_user_value_NULL(e2))
+	if(is_datum_NULL(e1) && is_datum_NULL(e2))
 		return 0;
-	else if(is_user_value_NULL(e1) && !is_user_value_NULL(e2))
+	else if(is_datum_NULL(e1) && !is_datum_NULL(e2))
 		return -1;
-	else if(!is_user_value_NULL(e1) && is_user_value_NULL(e2))
+	else if(!is_datum_NULL(e1) && is_datum_NULL(e2))
 		return 1;
 
 	switch(dti_1->type)
@@ -368,13 +368,13 @@ int compare_primitive_numeral_type(const user_value* e1, const data_type_info* d
 	}
 }
 
-int compare_primitive_numeral_type2(const user_value* e1, const user_value* e2, const data_type_info* dti)
+int compare_primitive_numeral_type2(const datum* e1, const datum* e2, const data_type_info* dti)
 {
-	if(is_user_value_NULL(e1) && is_user_value_NULL(e2))
+	if(is_datum_NULL(e1) && is_datum_NULL(e2))
 		return 0;
-	else if(is_user_value_NULL(e1) && !is_user_value_NULL(e2))
+	else if(is_datum_NULL(e1) && !is_datum_NULL(e2))
 		return -1;
-	else if(!is_user_value_NULL(e1) && is_user_value_NULL(e2))
+	else if(!is_datum_NULL(e1) && is_datum_NULL(e2))
 		return 1;
 
 	switch(dti->type)
@@ -423,15 +423,15 @@ int compare_primitive_numeral_type2(const user_value* e1, const user_value* e2, 
 	}
 }
 
-int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, const user_value* e_from, const data_type_info* dti_from)
+int type_cast_primitive_numeral_type(datum* e, const data_type_info* dti, const datum* e_from, const data_type_info* dti_from)
 {
 	// if e_from is NULL, return 
-	if(is_user_value_NULL(e_from))
+	if(is_datum_NULL(e_from))
 	{
 		if(is_nullable_type_info(dti))
-			(*e) = (*NULL_USER_VALUE);
+			(*e) = (*NULL_DATUM);
 		else
-			(*e) = (*EMPTY_USER_VALUE);
+			(*e) = (*EMPTY_DATUM);
 		return 1;
 	}
 
@@ -799,63 +799,63 @@ int type_cast_primitive_numeral_type(user_value* e, const data_type_info* dti, c
 	}
 }
 
-user_value get_MIN_value_for_primitive_numeral_type_info(const data_type_info* dti)
+datum get_MIN_value_for_primitive_numeral_type_info(const data_type_info* dti)
 {
 	// NULL is always the least value you can imagine
 	if(is_nullable_type_info(dti))
-		return (*NULL_USER_VALUE);
+		return (*NULL_DATUM);
 
 	switch(dti->type)
 	{
 		case UINT :
-			return (user_value){.uint_value = get_UINT64_MIN(dti->size)};
+			return (datum){.uint_value = get_UINT64_MIN(dti->size)};
 		case INT :
-			return (user_value){.int_value = get_INT64_MIN(dti->size)};
+			return (datum){.int_value = get_INT64_MIN(dti->size)};
 		case FLOAT :
 		{
 			if(dti->size == sizeof(float))
-				return (user_value){.float_value = get_FLOAT_MIN()}; // this is -infinity
+				return (datum){.float_value = get_FLOAT_MIN()}; // this is -infinity
 			else if(dti->size == sizeof(double))
-				return (user_value){.double_value = get_DOUBLE_MIN()}; // this is -infinity
+				return (datum){.double_value = get_DOUBLE_MIN()}; // this is -infinity
 			else
-				return (*NULL_USER_VALUE);
+				return (*NULL_DATUM);
 		}
 		case LARGE_UINT :
-			return (user_value){.large_uint_value = get_min_uint256()}; // always a 0
+			return (datum){.large_uint_value = get_min_uint256()}; // always a 0
 		case LARGE_INT :
-			return (user_value){.large_int_value = bitwise_not_int256(get_bitmask_lower_n_bits_set_int256((dti->size * CHAR_BIT) - 1))}; // only the msb set to 1
+			return (datum){.large_int_value = bitwise_not_int256(get_bitmask_lower_n_bits_set_int256((dti->size * CHAR_BIT) - 1))}; // only the msb set to 1
 		case BIT_FIELD :
-			return (user_value){.bit_field_value = 0};
+			return (datum){.bit_field_value = 0};
 		default :
-			return (*NULL_USER_VALUE);
+			return (*NULL_DATUM);
 	}
 }
 
-user_value get_MAX_value_for_primitive_numeral_type_info(const data_type_info* dti)
+datum get_MAX_value_for_primitive_numeral_type_info(const data_type_info* dti)
 {
 	switch(dti->type)
 	{
 		case UINT :
-			return (user_value){.uint_value = get_UINT64_MAX(dti->size)};
+			return (datum){.uint_value = get_UINT64_MAX(dti->size)};
 		case INT :
-			return (user_value){.int_value = get_INT64_MAX(dti->size)};
+			return (datum){.int_value = get_INT64_MAX(dti->size)};
 		case FLOAT :
 		{
 			/* since NAN are not comparable to anything, but we want a total order, we place them after the +infinity */
 			if(dti->size == sizeof(float))
-				return (user_value){.float_value = NAN};// must not return get_FLOAT_MAX()
+				return (datum){.float_value = NAN};// must not return get_FLOAT_MAX()
 			else if(dti->size == sizeof(double))
-				return (user_value){.double_value = NAN};// must not return get_DOUBLE_MAX()
+				return (datum){.double_value = NAN};// must not return get_DOUBLE_MAX()
 			else
-				return (*NULL_USER_VALUE);
+				return (*NULL_DATUM);
 		}
 		case LARGE_UINT : // returns a uint256, with least significant (dti->size * CHAR_BIT) bits set to 1
-			return (user_value){.large_uint_value = get_bitmask_lower_n_bits_set_uint256(dti->size * CHAR_BIT)}; // all relevant bits set to 1
+			return (datum){.large_uint_value = get_bitmask_lower_n_bits_set_uint256(dti->size * CHAR_BIT)}; // all relevant bits set to 1
 		case LARGE_INT :
-			return (user_value){.large_int_value = get_bitmask_lower_n_bits_set_int256((dti->size * CHAR_BIT) - 1)}; // all (except msb signbit) set to 1
+			return (datum){.large_int_value = get_bitmask_lower_n_bits_set_int256((dti->size * CHAR_BIT) - 1)}; // all (except msb signbit) set to 1
 		case BIT_FIELD :
-			return (user_value){.bit_field_value = ((dti->bit_field_size == 64) ? UINT64_MAX : ((UINT64_C(1) << dti->bit_field_size) - 1))};
+			return (datum){.bit_field_value = ((dti->bit_field_size == 64) ? UINT64_MAX : ((UINT64_C(1) << dti->bit_field_size) - 1))};
 		default :
-			return (*NULL_USER_VALUE);
+			return (*NULL_DATUM);
 	}
 }
