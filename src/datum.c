@@ -324,7 +324,15 @@ void print_datum(const datum* uval, const data_type_info* dti)
 		}
 		case STRING :
 		{
-			printf("\"%.*s\"", uval->string_size, ((const char*)(uval->string_value)));
+			printf("\"");
+			uint32_t bytes_printed = 0;
+			while(bytes_printed < uval->string_size)
+			{
+				int bytes_to_print = min((uval->string_size - bytes_printed), 1024); // print in 1KB chunks to stay safe from compatibility between uint32_t and int, on platforms where they are not the same
+				printf("%.*s", bytes_to_print, ((const char*)(uval->string_value)) + bytes_printed);
+				bytes_printed += bytes_to_print;
+			}
+			printf("\"");
 			break;
 		}
 		case BINARY :

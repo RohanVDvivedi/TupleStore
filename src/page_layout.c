@@ -420,7 +420,7 @@ void print_page_in_hex(const void* page, uint32_t page_size)
 	{
 		if(i % 8 == 0)
 			printf("\n");
-		printf("[%2d](%2x)%c \t ", i, 0xff & (*((char*)(page + i))), (*((char*)(page + i))));
+		printf("[%2"PRIu32"](%2x)%c \t ", i, 0xff & (*((char*)(page + i))), (*((char*)(page + i))));
 	}
 	printf("\n\n");
 }
