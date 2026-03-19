@@ -64,9 +64,9 @@ static inline int is_datum_NULL(const datum* uval)
 
 // only a valid function calls for container_type_info -> STRING, BINARY, TUPLE and ARRAY
 uint32_t get_element_count_for_datum(const datum* uval, const data_type_info* dti);
-int get_containee_from_datum(datum* uval_c, data_type_info** dti_c, const datum* uval, const data_type_info* dti, uint32_t index);
+int get_containee_from_datum(datum* uval_c, const data_type_info** dti_c, const datum* uval, const data_type_info* dti, uint32_t index);
 
-int get_nested_containee_from_datum(datum* uval_c, data_type_info** dti_c, const datum* uval, const data_type_info* dti, positional_accessor* pa);
+int get_nested_containee_from_datum(datum* uval_c, const data_type_info** dti_c, const datum* uval, const data_type_info* dti, positional_accessor pa);
 
 int can_compare_datum(const data_type_info* dti1, const data_type_info* dti2);
 

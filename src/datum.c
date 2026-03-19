@@ -30,7 +30,7 @@ uint32_t get_element_count_for_datum(const datum* uval, const data_type_info* dt
 	return 0;
 }
 
-int get_containee_from_datum(datum* uval_c, data_type_info** dti_c, const datum* uval, const data_type_info* dti, uint32_t index)
+int get_containee_from_datum(datum* uval_c, const data_type_info** dti_c, const datum* uval, const data_type_info* dti, uint32_t index)
 {
 	(*dti_c) = NULL;
 
@@ -58,7 +58,7 @@ int get_containee_from_datum(datum* uval_c, data_type_info** dti_c, const datum*
 		data_positional_info containee_pos_info = INVALID_DATA_POSITIONAL_INFO;
 		int result = get_datum_to_containee_from_container(uval_c, dti, uval->tuple_value, index, &containee_pos_info);
 		if(result)
-			(*dti_c) = containee_pos_info.al.type_info;
+			(*dti_c) = containee_pos_info.type_info;
 		return result;
 	}
 	else if(dti->type == ARRAY)
@@ -66,7 +66,7 @@ int get_containee_from_datum(datum* uval_c, data_type_info** dti_c, const datum*
 		data_positional_info containee_pos_info = INVALID_DATA_POSITIONAL_INFO;
 		int result =  get_datum_to_containee_from_container(uval_c, dti, uval->array_value, index, &containee_pos_info);
 		if(result)
-			(*dti_c) = containee_pos_info.al.type_info;
+			(*dti_c) = containee_pos_info.type_info;
 		return result;
 	}
 
@@ -74,7 +74,11 @@ int get_containee_from_datum(datum* uval_c, data_type_info** dti_c, const datum*
 	return 0;
 }
 
-int get_nested_containee_from_datum(datum* uval_c, data_type_info** dti_c, const datum* uval, const data_type_info* dti, positional_accessor* pa)
+// (*below macro is for internl use only)
+// it initializes a new positional accessor that will make you point to the next position you need to extract next
+#define NEXT_POSITION(pa) ((positional_accessor){.positions_length = pa.positions_length - 1, .positions = pa.positions + 1}) 	// build a positional accessor for the next nested object (* for internal use only)
+
+int get_nested_containee_from_datum(datum* uval_c, const data_type_info** dti_c, const datum* uval, const data_type_info* dti, positional_accessor pa)
 {
 	(*uval_c) = (*uval);
 	(*dti_c) = dti;
@@ -89,8 +93,8 @@ int get_nested_containee_from_datum(datum* uval_c, data_type_info** dti_c, const
 
 		{
 			datum temp_uval;
-			data_type_info* temp_dti;
-			result = get_containee_for_datum(&temp_uval, &temp_dti, uval_c, (*dti_c), pa.positions[0]);
+			const data_type_info* temp_dti;
+			result = get_containee_from_datum(&temp_uval, &temp_dti, uval_c, (*dti_c), pa.positions[0]);
 			if(!result)
 			{
 				result = 0;
@@ -137,14 +141,14 @@ static int compare_datum_internal(const datum* uval1, const data_type_info* dti1
 		uint32_t element_count = get_element_count_for_datum(uval1, dti1);
 		for(uint32_t i = 0; i < element_count && cmp == 0; i++)
 		{
-			const data_type_info* child_dti1 = get_data_type_info_for_containee_of_container_without_data(dti1, i);
+			const data_type_info* child_dti1;
 			datum child_value1;
-			if(!get_containee_for_datum(&child_value1, uval1, dti1, i))
+			if(!get_containee_from_datum(&child_value1, &child_dti1, uval1, dti1, i))
 				return -2;
 
-			const data_type_info* child_dti2 = get_data_type_info_for_containee_of_container_without_data(dti2, i);
+			const data_type_info* child_dti2;
 			datum child_value2;
-			if(!get_containee_for_datum(&child_value2, uval2, dti2, i))
+			if(!get_containee_from_datum(&child_value2, &child_dti2, uval2, dti2, i))
 				return -2;
 
 			cmp = compare_datum_internal(&child_value1, child_dti1, &child_value2, child_dti2);
@@ -159,14 +163,14 @@ static int compare_datum_internal(const datum* uval1, const data_type_info* dti1
 		uint32_t element_count = min(element_count1, element_count2);
 		for(uint32_t i = 0; i < element_count && cmp == 0; i++) // perform comparison over the minimum element count of both the containers
 		{
-			const data_type_info* child_dti1 = get_data_type_info_for_containee_of_container_without_data(dti1, i);
+			const data_type_info* child_dti1;
 			datum child_value1;
-			if(!get_containee_for_datum(&child_value1, uval1, dti1, i))
+			if(!get_containee_from_datum(&child_value1, &child_dti1, uval1, dti1, i))
 				return -2;
 
-			const data_type_info* child_dti2 = get_data_type_info_for_containee_of_container_without_data(dti2, i);
+			const data_type_info* child_dti2;
 			datum child_value2;
-			if(!get_containee_for_datum(&child_value2, uval2, dti2, i))
+			if(!get_containee_from_datum(&child_value2, &child_dti2, uval2, dti2, i))
 				return -2;
 
 			cmp = compare_datum_internal(&child_value1, child_dti1, &child_value2, child_dti2);
@@ -211,12 +215,14 @@ static int compare_datum_internal2(const datum* uval1, const datum* uval2, const
 		{
 			const data_type_info* child_dti = get_data_type_info_for_containee_of_container_without_data(dti, i);
 
+			const data_type_info* temp;
+
 			datum child_value1;
-			if(!get_containee_for_datum(&child_value1, uval1, dti, i))
+			if(!get_containee_from_datum(&child_value1, &temp, uval1, dti, i))
 				return -2;
 
 			datum child_value2;
-			if(!get_containee_for_datum(&child_value2, uval2, dti, i))
+			if(!get_containee_from_datum(&child_value2, &temp, uval2, dti, i))
 				return -2;
 
 			cmp = compare_datum_internal2(&child_value1, &child_value2, child_dti);
@@ -253,12 +259,14 @@ static int compare_datum_internal2(const datum* uval1, const datum* uval2, const
 		{
 			const data_type_info* child_dti = get_data_type_info_for_containee_of_container_without_data(dti, i);
 
+			const data_type_info* temp;
+
 			datum child_value1;
-			if(!get_containee_for_datum(&child_value1, uval1, dti, i))
+			if(!get_containee_from_datum(&child_value1, &temp, uval1, dti, i))
 				return -2;
 
 			datum child_value2;
-			if(!get_containee_for_datum(&child_value2, uval2, dti, i))
+			if(!get_containee_from_datum(&child_value2, &temp, uval2, dti, i))
 				return -2;
 
 			cmp = compare_datum_internal2(&child_value1, &child_value2, child_dti);
@@ -310,9 +318,9 @@ uint64_t hash_datum(const datum* uval, const data_type_info* dti, tuple_hasher* 
 	{
 		for(uint32_t i = 0; i < get_element_count_for_datum(uval, dti); i++)
 		{
-			const data_type_info* child_dti = get_data_type_info_for_containee_of_container_without_data(dti, i);
+			const data_type_info* child_dti;
 			datum child_value;
-			if(!get_containee_for_datum(&child_value, uval, dti, i))
+			if(!get_containee_from_datum(&child_value, &child_dti, uval, dti, i))
 				continue;
 			hash_datum(&child_value, child_dti, th);
 		}
