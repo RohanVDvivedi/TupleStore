@@ -30,8 +30,10 @@ uint32_t get_element_count_for_datum(const datum* uval, const data_type_info* dt
 	return 0;
 }
 
-int get_containee_for_datum(datum* uval_c, const datum* uval, const data_type_info* dti, uint32_t index)
+int get_containee_from_datum(datum* uval_c, data_type_info** dti_c, const datum* uval, const data_type_info* dti, uint32_t index)
 {
+	(*dti_c) = NULL;
+
 	if(!is_container_type_info(dti))
 		return 0;
 
@@ -48,21 +50,61 @@ int get_containee_for_datum(datum* uval_c, const datum* uval, const data_type_in
 	{
 		uval_c->is_NULL = 0;
 		uval_c->uint_value = (((const unsigned char *)(uval->string_or_binary_value))[index] & UINT64_C(0xff));
+		(*dti_c) = UINT_NON_NULLABLE[1]; // always the same, hence the default
 		return 1;
 	}
 	else if(dti->type == TUPLE)
 	{
 		data_positional_info containee_pos_info = INVALID_DATA_POSITIONAL_INFO;
-		return get_datum_to_containee_from_container(uval_c, dti, uval->tuple_value, index, &containee_pos_info);
+		int result = get_datum_to_containee_from_container(uval_c, dti, uval->tuple_value, index, &containee_pos_info);
+		if(result)
+			(*dti_c) = containee_pos_info.al.type_info;
+		return result;
 	}
 	else if(dti->type == ARRAY)
 	{
 		data_positional_info containee_pos_info = INVALID_DATA_POSITIONAL_INFO;
-		return get_datum_to_containee_from_container(uval_c, dti, uval->array_value, index, &containee_pos_info);
+		int result =  get_datum_to_containee_from_container(uval_c, dti, uval->array_value, index, &containee_pos_info);
+		if(result)
+			(*dti_c) = containee_pos_info.al.type_info;
+		return result;
 	}
 
 	// never reaches here
 	return 0;
+}
+
+int get_nested_containee_from_datum(datum* uval_c, data_type_info** dti_c, const datum* uval, const data_type_info* dti, positional_accessor* pa)
+{
+	(*uval_c) = (*uval);
+	(*dti_c) = dti;
+
+	int result = 1;
+
+	while(1)
+	{
+		// result is self
+		if(IS_SELF(pa))
+			break;
+
+		{
+			datum temp_uval;
+			data_type_info* temp_dti;
+			result = get_containee_for_datum(&temp_uval, &temp_dti, uval_c, (*dti_c), pa.positions[0]);
+			if(!result)
+			{
+				result = 0;
+				(*dti_c) = NULL;
+				break;
+			}
+			(*uval_c) = temp_uval;
+			(*dti_c) = temp_dti;
+		}
+
+		pa = NEXT_POSITION(pa);
+	}
+
+	return result;
 }
 
 int can_compare_datum(const data_type_info* dti1, const data_type_info* dti2)
