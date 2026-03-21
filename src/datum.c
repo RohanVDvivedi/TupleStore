@@ -301,7 +301,7 @@ uint64_t hash_datum(const datum* uval, const data_type_info* dti, tuple_hasher* 
 		}
 		return th->hash;
 	}
-	else if(!is_container_type_info(dti)) // case for UINT, INT, FLOAT and LARGE_UINT
+	else if(!is_container_type_info(dti)) // case for UINT, INT, FLOAT, LARGE_UINT and LARGE_INT
 	{
 		// has to be fixed size
 		char serialized_value[sizeof(datum)];
