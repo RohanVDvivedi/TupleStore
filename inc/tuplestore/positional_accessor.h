@@ -1,6 +1,8 @@
 #ifndef POSITIONAL_ACCESSOR_H
 #define POSITIONAL_ACCESSOR_H
 
+#include<stdint.h>
+
 // ------------------------------ structure and macros to index elements inside a tuple nestedly ----------------------------------------
 
 // used to access conatiner data type info's nestedly like TUPLE, ARRAY, STRING and BINARY only
