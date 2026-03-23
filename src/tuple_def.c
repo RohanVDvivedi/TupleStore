@@ -118,7 +118,7 @@ uint32_t get_tuple_size_using_tuple_size_def2(const tuple_size_def* tpl_sz_d, vo
 
 uint32_t get_tuple_size2(const tuple_def* tpl_d, void* context_p, uint32_t (*read_tuple_prefix)(void* context_p, void* data, uint32_t data_size))
 {
-	return get_tuple_size_from_stream_using_tuple_size_def(&(tpl_d->size_def), context_p, read_tuple_prefix);
+	return get_tuple_size_using_tuple_size_def2(&(tpl_d->size_def), context_p, read_tuple_prefix);
 }
 
 int is_variable_sized_tuple_size_def(const tuple_size_def* tuple_size_d)
