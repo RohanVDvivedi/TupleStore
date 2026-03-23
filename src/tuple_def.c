@@ -96,11 +96,8 @@ uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
 	return get_tuple_size_using_tuple_size_def(&(tpl_d->size_def), tupl);
 }
 
-uint32_t get_tuple_size_from_stream_using_tuple_size_def(const tuple_size_def* tpl_sz_d, void* buffer, uint32_t* bytes_read, void* context_p, uint32_t (*read_from_stream)(void* context_p, void* data, uint32_t data_size))
+uint32_t get_tuple_size_using_tuple_size_def2(const tuple_size_def* tpl_sz_d, void* context_p, uint32_t (*read_tuple_prefix)(void* context_p, void* data, uint32_t data_size))
 {
-	// initialize the return value
-	(*bytes_read) = 0;
-
 	// if fixed sized return size
 	if(!tpl_sz_d->is_variable_sized)
 		return tpl_sz_d->size;
@@ -108,19 +105,20 @@ uint32_t get_tuple_size_from_stream_using_tuple_size_def(const tuple_size_def* t
 	// else we know it is variable sized
 	// so it should have size or element_count in its prefix
 	uint32_t bytes_to_read = get_value_size_on_page(tpl_sz_d->max_size);
-	(*bytes_read) = read_from_stream(context_p, buffer, bytes_to_read);
+	char buffer[sizeof(uint32_t)] = {}; // bytes_to_read may never be more than 4 bytes
+	uint32_t bytes_read = read_tuple_prefix(context_p, buffer, bytes_to_read);
 
 	// if enough bytes could not be read then fail
-	if((*bytes_read) < bytes_to_read)
+	if(bytes_read < bytes_to_read)
 		return 0;
 
 	// we have read enough data from the stream to now decipher the tuple that is comming next, and whose part of which is stored in the buffer
 	return get_tuple_size_using_tuple_size_def(tpl_sz_d, buffer);
 }
 
-uint32_t get_tuple_size_from_stream(const tuple_def* tpl_d, void* buffer, uint32_t* bytes_read, void* context_p, uint32_t (*read_from_stream)(void* context_p, void* data, uint32_t data_size))
+uint32_t get_tuple_size2(const tuple_def* tpl_d, void* context_p, uint32_t (*read_tuple_prefix)(void* context_p, void* data, uint32_t data_size))
 {
-	return get_tuple_size_from_stream_using_tuple_size_def(&(tpl_d->size_def), buffer, bytes_read, context_p, read_from_stream);
+	return get_tuple_size_from_stream_using_tuple_size_def(&(tpl_d->size_def), context_p, read_tuple_prefix);
 }
 
 int is_variable_sized_tuple_size_def(const tuple_size_def* tuple_size_d)
