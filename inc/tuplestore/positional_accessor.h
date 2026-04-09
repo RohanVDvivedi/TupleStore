@@ -3,6 +3,8 @@
 
 #include<stdint.h>
 
+#include<cutlery/cutlery_stds.h>
+
 // ------------------------------ structure and macros to index elements inside a tuple nestedly ----------------------------------------
 
 // used to access conatiner data type info's nestedly like TUPLE, ARRAY, STRING and BINARY only
