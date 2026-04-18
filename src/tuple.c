@@ -549,25 +549,19 @@ int discard_elements_from_element_in_tuple(const tuple_def* tpl_d, positional_ac
 // compare and hash functions
 int compare_elements_of_tuple(const void* tup1, const tuple_def* tpl_d1, positional_accessor pa1, const void* tup2, const tuple_def* tpl_d2, positional_accessor pa2)
 {
-	// if the element is not accessible, then fail
 	const data_type_info* dti1 = get_type_info_for_element_from_tuple_def(tpl_d1, pa1);
-	if(dti1 == NULL)
-		return -2;
-
-	// if the element is not accessible, then fail
-	const data_type_info* dti2 = get_type_info_for_element_from_tuple_def(tpl_d2, pa2);
-	if(dti2 == NULL)
-		return -2;
 
 	// get the user value for this element
 	datum uval1;
 	if(!get_value_from_element_from_tuple(&uval1, tpl_d1, pa1, tup1))
-		return -2;
+		uval1 = (*NULL_DATUM);
+
+	const data_type_info* dti2 = get_type_info_for_element_from_tuple_def(tpl_d2, pa2);
 
 	// get the user value for this element
 	datum uval2;
 	if(!get_value_from_element_from_tuple(&uval2, tpl_d2, pa2, tup2))
-		return -2;
+		uval2 = (*NULL_DATUM);
 
 	// TODO : handle logic for custom compare function
 
@@ -602,15 +596,11 @@ int compare_element_with_datum(const void* tup1, const tuple_def* tpl_d1, positi
 {
 	// if the element is not accessible, then fail
 	const data_type_info* dti1 = get_type_info_for_element_from_tuple_def(tpl_d1, pa1);
-	if(dti1 == NULL)
-		return -2;
 
 	// get the user value for this element
 	datum uval1;
 	if(!get_value_from_element_from_tuple(&uval1, tpl_d1, pa1, tup1))
-		return -2;
-
-	// TODO : handle logic for custom compare function
+		uval1 = (*NULL_DATUM);
 
 	if(dti1 == dti2) // there is slight possibility of this to be true, in case of comparision between key entry, index entry and record entry of a bplus tree index
 		return compare_datum2(&uval1, uval2, dti2);
@@ -639,20 +629,16 @@ int compare_elements_of_tuple2(const void* tup1, const void* tup2, const tuple_d
 {
 	// if the element is not accessible, then fail
 	const data_type_info* dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
-	if(dti == NULL)
-		return -2;
 
 	// get the user value for this element
 	datum uval1;
 	if(!get_value_from_element_from_tuple(&uval1, tpl_d, pa, tup1))
-		return -2;
+		uval1 = (*NULL_DATUM);
 
 	// get the user value for this element
 	datum uval2;
 	if(!get_value_from_element_from_tuple(&uval2, tpl_d, pa, tup2))
-		return -2;
-
-	// TODO : handle logic for custom compare function
+		uval2 = (*NULL_DATUM);
 
 	return compare_datum2(&uval1, &uval2, dti);
 }

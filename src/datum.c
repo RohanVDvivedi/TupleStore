@@ -144,12 +144,12 @@ static int compare_datum_internal(const datum* uval1, const data_type_info* dti1
 			const data_type_info* child_dti1;
 			datum child_value1;
 			if(!get_containee_from_datum(&child_value1, &child_dti1, uval1, dti1, i))
-				return -2;
+				child_value1 = (*NULL_DATUM);
 
 			const data_type_info* child_dti2;
 			datum child_value2;
 			if(!get_containee_from_datum(&child_value2, &child_dti2, uval2, dti2, i))
-				return -2;
+				child_value2 = (*NULL_DATUM);
 
 			cmp = compare_datum_internal(&child_value1, child_dti1, &child_value2, child_dti2);
 		}
@@ -166,12 +166,12 @@ static int compare_datum_internal(const datum* uval1, const data_type_info* dti1
 			const data_type_info* child_dti1;
 			datum child_value1;
 			if(!get_containee_from_datum(&child_value1, &child_dti1, uval1, dti1, i))
-				return -2;
+				child_value1 = (*NULL_DATUM);
 
 			const data_type_info* child_dti2;
 			datum child_value2;
 			if(!get_containee_from_datum(&child_value2, &child_dti2, uval2, dti2, i))
-				return -2;
+				child_value2 = (*NULL_DATUM);
 
 			cmp = compare_datum_internal(&child_value1, child_dti1, &child_value2, child_dti2);
 		}
@@ -188,10 +188,11 @@ static int compare_datum_internal(const datum* uval1, const data_type_info* dti1
 
 int compare_datum(const datum* uval1, const data_type_info* dti1, const datum* uval2, const data_type_info* dti2)
 {
-	// first check that the element types attempted to be compared are comparable types
-	// it can be recursive fro nested arrays 
-	if(!can_compare_datum(dti1, dti2))
-		return -2;
+	if(dti1 != NULL && dti2 != NULL)
+	{
+		if(!can_compare_datum(dti1, dti2))
+			return -2;
+	}
 
 	return compare_datum_internal(uval1, dti1, uval2, dti2);
 }
@@ -219,11 +220,11 @@ static int compare_datum_internal2(const datum* uval1, const datum* uval2, const
 
 			datum child_value1;
 			if(!get_containee_from_datum(&child_value1, &temp, uval1, dti, i))
-				return -2;
+				child_value1 = (*NULL_DATUM);
 
 			datum child_value2;
 			if(!get_containee_from_datum(&child_value2, &temp, uval2, dti, i))
-				return -2;
+				child_value2 = (*NULL_DATUM);
 
 			cmp = compare_datum_internal2(&child_value1, &child_value2, child_dti);
 		}
@@ -263,11 +264,11 @@ static int compare_datum_internal2(const datum* uval1, const datum* uval2, const
 
 			datum child_value1;
 			if(!get_containee_from_datum(&child_value1, &temp, uval1, dti, i))
-				return -2;
+				child_value1 = (*NULL_DATUM);
 
 			datum child_value2;
 			if(!get_containee_from_datum(&child_value2, &temp, uval2, dti, i))
-				return -2;
+				child_value2 = (*NULL_DATUM);
 
 			cmp = compare_datum_internal2(&child_value1, &child_value2, child_dti);
 		}
