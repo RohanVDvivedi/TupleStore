@@ -1148,7 +1148,7 @@ static inline int set_datum_for_type_info(const data_type_info* dti, void* data,
 			{
 				// copy contents to data
 				if(uval != EMPTY_DATUM) // if user provided this pointer, then the tuple_value is NULL, hence we need to initialize a minimal tuple at this position
-					memory_move(data, uval->tuple_value, dti->size);
+					memory_move(data, uval->tuple_value, get_size_for_type_info(dti, uval->tuple_value));
 				else
 					initialize_minimal_data_for_type_info(dti, data);
 				return 1;
@@ -1157,7 +1157,7 @@ static inline int set_datum_for_type_info(const data_type_info* dti, void* data,
 			{
 				// copy contents to data
 				if(uval != EMPTY_DATUM) // if user provided this pointer, then the array_value is NULL, hence we need to initialize a minimal tuple at this position
-					memory_move(data, uval->array_value, dti->size);
+					memory_move(data, uval->array_value, get_size_for_type_info(dti, uval->array_value));
 				else
 					initialize_minimal_data_for_type_info(dti, data);
 				return 1;
