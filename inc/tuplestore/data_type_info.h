@@ -2,6 +2,7 @@
 #define DATA_TYPE_INFO_H
 
 #include<stdint.h>
+#include<stdlib.h>
 
 typedef enum data_type data_type;
 enum data_type
@@ -118,6 +119,11 @@ struct data_type_info
 #define sizeof_tuple_data_type_info(element_count) (sizeof(data_type_info) + sizeof(data_position_info) * (element_count))
 
 #include<tuplestore/data_type_info_defaults.h>
+
+// get the size of the struct data_type_info pointed to by dti pointer
+// note: this is not the size of data, it is size of the struct that represents type info
+// note: this is the number of bytes to be copied to shallow-copy dti, after your shallow copy it will still point to other dtis, so be carefull
+static inline size_t get_shallow_copy_struct_size_for_data_type_info(const data_type_info* dti);
 
 // varibale sized elements are always nullable
 // fixed length elements and bit fields are nullable if is_nullable is set
@@ -368,6 +374,14 @@ uint64_t hash_containee_in_container(const data_type_info* dti, const void* data
 
 #include<string.h>
 #include<stdio.h>
+
+static inline size_t get_shallow_copy_struct_size_for_data_type_info(const data_type_info* dti)
+{
+	if(dti->type == TUPLE)
+		return sizeof_tuple_data_type_info(dti->element_count);
+	else
+		return sizeof(data_type_info);
+}
 
 static inline int is_nullable_type_info(const data_type_info* dti)
 {
