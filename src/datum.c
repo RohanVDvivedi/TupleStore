@@ -365,12 +365,16 @@ void print_datum(const datum* uval, const data_type_info* dti)
 		}
 		case LARGE_UINT :
 		{
-			print_uint256(uval->large_uint_value);
+			char res[80] = {};
+			serialize_to_decimal_uint256(res, uval->large_uint_value);
+			printf("%s", res);
 			break;
 		}
 		case LARGE_INT :
 		{
-			print_int256(uval->large_int_value);
+			char res[80] = {};
+			serialize_to_decimal_int256(res, uval->large_int_value);
+			printf("%s", res);
 			break;
 		}
 		case STRING :
