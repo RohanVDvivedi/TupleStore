@@ -1486,8 +1486,8 @@ static inline int expand_container(const data_type_info* dti, void* data, uint32
 		// make room for new bits
 		for(uint32_t i = 0; i < old_element_count - index; i++)
 		{
-			uint32_t copy_from_bit = (old_element_count - 1 - i) * prefix_bits_necessary_for_1_containee;
-			uint32_t copy_to_bit = (new_element_count - 1 - i) * prefix_bits_necessary_for_1_containee;
+			uint64_t copy_from_bit = ((uint64_t)(old_element_count - 1 - i)) * prefix_bits_necessary_for_1_containee;
+			uint64_t copy_to_bit = ((uint64_t)(new_element_count - 1 - i)) * prefix_bits_necessary_for_1_containee;
 			uint64_t t = get_bits(data + prefix_bitmap_offset, copy_from_bit, copy_from_bit + prefix_bits_necessary_for_1_containee - 1);
 			set_bits(data + prefix_bitmap_offset, copy_to_bit, copy_to_bit + prefix_bits_necessary_for_1_containee - 1, t);
 		}
@@ -1495,7 +1495,7 @@ static inline int expand_container(const data_type_info* dti, void* data, uint32
 		// make new slots 0
 		for(uint32_t i = 0; i < slots; i++)
 		{
-			uint32_t to_zero_bit = (index + i) * prefix_bits_necessary_for_1_containee;
+			uint64_t to_zero_bit = ((uint64_t)(index + i)) * prefix_bits_necessary_for_1_containee;
 			set_bits(data + prefix_bitmap_offset, to_zero_bit, to_zero_bit + prefix_bits_necessary_for_1_containee - 1, 0);
 		}
 
@@ -1663,8 +1663,8 @@ static inline int discard_from_container(const data_type_info* dti, void* data, 
 		// move succeeding bits to prior location
 		for(uint32_t i = 0; i < old_element_count - (index + slots); i++)
 		{
-			uint32_t copy_from_bit = ((index + slots) + i) * prefix_bits_necessary_for_1_containee;
-			uint32_t copy_to_bit = (index + i) * prefix_bits_necessary_for_1_containee;
+			uint64_t copy_from_bit = ((uint64_t)((index + slots) + i)) * prefix_bits_necessary_for_1_containee;
+			uint64_t copy_to_bit = ((uint64_t)(index + i)) * prefix_bits_necessary_for_1_containee;
 			uint64_t t = get_bits(data + prefix_bitmap_offset, copy_from_bit, copy_from_bit + prefix_bits_necessary_for_1_containee - 1);
 			set_bits(data + prefix_bitmap_offset, copy_to_bit, copy_to_bit + prefix_bits_necessary_for_1_containee - 1, t);
 		}
