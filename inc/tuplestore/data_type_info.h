@@ -1501,7 +1501,7 @@ static inline int expand_container(const data_type_info* dti, void* data, uint32
 
 		// zero out unused bits in prefix bitmap
 		{
-			uint64_t total_bits_in_prefix_bitmap = new_element_count * prefix_bits_necessary_for_1_containee;
+			uint64_t total_bits_in_prefix_bitmap = ((uint64_t)new_element_count) * prefix_bits_necessary_for_1_containee;
 			uint64_t upper_limit = UINT_ALIGN_UP(total_bits_in_prefix_bitmap, 8);
 			if(upper_limit > total_bits_in_prefix_bitmap)
 				set_bits(data + prefix_bitmap_offset, total_bits_in_prefix_bitmap, upper_limit - 1, 0);
