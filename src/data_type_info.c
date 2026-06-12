@@ -202,7 +202,7 @@ int finalize_type_info(data_type_info* dti)
 			if(!dti->has_variable_element_count) // prefix_bitmap_size_in_bits is only defined for fixed element count containers
 			{
 				if(dti->containee->type == BIT_FIELD)
-					dti->prefix_bitmap_size_in_bits = dti->element_count * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size);
+					dti->prefix_bitmap_size_in_bits = ((uint64_t)(dti->element_count)) * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size);
 				else if(!is_variable_sized_type_info(dti->containee))
 					dti->prefix_bitmap_size_in_bits = dti->element_count * (needs_is_valid_bit_in_prefix_bitmap(dti->containee));
 				else
@@ -1354,7 +1354,7 @@ static void print_type_info_recursive(const data_type_info* dti, int tabs)
 
 		if(!dti->has_variable_element_count)
 		{
-			print_tabs(tabs); printf("prefix_bitmap_size_in_bits : %"PRIu32"\n", dti->prefix_bitmap_size_in_bits);
+			print_tabs(tabs); printf("prefix_bitmap_size_in_bits : %"PRIu64"\n", dti->prefix_bitmap_size_in_bits);
 		}
 
 

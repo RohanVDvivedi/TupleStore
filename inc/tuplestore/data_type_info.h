@@ -104,7 +104,7 @@ struct data_type_info
 	uint32_t element_count; // -> to be used for TUPLE or ARRAY types only, and only when has_variable_element_count == 0
 	// for fixed length string and binary, this must equal size
 
-	uint32_t prefix_bitmap_size_in_bits; // -> number of bits in the prefix bitmap, valid only for tuples and fixed element count array
+	uint64_t prefix_bitmap_size_in_bits; // -> number of bits in the prefix bitmap, valid only for tuples and fixed element count array
 	// must be set to 0s for STRING and BINARY types
 	// -> gets derieved anyway, by the finalize function for container types hence not necessary to be set
 
