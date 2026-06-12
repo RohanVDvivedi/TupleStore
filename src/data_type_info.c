@@ -735,7 +735,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(data_size >= 1 && serialized_bytes[0] <= 8)
+	else if(data_size >= 1 && 5 < serialized_bytes[0] && serialized_bytes[0] <= 8)
 	{
 		uint32_t type_no = serialized_bytes[0] - 5;
 		bytes_consumed += 1;
@@ -770,7 +770,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(data_size >= 1 && serialized_bytes[0] <= 11)
+	else if(data_size >= 1 && 8 < serialized_bytes[0] && serialized_bytes[0] <= 11)
 	{
 		uint32_t type_no = serialized_bytes[0] - 8;
 		bytes_consumed += 1;
@@ -917,7 +917,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 122) // STRING
+	else if(120 <= serialized_bytes[0] && serialized_bytes[0] <= 122) // STRING
 	{
 		data_type_info dti = {};
 		bytes_consumed++;
@@ -956,7 +956,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 125) // BINARY
+	else if(123 <= serialized_bytes[0] && serialized_bytes[0] <= 125) // BINARY
 	{
 		data_type_info dti = {};
 		bytes_consumed++;
@@ -995,7 +995,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 128) // TUPLE
+	else if(126 <= serialized_bytes[0] && serialized_bytes[0] <= 128) // TUPLE
 	{
 		data_type_info* dti_p = NULL;
 		bytes_consumed++;
@@ -1076,7 +1076,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		dti_p->is_static = 0; // since we are returning an allocated type_info it can not be static
 		return dti_p;
 	}
-	else if(serialized_bytes[0] <= 132) // ARRAY
+	else if(129 <= serialized_bytes[0] && serialized_bytes[0] <= 132) // ARRAY
 	{
 		data_type_info dti = {};
 		bytes_consumed++;
