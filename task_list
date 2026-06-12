@@ -1,5 +1,3 @@
 BUGS IDENTIFIED
 
  * fix overflow in parameter passing to bitmap_size_in_bytes() the multiplication may overflow
-
- * are_identical_type_info may not check is_finalized OR the deserialize function may not be allowed to call it on a newly created type

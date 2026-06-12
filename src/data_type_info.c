@@ -1223,12 +1223,6 @@ data_type_info* clone_type_info_recursively(const data_type_info* dti, int* allo
 
 int are_identical_type_info(const data_type_info* dti1, const data_type_info* dti2)
 {
-	// if either of dti1 or dti2 is not finalized, we fail
-	if(!dti1->is_finalized)
-		return 0;
-	if(!dti2->is_finalized)
-		return 0;
-
 	// if the passed pointers are equal, they are equal
 	if(dti1 == dti2)
 		return 1;
@@ -1261,9 +1255,7 @@ int are_identical_type_info(const data_type_info* dti1, const data_type_info* dt
 	}
 	else
 	{
-		// both must have same min_size and max_size
-		if(dti1->min_size != dti2->min_size)
-			return 0;
+		// both must have same max_size
 		if(dti1->max_size != dti2->max_size)
 			return 0;
 	}

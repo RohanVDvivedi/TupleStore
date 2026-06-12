@@ -226,6 +226,7 @@ void destroy_type_info_recursively(data_type_info* dti, const static_type_info_c
 data_type_info* clone_type_info_recursively(const data_type_info* dti, int* allocation_error, const static_type_info_callback* stic_p, const static_type_info_callback* on_destroy_p);
 
 // returns 1, if the 2 data_type_info are logically identical
+// this function also returns correct output if the data_type_info-s are not yet finalized (and have minimum attributes set as per the macros in data_type_info_defaults.h)
 int are_identical_type_info(const data_type_info* dti1, const data_type_info* dti2);
 
 // print type info
