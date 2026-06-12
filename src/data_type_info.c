@@ -768,12 +768,12 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		else
 			bytes_consumed += type_name_length;
 
-		if(are_identical_type_info(&dti, FLOAT_float_NULLABLE))
-			return FLOAT_float_NULLABLE;
-		else if(are_identical_type_info(&dti, FLOAT_double_NULLABLE))
-			return FLOAT_double_NULLABLE;
-		//else if(are_identical_type_info(&dti, FLOAT_long_double_NULLABLE))
-			//return FLOAT_long_double_NULLABLE;
+		if(are_identical_type_info(&dti, FLOAT_float_NON_NULLABLE))
+			return FLOAT_float_NON_NULLABLE;
+		else if(are_identical_type_info(&dti, FLOAT_double_NON_NULLABLE))
+			return FLOAT_double_NON_NULLABLE;
+		//else if(are_identical_type_info(&dti, FLOAT_long_double_NON_NULLABLE))
+			//return FLOAT_long_double_NON_NULLABLE;
 
 		data_type_info* dti_p = malloc(sizeof(data_type_info));
 		if(dti_p == NULL)
@@ -848,7 +848,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			bytes_consumed += type_name_length;
 
 		if(are_identical_type_info(&dti, LARGE_INT_NULLABLE[size]))
-			return LARGE_UINT_NULLABLE[size];
+			return LARGE_INT_NULLABLE[size];
 
 		data_type_info* dti_p = malloc(sizeof(data_type_info));
 		if(dti_p == NULL)
@@ -873,7 +873,7 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			bytes_consumed += type_name_length;
 
 		if(are_identical_type_info(&dti, LARGE_INT_NON_NULLABLE[size]))
-			return LARGE_UINT_NON_NULLABLE[size];
+			return LARGE_INT_NON_NULLABLE[size];
 
 		data_type_info* dti_p = malloc(sizeof(data_type_info));
 		if(dti_p == NULL)
