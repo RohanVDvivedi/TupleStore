@@ -1207,7 +1207,7 @@ data_type_info* clone_type_info_recursively(const data_type_info* dti, int* allo
 				if(*allocation_error)
 				{
 					for(uint32_t j = 0; j < i; j++)
-						destroy_type_info_recursively(dti->containees[j].al.type_info, on_destroy_p);
+						destroy_type_info_recursively(res->containees[j].al.type_info, on_destroy_p);
 					free(res);
 					return NULL;
 				}
