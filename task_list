@@ -2,8 +2,6 @@ BUGS IDENTIFIED
 
  * fix overflow in parameter passing to bitmap_size_in_bytes() the multiplication may overflow
 
- * line 1468 in data_type_info.c, comparing pointer to enum value
-
  * line 730 to 780 deserialize always returns float and double nullables
 
  * data_type_info.c line 850 -> review serialization and deserialization function for dti

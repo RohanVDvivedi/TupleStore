@@ -1465,7 +1465,7 @@ uint64_t hash_containee_in_container(const data_type_info* dti, const void* data
 	get_data_positional_info_for_containee_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 	const void* child_data = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
-	if(containee_pos_info->type_info == BIT_FIELD)
+	if(containee_pos_info->type_info->type == BIT_FIELD)
 	{
 		for(uint32_t i = 0; i < containee_pos_info->type_info->bit_field_size; i++)
 		{
