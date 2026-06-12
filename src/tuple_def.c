@@ -180,11 +180,11 @@ uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_
 	}
 }
 
-#define BIT_OFFSET_FOR_is_variable_sized                          0
-#define BIT_OFFSET_FOR_has_size_in_prefix                         1
+#define BIT_OFFSET_FOR_is_variable_sized                           0
+#define BIT_OFFSET_FOR_has_size_in_prefix                          1
 #define BIT_OFFSET_FOR_has_element_count_in_prefix                 2
-#define BIT_OFFSET_FOR_does_containee_need_is_valid_bit_in_prefix 3
-#define BIT_OFFSET_FOR_is_containee_bit_field                     4
+#define BIT_OFFSET_FOR_does_containee_need_is_valid_bit_in_prefix  3
+#define BIT_OFFSET_FOR_is_containee_bit_field                      4
 
 uint32_t serialize_tuple_size_def(const tuple_size_def* tuple_size_d, void* data)
 {
@@ -220,9 +220,9 @@ uint32_t serialize_tuple_size_def(const tuple_size_def* tuple_size_d, void* data
 		s[0] |= (1 << BIT_OFFSET_FOR_is_containee_bit_field);
 
 	if(tuple_size_d->is_containee_bit_field)
-		serialize_uint32(s + data_size, 4, tuple_size_d->containee_size);
-	else
 		serialize_uint32(s + data_size, 4, tuple_size_d->containee_bit_field_size);
+	else
+		serialize_uint32(s + data_size, 4, tuple_size_d->containee_size);
 	data_size += 4;
 	return data_size;
 }
@@ -256,9 +256,9 @@ int deserialize_tuple_size_def(tuple_size_def* tuple_size_d, const void* data, u
 
 	if(bytes_parsed + 4 > size) return 0;
 	if(tuple_size_d->is_containee_bit_field)
-		tuple_size_d->containee_size = deserialize_uint32(s + bytes_parsed, 4);
-	else
 		tuple_size_d->containee_bit_field_size = deserialize_uint32(s + bytes_parsed, 4);
+	else
+		tuple_size_d->containee_size = deserialize_uint32(s + bytes_parsed, 4);
 
 	return bytes_parsed;
 }
