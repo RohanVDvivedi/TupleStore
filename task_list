@@ -8,8 +8,6 @@ BUGS IDENTIFIED
 
  * print_datum line no 432
 
- * line 1292 in are identical type infos
-
  * data_type_info.c line 850 -> review serialization and deserialization function for dti
 
  * clone_type_info destroys input dti instead of res

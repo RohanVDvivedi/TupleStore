@@ -1289,7 +1289,7 @@ int are_identical_type_info(const data_type_info* dti1, const data_type_info* dt
 
 			// and all the element type_infos must be identical
 			for(uint32_t i = 0; i < dti1->element_count; i++)
-				if(!are_identical_type_info(dti1->containees[i].al.type_info, dti1->containees[i].al.type_info))
+				if(!are_identical_type_info(dti1->containees[i].al.type_info, dti2->containees[i].al.type_info))
 					return 0;
 
 			return 1;
@@ -1308,7 +1308,7 @@ int are_identical_type_info(const data_type_info* dti1, const data_type_info* dt
 					return 0;
 			}
 
-			return are_identical_type_info(dti1->containee, dti1->containee);
+			return are_identical_type_info(dti1->containee, dti2->containee);
 		}
 	}
 }
