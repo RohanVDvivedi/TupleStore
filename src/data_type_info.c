@@ -1400,7 +1400,7 @@ static void print_type_info_recursive(const data_type_info* dti, int tabs)
 
 				if(containee_type_info->type == BIT_FIELD)
 				{
-					print_tabs(tabs + 2); printf("bit_offset : %"PRIu32"\n", containee_pos_info->al.bit_offset_in_prefix_bitmap);
+					print_tabs(tabs + 2); printf("bit_offset : %"PRIu64"\n", containee_pos_info->al.bit_offset_in_prefix_bitmap);
 				}
 				else if(!is_variable_sized_type_info(containee_type_info))
 				{
@@ -1413,7 +1413,7 @@ static void print_type_info_recursive(const data_type_info* dti, int tabs)
 
 				if(needs_is_valid_bit_in_prefix_bitmap(containee_type_info))
 				{
-					print_tabs(tabs + 2); printf("bit_offset_to_is_valid_bit : %"PRIu32"\n", containee_pos_info->al.bit_offset_to_is_valid_bit);
+					print_tabs(tabs + 2); printf("bit_offset_to_is_valid_bit : %"PRIu64"\n", containee_pos_info->al.bit_offset_to_is_valid_bit);
 				}
 
 				print_type_info_recursive(containee_type_info, tabs + 3);

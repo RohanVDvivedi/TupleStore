@@ -44,10 +44,10 @@ struct data_positional_info
 
 		uint32_t byte_offset_to_byte_offset; // -> for variable length fields
 
-		uint32_t bit_offset_in_prefix_bitmap; // -> for bitfields
+		uint64_t bit_offset_in_prefix_bitmap; // -> for bitfields
 	};
 
-	uint32_t bit_offset_to_is_valid_bit; // -> for bit fields and fixed length elements only, and only when they have is_nullable bit set in the type_info
+	uint64_t bit_offset_to_is_valid_bit; // -> for bit fields and fixed length elements only, and only when they have is_nullable bit set in the type_info
 
 	data_type_info* type_info; // -> type information of this field
 };
@@ -608,8 +608,8 @@ static inline int get_data_positional_info_for_containee_of_container_CONTAINITY
 		if(needs_is_valid_bit_in_prefix_bitmap(containee_type_info))
 		{
 			(*cached_return) = (data_positional_info){
-				.bit_offset_in_prefix_bitmap = ((1 + containee_type_info->bit_field_size) * index) + 1,
-				.bit_offset_to_is_valid_bit = ((1 + containee_type_info->bit_field_size) * index),
+				.bit_offset_in_prefix_bitmap = ((1 + containee_type_info->bit_field_size) * ((uint64_t)index)) + 1,
+				.bit_offset_to_is_valid_bit = ((1 + containee_type_info->bit_field_size) * ((uint64_t)index)),
 				.type_info = containee_type_info,
 			};
 			return 1;
@@ -617,7 +617,7 @@ static inline int get_data_positional_info_for_containee_of_container_CONTAINITY
 		else
 		{
 			(*cached_return) = (data_positional_info){
-				.bit_offset_in_prefix_bitmap = containee_type_info->bit_field_size * index,
+				.bit_offset_in_prefix_bitmap = containee_type_info->bit_field_size * ((uint64_t)index),
 				.bit_offset_to_is_valid_bit = 0, // will be unused
 				.type_info = containee_type_info,
 			};
