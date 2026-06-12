@@ -570,6 +570,9 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		uint32_t size = serialized_bytes[1];
 		bytes_consumed += 2;
 
+		if(size < 1 || 64 < size)
+			return NULL;
+
 		data_type_info dti = define_bit_field_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
 		if(type_name_length == UINT32_MAX)
@@ -594,6 +597,9 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 	{
 		uint32_t size = serialized_bytes[1];
 		bytes_consumed += 2;
+
+		if(size < 1 || 64 < size)
+			return NULL;
 
 		data_type_info dti = define_bit_field_non_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
@@ -620,6 +626,9 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		uint32_t size = serialized_bytes[1];
 		bytes_consumed += 2;
 
+		if(size < 1 || 8 < size)
+			return NULL;
+
 		data_type_info dti = define_uint_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
 		if(type_name_length == UINT32_MAX)
@@ -644,6 +653,9 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 	{
 		uint32_t size = serialized_bytes[1];
 		bytes_consumed += 2;
+
+		if(size < 1 || 8 < size)
+			return NULL;
 
 		data_type_info dti = define_uint_non_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
@@ -670,6 +682,9 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		uint32_t size = serialized_bytes[1];
 		bytes_consumed += 2;
 
+		if(size < 1 || 8 < size)
+			return NULL;
+
 		data_type_info dti = define_int_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
 		if(type_name_length == UINT32_MAX)
@@ -694,6 +709,9 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 	{
 		uint32_t size = serialized_bytes[1];
 		bytes_consumed += 2;
+
+		if(size < 1 || 8 < size)
+			return NULL;
 
 		data_type_info dti = define_int_non_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
@@ -790,6 +808,9 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		uint32_t size = serialized_bytes[1];
 		bytes_consumed += 2;
 
+		if(size < 1 || 32 < size)
+			return NULL;
+
 		data_type_info dti = define_large_uint_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
 		if(type_name_length == UINT32_MAX)
@@ -814,6 +835,9 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 	{
 		uint32_t size = serialized_bytes[1];
 		bytes_consumed += 2;
+
+		if(size < 1 || 32 < size)
+			return NULL;
 
 		data_type_info dti = define_large_uint_non_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
@@ -840,6 +864,9 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 		uint32_t size = serialized_bytes[1];
 		bytes_consumed += 2;
 
+		if(size < 1 || 32 < size)
+			return NULL;
+
 		data_type_info dti = define_large_int_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
 		if(type_name_length == UINT32_MAX)
@@ -864,6 +891,9 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 	{
 		uint32_t size = serialized_bytes[1];
 		bytes_consumed += 2;
+
+		if(size < 1 || 32 < size)
+			return NULL;
 
 		data_type_info dti = define_large_int_non_nullable_type("", size);
 		uint32_t type_name_length = deserialize_type_name(dti.type_name, serialized_bytes + bytes_consumed, data_size - bytes_consumed);
