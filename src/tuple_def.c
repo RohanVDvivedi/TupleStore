@@ -229,6 +229,10 @@ uint32_t serialize_tuple_size_def(const tuple_size_def* tuple_size_d, void* data
 
 int deserialize_tuple_size_def(tuple_size_def* tuple_size_d, const void* data, uint32_t size)
 {
+	// must have atleast 1 byte
+	if(size == 0)
+		return 0;
+
 	const char* s = data;
 	uint32_t bytes_parsed = 1;
 
@@ -260,7 +264,7 @@ int deserialize_tuple_size_def(tuple_size_def* tuple_size_d, const void* data, u
 	else
 		tuple_size_d->containee_size = deserialize_uint32(s + bytes_parsed, 4);
 
-	return bytes_parsed;
+	return 1;
 }
 
 #include<stdio.h>

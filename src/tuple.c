@@ -585,7 +585,7 @@ int compare_tuples(const void* tup1, const tuple_def* tpl_d1, const positional_a
 		if(compare == -2) // this implies elements are not comparable
 			return -2;
 
-		// if cmp_dir is not NULL, then compare in default direction of the element
+		// if cmp_dir is not NULL, then compare in direction of the cmp_dir[i]
 		if(cmp_dir != NULL)
 			compare = compare * cmp_dir[i];
 	}
@@ -618,7 +618,7 @@ int compare_tuple_with_datum(const void* tup1, const tuple_def* tpl_d1, const po
 		if(compare == -2) // this implies elements are not comparable
 			return -2;
 
-		// if cmp_dir is not NULL, then compare in default direction of the element
+		// if cmp_dir is not NULL, then compare in direction of the cmp_dir[i]
 		if(cmp_dir != NULL)
 			compare = compare * cmp_dir[i];
 	}
@@ -653,7 +653,7 @@ int compare_tuples2(const void* tup1, const void* tup2, const tuple_def* tpl_d, 
 		if(compare == -2) // this implies elements are not comparable
 			return -2;
 
-		// if cmp_dir is not NULL, then compare in default direction of the element
+		// if cmp_dir is not NULL, then compare in direction of the cmp_dir[i]
 		if(cmp_dir != NULL)
 			compare = compare * cmp_dir[i];
 	}
@@ -670,7 +670,7 @@ int compare_datums3(const datum* uvals1, const datum* uvals2, data_type_info con
 		if(compare == -2) // this implies elements are not comparable
 			return -2;
 
-		// if cmp_dir is not NULL, then compare in default direction of the element
+		// if cmp_dir is not NULL, then compare in direction of the cmp_dir[i]
 		if(cmp_dir != NULL)
 			compare = compare * cmp_dir[i];
 	}

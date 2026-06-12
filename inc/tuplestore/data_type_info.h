@@ -734,7 +734,7 @@ static inline uint32_t get_size_of_containee_from_container_CONTAINITY_UNSAFE(co
 	if(containee_pos_info->type_info->type == BIT_FIELD)
 		return 0;
 	else if(!is_variable_sized_type_info(containee_pos_info->type_info))
-		return dti->size;
+		return containee_pos_info->type_info->size;
 	else
 	{
 		const void* containee = get_pointer_to_containee_from_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);

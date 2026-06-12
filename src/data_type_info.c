@@ -235,6 +235,8 @@ int finalize_type_info(data_type_info* dti)
 				if(dti->min_size > dti->max_size)
 					return 0;
 			}
+
+			break;
 		}
 	}
 
