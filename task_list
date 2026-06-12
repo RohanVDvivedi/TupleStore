@@ -1,3 +1,0 @@
-BUGS IDENTIFIED
-
- * fix overflow in parameter passing to bitmap_size_in_bytes() the multiplication may overflow

@@ -175,7 +175,7 @@ static inline int has_element_count_in_its_prefix_for_container_type_info(const 
 // for a tuple or a fixed element count array of fixed length elements it is equal to dti->prefix_bitmap_size_in_bits
 // for an array of variable length elements it is always 0
 // for a variable element count array of fixed length elements, it will be equal to element_count * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + (dti->containee.type == BIT_FIELD) ? dti->containee.size_def.bit_field_size : 0)
-static inline uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_info* dti, const void* data);
+static inline uint64_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_info* dti, const void* data);
 #define get_prefix_bitmap_size_for_container_type_info(dti, data) 					(bitmap_size_in_bytes(get_prefix_bitmap_size_in_bits_for_container_type_info(dti, data)))
 
 /*
@@ -422,7 +422,7 @@ static inline uint32_t get_size_for_type_info(const data_type_info* dti, const v
 	
 	if(dti->containee->type == BIT_FIELD)
 		return get_value_size_on_page(dti->max_size) // it has element_count in its prefix but not its size
-		 + bitmap_size_in_bytes(element_count * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size));
+		 + bitmap_size_in_bytes(((uint64_t)element_count) * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size));
 	else
 		return get_value_size_on_page(dti->max_size) // it has element_count in its prefix but not its size
 		 + bitmap_size_in_bytes(element_count * needs_is_valid_bit_in_prefix_bitmap(dti->containee))
@@ -512,7 +512,7 @@ static inline int has_element_count_in_its_prefix_for_container_type_info(const 
 	return is_variable_element_count_container_type_info(dti);
 }
 
-static inline uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_info* dti, const void* data)
+static inline uint64_t get_prefix_bitmap_size_in_bits_for_container_type_info(const data_type_info* dti, const void* data)
 {
 	// no prefix bitmap for non container type data_types
 	if(!is_container_type_info(dti))
@@ -529,7 +529,7 @@ static inline uint32_t get_prefix_bitmap_size_in_bits_for_container_type_info(co
 	// this must now be an array
 
 	if(dti->containee->type == BIT_FIELD)
-		return get_element_count_for_container_type_info(dti, data) * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size);
+		return ((uint64_t)get_element_count_for_container_type_info(dti, data)) * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size);
 	else
 		return get_element_count_for_container_type_info(dti, data) * needs_is_valid_bit_in_prefix_bitmap(dti->containee);
 }
@@ -1414,7 +1414,7 @@ static inline int can_expand_container(const data_type_info* dti, const void* da
 		// all of the content of the containee is in its prefix_bitmap
 		uint32_t prefix_bits_necessary_for_1_containee = needs_is_valid_bit_in_prefix_bitmap(containee_type_info) + containee_type_info->bit_field_size;
 
-		new_size = prefix_bitmap_offset + bitmap_size_in_bytes(prefix_bits_necessary_for_1_containee * new_element_count);
+		new_size = prefix_bitmap_offset + bitmap_size_in_bytes(prefix_bits_necessary_for_1_containee * ((uint64_t)new_element_count));
 	}
 	else if(!is_variable_sized_type_info(containee_type_info))
 	{
@@ -1479,7 +1479,7 @@ static inline int expand_container(const data_type_info* dti, void* data, uint32
 		uint32_t prefix_bits_necessary_for_1_containee = needs_is_valid_bit_in_prefix_bitmap(containee_type_info) + containee_type_info->bit_field_size;
 
 		// calculate new size and check for size increments
-		new_size = prefix_bitmap_offset + bitmap_size_in_bytes(prefix_bits_necessary_for_1_containee * new_element_count);
+		new_size = prefix_bitmap_offset + bitmap_size_in_bytes(prefix_bits_necessary_for_1_containee * ((uint64_t)new_element_count));
 		if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 			return 0;
 
@@ -1658,7 +1658,7 @@ static inline int discard_from_container(const data_type_info* dti, void* data, 
 		uint32_t prefix_bits_necessary_for_1_containee = needs_is_valid_bit_in_prefix_bitmap(containee_type_info) + containee_type_info->bit_field_size;
 
 		// calculate new size
-		new_size = prefix_bitmap_offset + bitmap_size_in_bytes(prefix_bits_necessary_for_1_containee * new_element_count);
+		new_size = prefix_bitmap_offset + bitmap_size_in_bytes(prefix_bits_necessary_for_1_containee * ((uint64_t)new_element_count));
 
 		// move succeeding bits to prior location
 		for(uint32_t i = 0; i < old_element_count - (index + slots); i++)

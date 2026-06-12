@@ -226,7 +226,7 @@ int finalize_type_info(data_type_info* dti)
 				if(!dti->has_variable_element_count)
 				{
 					if(dti->containee->type == BIT_FIELD)
-						dti->min_size += bitmap_size_in_bytes((needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size) * dti->element_count);
+						dti->min_size += bitmap_size_in_bytes(((uint64_t)(needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size)) * dti->element_count);
 					else if(!is_variable_sized_type_info(dti->containee))
 						dti->min_size += bitmap_size_in_bytes(needs_is_valid_bit_in_prefix_bitmap(dti->containee) * dti->element_count) + (dti->containee->size * dti->element_count);
 					else
