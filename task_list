@@ -6,8 +6,6 @@ BUGS IDENTIFIED
 
  * line 730 to 780 deserialize always returns float and double nullables
 
- * print_datum line no 432
-
  * data_type_info.c line 850 -> review serialization and deserialization function for dti
 
  * clone_type_info destroys input dti instead of res
