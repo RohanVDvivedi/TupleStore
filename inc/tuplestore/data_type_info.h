@@ -202,8 +202,8 @@ uint32_t find_containee_using_field_name_in_tuple_type_info(const data_type_info
 // must be called and must pass on all the types
 int finalize_type_info(data_type_info* dti);
 
-uint32_t get_byte_count_for_serialized_type_info(const data_type_info* dti); // returns number of bytes in serialized type_info
-uint32_t serialize_type_info(const data_type_info* dti, void* data); // data must be able to hold atleast enough bytes to serialize dti, you may get this size by calling get_byte_count_for_serialized_type_info first
+uint32_t get_byte_count_for_serialized_type_info(const data_type_info* dti); // returns number of bytes in serialized type_info, dti must be finalized
+uint32_t serialize_type_info(const data_type_info* dti, void* data); // data must be able to hold atleast enough bytes to serialize dti, you may get this size by calling get_byte_count_for_serialized_type_info first, dti here must be finalized
 data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int* allocation_error); // this function fails if we require more bytes than data_size for deserialization, it will fail with a NULL
 // if the returned value is NULL, and allocation_error is set, then the failure happenned because we were unable to allocate a data_type_info node using the malloc std c allocator
 // for the return value of this function you may destroy all nodes recursively except the ones marked is_static = 1

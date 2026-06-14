@@ -1058,7 +1058,10 @@ data_type_info* deserialize_type_info(const void* data, uint32_t data_size, int*
 			if(dti_p->containees[i].al.type_info == NULL)
 				goto DESTROY_ALL_CHILDREN_UNTIL_i_AND_FAIL;
 			else
+			{
+				finalize_type_info(dti_p->containees[i].al.type_info); //  only after the parsed containee is finalized can we actully know that we can get the bytes_consumed by the deserialize_type_info call
 				bytes_consumed += get_byte_count_for_serialized_type_info(dti_p->containees[i].al.type_info);
+			}
 
 			// logic below this is to handle failure in the loop, so if you succeed until here continue
 			continue;
