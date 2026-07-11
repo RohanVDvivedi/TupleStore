@@ -113,12 +113,21 @@ int get_nested_containee_from_datum(datum* uval_c, const data_type_info** dti_c,
 
 int can_compare_datum(const data_type_info* dti1, const data_type_info* dti2)
 {
-	if(are_identical_type_info(dti1, dti2)) // logically same exact types, this is essential for TUPLE and ARRAY types
+	if(dti1 == dti2)
 		return 1;
 	else if(is_primitive_numeral_type_info(dti1) && is_primitive_numeral_type_info(dti2)) // both are primitive numeral types
 		return 1;
 	else if((dti1->type == STRING || dti1->type == BINARY || dti1->type == ARRAY) && (dti2->type == STRING || dti2->type == BINARY || dti2->type == ARRAY)) // STRING, BINARY and ARRAY are internally comparable, if their containee types are comparable
 		return can_compare_datum(dti1->containee, dti2->containee);
+	else if(dti1->type == TUPLE && dti2->type == TUPLE)
+	{
+		if(dti1->element_count != dti2->element_count)
+			return 0;
+		for(uint32_t i = 0; i < dti1->element_count; i++)
+			if(!can_compare_datum(get_data_type_info_for_containee_of_container_without_data(dti1, i), get_data_type_info_for_containee_of_container_without_data(dti2, i)))
+				return 0;
+		return 1;
+	}
 	else
 		return 0;
 }
