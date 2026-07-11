@@ -345,7 +345,19 @@ uint64_t hash_datum(const datum* uval, const data_type_info* dti, tuple_hasher* 
 		// has to be fixed size
 		char serialized_value[sizeof(datum)];
 
-		set_datum_for_type_info(dti, serialized_value, 0, 0 /* has to be fixed sized, hence this parameter is never used*/, uval);
+		datum temp = (*uval);
+		if(dti->type == FLOAT && dti->size == sizeof(float))
+		{
+			if(temp.float_value == 0.0f) temp.float_value = 0.0f;
+			else if(isnan(temp.float_value)) temp.float_value = NAN;
+		}
+		else if(dti->type == FLOAT && dti->size == sizeof(double))
+		{
+			if(temp.double_value == 0.0) temp.double_value = 0.0;
+			else if(isnan(temp.double_value)) temp.double_value = NAN;
+		}
+
+		set_datum_for_type_info(dti, serialized_value, 0, 0 /* has to be fixed sized, hence this parameter is never used*/, &temp);
 
 		return tuple_hash_bytes(th, (const uint8_t*)serialized_value, get_size_for_type_info(dti ,serialized_value));
 	}
