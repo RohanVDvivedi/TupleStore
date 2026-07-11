@@ -297,6 +297,35 @@ int compare_datum2(const datum* uval1, const datum* uval2, const data_type_info*
 	return compare_datum_internal2(uval1, uval2, dti);
 }
 
+int are_hashably_equivalent(const data_type_info* dti1, const data_type_info* dti2)
+{
+	if(dti1->type == BIT_FIELD && dti2->type == BIT_FIELD)
+	{
+		if(dti1->bit_field_size == dti2->bit_field_size)
+			return 1;
+		return 0;
+	}
+	else if(is_primitive_numeral_type_info(dti1) && is_primitive_numeral_type_info(dti2))
+	{
+		if(dti1->type == dti2->type && dti1->size == dti2->size)
+			return 1;
+		return 0;
+	}
+	else if((dti1->type == STRING || dti1->type == BINARY || dti1->type == ARRAY) && (dti2->type == STRING || dti2->type == BINARY || dti2->type == ARRAY)) // STRING, BINARY and ARRAY are internally comparable, if their containee types are comparable
+		return are_hashably_equivalent(dti1->containee, dti2->containee);
+	else if(dti1->type == TUPLE && dti2->type == TUPLE)
+	{
+		if(dti1->element_count != dti2->element_count)
+			return 0;
+		for(uint32_t i = 0; i < dti1->element_count; i++)
+			if(!are_hashably_equivalent(get_data_type_info_for_containee_of_container_without_data(dti1, i), get_data_type_info_for_containee_of_container_without_data(dti2, i)))
+				return 0;
+		return 1;
+	}
+	else
+		return 0;
+}
+
 uint64_t hash_datum(const datum* uval, const data_type_info* dti, tuple_hasher* th)
 {
 	if(is_datum_NULL(uval)) // no bytes to hash

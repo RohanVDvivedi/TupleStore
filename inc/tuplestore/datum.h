@@ -75,6 +75,10 @@ int compare_datum(const datum* uval1, const data_type_info* dti1, const datum* u
 // this function is added to skip the checks that ensure that the datums can be compared, so that such checks can be discarded
 int compare_datum2(const datum* uval1, const datum* uval2, const data_type_info* dti);
 
+// below functions returns true, if two data of two types although different, but have same logical values (provably by compare_datum() == 0)
+// only if they will also hash to the same value
+int are_hashably_equivalent(const data_type_info* dti1, const data_type_info* dti2);
+
 #include<tuplestore/tuple_hasher.h>
 uint64_t hash_datum(const datum* uval, const data_type_info* dti, tuple_hasher* th);
 
