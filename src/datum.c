@@ -307,6 +307,13 @@ int are_hashably_equivalent(const data_type_info* dti1, const data_type_info* dt
 	}
 	else if(is_primitive_numeral_type_info(dti1) && is_primitive_numeral_type_info(dti2))
 	{
+		// special case, if they both are integers, then they must have same size, to be hashably equivalent
+		if( (dti1->type == UINT || dti1->type == INT || dti1->type == LARGE_UINT || dti1->type == LARGE_INT) // dti1 is integer
+		&&  (dti2->type == UINT || dti2->type == INT || dti2->type == LARGE_UINT || dti2->type == LARGE_INT) // and dti2 is integer
+		&&  (dti1->size == dti2->size) ) // and they have same number of bytes
+			return 1;
+
+		// if they have same type and size they are hashably equivalent
 		if(dti1->type == dti2->type && dti1->size == dti2->size)
 			return 1;
 		return 0;
