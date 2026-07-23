@@ -299,7 +299,9 @@ int compare_datum2(const datum* uval1, const datum* uval2, const data_type_info*
 
 int are_hashably_equivalent(const data_type_info* dti1, const data_type_info* dti2)
 {
-	if(dti1->type == BIT_FIELD && dti2->type == BIT_FIELD)
+	if(dti1 == dti2)
+		return 1;
+	else if(dti1->type == BIT_FIELD && dti2->type == BIT_FIELD)
 	{
 		if(dti1->bit_field_size == dti2->bit_field_size)
 			return 1;

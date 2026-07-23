@@ -229,6 +229,9 @@ data_type_info* clone_type_info_recursively(const data_type_info* dti, int* allo
 // this function also returns correct output if the data_type_info-s are not yet finalized (and have minimum attributes set as per the macros in data_type_info_defaults.h)
 int are_identical_type_info(const data_type_info* dti1, const data_type_info* dti2);
 
+// the layout of these type_infos is such that, one can be used on the data of the other one
+int are_accessibly_equivalent_type_info(const data_type_info* dti1, const data_type_info* dti2);
+
 // print type info
 void print_type_info(const data_type_info* dti);
 

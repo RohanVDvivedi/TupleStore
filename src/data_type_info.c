@@ -1316,7 +1316,7 @@ int are_identical_type_info(const data_type_info* dti1, const data_type_info* dt
 
 			// and all the element type_infos must be identical
 			for(uint32_t i = 0; i < dti1->element_count; i++)
-				if(!are_identical_type_info(dti1->containees[i].al.type_info, dti2->containees[i].al.type_info))
+				if(0 != strncmp(dti1->containees[i].field_name, dti2->containees[i].field_name, 64) || !are_identical_type_info(dti1->containees[i].al.type_info, dti2->containees[i].al.type_info))
 					return 0;
 
 			return 1;
@@ -1338,6 +1338,92 @@ int are_identical_type_info(const data_type_info* dti1, const data_type_info* dt
 			return are_identical_type_info(dti1->containee, dti2->containee);
 		}
 	}
+}
+
+int are_accessibly_equivalent_type_info(const data_type_info* dti1, const data_type_info* dti2)
+{
+	// if the passed pointers are equal, they are equal
+	if(dti1 == dti2)
+		return 1;
+
+	if(is_primitive_numeral_type_info(dti1) && is_primitive_numeral_type_info(dti2))
+	{
+		if(dti1->is_nullable != dti2->is_nullable) // they both must be nullable or not
+			return 0;
+
+		// they are all fixed sized, so their types and sizes must match rigthly
+
+		if(dti1->type == BIT_FIELD && dti2->type == BIT_FIELD)
+			return dti1->bit_field_size == dti2->bit_field_size; // must have same bit field size
+		else if((dti1->type == UINT || dti1->type == LARGE_UINT) && (dti2->type == UINT || dti2->type == LARGE_UINT))
+			return dti1->size == dti2->size; // must have same size
+		else if((dti1->type == INT || dti1->type == LARGE_INT) && (dti2->type == INT || dti2->type == LARGE_INT))
+			return dti1->size == dti2->size; // must have same size
+		else if(dti1->type == FLOAT && dti2->type == FLOAT)
+			return dti1->size == dti2->size; // must have same size
+		else
+			return 0;
+	}
+
+	if(is_primitive_numeral_type_info(dti1) || is_primitive_numeral_type_info(dti2)) // if anyone is still primitive numeral type, fail
+		return 0;
+
+	// for rest of the types the types must be exact
+	if(dti1->type != dti2->type)
+		return 0;
+
+	// both must be either fixed sized or variable sized
+	if(is_variable_sized_type_info(dti1) != is_variable_sized_type_info(dti2))
+		return 0;
+
+	// if they both are variable sized, compare their min_size and max_size, else compare their size and is_nullable
+	if(!is_variable_sized_type_info(dti1))
+	{
+		if(dti1->is_nullable != dti2->is_nullable) // they both must be nullable or not
+			return 0;
+
+		if(dti1->size != dti2->size)
+			return 0;
+	}
+	else
+	{
+		// both must have same max_size
+		if(dti1->max_size != dti2->max_size)
+			return 0;
+	}
+
+	if(dti1->type == STRING || dti1->type == BINARY)
+		return 1;
+	else if(dti1->type == TUPLE)
+	{
+		// both must have the same element_count
+		if(dti1->element_count != dti2->element_count)
+			return 0;
+
+		// and all the element type_infos must be identical
+		for(uint32_t i = 0; i < dti1->element_count; i++)
+			if(!are_accessibly_equivalent_type_info(dti1->containees[i].al.type_info, dti2->containees[i].al.type_info))
+				return 0;
+
+		return 1;
+	}
+	else if(dti1->type == ARRAY)
+	{
+		// both must be variable element_count or not
+		if(dti1->has_variable_element_count != dti2->has_variable_element_count)
+			return 0;
+
+		// if they are not variable element count, then compare their element_count
+		if(!dti1->has_variable_element_count)
+		{
+			if(dti1->element_count != dti2->element_count)
+				return 0;
+		}
+
+		return are_accessibly_equivalent_type_info(dti1->containee, dti2->containee);
+	}
+
+	return 0;
 }
 
 static void print_tabs(int tabs)
