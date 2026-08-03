@@ -108,6 +108,11 @@ struct data_type_info
 	// must be set to 0s for STRING and BINARY types
 	// -> gets derieved anyway, by the finalize function for container types hence not necessary to be set
 
+	void* binary_context;
+	// binary_context, this attribute is internally not used by the tuplestore project, but it is provided to decode and understand the contents of the blob/binary types
+	// a possible implementation could use it for supporting union, where first few bytes can decide how to decode/understand the contents of the blob/binary
+	// even other data_type type != BINARY, can use it but they already have a defined meaning to them
+
 	data_type_info* containee;	// -> to be used for ARRAY only
 	// for string and binary types the containee is always a UINT_1_NON_NULL i.e. non-nullable UINT of size 1 byte
 
