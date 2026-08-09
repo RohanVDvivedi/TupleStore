@@ -272,8 +272,20 @@ int insert_tuple_slotted_page(void* page, uint32_t page_size, const tuple_size_d
 	if(index == tuple_count_val - 1)
 		return 1;
 
-	// right rotate the offsets array at index, by the size of offset, to bring the last offset at the "right" index
-	memory_right_rotate(page + get_offset_to_ith_tuple_offset(page, page_size, index), (tuple_count_val - index) * get_value_size_on_page(page_size), get_value_size_on_page(page_size));
+	// bring the just-appended offset (currently the last entry) to its target index
+	{
+		// read the last tuple's offset which is the new tuple's offset
+		uint32_t new_tuple_s_offset_val = get_offset_to_ith_tuple(page, page_size, tuple_count_val - 1);
+
+		for(uint32_t to_index = index + 1; to_index < tuple_count_val; to_index++)
+		{
+			uint32_t from_index = to_index - 1;
+			write_value_to_page(page + get_offset_to_ith_tuple_offset(page, page_size, to_index), page_size, get_offset_to_ith_tuple(page, page_size, from_index));
+		}
+
+		// write new_tuple's offset to the index-th position
+		write_value_to_page(page + get_offset_to_ith_tuple_offset(page, page_size, index), page_size, new_tuple_s_offset_val);
+	}
 
 	return 1;
 }
