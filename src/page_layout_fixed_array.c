@@ -220,8 +220,15 @@ int insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_si
 		bit_at_index ? set_bit(is_valid, index) : reset_bit(is_valid, index);
 	}
 
-	// right rotate the tuple array at index, by the size of tuple, to bring the last offset at the "right" index
-	memory_right_rotate(page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index), (tuple_count_val - index) * tpl_sz_d->size, tpl_sz_d->size);
+	// now, right rotate the tuple array at index, by the size of tuple, to bring the last offset at the "right" index
+	// memory_right_rotate(page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index), (tuple_count_val - index) * tpl_sz_d->size, tpl_sz_d->size);
+	// above line of code proved to be inefficient, below 2 moves are it's efficient substitute
+	// so it has been replace with the 2 memory_move-s below
+	// shift the tuples in [index, tuple_count_val - 1) one slot to the right at index = (index + 1) using a single memory_move
+	// (memory_move handles the overlap), then place the just-appended tuple at its target index.
+	memory_move(page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index + 1), page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index), (tuple_count_val - 1 - index) * tpl_sz_d->size);
+	if(external_tuple != NULL)
+		memory_move(page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index), external_tuple, tpl_sz_d->size);
 
 	return 1;
 }
