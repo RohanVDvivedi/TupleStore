@@ -905,8 +905,37 @@ static inline int move_variable_sized_containee_to_end_of_container_CONTAINITY_U
 	if(containee_byte_offset + containee_size == container_size)
 		return 0;
 
-	// perform left rotation to psuh the containee at index to the end of the container
-	memory_left_rotate(containee, container_size - containee_byte_offset, containee_size);
+	// push the containee at index to the end of the container, and the bytes after the current location of containee to the location of the containee itself
+	// something like memory_left_rotate(containee, container_size - containee_byte_offset, containee_size), but optimized
+	{
+		uint32_t region_size = container_size - containee_byte_offset;   // containee + everything after it
+		uint32_t tail_size = region_size - containee_size;               // everything after the containee
+
+		uint32_t stash_size  = min(containee_size, tail_size);
+		char stack_stash[256];
+		char* stash = (stash_size <= sizeof(stack_stash)) ? stack_stash : malloc(stash_size);
+		if(stash == NULL) // fall back to the rotate, it needs no scratch memory
+			memory_left_rotate(containee, region_size, containee_size);
+		else
+		{
+			if(containee_size <= tail_size)
+			{
+				// use stash to hold containee
+				memory_move(stash, containee, containee_size);
+				memory_move(containee, containee + containee_size, tail_size);
+				memory_move(containee + tail_size, stash, containee_size);
+			}
+			else
+			{
+				// use stash to hold the tail
+				memory_move(stash, containee + containee_size, tail_size);
+				memory_move(containee + tail_size, containee, containee_size);
+				memory_move(containee, stash, tail_size);
+			}
+			if(stash != stack_stash)
+				free(stash);
+		}
+	}
 
 	for(uint32_t i = 0; i < get_element_count_for_container_type_info(dti, data); i++)
 	{
