@@ -43,7 +43,7 @@ int main()
 		test_serde_for_type_info(tuple_type_info);
 		test_clone_for_type_info(tuple_type_info);
 
-		char tuple[256];
+		char tuple[4096];
 		initialize_minimal_data_for_type_info(tuple_type_info, tuple);
 
 		print_data_for_data_type_info(tuple_type_info, tuple);printf("    is minimal = %d\n", is_minimal_data_for_type_info(tuple_type_info, tuple));
