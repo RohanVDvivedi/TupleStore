@@ -210,11 +210,19 @@ int insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_si
 		// bit value to be placed at the index location
 		int bit_at_index = get_bit(is_valid, tuple_count_val - 1);
 
-		for(uint32_t i = tuple_count_val - 1; i > index; i--)
+		// move bit one word at a time
+		for(uint32_t dest_last = tuple_count_val - 1; dest_last > index; )
 		{
-			// copy bit from index = i-1, and place i at index = i
-			uint32_t i_1_bit = get_bit(is_valid, i - 1);
-			i_1_bit ? set_bit(is_valid, i) : reset_bit(is_valid, i);
+			uint32_t bits_to_move = min(sizeof(unsigned long long int) * CHAR_BIT, dest_last - index);
+
+			uint32_t dest_start = dest_last - bits_to_move + 1;
+
+			uint32_t src_last = dest_last - 1;
+			uint32_t src_start = dest_start - 1;
+
+			set_bits(is_valid, dest_start, dest_last, get_bits(is_valid, src_start, src_last));
+
+			dest_last -= bits_to_move;
 		}
 
 		bit_at_index ? set_bit(is_valid, index) : reset_bit(is_valid, index);
