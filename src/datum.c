@@ -132,9 +132,14 @@ int can_compare_datum(const data_type_info* dti1, const data_type_info* dti2)
 		return 0;
 }
 
+static int compare_datum_internal2(const datum* uval1, const datum* uval2, const data_type_info* dti);
+
 // before calling this function the dti1 and dti2 must pass this check : can_compare_datum(dti1, dti2)
 static int compare_datum_internal(const datum* uval1, const data_type_info* dti1, const datum* uval2, const data_type_info* dti2)
 {
+	if(dti1 == dti2) // same type infos passed then take, fast path
+		return compare_datum_internal2(uval1, uval2, dti1);
+
 	if(is_datum_NULL(uval1) && is_datum_NULL(uval2))
 		return 0;
 	else if(is_datum_NULL(uval1) && !is_datum_NULL(uval2))
@@ -144,7 +149,7 @@ static int compare_datum_internal(const datum* uval1, const data_type_info* dti1
 
 	if(is_primitive_numeral_type_info(dti1)) // both are primitive types and are comparable
 		return compare_primitive_numeral_type(uval1, dti1, uval2, dti2);
-	else if(dti1->type == TUPLE) // both are the same tuple types
+	else if(dti1->type == TUPLE) // both are the comparable tuple types
 	{
 		int cmp = 0;
 		uint32_t element_count = get_element_count_for_datum(uval1, dti1);
@@ -162,6 +167,26 @@ static int compare_datum_internal(const datum* uval1, const data_type_info* dti1
 
 			cmp = compare_datum_internal(&child_value1, child_dti1, &child_value2, child_dti2);
 		}
+		return cmp;
+	}
+	else if((dti1->type == STRING || dti1->type == BINARY) && (dti2->type == STRING || dti2->type == BINARY)) // fast path
+	{
+		int cmp = 0;
+		uint32_t element_count1 = get_element_count_for_datum(uval1, dti1);
+		uint32_t element_count2 = get_element_count_for_datum(uval2, dti2);
+		uint32_t element_count = min(element_count1, element_count2);
+
+		for(uint32_t i = 0; i < element_count && cmp == 0; i++)
+			cmp = compare_numbers( (*((const unsigned char*)(uval1->string_or_binary_value + i))), (*((const unsigned char*)(uval2->string_or_binary_value + i))) );
+
+		if(cmp == 0 && (element_count1 != element_count2))
+		{
+			if(element_count1 > element_count2)
+				cmp = 1;
+			else
+				cmp = -1;
+		}
+
 		return cmp;
 	}
 	else // they both are a 9-combination of STRING, BINARY and ARRAY of comparable types
