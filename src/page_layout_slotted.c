@@ -669,7 +669,12 @@ int run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple
 
 	// sort tuples_offset_list by their offset in decreasing order
 	if(get_element_count_tuple_offset_indexed_list(&tuple_offset_list) > 1)
-		heap_sort_tuple_offset_indexed_list(&tuple_offset_list, 0, get_element_count_tuple_offset_indexed_list(&tuple_offset_list)-1, &simple_comparator(compare_by_offset_descending));
+	{
+		// if we fail in the middle of the sort function we can not continue, we must exit immediately
+		// as we are using heap sort here, which fails only if the swap function fails, this call never fails
+		if(!heap_sort_tuple_offset_indexed_list(&tuple_offset_list, 0, get_element_count_tuple_offset_indexed_list(&tuple_offset_list)-1, &simple_comparator(compare_by_offset_descending)))
+			exit(-1);
+	}
 
 	// start allocating as if it is a new page
 	uint32_t end_of_free_space_offset_val = page_size;
