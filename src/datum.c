@@ -176,8 +176,7 @@ static int compare_datum_internal(const datum* uval1, const data_type_info* dti1
 		uint32_t element_count2 = get_element_count_for_datum(uval2, dti2);
 		uint32_t element_count = min(element_count1, element_count2);
 
-		for(uint32_t i = 0; i < element_count && cmp == 0; i++)
-			cmp = compare_numbers( (*((const unsigned char*)(uval1->string_or_binary_value + i))), (*((const unsigned char*)(uval2->string_or_binary_value + i))) );
+		cmp = memory_compare(uval1->string_or_binary_value, uval2->string_or_binary_value, element_count);
 
 		if(cmp == 0 && (element_count1 != element_count2))
 		{
@@ -271,8 +270,7 @@ static int compare_datum_internal2(const datum* uval1, const datum* uval2, const
 		uint32_t element_count2 = get_element_count_for_datum(uval2, dti);
 		uint32_t element_count = min(element_count1, element_count2);
 
-		for(uint32_t i = 0; i < element_count && cmp == 0; i++)
-			cmp = compare_numbers( (*((const unsigned char*)(uval1->string_or_binary_value + i))), (*((const unsigned char*)(uval2->string_or_binary_value + i))) );
+		cmp = memory_compare(uval1->string_or_binary_value, uval2->string_or_binary_value, element_count);
 
 		if(cmp == 0 && (element_count1 != element_count2))
 		{
