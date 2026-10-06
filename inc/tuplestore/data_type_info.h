@@ -814,8 +814,9 @@ static inline int get_datum_for_type_info(datum* uval, const data_type_info* dti
 			// and the first byte is right where the prefix ends, there is not prefix_bitmap, so we can use its offset as index to first possible byte
 			uval->string_value = data + get_offset_to_prefix_bitmap_for_container_type_info(dti);
 			uval->string_size = get_element_count_for_container_type_info(dti, data);
-			// this string could be null terminated
-			uval->string_size = strnlen(uval->string_value, uval->string_size);
+			// this string could be null terminated, if it is fixed length string type
+			if(!is_variable_sized_type_info(dti))
+				uval->string_size = strnlen(uval->string_value, uval->string_size);
 			break;
 		}
 		case BINARY :
@@ -1079,19 +1080,22 @@ static inline int can_set_datum_for_type_info(const data_type_info* dti, const v
 
 	// if it is fixed sized, then no need to check for max_size_increment
 	if(!is_variable_sized_type_info(dti))
+	{
+		if(dti->type == STRING && uval->string_size > dti->size) // a fixed length string still behaves like a variable length string padded to 0s upto its max size
+			return 0;
+		if(dti->type == BINARY && uval->binary_size != dti->size) // a fixed length binary, needs exactly as many bytes in the uval
+			return 0;
 		return 1;
+	}
 
 	switch(dti->type)
 	{
 		case STRING :
 		{
-			datum uval_t = *uval;
-
-			// limit the string length
-			uval_t.string_size = strnlen(uval_t.string_value, uval_t.string_size);
+			// uval is expected to not have a NULL byte in it
 
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval_t.string_size;
+			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval->string_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
@@ -1174,26 +1178,23 @@ static inline int set_datum_for_type_info(const data_type_info* dti, void* data,
 			}
 			case STRING :
 			{
-				datum uval_t = *uval;
-
-				// limit the string length
-				uval_t.string_size = strnlen(uval_t.string_value, uval_t.string_size);
-				uval_t.string_size = min(uval_t.string_size, dti->size);
+				// datum uval string must have lesser bytes then what we can accomodate at the maximum
+				if(uval->string_size > dti->size)
+					return 0;
 
 				// copy contents to data
-				memory_move(data, uval_t.string_value, uval_t.string_size);
-				// padd remaining bytes to 0
-				if(uval_t.string_size < dti->size)
-					memory_set(data + uval_t.string_size, 0, dti->size - uval_t.string_size);
+				memory_move(data, uval->string_value, uval->string_size);
+				// pad remaining bytes to 0
+				if(uval->string_size < dti->size)
+					memory_set(data + uval->string_size, 0, dti->size - uval->string_size);
 				return 1;
 			}
 			case BINARY :
 			{
-				datum uval_t = *uval;
+				if(uval->binary_size != dti->size)
+					return 0;
 
-				uval_t.binary_size = min(uval_t.binary_size, dti->size);
-				// copy contents to data
-				memory_move(data, uval_t.binary_value, uval_t.binary_size);
+				memory_move(data, uval->binary_value, uval->binary_size);
 				return 1;
 			}
 			case TUPLE :
@@ -1227,20 +1228,17 @@ static inline int set_datum_for_type_info(const data_type_info* dti, void* data,
 	{
 		case STRING :
 		{
-			datum uval_t = *uval;
-
-			// limit the string length
-			uval_t.string_size = strnlen(uval_t.string_value, uval_t.string_size);
+			// uval is expected to not have a NULL byte in it
 
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval_t.string_size;
+			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval->string_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
 
 			// write element count and copy contents to data
-			write_value_to_page(data, dti->max_size, uval_t.string_size);
-			memory_move(data + get_value_size_on_page(dti->max_size), uval_t.string_value, uval_t.string_size);
+			write_value_to_page(data, dti->max_size, uval->string_size);
+			memory_move(data + get_value_size_on_page(dti->max_size), uval->string_value, uval->string_size);
 			return 1;
 		}
 		case BINARY :
