@@ -50,6 +50,7 @@ int get_value_from_element_from_tuple(datum* uval, const data_type_info** dti, c
 		if(child_data == NULL)
 		{
 			uval->is_NULL = 1;
+			(*dti) = NULL;
 			return 1;
 		}
 
@@ -300,6 +301,9 @@ int set_element_in_tuple_from_tuple(const tuple_def* tpl_d, positional_accessor 
 	const data_type_info* dti = get_type_info_for_element_from_tuple_def(tpl_d, pa);
 	if(dti == NULL)
 		return 0;
+
+	if(is_datum_NULL(&uval_in))
+		return set_element_in_tuple(tpl_d, pa, tupl, NULL_DATUM, max_size_increment_allowed);
 
 	if(are_identical_type_info(dti, dti_in)) // if both are logically identical types, no type casting required
 		return set_element_in_tuple(tpl_d, pa, tupl, &uval_in, max_size_increment_allowed);
