@@ -76,19 +76,19 @@ uint32_t get_tuple_size_using_tuple_size_def(const tuple_size_def* tpl_sz_d, con
 	// if has size in prefix read that, and return it
 	if(tpl_sz_d->has_size_in_prefix)
 	{
-		uint32_t size = read_value_from_page(tupl, tpl_sz_d->max_size);
+		uint32_t size = read_value_from_container(tupl, tpl_sz_d->max_size);
 		return (size == 0) ? tpl_sz_d->max_size : size; // a variable sized element is never 0 sized (because it is storing size in prefix), it is probably max_size
 	}
 
 	// else read element_count
-	uint32_t element_count = read_value_from_page(tupl, tpl_sz_d->max_size);
+	uint32_t element_count = read_value_from_container(tupl, tpl_sz_d->max_size);
 
 	// it has element_count in its prefix but not its size
 
 	if(tpl_sz_d->is_containee_bit_field)
-		return get_value_size_on_page(tpl_sz_d->max_size) + bitmap_size_in_bytes(((uint64_t)element_count) * (tpl_sz_d->does_containee_need_is_valid_bit_in_prefix + tpl_sz_d->containee_bit_field_size));
+		return get_value_size_on_container(tpl_sz_d->max_size) + bitmap_size_in_bytes(((uint64_t)element_count) * (tpl_sz_d->does_containee_need_is_valid_bit_in_prefix + tpl_sz_d->containee_bit_field_size));
 	else
-		return get_value_size_on_page(tpl_sz_d->max_size) + bitmap_size_in_bytes(element_count * tpl_sz_d->does_containee_need_is_valid_bit_in_prefix) + (element_count * tpl_sz_d->containee_size);
+		return get_value_size_on_container(tpl_sz_d->max_size) + bitmap_size_in_bytes(element_count * tpl_sz_d->does_containee_need_is_valid_bit_in_prefix) + (element_count * tpl_sz_d->containee_size);
 }
 
 uint32_t get_tuple_size(const tuple_def* tpl_d, const void* tupl)
@@ -104,7 +104,7 @@ uint32_t get_tuple_size_using_tuple_size_def2(const tuple_size_def* tpl_sz_d, vo
 
 	// else we know it is variable sized
 	// so it should have size or element_count in its prefix
-	uint32_t bytes_to_read = get_value_size_on_page(tpl_sz_d->max_size);
+	uint32_t bytes_to_read = get_value_size_on_container(tpl_sz_d->max_size);
 	char buffer[sizeof(uint32_t)] = {}; // bytes_to_read may never be more than 4 bytes
 	uint32_t bytes_read = read_tuple_prefix(context_p, buffer, bytes_to_read);
 
@@ -175,7 +175,7 @@ uint32_t initialize_minimal_tuple_for_tuple_size_info(const tuple_size_def* tpl_
 		memory_set(tupl, 0, tpl_sz_d->min_size);
 		// if it has size set it to min_size, element_count if exists on the tupl is set to 0 by the above statement
 		if(tpl_sz_d->has_size_in_prefix)
-			write_value_to_page(tupl, tpl_sz_d->max_size, tpl_sz_d->min_size);
+			write_value_to_container(tupl, tpl_sz_d->max_size, tpl_sz_d->min_size);
 		return tpl_sz_d->min_size;
 	}
 }

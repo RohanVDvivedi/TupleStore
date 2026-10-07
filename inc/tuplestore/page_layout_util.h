@@ -25,9 +25,27 @@
 // also serial_int.h too enforces this
 fail_build_on((CHAR_BIT != 8))
 
+// this is what most databases expect, this turns on plethora of optimizations
+#define MAX_PAGE_SIZE_64_KB
+
+int is_valid_page_size(uint32_t page_size)
+{
+	// if the max page that will be used is 64KB, then fail all page sizes above it
+	#ifdef MAX_PAGE_SIZE_64_KB
+		return (page_size <= (UINT32_C(1) << 16));
+	#endif
+
+	return 1;
+}
+
 // core functions that calculates the value of sizes, offsets and indices of elements on the page or inside tuples
 static inline uint32_t get_value_size_on_page(uint32_t page_size)
 {
+	// if the max page that will be used is 64KB, then we do not need more than 2 bytes for on page sizes and offsets
+	#ifdef MAX_PAGE_SIZE_64_KB
+		return 2;
+	#endif
+
 	/*if(page_size <= (UINT32_C(1) << 8))
 		return 1;
 	else if(page_size <= (UINT32_C(1) << 16))

@@ -18,7 +18,7 @@ struct tuple_size_def
 		uint32_t min_size; // -> suggests minimum size of the tuple for a variable sized tuple
 	};
 
-	uint32_t max_size; // to read size OR element_count from prefix using read_value_from_page(, max_size)
+	uint32_t max_size; // to read size OR element_count from prefix using read_value_from_container(, max_size)
 
 	// below two fields are used only when is_variable_sized = 1
 	int has_size_in_prefix; // -> if set directly read size from the prefix and we are done

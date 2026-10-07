@@ -101,7 +101,7 @@ int finalize_type_info(data_type_info* dti)
 			dti->prefix_bitmap_size_in_bits = 0; // will always be zero here
 			if(dti->is_variable_sized)
 			{
-				dti->min_size = get_value_size_on_page(dti->max_size); // an empty string or binary
+				dti->min_size = get_value_size_on_container(dti->max_size); // an empty string or binary
 				if(dti->min_size > dti->max_size)
 					return 0;
 			}
@@ -159,7 +159,7 @@ int finalize_type_info(data_type_info* dti)
 
 			// allocate space for storing tuple_size for variable sized tuple_def
 			if(dti->is_variable_sized)
-				dti->min_size += get_value_size_on_page(dti->max_size);
+				dti->min_size += get_value_size_on_container(dti->max_size);
 
 			// add prefix_bitmap's size in bytes to tuple_sed size 
 			dti->size += bitmap_size_in_bytes(dti->prefix_bitmap_size_in_bits);
@@ -177,7 +177,7 @@ int finalize_type_info(data_type_info* dti)
 				if(is_variable_sized_type_info(containee_type_info))
 				{
 					containee_pos_info->al.byte_offset_to_byte_offset = dti->min_size;
-					dti->min_size += get_value_size_on_page(dti->max_size);
+					dti->min_size += get_value_size_on_container(dti->max_size);
 				}
 				else
 				{
@@ -230,7 +230,7 @@ int finalize_type_info(data_type_info* dti)
 					else if(!is_variable_sized_type_info(dti->containee))
 						dti->min_size += bitmap_size_in_bytes(needs_is_valid_bit_in_prefix_bitmap(dti->containee) * dti->element_count) + (dti->containee->size * dti->element_count);
 					else
-						dti->min_size += (get_value_size_on_page(dti->max_size) * dti->element_count);
+						dti->min_size += (get_value_size_on_container(dti->max_size) * dti->element_count);
 				}
 				if(dti->min_size > dti->max_size)
 					return 0;

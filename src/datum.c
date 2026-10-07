@@ -492,7 +492,7 @@ void print_datum(const datum* uval, const data_type_info* dti)
 				if(!get_datum_to_containee_from_container_CONTAINITY_UNSAFE(&child_uval, dti, uval->tuple_value, i, (data_positional_info*)(&(containee_pos_info->al))))
 					continue;
 				if(is_variable_sized_type_info(containee_pos_info->al.type_info) && !is_datum_NULL(&child_uval))
-					printf("[%"PRIu32"]->", read_value_from_page(uval->tuple_value + containee_pos_info->al.byte_offset_to_byte_offset, dti->max_size));
+					printf("[%"PRIu32"]->", read_value_from_container(uval->tuple_value + containee_pos_info->al.byte_offset_to_byte_offset, dti->max_size));
 				print_datum(&child_uval, containee_pos_info->al.type_info);
 			}
 			printf(")");
@@ -511,7 +511,7 @@ void print_datum(const datum* uval, const data_type_info* dti)
 				if(!get_datum_to_containee_from_container_CONTAINITY_UNSAFE(&child_uval, dti, uval->array_value, i, &containee_pos_info))
 					continue;
 				if(is_variable_sized_type_info(containee_pos_info.type_info) && !is_datum_NULL(&child_uval))
-					printf("[%"PRIu32"]->", read_value_from_page(uval->array_value + containee_pos_info.byte_offset_to_byte_offset, dti->max_size));
+					printf("[%"PRIu32"]->", read_value_from_container(uval->array_value + containee_pos_info.byte_offset_to_byte_offset, dti->max_size));
 				print_datum(&child_uval, containee_pos_info.type_info);
 			}
 			printf("]");

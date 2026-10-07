@@ -168,10 +168,10 @@ static inline int has_size_in_its_prefix_for_container_type_info(const data_type
 static inline int has_element_count_in_its_prefix_for_container_type_info(const data_type_info* dti);
 
 #define get_offset_to_prefix_size_for_container_type_info(dti)						(0)
-#define get_bytes_required_for_prefix_size_for_container_type_info(dti) 			(get_value_size_on_page((dti)->max_size) * has_size_in_its_prefix_for_container_type_info(dti))
+#define get_bytes_required_for_prefix_size_for_container_type_info(dti) 			(get_value_size_on_container((dti)->max_size) * has_size_in_its_prefix_for_container_type_info(dti))
 
 #define get_offset_to_prefix_element_count_for_container_type_info(dti)				(get_offset_to_prefix_size_for_container_type_info(dti) + get_bytes_required_for_prefix_size_for_container_type_info(dti))
-#define get_bytes_required_for_prefix_element_count_for_container_type_info(dti) 	(get_value_size_on_page((dti)->max_size) * has_element_count_in_its_prefix_for_container_type_info(dti))
+#define get_bytes_required_for_prefix_element_count_for_container_type_info(dti) 	(get_value_size_on_container((dti)->max_size) * has_element_count_in_its_prefix_for_container_type_info(dti))
 
 // logically equivalent to = bytes_required_for_prefix_size + bytes_required_for_prefix_element_count
 #define get_offset_to_prefix_bitmap_for_container_type_info(dti)					(get_offset_to_prefix_element_count_for_container_type_info(dti) + get_bytes_required_for_prefix_element_count_for_container_type_info(dti))
@@ -384,6 +384,26 @@ uint64_t hash_containee_in_container(const data_type_info* dti, const void* data
 #include<string.h>
 #include<stdio.h>
 
+#define ENABLE_COMPILE_TIME_OPTIMIZATION_FOR_TUPLE_STORE_TUPLES
+static inline uint8_t get_value_size_on_container(uint32_t max_size)
+{
+	#ifdef ENABLE_COMPILE_TIME_OPTIMIZATION_FOR_TUPLE_STORE_TUPLES
+		return (max_size <= (UINT32_C(1) << 16)) ? 2 : 4;
+	#endif
+
+	return 4 - (max_size <= (UINT32_C(1) << 24)) - (max_size <= (UINT32_C(1) << 16)) - (max_size <= (UINT32_C(1) << 8));
+}
+
+static inline uint32_t read_value_from_container(const void* value, uint32_t max_size)
+{
+	return deserialize_uint32(value, get_value_size_on_container(max_size));
+}
+
+static inline void write_value_to_container(void* value, const uint32_t max_size, uint32_t to_write)
+{
+	serialize_uint32(value, get_value_size_on_container(max_size), to_write);
+}
+
 static inline size_t get_shallow_copy_struct_size_for_data_type_info(const data_type_info* dti)
 {
 	if(dti->type == TUPLE)
@@ -418,21 +438,21 @@ static inline uint32_t get_size_for_type_info(const data_type_info* dti, const v
 	// variable sized element either has its size in prefix or its element count in the prefix or both
 	if(has_size_in_its_prefix_for_container_type_info(dti))
 	{
-		uint32_t size = read_value_from_page(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size);
+		uint32_t size = read_value_from_container(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size);
 		return (size == 0) ? dti->max_size : size; // a variable sized element is never 0 sized (because it is storing size in prefix), it is probably max_size
 	}
 
-	uint32_t element_count = read_value_from_page(data + get_offset_to_prefix_element_count_for_container_type_info(dti), dti->max_size);
+	uint32_t element_count = read_value_from_container(data + get_offset_to_prefix_element_count_for_container_type_info(dti), dti->max_size);
 
 	// now we know for sure that this is variable sized container, but without size in its prefix
 	// so this must be a container precisely : variable sized string, variable sized binary or array of variable element count but of fixed length type
 	// all in all we know the element_count and that each element is fixed sized element
 	
 	if(dti->containee->type == BIT_FIELD)
-		return get_value_size_on_page(dti->max_size) // it has element_count in its prefix but not its size
+		return get_value_size_on_container(dti->max_size) // it has element_count in its prefix but not its size
 		 + bitmap_size_in_bytes(((uint64_t)element_count) * (needs_is_valid_bit_in_prefix_bitmap(dti->containee) + dti->containee->bit_field_size));
 	else
-		return get_value_size_on_page(dti->max_size) // it has element_count in its prefix but not its size
+		return get_value_size_on_container(dti->max_size) // it has element_count in its prefix but not its size
 		 + bitmap_size_in_bytes(element_count * needs_is_valid_bit_in_prefix_bitmap(dti->containee))
 		 + (element_count * dti->containee->size);
 }
@@ -445,7 +465,7 @@ static inline int overwrite_size_for_container_type_info_with_size_in_prefix(con
 	if(new_size > dti->max_size)
 		return 0;
 
-	write_value_to_page(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, new_size);
+	write_value_to_container(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, new_size);
 
 	return 1;
 }
@@ -489,7 +509,7 @@ static inline uint32_t get_element_count_for_container_type_info(const data_type
 		return dti->element_count;
 
 	// else read from the data
-	return read_value_from_page(data + get_offset_to_prefix_element_count_for_container_type_info(dti), dti->max_size);
+	return read_value_from_container(data + get_offset_to_prefix_element_count_for_container_type_info(dti), dti->max_size);
 }
 
 static inline int has_size_in_its_prefix_for_container_type_info(const data_type_info* dti)
@@ -644,7 +664,7 @@ static inline int get_data_positional_info_for_containee_of_container_CONTAINITY
 	else
 	{
 		(*cached_return) = (data_positional_info){
-			.byte_offset_to_byte_offset = first_element_offset + get_value_size_on_page(dti->max_size) * index,
+			.byte_offset_to_byte_offset = first_element_offset + get_value_size_on_container(dti->max_size) * index,
 			.type_info = containee_type_info,
 		};
 		return 1;
@@ -680,7 +700,7 @@ static inline int is_containee_null_in_container_CONTAINITY_UNSAFE(const data_ty
 	else
 	{
 		// variable size element is NULL if the byte_offset in the tuple of the containee is 0
-		return read_value_from_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size) == 0;
+		return read_value_from_container(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size) == 0;
 	}
 }
 
@@ -714,7 +734,7 @@ static inline const void* get_pointer_to_containee_from_container_CONTAINITY_UNS
 	else
 	{
 		// figure out actual offset of the variable length field, if it is 0, then the containee is NULL
-		uint32_t actual_byte_offset = read_value_from_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size);
+		uint32_t actual_byte_offset = read_value_from_container(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size);
 		if(actual_byte_offset == 0)
 			return NULL;
 		return data + actual_byte_offset;
@@ -948,14 +968,14 @@ static inline int move_variable_sized_containee_to_end_of_container_CONTAINITY_U
 			continue;
 
 		// move all offsets to elements that came after the containee_byte_offset front by the containee_size
-		uint32_t byte_offset_i = read_value_from_page(data + pos_info_i.byte_offset_to_byte_offset, dti->max_size);
+		uint32_t byte_offset_i = read_value_from_container(data + pos_info_i.byte_offset_to_byte_offset, dti->max_size);
 
 		if(byte_offset_i > containee_byte_offset)
-			write_value_to_page(data + pos_info_i.byte_offset_to_byte_offset, dti->max_size, byte_offset_i - containee_size);
+			write_value_to_container(data + pos_info_i.byte_offset_to_byte_offset, dti->max_size, byte_offset_i - containee_size);
 	}
 
 	// finally update the offset of the index-th element
-	write_value_to_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size, container_size - containee_size);
+	write_value_to_container(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size, container_size - containee_size);
 	return 1;
 }
 
@@ -987,7 +1007,7 @@ static inline uint32_t initialize_minimal_data_for_type_info(const data_type_inf
 		memory_set(data, 0, dti->min_size);
 		// if it has size set it to min_size, element_count if exists on the data is set to 0 by the above statement
 		if(has_size_in_its_prefix_for_container_type_info(dti))
-			write_value_to_page(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, dti->min_size);
+			write_value_to_container(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, dti->min_size);
 		return dti->min_size;
 	}
 }
@@ -1016,8 +1036,8 @@ static inline int is_minimal_data_for_type_info(const data_type_info* dti, const
 		// and the remaining content must be all zeroes
 		if(has_size_in_its_prefix_for_container_type_info(dti))
 			return are_zeroes(data, get_offset_to_prefix_size_for_container_type_info(dti)) &&
-					are_zeroes(data + get_offset_to_prefix_size_for_container_type_info(dti) + get_value_size_on_page(dti->max_size),
-								data_size - (get_offset_to_prefix_size_for_container_type_info(dti) + get_value_size_on_page(dti->max_size)));
+					are_zeroes(data + get_offset_to_prefix_size_for_container_type_info(dti) + get_value_size_on_container(dti->max_size),
+								data_size - (get_offset_to_prefix_size_for_container_type_info(dti) + get_value_size_on_container(dti->max_size)));
 		else
 			return are_zeroes(data, data_size);
 	}
@@ -1047,11 +1067,11 @@ static inline int set_containee_to_NULL_in_container_CONTAINITY_UNSAFE(const dat
 		move_variable_sized_containee_to_end_of_container_CONTAINITY_UNSAFE(dti, data, index, containee_pos_info);
 
 		// set containee offset to 0
-		write_value_to_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size, 0);
+		write_value_to_container(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size, 0);
 
 		// if it has size in its prefix deduct containee_size from it
 		if(has_size_in_its_prefix_for_container_type_info(dti))
-			write_value_to_page(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, container_size - containee_size);
+			write_value_to_container(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, container_size - containee_size);
 	}
 
 	return 1;
@@ -1095,7 +1115,7 @@ static inline int can_set_datum_for_type_info(const data_type_info* dti, const v
 			// uval is expected to not have a NULL byte in it
 
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval->string_size;
+			uint32_t new_size = get_value_size_on_container(dti->max_size) + uval->string_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
@@ -1104,7 +1124,7 @@ static inline int can_set_datum_for_type_info(const data_type_info* dti, const v
 		case BINARY :
 		{
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval->binary_size;
+			uint32_t new_size = get_value_size_on_container(dti->max_size) + uval->binary_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
@@ -1231,27 +1251,27 @@ static inline int set_datum_for_type_info(const data_type_info* dti, void* data,
 			// uval is expected to not have a NULL byte in it
 
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval->string_size;
+			uint32_t new_size = get_value_size_on_container(dti->max_size) + uval->string_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
 
 			// write element count and copy contents to data
-			write_value_to_page(data, dti->max_size, uval->string_size);
-			memory_move(data + get_value_size_on_page(dti->max_size), uval->string_value, uval->string_size);
+			write_value_to_container(data, dti->max_size, uval->string_size);
+			memory_move(data + get_value_size_on_container(dti->max_size), uval->string_value, uval->string_size);
 			return 1;
 		}
 		case BINARY :
 		{
 			uint32_t old_size = is_valid ? get_size_for_type_info(dti, data) : 0;
-			uint32_t new_size = get_value_size_on_page(dti->max_size) + uval->binary_size;
+			uint32_t new_size = get_value_size_on_container(dti->max_size) + uval->binary_size;
 
 			if(new_size > dti->max_size || (new_size > old_size && new_size - old_size > max_size_increment_allowed))
 				return 0;
 
 			// write element count and copy contents to data
-			write_value_to_page(data, dti->max_size, uval->binary_size);
-			memory_move(data + get_value_size_on_page(dti->max_size), uval->binary_value, uval->binary_size);
+			write_value_to_container(data, dti->max_size, uval->binary_size);
+			memory_move(data + get_value_size_on_container(dti->max_size), uval->binary_value, uval->binary_size);
 			return 1;
 		}
 		case TUPLE :
@@ -1381,7 +1401,7 @@ static inline int set_datum_to_containee_in_container_CONTAINITY_UNSAFE(const da
 
 		// if result was a success, and the old_containee_offset was in-valid i.e 0, then set it
 		if(result && !is_old_containee_offset_valid)
-			write_value_to_page(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size, old_container_size);
+			write_value_to_container(data + containee_pos_info->byte_offset_to_byte_offset, dti->max_size, old_container_size);
 
 		// if the container has size in prefix then update it
 		if(result && has_size_in_its_prefix_for_container_type_info(dti))
@@ -1390,7 +1410,7 @@ static inline int set_datum_to_containee_in_container_CONTAINITY_UNSAFE(const da
 
 			uint32_t new_container_size = old_container_size - old_containee_size + new_containee_size;
 
-			write_value_to_page(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, new_container_size);
+			write_value_to_container(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, new_container_size);
 		}
 
 		return result;
@@ -1463,7 +1483,7 @@ static inline int can_expand_container(const data_type_info* dti, const void* da
 	}
 	else
 	{
-		uint32_t byte_offset_size = get_value_size_on_page(dti->max_size);
+		uint32_t byte_offset_size = get_value_size_on_container(dti->max_size);
 
 		new_size = old_size + (byte_offset_size * slots);
 	}
@@ -1602,7 +1622,7 @@ static inline int expand_container(const data_type_info* dti, void* data, uint32
 	}
 	else
 	{
-		uint32_t byte_offset_size = get_value_size_on_page(dti->max_size);
+		uint32_t byte_offset_size = get_value_size_on_container(dti->max_size);
 
 		// calculate new size and check for size increments
 		new_size = old_size + (byte_offset_size * slots);
@@ -1620,17 +1640,17 @@ static inline int expand_container(const data_type_info* dti, void* data, uint32
 		// since all the varibale length data is moved back by (copy_to - copy_from) bytes, we need to update their offsets
 		for(uint32_t i = 0; i < new_element_count; i++)
 		{
-			uint32_t offset = read_value_from_page(data + prefix_bitmap_offset + (i * byte_offset_size), dti->max_size);
+			uint32_t offset = read_value_from_container(data + prefix_bitmap_offset + (i * byte_offset_size), dti->max_size);
 			if(offset != 0)
-				write_value_to_page(data + prefix_bitmap_offset + (i * byte_offset_size), dti->max_size, offset + (copy_to - copy_from));
+				write_value_to_container(data + prefix_bitmap_offset + (i * byte_offset_size), dti->max_size, offset + (copy_to - copy_from));
 		}
 	}
 
 	// update the size and element count in the prefix
 	if(has_size_in_its_prefix_for_container_type_info(dti))
-		write_value_to_page(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, new_size);
+		write_value_to_container(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, new_size);
 	if(has_element_count_in_its_prefix_for_container_type_info(dti))
-		write_value_to_page(data + get_offset_to_prefix_element_count_for_container_type_info(dti), dti->max_size, new_element_count);
+		write_value_to_container(data + get_offset_to_prefix_element_count_for_container_type_info(dti), dti->max_size, new_element_count);
 
 	return 1;
 }
@@ -1753,7 +1773,7 @@ static inline int discard_from_container(const data_type_info* dti, void* data, 
 		// update the old size that we have cached
 		old_size = get_size_for_type_info(dti, data);
 
-		uint32_t byte_offset_size = get_value_size_on_page(dti->max_size);
+		uint32_t byte_offset_size = get_value_size_on_container(dti->max_size);
 
 		// calculate new size
 		new_size = old_size - (byte_offset_size * slots);
@@ -1766,17 +1786,17 @@ static inline int discard_from_container(const data_type_info* dti, void* data, 
 		// since all the varibale length data is moved back by (copy_from - copy_to) bytes, we need to update their offsets
 		for(uint32_t i = 0; i < new_element_count; i++)
 		{
-			uint32_t offset = read_value_from_page(data + prefix_bitmap_offset + (i * byte_offset_size), dti->max_size);
+			uint32_t offset = read_value_from_container(data + prefix_bitmap_offset + (i * byte_offset_size), dti->max_size);
 			if(offset != 0)
-				write_value_to_page(data + prefix_bitmap_offset + (i * byte_offset_size), dti->max_size, offset - (copy_from - copy_to));
+				write_value_to_container(data + prefix_bitmap_offset + (i * byte_offset_size), dti->max_size, offset - (copy_from - copy_to));
 		}
 	}
 
 	// update the size and element count in the prefix
 	if(has_size_in_its_prefix_for_container_type_info(dti))
-		write_value_to_page(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, new_size);
+		write_value_to_container(data + get_offset_to_prefix_size_for_container_type_info(dti), dti->max_size, new_size);
 	if(has_element_count_in_its_prefix_for_container_type_info(dti))
-		write_value_to_page(data + get_offset_to_prefix_element_count_for_container_type_info(dti), dti->max_size, new_element_count);
+		write_value_to_container(data + get_offset_to_prefix_element_count_for_container_type_info(dti), dti->max_size, new_element_count);
 
 	return 1;
 }
