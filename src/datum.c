@@ -391,7 +391,7 @@ uint64_t hash_datum(const datum* uval, const data_type_info* dti, tuple_hasher* 
 
 		set_datum_for_type_info(dti, serialized_value, 0, 0 /* has to be fixed sized, hence this parameter is never used*/, &temp);
 
-		return tuple_hash_bytes(th, (const uint8_t*)serialized_value, get_size_for_type_info(dti ,serialized_value));
+		return tuple_hash_bytes(th, (const uint8_t*)serialized_value, get_size_for_type_info(dti, serialized_value));
 	}
 	else if(dti->type == STRING || dti->type == BINARY)
 	{
