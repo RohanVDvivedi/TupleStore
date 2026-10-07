@@ -28,7 +28,7 @@ fail_build_on((CHAR_BIT != 8))
 // this is what most databases expect, this turns on plethora of optimizations
 #define MAX_PAGE_SIZE_64_KB
 
-int is_valid_page_size(uint32_t page_size)
+static inline int is_valid_page_size(uint32_t page_size)
 {
 	// if the max page that will be used is 64KB, then fail all page sizes above it
 	#ifdef MAX_PAGE_SIZE_64_KB
