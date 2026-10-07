@@ -14,9 +14,9 @@ void print_pre_order_ly(const tuple_def* tpl_d, const void* tupl, const position
 
 	while(1)
 	{
+		const data_type_info* dti;
 		datum uval;
-		int valid = get_value_from_element_from_tuple(&uval, tpl_d, absolute_position, tupl);
-		const data_type_info* dti = get_type_info_for_element_from_tuple_def(tpl_d, absolute_position);
+		int valid = get_value_from_element_from_tuple(&uval, &dti, tpl_d, absolute_position, tupl);
 
 		if(!valid)
 		{
