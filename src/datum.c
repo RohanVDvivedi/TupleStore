@@ -173,8 +173,8 @@ static int compare_datum_internal(const datum* uval1, const data_type_info* dti1
 	else if((dti1->type == STRING || dti1->type == BINARY) && (dti2->type == STRING || dti2->type == BINARY)) // fast path
 	{
 		int cmp = 0;
-		uint32_t element_count1 = get_element_count_for_datum(uval1, dti1);
-		uint32_t element_count2 = get_element_count_for_datum(uval2, dti2);
+		uint32_t element_count1 = uval1->string_or_binary_size;
+		uint32_t element_count2 = uval2->string_or_binary_size;
 		uint32_t element_count = min(element_count1, element_count2);
 
 		cmp = memory_compare(uval1->string_or_binary_value, uval2->string_or_binary_value, element_count);
@@ -267,8 +267,8 @@ static int compare_datum_internal2(const datum* uval1, const datum* uval2, const
 	else if(dti->type == STRING || dti->type == BINARY)
 	{
 		int cmp = 0;
-		uint32_t element_count1 = get_element_count_for_datum(uval1, dti);
-		uint32_t element_count2 = get_element_count_for_datum(uval2, dti);
+		uint32_t element_count1 = uval1->string_or_binary_size;
+		uint32_t element_count2 = uval2->string_or_binary_size;
 		uint32_t element_count = min(element_count1, element_count2);
 
 		cmp = memory_compare(uval1->string_or_binary_value, uval2->string_or_binary_value, element_count);
