@@ -50,8 +50,8 @@ int get_value_from_element_from_tuple(datum* uval, const data_type_info** dti, c
 		if(child_data == NULL)
 		{
 			uval->is_NULL = 1;
-			(*dti) = NULL;
-			return 1;
+			(*dti) = get_type_info_for_element_from_data_type_info((*dti), pa);
+			return (*dti) != NULL; // result is valid only if we could access type of the element at dti
 		}
 
 		(*dti) = child_dti;
@@ -62,10 +62,8 @@ int get_value_from_element_from_tuple(datum* uval, const data_type_info** dti, c
 	return 0;
 }
 
-const data_type_info* get_type_info_for_element_from_tuple_def(const tuple_def* tpl_d, positional_accessor pa)
+const data_type_info* get_type_info_for_element_from_data_type_info(const data_type_info* dti, positional_accessor pa)
 {
-	const data_type_info* dti = tpl_d->type_info;
-
 	while(1)
 	{
 		// loop termination cases
@@ -86,6 +84,13 @@ const data_type_info* get_type_info_for_element_from_tuple_def(const tuple_def* 
 	}
 
 	return NULL;
+}
+
+const data_type_info* get_type_info_for_element_from_tuple_def(const tuple_def* tpl_d, positional_accessor pa)
+{
+	const data_type_info* dti = tpl_d->type_info;
+
+	return get_type_info_for_element_from_data_type_info(dti, pa);
 }
 
 int are_all_positions_accessible_for_tuple_def(const tuple_def* tpl_d, const positional_accessor* element_ids, uint32_t element_count)

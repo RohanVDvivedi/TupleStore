@@ -40,7 +40,8 @@ int get_containee_from_datum(datum* uval_c, const data_type_info** dti_c, const 
 	if(is_datum_NULL(uval))
 	{
 		uval_c->is_NULL = 1;
-		return 1;
+		(*dti_c) = get_data_type_info_for_containee_of_container_without_data(dti, index);
+		return (*dti_c) != NULL; // result is valid only if we could access type of the element at dti
 	}
 
 	if(index >= get_element_count_for_datum(uval, dti))

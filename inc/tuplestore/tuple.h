@@ -13,6 +13,7 @@ void init_tuple(const tuple_def* tpl_d, void* tupl);
 // on success returns 1, and set the uval and returns back it's dti in dti_ret
 int get_value_from_element_from_tuple(datum* uval, const data_type_info** dti, const tuple_def* tpl_d, positional_accessor pa, const void* tupl);
 
+const data_type_info* get_type_info_for_element_from_data_type_info(const data_type_info* dti, positional_accessor pa);
 const data_type_info* get_type_info_for_element_from_tuple_def(const tuple_def* tpl_d, positional_accessor pa);
 
 // below 2 functions can be used to ensure that no positions are OUT_OF_BOUNDS or inaccessible for the given tple and tuple def
