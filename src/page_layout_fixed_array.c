@@ -10,6 +10,8 @@
 
 #include<cutlery/cutlery_stds.h>
 
+#include<string.h>
+
 /*
 ** tuple capacity for a fixed array page can be pre-calculated
 */
@@ -159,7 +161,7 @@ int append_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_si
 		void* slot = page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index);
 
 		// move data from external_tuple to the slot on the page
-		memory_move(slot, external_tuple, tpl_sz_d->size);
+		memmove(slot, external_tuple, tpl_sz_d->size);
 	}
 	else
 	{
@@ -228,13 +230,13 @@ int insert_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_si
 		bit_at_index ? set_bit(is_valid, index) : reset_bit(is_valid, index);
 	}
 
-	// shift the tuples in [index, tuple_count_val - 1) one slot to the right at index = (index + 1) using a single memory_move
+	// shift the tuples in [index, tuple_count_val - 1) one slot to the right at index = (index + 1) using a single memmove
 	// then place the just-appended tuple at its target index.
-	memory_move(page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index + 1),
+	memmove(page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index + 1),
 				page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index),
 				(tuple_count_val - 1 - index) * tpl_sz_d->size);
 	if(external_tuple != NULL)
-		memory_move(page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index), external_tuple, tpl_sz_d->size);
+		memmove(page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index), external_tuple, tpl_sz_d->size);
 
 	return 1;
 }
@@ -277,7 +279,7 @@ int update_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_si
 		void* slot = page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, index);
 
 		// copy external_tuple to the slot on the page (at index)
-		memory_move(slot, external_tuple, tpl_sz_d->size);
+		memmove(slot, external_tuple, tpl_sz_d->size);
 	}
 
 	return 1;
@@ -310,7 +312,7 @@ int discard_tuple_fixed_array_page(void* page, uint32_t page_size, const tuple_s
 			set_bit(is_valid, i-1);
 
 			// copy the tuple contents from (i)th tuple to (i-1)th position
-			memory_move(page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, i-1), page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, i), tpl_sz_d->size);
+			memmove(page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, i-1), page + get_offset_to_ith_tuple(page, page_size, tpl_sz_d, i), tpl_sz_d->size);
 		}
 		else // we only need to reset the is valid bit
 			reset_bit(is_valid, i-1);

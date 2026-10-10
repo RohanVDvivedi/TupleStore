@@ -12,6 +12,8 @@
 
 #include<cutlery/cutlery_stds.h>
 
+#include<string.h>
+
 /*
 ** 		offset calculation functions
 */
@@ -233,7 +235,7 @@ int append_tuple_slotted_page(void* page, uint32_t page_size, const tuple_size_d
 		write_value_to_page(new_tuple_offset, page_size, new_tuple_offset_val);
 
 		// copy the tuple contents
-		memory_move(page + new_tuple_offset_val, external_tuple, external_tuple_size);
+		memmove(page + new_tuple_offset_val, external_tuple, external_tuple_size);
 	}
 
 	// increment the space_occupied_by_tuples value on the page, by the space that is/will be occupied by this external tuple 
@@ -278,7 +280,7 @@ int insert_tuple_slotted_page(void* page, uint32_t page_size, const tuple_size_d
 		uint32_t new_tuple_s_offset_val = get_offset_to_ith_tuple(page, page_size, tuple_count_val - 1);
 
 		// move all offsets from index -> index + 1
-		memory_move(page + get_offset_to_ith_tuple_offset(page, page_size, index + 1),
+		memmove(page + get_offset_to_ith_tuple_offset(page, page_size, index + 1),
 					page + get_offset_to_ith_tuple_offset(page, page_size, index),
 					(tuple_count_val - 1 - index) * get_value_size_on_page(page_size));
 
@@ -369,7 +371,7 @@ int update_tuple_slotted_page(void* page, uint32_t page_size, const tuple_size_d
 		}
 
 		// copy the ith tuple at the offset
-		memory_move(page + ith_tuple_offset_val, external_tuple, external_tuple_size);
+		memmove(page + ith_tuple_offset_val, external_tuple, external_tuple_size);
 
 		// increment the space_occupied_by_tuples value on the page, by the space of the external_tuple
 		void* space_occupied_by_tuples = page + get_offset_to_space_occupied_by_tuples(page, page_size);
@@ -456,7 +458,7 @@ int discard_tuple_slotted_page(void* page, uint32_t page_size, const tuple_size_
 	uint32_t tuple_count_val = read_value_from_page(tuple_count, page_size);
 
 	// move all tuple offsets after i ([i+1, tuple_count_val-1]), to ith index
-	memory_move(page + get_offset_to_ith_tuple_offset(page, page_size, index),
+	memmove(page + get_offset_to_ith_tuple_offset(page, page_size, index),
 				page + get_offset_to_ith_tuple_offset(page, page_size, index + 1),
 				(tuple_count_val - (index + 1)) * get_additional_space_overhead_per_tuple_slotted_page(page_size));
 
@@ -701,7 +703,7 @@ int run_page_compaction_slotted_page(void* page, uint32_t page_size, const tuple
 			was_page_compacted = 1;
 
 		// move the tuple to the allocated space
-		memory_move(page + end_of_free_space_offset_val, tuple, tuple_size);
+		memmove(page + end_of_free_space_offset_val, tuple, tuple_size);
 
 		// update the tuple_offset on the page
 		write_value_to_page(tuple_offset, page_size, end_of_free_space_offset_val);

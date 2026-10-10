@@ -4,6 +4,8 @@
 
 #include<cutlery/cutlery_stds.h>
 
+#include<string.h>
+
 datum const * const NULL_DATUM = &((const datum){.is_NULL = 1,});
 
 datum const * const ZERO_DATUM = &((const datum){.is_NULL = 0,});

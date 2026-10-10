@@ -1234,7 +1234,7 @@ data_type_info* clone_type_info_recursively(const data_type_info* dti, int* allo
 				(*allocation_error) = 1;
 				return NULL;
 			}
-			memory_move(res, dti, sizeof_tuple_data_type_info(dti->element_count));
+			memmove(res, dti, sizeof_tuple_data_type_info(dti->element_count));
 
 			for(uint32_t i = 0; i < dti->element_count; i++)
 			{

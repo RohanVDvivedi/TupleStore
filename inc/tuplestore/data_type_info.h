@@ -3,6 +3,7 @@
 
 #include<stdint.h>
 #include<stdlib.h>
+#include<string.h>
 
 typedef enum data_type data_type;
 enum data_type
@@ -942,16 +943,16 @@ static inline int move_variable_sized_containee_to_end_of_container_CONTAINITY_U
 			if(containee_size <= tail_size)
 			{
 				// use stash to hold containee
-				memory_move(stash, containee, containee_size);
-				memory_move(containee, containee + containee_size, tail_size);
-				memory_move(containee + tail_size, stash, containee_size);
+				memmove(stash, containee, containee_size);
+				memmove(containee, containee + containee_size, tail_size);
+				memmove(containee + tail_size, stash, containee_size);
 			}
 			else
 			{
 				// use stash to hold the tail
-				memory_move(stash, containee + containee_size, tail_size);
-				memory_move(containee + tail_size, containee, containee_size);
-				memory_move(containee, stash, tail_size);
+				memmove(stash, containee + containee_size, tail_size);
+				memmove(containee + tail_size, containee, containee_size);
+				memmove(containee, stash, tail_size);
 			}
 			if(stash != stack_stash)
 				free(stash);
@@ -1203,7 +1204,7 @@ static inline int set_datum_for_type_info(const data_type_info* dti, void* data,
 					return 0;
 
 				// copy contents to data
-				memory_move(data, uval->string_value, uval->string_size);
+				memmove(data, uval->string_value, uval->string_size);
 				// pad remaining bytes to 0
 				if(uval->string_size < dti->size)
 					memory_set(data + uval->string_size, 0, dti->size - uval->string_size);
@@ -1214,14 +1215,14 @@ static inline int set_datum_for_type_info(const data_type_info* dti, void* data,
 				if(uval->binary_size != dti->size)
 					return 0;
 
-				memory_move(data, uval->binary_value, uval->binary_size);
+				memmove(data, uval->binary_value, uval->binary_size);
 				return 1;
 			}
 			case TUPLE :
 			{
 				// copy contents to data
 				if(uval != EMPTY_DATUM) // if user provided this pointer, then the tuple_value is NULL, hence we need to initialize a minimal tuple at this position
-					memory_move(data, uval->tuple_value, dti->size);
+					memmove(data, uval->tuple_value, dti->size);
 				else
 					initialize_minimal_data_for_type_info(dti, data);
 				return 1;
@@ -1230,7 +1231,7 @@ static inline int set_datum_for_type_info(const data_type_info* dti, void* data,
 			{
 				// copy contents to data
 				if(uval != EMPTY_DATUM) // if user provided this pointer, then the array_value is NULL, hence we need to initialize a minimal tuple at this position
-					memory_move(data, uval->array_value, dti->size);
+					memmove(data, uval->array_value, dti->size);
 				else
 					initialize_minimal_data_for_type_info(dti, data);
 				return 1;
@@ -1258,7 +1259,7 @@ static inline int set_datum_for_type_info(const data_type_info* dti, void* data,
 
 			// write element count and copy contents to data
 			write_value_to_container(data, dti->max_size, uval->string_size);
-			memory_move(data + get_value_size_on_container(dti->max_size), uval->string_value, uval->string_size);
+			memmove(data + get_value_size_on_container(dti->max_size), uval->string_value, uval->string_size);
 			return 1;
 		}
 		case BINARY :
@@ -1271,7 +1272,7 @@ static inline int set_datum_for_type_info(const data_type_info* dti, void* data,
 
 			// write element count and copy contents to data
 			write_value_to_container(data, dti->max_size, uval->binary_size);
-			memory_move(data + get_value_size_on_container(dti->max_size), uval->binary_value, uval->binary_size);
+			memmove(data + get_value_size_on_container(dti->max_size), uval->binary_value, uval->binary_size);
 			return 1;
 		}
 		case TUPLE :
@@ -1284,7 +1285,7 @@ static inline int set_datum_for_type_info(const data_type_info* dti, void* data,
 
 			// copy contents to data
 			if(uval != EMPTY_DATUM)
-				memory_move(data, uval->tuple_value, get_size_for_type_info(dti, uval->tuple_value));
+				memmove(data, uval->tuple_value, get_size_for_type_info(dti, uval->tuple_value));
 			else
 				initialize_minimal_data_for_type_info(dti, data);
 			return 1;
@@ -1299,7 +1300,7 @@ static inline int set_datum_for_type_info(const data_type_info* dti, void* data,
 
 			// copy contents to data
 			if(uval != EMPTY_DATUM)
-				memory_move(data, uval->array_value, get_size_for_type_info(dti, uval->array_value));
+				memmove(data, uval->array_value, get_size_for_type_info(dti, uval->array_value));
 			else
 				initialize_minimal_data_for_type_info(dti, data);
 			return 1;
@@ -1581,7 +1582,7 @@ static inline int expand_container(const data_type_info* dti, void* data, uint32
 		{
 			uint32_t copy_from = prefix_bitmap_offset + prefix_bitmap_old_size;
 			uint32_t copy_to = prefix_bitmap_offset + prefix_bitmap_new_size;
-			memory_move(data + copy_to, data + copy_from, old_size - copy_from);
+			memmove(data + copy_to, data + copy_from, old_size - copy_from);
 		}
 
 		if(needs_is_valid_bit_in_prefix_bitmap(containee_type_info)) // if these element have is_valid bits in prefix, then move them accordingly or 0 them if they are new
@@ -1606,7 +1607,7 @@ static inline int expand_container(const data_type_info* dti, void* data, uint32
 		uint32_t offset_to_first_element = prefix_bitmap_offset + prefix_bitmap_new_size;
 
 		// make room from new slots for the fixed sized containees
-		memory_move(data + offset_to_first_element + ((index + slots) * byte_size), data + offset_to_first_element + (index * byte_size), (old_element_count - index) * byte_size);
+		memmove(data + offset_to_first_element + ((index + slots) * byte_size), data + offset_to_first_element + (index * byte_size), (old_element_count - index) * byte_size);
 
 		// zero out the new slots
 		memory_set(data + offset_to_first_element + (index * byte_size), 0, slots * byte_size);
@@ -1632,7 +1633,7 @@ static inline int expand_container(const data_type_info* dti, void* data, uint32
 		// make room for new slots
 		uint32_t copy_from = prefix_bitmap_offset + byte_offset_size * index;
 		uint32_t copy_to = prefix_bitmap_offset + byte_offset_size * (index + slots);
-		memory_move(data + copy_to, data + copy_from, old_size - copy_from);
+		memmove(data + copy_to, data + copy_from, old_size - copy_from);
 
 		// zero out the new slots
 		memory_set(data + copy_from, 0, copy_to - copy_from);
@@ -1752,14 +1753,14 @@ static inline int discard_from_container(const data_type_info* dti, void* data, 
 		{
 			uint32_t copy_from = prefix_bitmap_offset + prefix_bitmap_old_size;
 			uint32_t copy_to = prefix_bitmap_offset + prefix_bitmap_new_size;
-			memory_move(data + copy_to, data + copy_from, old_size - copy_from);
+			memmove(data + copy_to, data + copy_from, old_size - copy_from);
 		}
 
 		// calculate the offset to the array of containees
 		uint32_t offset_to_first_element = prefix_bitmap_offset + prefix_bitmap_new_size;
 
 		// discard the concerning slots
-		memory_move(data + offset_to_first_element + (index * byte_size), data + offset_to_first_element + ((index + slots) * byte_size), (old_element_count - (index + slots)) * byte_size);
+		memmove(data + offset_to_first_element + (index * byte_size), data + offset_to_first_element + ((index + slots) * byte_size), (old_element_count - (index + slots)) * byte_size);
 	}
 	else
 	{
@@ -1781,7 +1782,7 @@ static inline int discard_from_container(const data_type_info* dti, void* data, 
 		// make room for new slots
 		uint32_t copy_from = prefix_bitmap_offset + byte_offset_size * (index + slots);
 		uint32_t copy_to = prefix_bitmap_offset + byte_offset_size * index;
-		memory_move(data + copy_to, data + copy_from, old_size - copy_from);
+		memmove(data + copy_to, data + copy_from, old_size - copy_from);
 
 		// since all the varibale length data is moved back by (copy_from - copy_to) bytes, we need to update their offsets
 		for(uint32_t i = 0; i < new_element_count; i++)

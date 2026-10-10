@@ -5,6 +5,8 @@
 
 #include<cutlery/cutlery_stds.h>
 
+#include<string.h>
+
 // ------------------------------ structure and macros to index elements inside a tuple nestedly ----------------------------------------
 
 // used to access conatiner data type info's nestedly like TUPLE, ARRAY, STRING and BINARY only
@@ -29,7 +31,7 @@ struct positional_accessor
 // this function assumes that pa->positions is large enough to accomodate relative position in t
 static inline void append_positions(positional_accessor* pa, positional_accessor t)
 {
-	memory_move(pa->positions + pa->positions_length, t.positions, t.positions_length * sizeof(uint32_t));
+	memmove(pa->positions + pa->positions_length, t.positions, t.positions_length * sizeof(uint32_t));
 	pa->positions_length += t.positions_length;
 }
 
@@ -81,8 +83,8 @@ static inline int point_to_next_uncle_position(positional_accessor* pa) // logic
 		while(1)
 		{
 			datum uval;
-			int valid = get_value_from_element_from_tuple(&uval, tpl_d, absolute_position, tupl);
-			const data_type_info* dti = get_type_info_for_element_from_tuple_def(tpl_d, absolute_position);
+			const data_type_info* dti;
+			int valid = get_value_from_element_from_tuple(&uval, &dti, tpl_d, absolute_position, tupl);
 
 			if((!valid) || (if you are iterating over types and the parent of dti is an array/string/binary and the absolute_position is at the child == 1) )
 			{

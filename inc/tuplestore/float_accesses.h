@@ -2,6 +2,7 @@
 #define FLOAT_ACCESSES_H
 
 #include<stdint.h>
+#include<string.h>
 
 /*
 	below functions allow you to read and write floats and doubles independent of alignement issues
@@ -43,7 +44,7 @@ static inline float deserialize_float(const void* data)
 	uint32_t temp = deserialize_uint32(data, sizeof(float));
 
 	float x;
-	memory_move(&x, &temp, sizeof(float));
+	memmove(&x, &temp, sizeof(float));
 	return x;
 }
 
@@ -53,14 +54,14 @@ static inline double deserialize_double(const void* data)
 	uint64_t temp = deserialize_uint64(data, sizeof(double));
 
 	double x;
-	memory_move(&x, &temp, sizeof(double));
+	memmove(&x, &temp, sizeof(double));
 	return x;
 }
 
 static inline void serialize_float(void* data, float x)
 {
 	uint32_t temp;
-	memory_move(&temp, &x, sizeof(float));
+	memmove(&temp, &x, sizeof(float));
 
 	// little-endian on-disk format
 	serialize_uint32(data, sizeof(float), temp);
@@ -69,7 +70,7 @@ static inline void serialize_float(void* data, float x)
 static inline void serialize_double(void* data, double x)
 {
 	uint64_t temp;
-	memory_move(&temp, &x, sizeof(double));
+	memmove(&temp, &x, sizeof(double));
 
 	// little-endian on-disk format
 	serialize_uint64(data, sizeof(double), temp);
