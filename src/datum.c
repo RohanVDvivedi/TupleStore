@@ -180,6 +180,8 @@ static int compare_datum_internal(const datum* uval1, const data_type_info* dti1
 		uint32_t element_count = min(element_count1, element_count2);
 
 		cmp = memcmp(uval1->string_or_binary_value, uval2->string_or_binary_value, element_count);
+		if(cmp != 0)
+			cmp = (cmp > 0) ? 1 : -1;
 
 		if(cmp == 0 && (element_count1 != element_count2))
 		{
@@ -274,6 +276,8 @@ static int compare_datum_internal2(const datum* uval1, const datum* uval2, const
 		uint32_t element_count = min(element_count1, element_count2);
 
 		cmp = memcmp(uval1->string_or_binary_value, uval2->string_or_binary_value, element_count);
+		if(cmp != 0)
+			cmp = (cmp > 0) ? 1 : -1;
 
 		if(cmp == 0 && (element_count1 != element_count2))
 		{
