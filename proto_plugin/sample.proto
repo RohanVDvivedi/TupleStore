@@ -1,32 +1,151 @@
 syntax = "proto3";
-package example;
+package demo;
 
-enum Color {
-	COLOR_RED = 0;
-	COLOR_GREEN = 1;
-	COLOR_BLUE = 2;
+// ---- enums: different bit widths ----
+enum Color {              // max value 3 -> 2 bits
+  COLOR_UNSPECIFIED = 0;
+  COLOR_RED         = 1;
+  COLOR_GREEN       = 2;
+  COLOR_BLUE        = 3;
 }
 
-// max=65536
+enum Priority {           // max value 100 -> 7 bits
+  PRIORITY_NONE   = 0;
+  PRIORITY_LOW    = 5;
+  PRIORITY_MEDIUM = 42;
+  PRIORITY_HIGH   = 100;
+}
+
+enum Trend {              // has a negative value -> 32-bit enum branch
+  TREND_FLAT = 0;
+  TREND_DOWN = -1;
+  TREND_UP   = 1;
+}
+
+// ---- level 5 (deepest leaf): geo (all fixed scalars) ----
+// max_size=48
+message geo {
+  double latitude  = 1;
+  double longitude = 2;
+  float  accuracy  = 3;
+}
+
+// ---- leaf used inside person: metadata ----
+// max_size=192
+message metadata {
+  string key      = 1;  // size=16          (fixed string: up to 16 bytes)
+  bytes  checksum = 2;  // size=8           (fixed blob: exactly 8 bytes)
+  string tag      = 3;  // size=12 nullable (fixed string: up to 12 bytes, or NULL)
+  string note     = 4;  // max_size=128      (variable string: up to 120 usable)
+}
+
+// ---- level 4: address (contains geo) ----
+// max_size=512
 message address {
-	string city = 1; // nullable
-	uint32 zip = 2;
+  string street       = 1;  // max_size=128  (variable: up to 120 usable)
+  string city         = 2;  // max_size=64   (variable: up to 56 usable)
+  bytes  country_code = 3;  // size=2        (fixed blob: exactly 2 bytes)
+  string postal       = 4;  // size=10 nullable (fixed string: up to 10, or NULL)
+  geo    location     = 5;                   // nested message
+  geo    alt          = 6;                   // nested message
+  repeated string lines = 7; // max_size=128  (variable array: up to 120 usable)
+  Color  region_color = 8;                   // enum
 }
 
-// max=65536
-message user {
-	int32  id1 = 1;
-	uint64 b10 = 7;   // bitfield bits=44
-	string name  = 8;
-	bool   is_active = 10;
+// ---- level 3: person (contains address x2 + repeated address + metadata) ----
+// max_size=8192
+message person {
+  // integer width branches -> int8_t / int16_t / int32_t / int64_t
+  int32    id      = 1;
+  int64    lid     = 2;
+  int32    i8      = 3;   // bytes=1
+  int32    i16     = 4;   // bytes=2
+  int32    i24     = 5;   // bytes=3
+  int64    i48     = 6;   // bytes=6
+  sint32   zig     = 7;                 // signed zigzag -> int32
+  sfixed64 sfx     = 8;                 // -> int64
+
+  // unsigned width branches -> uint8_t / uint16_t / uint32_t / uint64_t
+  uint32   u8v     = 9;   // bytes=1
+  uint32   u16v    = 10;  // bytes=2
+  uint32   u32v    = 11;
+  uint64   u64v    = 12;
+  fixed64  ufx     = 13;                // -> uint64
+
+  // large integers -> int256 / uint256
+  int64    big_signed   = 14; // large bytes=20
+  uint64   big_unsigned = 15; // large bytes=32
+
+  // bit fields (unsigned only) + bool
+  uint64   flags   = 16;  // bitfield bits=44
+  uint32   onebit  = 17;  // bitfield bits=1
+  bool     active  = 18;
+
+  // floating point
+  float    rating  = 19;
+  double   balance = 20;
+
+  // enums of different widths
+  Color    favorite = 21;
+  Priority prio     = 22;
+  Trend    trend    = 23;
+
+  // strings / blobs: variable and fixed
+  string name   = 24; // max_size=64   (variable: up to 56 usable)
+  string bio    = 25; // max_size=256  (variable: up to 248 usable)
+  bytes  avatar = 26; // max_size=1024 (variable blob: up to 1016 usable)
+  bytes  uuid   = 27; // size=16        (fixed blob: exactly 16 bytes)
+  string code   = 28; // size=8         (fixed string: up to 8 bytes)
+  string label  = 29; // size=12 nullable (fixed string: up to 12, or NULL)
+
+  // nullable scalars -> emit is_null_<field> bit
+  int32    age           = 30; // nullable
+  double   maybe_balance = 31; // nullable
+
+  // nested messages (levels 4/5 beneath here)
+  address  home = 32;
+  address  work = 33;
+  metadata meta = 34;
+
+  // repeated scalars / strings / enums / floats / bit fields / blobs
+  repeated int32  tag_ids   = 40; // max_size=128  (variable array)
+  repeated string nicknames = 41; // max_size=128  (variable array of string)
+  repeated Color  palette   = 42; // max_size=64   (variable array of enum)
+  repeated double samples   = 43; // max_size=256  (variable array of double)
+  repeated uint64 masks     = 44; // bitfield bits=40 max_size=128 (array of bit field)
+  repeated bytes  chunks    = 45; // max_size=256  (variable array of blob)
+  repeated float  weights   = 46; // max_size=128  (variable array of float)
+
+  // fixed element_count arrays
+  repeated int32  top3 = 47; // element_count=3 max_size=24          (fixed array)
+  repeated int32  quad = 48; // element_count=4 max_size=32 nullable (fixed array, nullable)
+
+  // repeated nested message (variable count)
+  repeated address addresses = 49; // max_size=1024
 }
 
-// max=131072
-message profile {
-	user owner = 1;
-	int32 score = 2; // nullable
-	repeated int32 tags = 3;
-	repeated address places = 4;
-	Color favorite = 5;
-	repeated string nicknames = 6;
+// ---- level 2: team (contains person) ----
+// max_size=32768
+message team {
+  string          name    = 1; // max_size=64
+  person          lead    = 2;                 // nested
+  person          backup  = 3;                 // nested
+  repeated person members = 4; // max_size=8192  (repeated message)
+  repeated person bench   = 5; // element_count=2 max_size=4096 (fixed-count message array)
+  Priority        prio    = 6;
+  repeated string tags    = 7; // max_size=128  (variable array of string)
+}
+
+// ---- level 1 (top): org (contains team) ----
+// max_size=131072
+message org {
+  string        name      = 1; // max_size=64
+  bytes         logo      = 2; // max_size=8192 (variable blob: up to 8184 usable)
+  team          root      = 3;                 // nested
+  repeated team teams     = 4; // max_size=65536 (repeated nested message)
+  Color         brand     = 5;
+  uint64        founded   = 6; // bitfield bits=12
+  int64         endowment = 7; // large bytes=24  (int256 at top level)
+  bool          is_public = 8;
+  repeated Priority priorities = 9; // max_size=64 (repeated enum)
 }
