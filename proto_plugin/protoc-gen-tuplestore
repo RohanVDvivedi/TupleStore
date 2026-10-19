@@ -1,0 +1,607 @@
+#!/usr/bin/env python3
+# protoc-gen-tuplestore : generate, for every proto message, a C struct + a
+# TupleStore tuple_def + serialize / deserialize / destroy functions.
+
+import sys, re
+from google.protobuf.compiler import plugin_pb2
+from google.protobuf.descriptor_pb2 import FieldDescriptorProto as FieldDescriptor
+
+SIGNED_INT_32   = {FieldDescriptor.TYPE_INT32, FieldDescriptor.TYPE_SINT32, FieldDescriptor.TYPE_SFIXED32}
+SIGNED_INT_64   = {FieldDescriptor.TYPE_INT64, FieldDescriptor.TYPE_SINT64, FieldDescriptor.TYPE_SFIXED64}
+UNSIGNED_INT_32 = {FieldDescriptor.TYPE_UINT32, FieldDescriptor.TYPE_FIXED32}
+UNSIGNED_INT_64 = {FieldDescriptor.TYPE_UINT64, FieldDescriptor.TYPE_FIXED64}
+
+def integer_c_type(byte_size, signed):
+	prefix = '' if signed else 'u'
+	if byte_size <= 1: return f'{prefix}int8_t'
+	if byte_size <= 2: return f'{prefix}int16_t'
+	if byte_size <= 4: return f'{prefix}int32_t'
+	if byte_size <= 8: return f'{prefix}int64_t'
+	return f'{prefix}int256'
+
+def parse_field_options(comment):
+	options = {}
+	if re.search(r'\blarge\b', comment):    options['large'] = True
+	if re.search(r'\bbitfield\b', comment): options['bitfield'] = True
+	if re.search(r'\bnullable\b', comment): options['nullable'] = True
+	match = re.search(r'\bbytes\s*=\s*(\d+)', comment)
+	if match: options['bytes'] = int(match.group(1))
+	match = re.search(r'\bbits\s*=\s*(\d+)', comment)
+	if match: options['bits'] = int(match.group(1))
+	match = re.search(r'\bmax_size\s*=\s*(\d+)', comment) or re.search(r'\bmax\b\s*=\s*(\d+)', comment)
+	if match: options['max_size'] = int(match.group(1))
+	match = re.search(r'\bsize\s*=\s*(\d+)', comment)
+	if match: options['fixed_size'] = int(match.group(1))
+	match = re.search(r'\belement_count\s*=\s*(\d+)', comment)
+	if match: options['element_count'] = int(match.group(1))
+	return options
+
+class FieldPlan:
+	pass
+
+def plan_field(field, index, comment, enum_bits_by_name, parent_max_size):
+	options = parse_field_options(comment)
+	plan = FieldPlan()
+	plan.name          = field.name
+	plan.index         = index
+	plan.repeated      = (field.label == FieldDescriptor.LABEL_REPEATED)
+	plan.nullable      = bool(options.get('nullable')) or bool(getattr(field, 'proto3_optional', False))
+	plan.max_size      = options.get('max_size', parent_max_size)
+	plan.fixed_size    = options.get('fixed_size')
+	plan.element_count = options.get('element_count')
+	plan.is_bool       = False
+	plan.enum_name     = None
+	plan.message_name  = None
+	plan.bits          = 0
+	kind = field.type
+
+	if kind in SIGNED_INT_32 or kind in SIGNED_INT_64:
+		byte_size = options.get('bytes', 4 if kind in SIGNED_INT_32 else 8)
+		if options.get('bitfield'):
+			raise RuntimeError(f'{field.name}: bit fields (bits=) are only allowed on unsigned integers')
+		if options.get('large'):
+			if not (1 <= byte_size <= 32):
+				raise RuntimeError(f'{field.name}: large integer bytes must be 1..32, got {byte_size}')
+			plan.kind = 'LARGE_INT'; plan.size = byte_size; plan.c_type = 'int256'; plan.datum_member = 'large_int_value'
+		else:
+			if not (1 <= byte_size <= 8):
+				raise RuntimeError(f'{field.name}: integer bytes must be 1..8 (use large for up to 32), got {byte_size}')
+			plan.kind = 'INT'; plan.size = byte_size; plan.c_type = integer_c_type(byte_size, True); plan.datum_member = 'int_value'
+	elif kind in UNSIGNED_INT_32 or kind in UNSIGNED_INT_64:
+		byte_size = options.get('bytes', 4 if kind in UNSIGNED_INT_32 else 8)
+		if options.get('bitfield'):
+			plan.bits = options.get('bits', byte_size * 8)
+			if not (1 <= plan.bits <= 64):
+				raise RuntimeError(f'{field.name}: bit field bits must be 1..64, got {plan.bits}')
+			plan.kind = 'BIT'; plan.c_type = 'uint64_t'; plan.datum_member = 'bit_field_value'
+		elif options.get('large'):
+			if not (1 <= byte_size <= 32):
+				raise RuntimeError(f'{field.name}: large integer bytes must be 1..32, got {byte_size}')
+			plan.kind = 'LARGE_UINT'; plan.size = byte_size; plan.c_type = 'uint256'; plan.datum_member = 'large_uint_value'
+		else:
+			if not (1 <= byte_size <= 8):
+				raise RuntimeError(f'{field.name}: integer bytes must be 1..8 (use large for up to 32), got {byte_size}')
+			plan.kind = 'UINT'; plan.size = byte_size; plan.c_type = integer_c_type(byte_size, False); plan.datum_member = 'uint_value'
+	elif kind == FieldDescriptor.TYPE_BOOL:
+		plan.kind = 'BIT'; plan.is_bool = True; plan.bits = options.get('bits', 1); plan.c_type = 'uint64_t'; plan.datum_member = 'bit_field_value'
+		if not (1 <= plan.bits <= 64):
+			raise RuntimeError(f'{field.name}: bit field bits must be 1..64, got {plan.bits}')
+	elif kind == FieldDescriptor.TYPE_ENUM:
+		plan.kind = 'ENUM'; plan.enum_name = field.type_name.split('.')[-1]; plan.bits = enum_bits_by_name[plan.enum_name]; plan.c_type = plan.enum_name; plan.datum_member = 'bit_field_value'
+	elif kind == FieldDescriptor.TYPE_FLOAT:
+		plan.kind = 'FLOAT'; plan.c_type = 'float'; plan.datum_member = 'float_value'
+	elif kind == FieldDescriptor.TYPE_DOUBLE:
+		plan.kind = 'FLOAT'; plan.c_type = 'double'; plan.datum_member = 'double_value'
+	elif kind == FieldDescriptor.TYPE_STRING:
+		plan.kind = 'STRING'; plan.c_type = 'dstring'; plan.datum_member = 'string_value'
+	elif kind == FieldDescriptor.TYPE_BYTES:
+		plan.kind = 'BINARY'; plan.c_type = 'dstring'; plan.datum_member = 'string_value'
+	elif kind == FieldDescriptor.TYPE_MESSAGE:
+		plan.kind = 'MESSAGE'; plan.message_name = field.type_name.split('.')[-1]; plan.c_type = plan.message_name; plan.datum_member = 'tuple_value'
+	else:
+		raise RuntimeError(f'unsupported proto field type {kind} on {field.name}')
+	return plan
+
+def default_scalar_pointer(plan, nullable):
+	suffix = 'NULLABLE' if nullable else 'NON_NULLABLE'
+	if plan.kind == 'INT':        return f'INT_{suffix}[{plan.size}]'
+	if plan.kind == 'UINT':       return f'UINT_{suffix}[{plan.size}]'
+	if plan.kind == 'LARGE_INT':  return f'LARGE_INT_{suffix}[{plan.size}]'
+	if plan.kind == 'LARGE_UINT': return f'LARGE_UINT_{suffix}[{plan.size}]'
+	if plan.kind == 'FLOAT':      return f'FLOAT_{plan.c_type}_{suffix}'
+	if plan.kind == 'BIT':        return f'BIT_FIELD_{suffix}[{plan.bits}]'
+	raise RuntimeError('no default pointer for kind ' + plan.kind)
+
+# data_type_info for a single (non-array) value.
+# Returns (static_declarations, init_setup_lines, pointer_expression).
+def leaf_type_info(plan, nullable, global_base, display_name):
+	if plan.kind in ('INT', 'UINT', 'LARGE_INT', 'LARGE_UINT', 'FLOAT') or (plan.kind == 'BIT' and plan.is_bool):
+		return [], [], default_scalar_pointer(plan, nullable)
+	if plan.kind == 'ENUM':
+		return [], [], f'&{plan.enum_name}_dti'
+	if plan.kind == 'MESSAGE':
+		return [], [], f'{plan.message_name}_dti'
+	name = f'{global_base}_dti'
+	nullable_flag = 1 if nullable else 0
+	if plan.kind == 'BIT':
+		macro = 'define_bit_field_nullable_type' if nullable else 'define_bit_field_non_nullable_type'
+		setup = [f'\t{name} = {macro}("{display_name}", {plan.bits});',
+		         f'\tif(!finalize_type_info(&{name})) exit(-1);']
+	elif plan.fixed_size is not None:
+		macro = 'get_fixed_length_string_type' if plan.kind == 'STRING' else 'get_fixed_length_binary_type'
+		setup = [f'\t{name} = {macro}("{display_name}", {plan.fixed_size}, {nullable_flag});',
+		         f'\tif(!finalize_type_info(&{name})) exit(-1);']
+	else:
+		macro = 'get_variable_length_string_type' if plan.kind == 'STRING' else 'get_variable_length_binary_type'
+		setup = [f'\t{name} = {macro}("{display_name}", {plan.max_size});',
+		         f'\tif(!finalize_type_info(&{name})) exit(-1);']
+	return [name], setup, f'&{name}'
+
+# For a field: returns (static_declarations, init_setup_lines, containee_pointer).
+def field_type_info(plan, message_name):
+	if not plan.repeated:
+		return leaf_type_info(plan, plan.nullable, f'{message_name}_{plan.name}', plan.name)
+	element_declarations, element_setup, element_pointer = leaf_type_info(plan, False, f'{message_name}_{plan.name}_element', plan.name)
+	array_name = f'{message_name}_{plan.name}_dti'
+	nullable_flag = 1 if plan.nullable else 0
+	setup = list(element_setup)
+	if plan.element_count is not None:
+		setup.append(f'\t{array_name} = get_fixed_element_count_array_type("{plan.name}", {plan.element_count}, {plan.max_size}, {nullable_flag}, {element_pointer});')
+	else:
+		setup.append(f'\t{array_name} = get_variable_element_count_array_type("{plan.name}", {plan.max_size}, {element_pointer});')
+	setup.append(f'\tif(!finalize_type_info(&{array_name})) exit(-1);')
+	return element_declarations + [array_name], setup, f'&{array_name}'
+
+def struct_member_lines(plan):
+	if plan.repeated:
+		return [f'\tarraylist* {plan.name};']
+	if plan.kind in ('STRING', 'BINARY'):
+		return [f'\tdstring* {plan.name};']
+	if plan.kind == 'MESSAGE':
+		return [f'\t{plan.c_type}* {plan.name};']
+	if plan.kind == 'BIT':
+		lines = [f'\tuint64_t {plan.name} : {plan.bits};']
+	else:
+		lines = [f'\t{plan.c_type} {plan.name};']
+	if plan.nullable:
+		lines.append(f'\tunsigned int is_null_{plan.name} : 1;')
+	return lines
+
+# ---------------- serialize ----------------
+# The element datum for a single value of this field (used at the leaf position).
+def serialize_value_datum(plan, accessor):
+	if plan.kind in ('STRING', 'BINARY'):
+		return f'&(datum){{.string_value = get_byte_array_dstring({accessor}), .string_size = get_char_count_dstring({accessor})}}'
+	if plan.kind == 'MESSAGE':
+		return f'&(datum){{.tuple_value = {accessor}}}'
+	return f'&(datum){{.{plan.datum_member} = {accessor}}}'
+
+# Lines that produce `element` (a pointer/value for datum) from the arraylist slot,
+# plus the set call. Shared by fixed and variable repeated paths.
+def serialize_element_lines(plan, message_name):
+	definition = f'&{message_name}_def'
+	position = f'STATIC_POSITION({plan.index}, element_index)'
+	if plan.kind == 'MESSAGE':
+		return [
+			f'\t\t\t{plan.c_type}* element = ({plan.c_type}*)get_from_front_of_arraylist(source->{plan.name}, element_index);',
+			f'\t\t\tuint32_t nested_size = 0;',
+			f'\t\t\tvoid* nested_buffer = serialize_{plan.c_type}_tuple(&nested_size, element);',
+			f'\t\t\tif(nested_buffer == NULL) {{ free(tuple_buffer); (*size) = 0; return NULL; }}',
+			f'\t\t\tif(!set_value_or_grow({definition}, {position}, &tuple_buffer, &capacity, &(datum){{.tuple_value = nested_buffer}})) {{ free(nested_buffer); free(tuple_buffer); (*size) = 0; return NULL; }}',
+			f'\t\t\tfree(nested_buffer);',
+		]
+	if plan.kind in ('STRING', 'BINARY'):
+		return [
+			f'\t\t\tdstring* element = (dstring*)get_from_front_of_arraylist(source->{plan.name}, element_index);',
+			f'\t\t\tif(!set_value_or_grow({definition}, {position}, &tuple_buffer, &capacity, {serialize_value_datum(plan, "element")})) {{ free(tuple_buffer); (*size) = 0; return NULL; }}',
+		]
+	return [
+		f'\t\t\t{plan.c_type}* element = ({plan.c_type}*)get_from_front_of_arraylist(source->{plan.name}, element_index);',
+		f'\t\t\tif(!set_value_or_grow({definition}, {position}, &tuple_buffer, &capacity, &(datum){{.{plan.datum_member} = *element}})) {{ free(tuple_buffer); (*size) = 0; return NULL; }}',
+	]
+
+def serialize_field_lines(plan, message_name):
+	definition = f'&{message_name}_def'
+	position = f'STATIC_POSITION({plan.index})'
+	if plan.repeated and plan.element_count is not None:
+		return [
+			f'\tif(source->{plan.name} == NULL)',
+			f'\t{{',
+			f'\t\tif(!set_value_or_grow({definition}, {position}, &tuple_buffer, &capacity, NULL_DATUM)) {{ free(tuple_buffer); (*size) = 0; return NULL; }}',
+			f'\t}}',
+			f'\telse',
+			f'\t{{',
+			f'\t\tif(get_element_count_arraylist(source->{plan.name}) != {plan.element_count}) {{ free(tuple_buffer); (*size) = 0; return NULL; }}',
+			f'\t\tif(!set_value_or_grow({definition}, {position}, &tuple_buffer, &capacity, EMPTY_DATUM)) {{ free(tuple_buffer); (*size) = 0; return NULL; }}',
+			f'\t\tfor(cy_uint element_index = 0; element_index < {plan.element_count}; element_index++)',
+			f'\t\t{{',
+		] + serialize_element_lines(plan, message_name) + [
+			f'\t\t}}',
+			f'\t}}',
+		]
+	if plan.repeated:
+		return [
+			f'\tif(source->{plan.name} == NULL)',
+			f'\t{{',
+			f'\t\tif(!set_value_or_grow({definition}, {position}, &tuple_buffer, &capacity, NULL_DATUM)) {{ free(tuple_buffer); (*size) = 0; return NULL; }}',
+			f'\t}}',
+			f'\telse',
+			f'\t{{',
+			f'\t\tif(!set_value_or_grow({definition}, {position}, &tuple_buffer, &capacity, EMPTY_DATUM)) {{ free(tuple_buffer); (*size) = 0; return NULL; }}',
+			f'\t\tcy_uint element_count = get_element_count_arraylist(source->{plan.name});',
+			f'\t\tif(!expand_count_or_grow({definition}, {position}, &tuple_buffer, &capacity, element_count)) {{ free(tuple_buffer); (*size) = 0; return NULL; }}',
+			f'\t\tfor(cy_uint element_index = 0; element_index < element_count; element_index++)',
+			f'\t\t{{',
+		] + serialize_element_lines(plan, message_name) + [
+			f'\t\t}}',
+			f'\t}}',
+		]
+	if plan.kind in ('STRING', 'BINARY', 'MESSAGE'):
+		return [
+			f'\tif(source->{plan.name} == NULL)',
+			f'\t{{',
+			f'\t\tif(!set_value_or_grow({definition}, {position}, &tuple_buffer, &capacity, NULL_DATUM)) {{ free(tuple_buffer); (*size) = 0; return NULL; }}',
+			f'\t}}',
+			f'\telse',
+			f'\t{{',
+		] + ([
+			f'\t\tuint32_t nested_size = 0;',
+			f'\t\tvoid* nested_buffer = serialize_{plan.c_type}_tuple(&nested_size, source->{plan.name});',
+			f'\t\tif(nested_buffer == NULL) {{ free(tuple_buffer); (*size) = 0; return NULL; }}',
+			f'\t\tif(!set_value_or_grow({definition}, {position}, &tuple_buffer, &capacity, &(datum){{.tuple_value = nested_buffer}})) {{ free(nested_buffer); free(tuple_buffer); (*size) = 0; return NULL; }}',
+			f'\t\tfree(nested_buffer);',
+		] if plan.kind == 'MESSAGE' else [
+			f'\t\tif(!set_value_or_grow({definition}, {position}, &tuple_buffer, &capacity, {serialize_value_datum(plan, "source->" + plan.name)})) {{ free(tuple_buffer); (*size) = 0; return NULL; }}',
+		]) + [
+			f'\t}}',
+		]
+	if plan.nullable:
+		return [
+			f'\tif(source->is_null_{plan.name})',
+			f'\t{{',
+			f'\t\tif(!set_value_or_grow({definition}, {position}, &tuple_buffer, &capacity, NULL_DATUM)) {{ free(tuple_buffer); (*size) = 0; return NULL; }}',
+			f'\t}}',
+			f'\telse',
+			f'\t{{',
+			f'\t\tif(!set_value_or_grow({definition}, {position}, &tuple_buffer, &capacity, {serialize_value_datum(plan, "source->" + plan.name)})) {{ free(tuple_buffer); (*size) = 0; return NULL; }}',
+			f'\t}}',
+		]
+	return [
+		f'\tif(!set_value_or_grow({definition}, {position}, &tuple_buffer, &capacity, {serialize_value_datum(plan, "source->" + plan.name)})) {{ free(tuple_buffer); (*size) = 0; return NULL; }}',
+	]
+
+# ---------------- deserialize ----------------
+def deserialize_element_lines(plan, message_name):
+	definition = f'&{message_name}_def'
+	position = f'STATIC_POSITION({plan.index}, element_index)'
+	get_line = f'\t\t\tif(!get_value_from_element_from_tuple(&value, &value_type, {definition}, {position}, buffer)) {{ destroy_{message_name}(result); return NULL; }}'
+	if plan.kind == 'MESSAGE':
+		make = [
+			f'\t\t\t{plan.c_type}* element = deserialize_{plan.c_type}_tuple(value.tuple_value);',
+			f'\t\t\tif(element == NULL) {{ destroy_{message_name}(result); return NULL; }}',
+		]
+		free_element = f'destroy_{plan.c_type}(element);'
+	elif plan.kind in ('STRING', 'BINARY'):
+		make = [
+			f'\t\t\tdstring* element = malloc(sizeof(dstring));',
+			f'\t\t\tinit_dstring(element, value.string_value, value.string_size);',
+		]
+		free_element = 'deinit_dstring(element); free(element);'
+	else:
+		make = [
+			f'\t\t\t{plan.c_type}* element = malloc(sizeof({plan.c_type}));',
+			f'\t\t\t*element = ({plan.c_type})value.{plan.datum_member};',
+		]
+		free_element = 'free(element);'
+	return [get_line] + make + [
+		f'\t\t\tif(!push_back_to_arraylist(result->{plan.name}, element))',
+		f'\t\t\t{{',
+		f'\t\t\t\tif(!expand_arraylist(result->{plan.name})) {{ {free_element} destroy_{message_name}(result); return NULL; }}',
+		f'\t\t\t\tpush_back_to_arraylist(result->{plan.name}, element);',
+		f'\t\t\t}}',
+	]
+
+def deserialize_field_lines(plan, message_name):
+	definition = f'&{message_name}_def'
+	position = f'STATIC_POSITION({plan.index})'
+	get_line = f'\tif(!get_value_from_element_from_tuple(&value, &value_type, {definition}, {position}, buffer)) {{ destroy_{message_name}(result); return NULL; }}'
+	if plan.repeated:
+		return [
+			get_line,
+			f'\tif(is_datum_NULL(&value))',
+			f'\t\tresult->{plan.name} = NULL;',
+			f'\telse',
+			f'\t{{',
+			f'\t\tcy_uint element_count = get_element_count_for_element_from_tuple({definition}, {position}, buffer);',
+			f'\t\tresult->{plan.name} = malloc(sizeof(arraylist));',
+			f'\t\tinitialize_arraylist(result->{plan.name}, element_count);',
+			f'\t\tfor(cy_uint element_index = 0; element_index < element_count; element_index++)',
+			f'\t\t{{',
+		] + deserialize_element_lines(plan, message_name) + [
+			f'\t\t}}',
+			f'\t}}',
+		]
+	if plan.kind in ('STRING', 'BINARY'):
+		return [
+			get_line,
+			f'\tif(is_datum_NULL(&value))',
+			f'\t\tresult->{plan.name} = NULL;',
+			f'\telse',
+			f'\t{{',
+			f'\t\tresult->{plan.name} = malloc(sizeof(dstring));',
+			f'\t\tinit_dstring(result->{plan.name}, value.string_value, value.string_size);',
+			f'\t}}',
+		]
+	if plan.kind == 'MESSAGE':
+		return [
+			get_line,
+			f'\tif(is_datum_NULL(&value))',
+			f'\t\tresult->{plan.name} = NULL;',
+			f'\telse',
+			f'\t{{',
+			f'\t\tresult->{plan.name} = deserialize_{plan.c_type}_tuple(value.tuple_value);',
+			f'\t\tif(result->{plan.name} == NULL) {{ destroy_{message_name}(result); return NULL; }}',
+			f'\t}}',
+		]
+	if plan.nullable:
+		return [
+			get_line,
+			f'\tif(is_datum_NULL(&value))',
+			f'\t{{',
+			f'\t\tresult->is_null_{plan.name} = 1;',
+			f'\t\tresult->{plan.name} = 0;',
+			f'\t}}',
+			f'\telse',
+			f'\t{{',
+			f'\t\tresult->is_null_{plan.name} = 0;',
+			f'\t\tresult->{plan.name} = ({plan.c_type})value.{plan.datum_member};',
+			f'\t}}',
+		]
+	return [
+		get_line,
+		f'\tresult->{plan.name} = ({plan.c_type})value.{plan.datum_member};',
+	]
+
+# ---------------- destroy ----------------
+def destroy_field_lines(plan):
+	if plan.repeated:
+		if plan.kind == 'MESSAGE':
+			free_element = f'\t\t\tdestroy_{plan.c_type}(({plan.c_type}*)get_from_front_of_arraylist(s->{plan.name}, element_index));'
+		elif plan.kind in ('STRING', 'BINARY'):
+			free_element = f'\t\t\tdstring* element = (dstring*)get_from_front_of_arraylist(s->{plan.name}, element_index); deinit_dstring(element); free(element);'
+		else:
+			free_element = f'\t\t\tfree((void*)get_from_front_of_arraylist(s->{plan.name}, element_index));'
+		return [
+			f'\tif(s->{plan.name} != NULL)',
+			f'\t{{',
+			f'\t\tcy_uint element_count = get_element_count_arraylist(s->{plan.name});',
+			f'\t\tfor(cy_uint element_index = 0; element_index < element_count; element_index++)',
+			f'\t\t{{',
+			free_element,
+			f'\t\t}}',
+			f'\t\tdeinitialize_arraylist(s->{plan.name});',
+			f'\t\tfree(s->{plan.name});',
+			f'\t}}',
+		]
+	if plan.kind in ('STRING', 'BINARY'):
+		return [f'\tif(s->{plan.name} != NULL) {{ deinit_dstring(s->{plan.name}); free(s->{plan.name}); }}']
+	if plan.kind == 'MESSAGE':
+		return [f'\tif(s->{plan.name} != NULL) destroy_{plan.c_type}(s->{plan.name});']
+	return []
+
+# static inline helpers: set_value_or_grow / expand_count_or_grow.
+# max_size_increment_allowed is (allocated buffer bytes) - (current tuple size).
+# A too-small buffer is fixed by doubling; a type-level mismatch (can_* fails,
+# e.g. NULL on a non-nullable field) returns 0 and the caller fails the call.
+HELPER_LINES = [
+	'static inline int set_value_or_grow(const tuple_def* definition, positional_accessor position, void** buffer, uint32_t* capacity, const datum* value)',
+	'{',
+	'\tif(!can_set_element_in_tuple(definition, position, *buffer, value, UINT32_MAX))',
+	'\t\treturn 0;',
+	'\twhile(!set_element_in_tuple(definition, position, *buffer, value, (*capacity) - get_tuple_size(definition, *buffer)))',
+	'\t{',
+	'\t\tif((*capacity) > (UINT32_MAX / 2))',
+	'\t\t\treturn 0;',
+	'\t\tvoid* bigger_buffer = realloc(*buffer, (*capacity) * 2);',
+	'\t\tif(bigger_buffer == NULL)',
+	'\t\t\treturn 0;',
+	'\t\t*buffer = bigger_buffer;',
+	'\t\t*capacity = (*capacity) * 2;',
+	'\t}',
+	'\treturn 1;',
+	'}',
+	'',
+	'static inline int expand_count_or_grow(const tuple_def* definition, positional_accessor position, void** buffer, uint32_t* capacity, cy_uint slots)',
+	'{',
+	'\tif(!can_expand_element_count_for_element_in_tuple(definition, position, *buffer, 0, slots, UINT32_MAX))',
+	'\t\treturn 0;',
+	'\twhile(!expand_element_count_for_element_in_tuple(definition, position, *buffer, 0, slots, (*capacity) - get_tuple_size(definition, *buffer)))',
+	'\t{',
+	'\t\tif((*capacity) > (UINT32_MAX / 2))',
+	'\t\t\treturn 0;',
+	'\t\tvoid* bigger_buffer = realloc(*buffer, (*capacity) * 2);',
+	'\t\tif(bigger_buffer == NULL)',
+	'\t\t\treturn 0;',
+	'\t\t*buffer = bigger_buffer;',
+	'\t\t*capacity = (*capacity) * 2;',
+	'\t}',
+	'\treturn 1;',
+	'}',
+	'',
+]
+
+def generate():
+	request = plugin_pb2.CodeGeneratorRequest()
+	request.ParseFromString(sys.stdin.buffer.read())
+	response = plugin_pb2.CodeGeneratorResponse()
+	response.supported_features = getattr(plugin_pb2.CodeGeneratorResponse, 'FEATURE_PROTO3_OPTIONAL', 0)
+
+	for proto_file in request.proto_file:
+		if proto_file.name not in request.file_to_generate:
+			continue
+
+		comment_by_path = {}
+		for location in proto_file.source_code_info.location:
+			text = (location.leading_comments or '') + ' ' + (location.trailing_comments or '')
+			if text.strip():
+				comment_by_path[tuple(location.path)] = text
+
+		enum_bits_by_name = {}
+		for enum in proto_file.enum_type:
+			values = [value.number for value in enum.value]
+			enum_bits_by_name[enum.name] = 32 if any(v < 0 for v in values) else max(1, max(values + [0]).bit_length())
+
+		base_name = proto_file.name[:-6] if proto_file.name.endswith('.proto') else proto_file.name
+		header_name, source_name = base_name + '.h', base_name + '.c'
+		include_guard = base_name.upper().replace('/', '_').replace('.', '_') + '_H'
+
+		header = ['#ifndef ' + include_guard, '#define ' + include_guard, '',
+		          '#include<stdint.h>', '',
+		          '#include<tuplestore/tuple.h>', '#include<tuplestore/tuple_def.h>',
+		          '#include<tuplestore/data_type_info.h>', '#include<tuplestore/datum.h>',
+		          '#include<cutlery/dstring.h>', '#include<cutlery/arraylist.h>',
+		          '#include<serint/large_uints.h>', '#include<serint/large_ints.h>', '']
+		source = ['#include<' + header_name + '>', '', '#include<stdint.h>', '#include<stdlib.h>', '#include<string.h>', ''] + HELPER_LINES
+		init_declarations, serialize_declarations, deserialize_declarations, destroy_declarations = [], [], [], []
+
+		for enum in proto_file.enum_type:
+			header.append(f'typedef enum {enum.name} {enum.name};')
+			header.append(f'enum {enum.name}')
+			header.append('{')
+			for value in enum.value:
+				header.append(f'\t{value.name} = {value.number},')
+			header.append('};')
+			header.append('')
+			source.append(f'static data_type_info {enum.name}_dti;')
+			source.append(f'static int {enum.name}_dti_initialized = 0;')
+			source.append(f'static void initialize_{enum.name}_dti(void)')
+			source.append('{')
+			source.append(f'\tif({enum.name}_dti_initialized)')
+			source.append('\t\treturn;')
+			source.append(f'\t{enum.name}_dti_initialized = 1;')
+			source.append(f'\t{enum.name}_dti = define_bit_field_non_nullable_type("{enum.name}", {enum_bits_by_name[enum.name]});')
+			source.append(f'\tif(!finalize_type_info(&{enum.name}_dti)) exit(-1);')
+			source.append('}')
+			source.append('')
+
+		for message in proto_file.message_type:
+			header.append(f'typedef struct {message.name} {message.name};')
+		header.append('')
+
+		for message_index, message in enumerate(proto_file.message_type):
+			message_comment = comment_by_path.get((4, message_index), '')
+			match = re.search(r'\bmax_size\s*=\s*(\d+)', message_comment) or re.search(r'\bmax\b\s*=\s*(\d+)', message_comment)
+			max_size = int(match.group(1)) if match else 65536
+			plans = [plan_field(field, field_index, comment_by_path.get((4, message_index, 2, field_index), ''), enum_bits_by_name, max_size)
+			         for field_index, field in enumerate(message.field)]
+
+			header.append(f'struct {message.name}')
+			header.append('{')
+			for plan in plans:
+				header.extend(struct_member_lines(plan))
+				header.append('')
+			header.append('};')
+			header.append('')
+			header.append(f'extern data_type_info* {message.name}_dti;')
+			header.append(f'extern tuple_def {message.name}_def;')
+			header.append('')
+
+			source.append(f'data_type_info* {message.name}_dti = NULL;')
+			source.append(f'tuple_def {message.name}_def;')
+
+			static_declarations, field_setup, containee_pointers = [], [], []
+			for plan in plans:
+				declarations, setup, pointer = field_type_info(plan, message.name)
+				static_declarations.extend(declarations)
+				field_setup.extend(setup)
+				containee_pointers.append(pointer)
+			for name in static_declarations:
+				source.append(f'static data_type_info {name};')
+			source.append('')
+
+			init_declarations.append(f'void init_{message.name}_def(void);')
+			source.append(f'void init_{message.name}_def(void)')
+			source.append('{')
+			source.append(f'\tif({message.name}_dti != NULL)')
+			source.append('\t\treturn;')
+			already_initialized = set()
+			for plan in plans:
+				if plan.kind == 'MESSAGE' and plan.message_name not in already_initialized:
+					already_initialized.add(plan.message_name); source.append(f'\tinit_{plan.message_name}_def();')
+				if plan.kind == 'ENUM' and plan.enum_name not in already_initialized:
+					already_initialized.add(plan.enum_name); source.append(f'\tinitialize_{plan.enum_name}_dti();')
+			source.extend(field_setup)
+			source.append(f'\t{message.name}_dti = malloc(sizeof_tuple_data_type_info({len(plans)}));')
+			source.append(f'\tinitialize_tuple_data_type_info({message.name}_dti, "{message.name}", 0, {max_size}, {len(plans)});')
+			for plan, pointer in zip(plans, containee_pointers):
+				source.append(f'\tstrcpy({message.name}_dti->containees[{plan.index}].field_name, "{plan.name}");')
+				source.append(f'\t{message.name}_dti->containees[{plan.index}].al.type_info = {pointer};')
+				source.append('')
+			source.append(f'\tif(!initialize_tuple_def(&{message.name}_def, {message.name}_dti)) exit(-1);')
+			source.append('}')
+			source.append('')
+
+			serialize_declarations.append(f'void* serialize_{message.name}_tuple(uint32_t* size, const {message.name}* source);')
+			source.append(f'void* serialize_{message.name}_tuple(uint32_t* size, const {message.name}* source)')
+			source.append('{')
+			source.append(f'\tuint32_t capacity = get_maximum_tuple_size(&{message.name}_def);')
+			source.append('\tvoid* tuple_buffer = malloc(capacity);')
+			source.append(f'\tinit_tuple(&{message.name}_def, tuple_buffer);')
+			source.append('')
+			for plan in plans:
+				source.extend(serialize_field_lines(plan, message.name))
+				source.append('')
+			source.append(f'\t(*size) = get_tuple_size(&{message.name}_def, tuple_buffer);')
+			source.append('\treturn tuple_buffer;')
+			source.append('}')
+			source.append('')
+
+			deserialize_declarations.append(f'{message.name}* deserialize_{message.name}_tuple(const void* buffer);')
+			source.append(f'{message.name}* deserialize_{message.name}_tuple(const void* buffer)')
+			source.append('{')
+			source.append(f'\t{message.name}* result = malloc(sizeof({message.name}));')
+			source.append(f'\tmemset(result, 0, sizeof({message.name}));')
+			source.append('\tdatum value;')
+			source.append('\tconst data_type_info* value_type; (void)value_type;')
+			source.append('')
+			for plan in plans:
+				source.extend(deserialize_field_lines(plan, message.name))
+				source.append('')
+			source.append('\treturn result;')
+			source.append('}')
+			source.append('')
+
+			destroy_declarations.append(f'void destroy_{message.name}({message.name}* s);')
+			source.append(f'void destroy_{message.name}({message.name}* s)')
+			source.append('{')
+			source.append('\tif(s == NULL)')
+			source.append('\t\treturn;')
+			source.append('')
+			for plan in plans:
+				source.extend(destroy_field_lines(plan))
+				source.append('')
+			source.append('\tfree(s);')
+			source.append('}')
+			source.append('')
+
+		header.append('// init')
+		header.extend(init_declarations)
+		header.append('')
+		header.append('// serialize')
+		header.extend(serialize_declarations)
+		header.append('')
+		header.append('// deserialize')
+		header.extend(deserialize_declarations)
+		header.append('')
+		header.append('// destroy')
+		header.extend(destroy_declarations)
+		header.append('')
+		header.append('#endif')
+
+		header_output = response.file.add(); header_output.name = header_name; header_output.content = '\n'.join(header) + '\n'
+		source_output = response.file.add(); source_output.name = source_name; source_output.content = '\n'.join(source) + '\n'
+
+	sys.stdout.buffer.write(response.SerializeToString())
+
+if __name__ == '__main__':
+	generate()

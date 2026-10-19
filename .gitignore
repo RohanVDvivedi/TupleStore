@@ -6,3 +6,6 @@
 obj
 lib
 bin
+
+proto_plugin/*.c
+proto_plugin/*.h

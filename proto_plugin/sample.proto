@@ -1,0 +1,32 @@
+syntax = "proto3";
+package example;
+
+enum Color {
+	COLOR_RED = 0;
+	COLOR_GREEN = 1;
+	COLOR_BLUE = 2;
+}
+
+// max=65536
+message address {
+	string city = 1; // nullable
+	uint32 zip = 2;
+}
+
+// max=65536
+message user {
+	int32  id1 = 1;
+	uint64 b10 = 7;   // bitfield bits=44
+	string name  = 8;
+	bool   is_active = 10;
+}
+
+// max=131072
+message profile {
+	user owner = 1;
+	int32 score = 2; // nullable
+	repeated int32 tags = 3;
+	repeated address places = 4;
+	Color favorite = 5;
+	repeated string nicknames = 6;
+}

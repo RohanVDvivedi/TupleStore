@@ -94,3 +94,16 @@ uninstall :
 	${RM} -r ${DOWNLOAD_DIR}/include/${PROJECT_NAME}
 	${RM} ${DOWNLOAD_DIR}/lib/${LIBRARY}
 	#${RM} ${DOWNLOAD_DIR}/bin/${BINARY}
+
+# for using the protobuf plugin
+
+PROTO_PLUGIN_DIR:=./proto_plugin
+
+install-plugin :
+	${CP} ${PROTO_PLUGIN_DIR}/protoc-gen-tuplestore ${DOWNLOAD_DIR}/bin
+
+uninstall-plugin :
+	${RM} ${DOWNLOAD_DIR}/bin/protoc-gen-tuplestore
+
+build-sample-using-plugin :
+	protoc --tuplestore_out=. ${PROTO_PLUGIN_DIR}/sample.proto
