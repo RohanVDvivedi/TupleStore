@@ -22,6 +22,9 @@ Overflow prone functions :
   * finalize_tuple_def() -> limit max size of element and maximum number of elements, so as the number does not cross 2GB for tuples and arrays
   * expand_element_count_for_element_in_tuple() and can_expand_element_count_for_element_in_tuple() -> accumulate all the elements you want to insert in memory and ensure that their (sum of sizes + 4 * count) does not cross 2GB and and only then attempt to expand the container, else their may be overflow
 
+This library also supports a protobuf compiler plugin to easily produce code to serialize/deserialize C-structs into tuplestore format in/from a buffer.
+Check makefile for how to use/install it.
+
 ## Setup instructions
 **Install dependencies :**
  * [Cutlery](https://github.com/RohanVDvivedi/Cutlery)
