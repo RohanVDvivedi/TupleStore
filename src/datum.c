@@ -150,6 +150,10 @@ static int compare_datum_internal(const datum* uval1, const data_type_info* dti1
 	else if(!is_datum_NULL(uval1) && is_datum_NULL(uval2))
 		return 1;
 
+	// check if fast path exists, if yes use it
+	if(dti1->fast_path_compare != NULL && dti1->fast_path_compare == dti2->fast_path_compare)
+		return dti1->fast_path_compare(uval1, uval2);
+
 	if(is_primitive_numeral_type_info(dti1)) // both are primitive types and are comparable
 		return compare_primitive_numeral_type(uval1, dti1, uval2, dti2);
 	else if(dti1->type == TUPLE) // both are the comparable tuple types
@@ -226,12 +230,6 @@ static int compare_datum_internal(const datum* uval1, const data_type_info* dti1
 
 int compare_datum(const datum* uval1, const data_type_info* dti1, const datum* uval2, const data_type_info* dti2)
 {
-	if(dti1 != NULL && dti2 != NULL)
-	{
-		if(!can_compare_datum(dti1, dti2))
-			return -2;
-	}
-
 	return compare_datum_internal(uval1, dti1, uval2, dti2);
 }
 
@@ -243,6 +241,10 @@ static int compare_datum_internal2(const datum* uval1, const datum* uval2, const
 		return -1;
 	else if(!is_datum_NULL(uval1) && is_datum_NULL(uval2))
 		return 1;
+
+	// check if fast path exists, if yes use it
+	if(dti->fast_path_compare != NULL)
+		return dti->fast_path_compare(uval1, uval2);
 
 	if(is_primitive_numeral_type_info(dti)) // both are primitive types and are comparable
 		return compare_primitive_numeral_type2(uval1, uval2, dti);

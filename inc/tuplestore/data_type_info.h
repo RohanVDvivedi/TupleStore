@@ -66,6 +66,8 @@ struct data_position_info
 	data_positional_info al; // -> information about the actual position inthe tuple or array
 };
 
+#include<tuplestore/datum.h>
+
 struct data_type_info
 {
 	int is_static; // -> if set this object is not to be freed, set for default types and custom types from extensions
@@ -113,6 +115,9 @@ struct data_type_info
 	// binary_context, this attribute is internally not used by the tuplestore project, but it is provided to decode and understand the contents of the blob/binary types
 	// a possible implementation could use it for supporting union, where first few bytes can decide how to decode/understand the contents of the blob/binary
 	// even other data_type type != BINARY, can use it but they already have a defined meaning to them
+
+	// datum.h uses it to quickly compare types that have identical function pointers here, after NULL checking but without any type checking
+	int (*fast_path_compare)(const datum* uval1, const datum* uval2);
 
 	data_type_info* containee;	// -> to be used for ARRAY only
 	// for string and binary types the containee is always a UINT_1_NON_NULL i.e. non-nullable UINT of size 1 byte

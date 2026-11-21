@@ -1,6 +1,8 @@
 #ifndef DATA_TYPE_INFO_DEFAULTS_H
 #define DATA_TYPE_INFO_DEFAULTS_H
 
+#include<tuplestore/fast_path_comparators.h>
+
 extern data_type_info* BIT_FIELD_NULLABLE[65];
 
 extern data_type_info* BIT_FIELD_NON_NULLABLE[65];
@@ -44,6 +46,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.is_nullable = 1, \
 	.is_variable_sized = 0, \
 	.bit_field_size = _size, \
+	.fast_path_compare = fast_path_compare_uint64, \
 })
 
 #define define_bit_field_non_nullable_type(_type_name, _size) \
@@ -55,6 +58,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.is_nullable = 0, \
 	.is_variable_sized = 0, \
 	.bit_field_size = _size, \
+	.fast_path_compare = fast_path_compare_uint64, \
 })
 
 #define define_uint_nullable_type(_type_name, _size) \
@@ -66,6 +70,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.is_nullable = 1, \
 	.is_variable_sized = 0, \
 	.size = _size, \
+	.fast_path_compare = fast_path_compare_uint64, \
 })
 
 #define define_uint_non_nullable_type(_type_name, _size) \
@@ -77,6 +82,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.is_nullable = 0, \
 	.is_variable_sized = 0, \
 	.size = _size, \
+	.fast_path_compare = fast_path_compare_uint64, \
 })
 
 #define define_int_nullable_type(_type_name, _size) \
@@ -88,6 +94,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.is_nullable = 1, \
 	.is_variable_sized = 0, \
 	.size = _size, \
+	.fast_path_compare = fast_path_compare_int64, \
 })
 
 #define define_int_non_nullable_type(_type_name, _size) \
@@ -99,6 +106,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.is_nullable = 0, \
 	.is_variable_sized = 0, \
 	.size = _size, \
+	.fast_path_compare = fast_path_compare_int64, \
 })
 
 #define define_float_nullable_type(_type_name, size_for) \
@@ -110,6 +118,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.is_nullable = 1, \
 	.is_variable_sized = 0, \
 	.size = sizeof(size_for), \
+	.fast_path_compare = sizeof(size_for) == sizeof(float) ? fast_path_compare_float : fast_path_compare_double, \
 })
 
 #define define_float_non_nullable_type(_type_name, size_for) \
@@ -121,6 +130,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.is_nullable = 0, \
 	.is_variable_sized = 0, \
 	.size = sizeof(size_for), \
+	.fast_path_compare = sizeof(size_for) == sizeof(float) ? fast_path_compare_float : fast_path_compare_double, \
 })
 
 #define define_large_uint_nullable_type(_type_name, _size) \
@@ -132,6 +142,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.is_nullable = 1, \
 	.is_variable_sized = 0, \
 	.size = _size, \
+	.fast_path_compare = fast_path_compare_uint256, \
 })
 
 #define define_large_uint_non_nullable_type(_type_name, _size) \
@@ -143,6 +154,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.is_nullable = 0, \
 	.is_variable_sized = 0, \
 	.size = _size, \
+	.fast_path_compare = fast_path_compare_uint256, \
 })
 
 #define define_large_int_nullable_type(_type_name, _size) \
@@ -154,6 +166,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.is_nullable = 1, \
 	.is_variable_sized = 0, \
 	.size = _size, \
+	.fast_path_compare = fast_path_compare_int256, \
 })
 
 #define define_large_int_non_nullable_type(_type_name, _size) \
@@ -165,6 +178,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.is_nullable = 0, \
 	.is_variable_sized = 0, \
 	.size = _size, \
+	.fast_path_compare = fast_path_compare_int256, \
 })
 
 #define get_fixed_length_string_type(_type_name, _size, _is_nullable) \
@@ -178,6 +192,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.has_variable_element_count = 0, \
 	.element_count = _size, \
 	.containee = UINT_NON_NULLABLE[1], \
+	.fast_path_compare = fast_path_compare_string_binary, \
 })
 
 #define get_fixed_length_binary_type(_type_name, _size, _is_nullable) \
@@ -191,6 +206,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.has_variable_element_count = 0, \
 	.element_count = _size, \
 	.containee = UINT_NON_NULLABLE[1], \
+	.fast_path_compare = fast_path_compare_string_binary, \
 })
 
 #define get_variable_length_string_type(_type_name, _max_size) \
@@ -202,6 +218,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.max_size = _max_size, \
 	.has_variable_element_count = 1, \
 	.containee = UINT_NON_NULLABLE[1], \
+	.fast_path_compare = fast_path_compare_string_binary, \
 })
 
 #define get_variable_length_binary_type(_type_name, _max_size) \
@@ -213,6 +230,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.max_size = _max_size, \
 	.has_variable_element_count = 1, \
 	.containee = UINT_NON_NULLABLE[1], \
+	.fast_path_compare = fast_path_compare_string_binary, \
 })
 
 #define get_fixed_element_count_array_type(_type_name, _element_count, _max_size_if_variable_sized_element, _is_nullable_if_fixed_sized_element, _containee) \
@@ -226,6 +244,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.has_variable_element_count = 0, \
 	.element_count = _element_count, \
 	.containee = _containee, \
+	.fast_path_compare = NULL, \
 })
 
 #define get_variable_element_count_array_type(_type_name, _max_size, _containee) \
@@ -237,6 +256,7 @@ extern data_type_info* LARGE_INT_NON_NULLABLE[33];
 	.max_size = _max_size, \
 	.has_variable_element_count = 1, \
 	.containee = _containee, \
+	.fast_path_compare = NULL, \
 })
 
 #define initialize_tuple_data_type_info(dti, _type_name, _is_nullable_if_fixed_sized_element, _max_size_if_variable_sized, _element_count) \
@@ -247,6 +267,7 @@ dti->type = TUPLE; \
 dti->is_nullable = _is_nullable_if_fixed_sized_element; \
 dti->max_size = _max_size_if_variable_sized; \
 dti->has_variable_element_count = 0; \
-dti->element_count = _element_count;
+dti->element_count = _element_count; \
+dti->fast_path_compare = NULL;
 
 #endif

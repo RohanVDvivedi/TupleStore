@@ -1,6 +1,8 @@
 #include<tuplestore/data_type_info.h>
 #include<tuplestore/page_layout_util.h>
 
+#include<tuplestore/fast_path_comparators.h>
+
 #include<serint/serial_int.h>
 #include<serint/large_uints.h>
 #include<tuplestore/float_accesses.h>
@@ -53,15 +55,25 @@ int finalize_type_info(data_type_info* dti)
 			if(dti->bit_field_size < 1 || 64 < dti->bit_field_size)
 				return 0;
 			dti->is_variable_sized = 0;
+			dti->fast_path_compare = fast_path_compare_uint64;
 			break;
 		}
 
 		case UINT :
+		{
+			if(dti->size < 1 || 8 < dti->size)
+				return 0;
+			dti->is_variable_sized = 0;
+			dti->fast_path_compare = fast_path_compare_uint64;
+			break;
+		}
+
 		case INT :
 		{
 			if(dti->size < 1 || 8 < dti->size)
 				return 0;
 			dti->is_variable_sized = 0;
+			dti->fast_path_compare = fast_path_compare_int64;
 			break;
 		}
 
@@ -70,6 +82,10 @@ int finalize_type_info(data_type_info* dti)
 			if((dti->size != sizeof(float)) && (dti->size != sizeof(double)))
 				return 0;
 			dti->is_variable_sized = 0;
+			if(dti->size == sizeof(float))
+				dti->fast_path_compare = fast_path_compare_float;
+			else if(dti->size == sizeof(double))
+				dti->fast_path_compare = fast_path_compare_double;
 			break;
 		}
 
@@ -78,6 +94,7 @@ int finalize_type_info(data_type_info* dti)
 			if(dti->size < 1 || get_max_bytes_uint256() < dti->size)
 				return 0;
 			dti->is_variable_sized = 0;
+			dti->fast_path_compare = fast_path_compare_uint256;
 			break;
 		}
 
@@ -86,6 +103,7 @@ int finalize_type_info(data_type_info* dti)
 			if(dti->size < 1 || get_max_bytes_int256() < dti->size)
 				return 0;
 			dti->is_variable_sized = 0;
+			dti->fast_path_compare = fast_path_compare_int256;
 			break;
 		}
 
@@ -107,6 +125,7 @@ int finalize_type_info(data_type_info* dti)
 			}
 			else
 				dti->size = dti->element_count;
+			dti->fast_path_compare = fast_path_compare_string_binary;
 			break;
 		}
 
@@ -189,6 +208,8 @@ int finalize_type_info(data_type_info* dti)
 			if(is_variable_sized_type_info(dti) && dti->min_size > dti->max_size)
 				return 0;
 
+			dti->fast_path_compare = NULL;
+
 			break;
 		}
 
@@ -235,6 +256,7 @@ int finalize_type_info(data_type_info* dti)
 				if(dti->min_size > dti->max_size)
 					return 0;
 			}
+			dti->fast_path_compare = NULL;
 
 			break;
 		}
